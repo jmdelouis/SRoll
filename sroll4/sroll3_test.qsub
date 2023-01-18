@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -q mpi_1
+#PBS -l select=1:ncpus=28:mem=115g
+#PBS -l walltime=12:00:00
+#PBS -N Dmaptest
+
+cd /home1/datawork/jmdeloui/Troll/iaocea/source/SrollEx
+
+module purge
+source srollex_setenv.sh
+cd sroll4
+echo 'PATH INIT DONE'
+module load impi/5.1.3.258
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/home1/datahome/jmdeloui/conda-env/tfgpu/lib
+
+echo 'READY FOR RUN'
+mpirun -np 16 ./troll_857 sroll3_test.py &> /home1/datawork/jmdeloui/Troll/iaocea/source/SrollEx/sroll4/sroll3_test.log
+#mpirun -np 16 ./test
+echo 'End'

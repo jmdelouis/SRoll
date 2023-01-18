@@ -1,0 +1,99 @@
+#%%##############################################################################
+#%% IMPORTANT:
+#%% This parameter file need to be pre-processed by a specialization script
+#%% before use!
+#%% Please see: script/doQsub.py for more detail
+#%%##############################################################################
+# This parameter file is based on reference pipeline ID: 1731634056978137279 DB: MISS03
+
+
+BeginRing = [[%BeginRing]]
+EndRing   = [[%EndRing]]
+
+AVGCO = 0
+AVGDUST = 0
+AVGR0 = 0
+CALCODUST = 0
+CUTRG = 1
+DEGREE = 0
+DODIPCAL = 1
+DOGAINDIP = [[%DOGAINDIP]]
+DOMAXVRAIE = 0
+D_NOPOL = 0
+#DoDIP2 = 2
+FITTHETA = 0
+GAINSTEP = [[%GAINSTEP]]
+NADU = [[%NADU]]
+Nside = 2048
+REMDIP = [[%REMDIP]]
+REMHDIP = 1
+RSTEP = 1
+SAVEINTMAP = 0
+TESTPOL = 1
+XI2STOP = 1.0
+seuilcond = 1e-06
+verbose = 0
+number_of_Calibration = {%N}
+{{Calibration}}
+number_of_CrossPol = {%N}
+{{CrossPol}}
+number_of_FSLCOEF = {%N}
+{{FSLCOEF}}
+number_of_Monop = {%N}
+{{Monop}}
+number_of_NEP = {%N}
+{{NEP}}
+number_of_OUT_NOPOL = {%N}
+{{OUT_NOPOL}}
+number_of_SEED = 1
+SEED1 = [[%SEED]]
+number_of_bolomask = {%N}
+{{bolomask}}
+
+
+# INPUT
+Mask = [[%srollIn]]/dmc/MISS03/DATA/MASK_2048_GALACTIC/mask_RD_857
+TEMPLATEMAP = [[%srollIn]]/dmc/MISS03/DATA/MAP_DX11d_noZodi_2048_GALACTIC_0240_27005/857GHz_W_TauDeconv_planet_I
+Theo_CO = [[%srollIn]]/dmc/MISS03/DATA/MAP_JMD_128/COMAP
+Theo_CO_Q = [[%srollIn]]/dmc/MISS03/DATA/MAP_JMD_128/CO_ORT_Q
+Theo_CO_U = [[%srollIn]]/dmc/MISS03/DATA/MAP_JMD_128/CO_ORT_U
+Theo_Dust_I = [[%srollIn]]/dmc/MISS03/DATA/MAP_JMD_128/Dust_I
+Theo_Dust_Q = [[%srollIn]]/dmc/MISS03/DATA/MAP_JMD_128/Dust_Q
+Theo_Dust_U = [[%srollIn]]/dmc/MISS03/DATA/MAP_JMD_128/Dust_U
+number_of_ADU = {%N}
+{{ADU}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_adutot
+number_of_Badring = {%N}
+{{Badring}} = [[%srollIn]]/dmc/MISS03/DATA/calROIs/{boloIDFull}_discarded_rings_v61[[%OddEven]]
+number_of_DipOrb_noPS = {%N}
+{{DipOrb_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_diporb_quat
+number_of_Hit_noPS = {%N}
+{{Hit_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_hit
+number_of_Ptg_noPS = {%N}
+{{Ptg_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_ptg
+number_of_Signal_noPS = {%N}
+{{Signal_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]
+number_of_Theo_noPS = {%N}
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_R0
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_R1
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_R2
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_R3
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_H0
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_H1
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_H2
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_H3
+{{Theo_noPS}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_REP7_2
+number_of_fsl = {%N}
+{{fsl}} = [[%srollIn]]/dmc/MISS03/DATA/PBR_JMD/{boloID}_[[%REPID]]_fsl
+
+
+# OUTPUT
+number_of_MAP = {%N}
+{{MAP}} = [[%srollOut_MapDir]]/{mapLabel}_RD13beta2_[[%REPID]]
+number_of_Out_Offset = {%N}
+{{Out_Offset}} =  [[%srollOut_VectDir]]/{boloID}_offsets_PROD_[[%REPID]]_RD13beta2_857GHz
+number_of_Out_Offset_corr = {%N}
+{{Out_Offset_corr}} =  [[%srollOut_VectDir]]/{boloID}_offsets_fsl_PROD_[[%REPID]]_RD13beta2_857GHz
+number_of_Out_xi2 = {%N}
+{{Out_xi2}} =  [[%srollOut_VectDir]]/{boloID}_xi2_PROD_[[%REPID]]_RD13beta2_857GHz
+number_of_Out_xi2_corr = {%N}
+{{Out_xi2_corr}} =  [[%srollOut_VectDir]]/{boloID}_xi2_fsl_PROD_[[%REPID]]_RD13beta2_857GHz

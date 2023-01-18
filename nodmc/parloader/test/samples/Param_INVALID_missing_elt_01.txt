@@ -1,0 +1,33 @@
+#TOTO NADU
+	# <--- ici on a une tabulation en debut de ligne!
+    
+  #a   =0
+
+number_of_fsl = 8
+     
+fsl1 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-1a_REP6_fsl
+fsl2 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-1b_REP6_fsl
+fsl3 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-4a_REP6_fsl
+fsl4 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-4b_REP6_fsl
+fsl5 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-2a_REP6_fsl
+fsl6 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-2b_REP6_fsl
+###
+#
+# 
+
+ #
+  
+fsl7 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-3a_REP6_fsl
+fsl8 = object:/data/dmc/MISS03/DATA:PBR_JMD:100-3b_REP6_fsl
+#NADU=123
+    NADU   =987 
+
+number_of_Calibration = 8
+Calibration1 = 1.00340513024e-13
+Calibration2 = 1.23240311873e-13
+Calibration3 = 1.46826316998e-13
+Calibration4 = 1.17469574177e-13
+Calibration5 = 1.51966997388e-13
+Calibration6 = 1.5885889296e-13
+Calibration7 = 1.38652193689e-13
+Calibration8 = 1.1492356927e-13

@@ -1,0 +1,93 @@
+#
+# parameter file to test if stimexe runs on occigen
+# simply run with:
+# pushd $SROLLDIR/stim; export OMP_NUM_THREADS=2; ./stimexe $SROLLDIR/sroll/TESTPAR/test_stimexe_1proc_353-1_occigen.stim.par; popd
+# it takes about 3 minutes to complete
+# you can then
+# rm $SHAREDSCRATCHDIR/bware/stimexe_test_to_delete_353-1_stimHPR_100.*
+#
+
+
+bolometer       = 353-1
+brimo_filename  = /scratch/cnt0028/ias1717/SHARED/RD12_data/brimo_4_27
+stay_in_memory  = -1
+
+iterations      = 1
+random_seed     = 100
+
+BeginRing       = 240
+EndRing         = 245
+rings_per_read  = 6
+
+RD12calib = 0
+signal_in       = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/e2e_common_TOI/353-1_JAN18sky_TOI
+signal_out      = 0
+hpr_out         = /scratch/cnt0028/ias1717/SHARED/bware/stimexe_test_to_delete_353-1_stimHPR
+TOI_pixel_index = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/e2e_common_TOI/353-1_HPRIDX_ABER_TotalFlag_dx11
+phase           = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/Sa_HFI_C_Bolo/Phase_dx11
+
+
+do_photonic_noise = 1
+
+
+do_LFER_convolve = 1
+
+
+do_electronic_noise = 1
+
+
+do_despike_flag = 1
+
+
+do_LFER_deconvolve = 1
+# 0 = use default values
+deconv_LPF_FILTER = 0
+deconv_R_FILTER   = 0
+
+
+do_sim_adu = 1
+sim_inl_name = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/RAW_VECT_FIT_INFO/353-1_SIMINL1406_offsets
+#save_sim_inl=
+rawgain_name = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/RAW_GAIN/05_INL_GP41N
+rawcst_name  = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/RAW_CST/05_LM4K_DX11
+#fourk_name   = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/RAW_4K/05_HARMS_LM4K_DX11_PIOFLOAT
+fourk_name   = 0
+add_baseline = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/e2e_common_TOI/353-1_dsn_baseline_Feb16
+electronic_noise_adu = 4.0
+
+
+do_compress_decompress = 1
+
+
+do_correct_adc = 1
+corr_inl_name  = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/RAW_VECT_FIT_INFO/HFI_05_DNL_DX11
+
+
+do_adu_to_volts = 1
+use_bolometer_nonlinearity = 0
+
+
+do_bl_demod = 1
+
+
+do_gaindecorr    = 1
+thermal_baseline = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calTOIs/T90_sm10823_v61
+
+
+nharm_oof     = 1
+amp_oof_param = 0
+
+
+do_calibrate = 0
+
+
+add_final_toi = 0
+add_final_toi_factor = 0
+
+
+number_of_add_hpr_name = 1
+add_hpr_name1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/353-1_REP6_4k_residu
+
+number_of_add_hpr_factor = 1
+add_hpr_factor1 = 1.0
+

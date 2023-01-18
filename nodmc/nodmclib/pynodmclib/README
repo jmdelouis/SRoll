@@ -1,0 +1,79 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+PYNODMCLIB
+
+This README file is write for developpers of the python wrapper.
+If you are a user of the python wrapper please refer to the documentation in
+doc/README (section 2.c.ii)) for general information or examples/README for
+more detail about usage.
+
+
+* REQUIREMENTS
+
+  - As stated in the INSTALL file, only specific python version are allowed!
+  - BEFORE trying to compile the wrapper the NO_DMC_LIB must have been
+    generated (cf. 'make lib') and placed in the LD_LIBRARY_PATH.
+    ex: $> export LD_LIBRARY_PATH=../Linux-x86_64/
+  - Unset any PYTHONPATH previously set to avoid conflict!
+    ex: $> unset PYTHONPATH
+
+
+* "setup.py"
+
+** Compil/Install of the python wrapper module
+
+  Note that the python wrapper module is compiled from cython code to a shared
+  library ("nodmclib.so").
+
+  The setup.py file allow to easily install this library (cf. distutils).
+
+  Here are listed some useful commands depending on the goal to achieve:
+
+  1) For generating the lib inplace (useful for debug)
+  $> python setup.py build_ext --inplace
+
+  2) For installing the lib in a "local" directory
+  $> python setup.py install --install-lib ./my_dir_install
+
+  3) For installing the lib in a stardard hierachy from a prefix path:
+  $> python setup.py install --prefix ./my_dir_install
+
+** Usage
+
+  IMPORTANT: you must update your PYTHONPATH accordingly so that the just
+  compiled python wrapper can be found:
+  $> export PYTHONPATH=./my_dir_install/nodmclib
+  Note the additional "/nodmclib" subdir!
+
+  Then launch your python interpreter:
+  $> python
+
+  Import the module:
+  >>> import nodmclib
+
+  Print the version attribute:
+  >>> print nodmclib.__version__
+
+  Print all available function of the wrapper:
+  >>> dir(nodmclib)
+
+  Read data...
+  >>> data = nodmclib.read_PIODOUBLE("some_object_path", 0, 10)
+
+
+** (in case of error) Ensure all (path) are ok:
+
+  In case of error just ensure that all libraries are reachable by typing:
+  $> ldd nodmclib.so
+  If some are "not found" just add them to the LD_LIBRARY_PATH env variable.
+  $> export LD_LIBRARY_PATH = $LD_LIBRARY_PATH:path_to_lib
+
+
+** Reference documentation
+
+  Cython: http://docs.cython.org/
+  Cython - clibraries: http://docs.cython.org/src/tutorial/clibraries.html
+  
+  Python distutils setup.py file: https://docs.python.org/2/distutils/setupscript.html

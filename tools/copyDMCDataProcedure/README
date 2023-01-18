@@ -1,0 +1,53 @@
+*** README ***
+
+** Procedure to follow when we need to copie DMC data (from M3) to a remote host **
+
+Note: Currently identified remote host are:
+      * M4: http://m4users.planck.fr
+      * CC: http://cc.in2p3.fr/
+      * EDISON (NERSC): https://www.nersc.gov/users/storage-and-file-systems/transferring-data/
+
+
+
+1) Obtain list of object to be copied
+   ----------------------------------
+   --> ON REMOTE HOST
+
+   IMPORTANT: You must decide if you want to retrieve only missing files
+              (--only-missing) or if you want to retrieve the whole set of
+              dependency upon product (--full).
+              The last case (--full) will allow you to ensure all data used in
+              process is up to date regarding the source (M3).
+   
+   a) Partial check (only checking for missing file): +faster
+   $> checkParamDataAvailability.sh --only-missing <path_to_param_file.txt>
+
+   b) Full retrieve of all dependency files: !slower
+   $> checkParamDataAvailability.sh --full <path_to_param_file.txt>
+
+   In both case it will produce an output file <TO_BE_COPIED_FOR_XXX.txt>
+   Where 'XXX' is your input parameter name.
+   For next step copy this file to M3.
+
+2) Prepare DMC object for copy
+   ---------------------------
+   --> ON M3 (source of DMC data)
+
+   !!! Require an hl2_env !!! (since we make request to DMC)
+
+   $> prepareDMCDataForCopy.sh <TO_BE_COPIED_FOR_XXX.txt>
+
+   It will produce 2 output files: <From_M3_DATA_For_XXX.txt> and
+   <From_M3_PIO_For_XXX.txt>
+
+3) Copying to Remote host
+   ----------------------
+   --> ON REMOTE HOST (either M4, CC or EDISON)
+
+   The new script "copyFromM3ToHost.sh" automaticaly perform appropriate config
+   regarding the host you are logged in.
+   Especially it allow to take adavantage of some optimization in case of M4.
+
+   $> copyFromM3ToHost.sh <From_M3_DATA_For_XXX.txt> <From_M3_PIO_For_XXX.txt>
+   Note that the metadata of copied object are automaticaly updated in the same
+   process so this is the last step of the copy procedure!

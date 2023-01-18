@@ -1,0 +1,11 @@
+README
+
+* External library: "fftw"
+  Now the "fftw-3.3.4.tgz" is directly include in the cvs source tree.
+  Makefile is able to handle its decompression (and compilation) when required.
+
+* Now the 'sroll' code automatically balance rings to be processed on available
+  ranks. Therefore in the parameter file one shall only specify: 
+    BeginRing = 240
+    EndRing   = 27005
+

@@ -1,0 +1,121 @@
+                                  *************
+                                  * ParLoader *
+                                  *************
+
+README
+
+* About ParLoader
+
+  The ParLoader aims to produce customized C code allowing to load parameters
+  from a text file according to a defined structure type (parContent) obtain
+  from a header file.
+
+  To achieve this goal, the ParLoader works in 2 phases (managed by the python
+  script "fillParLoader.py"):
+    1) Parse and load the structure defining the parameters (from a specified
+       header file).
+    2) Use theses information to generate customized parLoader files (a .c
+       and a .h) that you will be able to use directly in your project.
+
+  So, in order to use the ParLoader you will have to specify some required
+  infortion when you call the Makefile:
+    * 'currentParContentDefHeaderFile' the header file defining the
+      "parContent" structure.
+    * 'tagPrefix' a prefix used for all strucures and functions so that
+      several projects can use the parloader for different loading
+      configuration. This parameter can be empty but then it may conflict with
+      other definition.
+      For conveniency in the rest of this documentation we will use as an
+      exemple tag: "myTag_"
+  Then you will be able to produce a customized parLoader with the command:
+  $> make currentParContentDefHeaderFile=/some_path/headerParContent.h tagPrefix="myTag_"
+  This will produce 2 files in the directrory of the input file
+  'currentParContentDefHeaderFile':
+    *) ParLoader header file: ex: "myTag_parLoader.h"
+    *) ParLoader source file: ex: "myTag_parLoader.c"
+  Then use these files directly in your own program.
+
+  Note that the available function are declared in file "myTag_parLoader.h".
+
+
+* Customizing ParLoader for your specific needs
+
+  You can specify your own parameter structure definition in an header file.
+  (see "Restriction of use").
+  Remember that you have to specify this input header file as parameter at make
+  call time:
+  See parameter: "currentParContentDefHeaderFile".
+
+
+* Compilation and relation to the NO_DMC_LIB
+
+  The ParLoader make use of some functions and types defined in the NO_DMC_LIB,
+  therefore at compilation time in your own project remember to define path to
+  the NODMCLIB directory you want to use.
+  (see NODMCLIB documentation).
+
+
+* Limitations:
+
+  For now, only the following PIO formats are supported:
+  - PIOLONG
+  - PIOFLOAT
+  - PIODOUBLE
+  - PIOSTRING
+  - PIOINT
+
+
+* Restriction of use
+
+  In all cases, the parser will try to best detect and notify encountered
+  errors.
+  In this section "<headerParContent.h>" represent the name of the input
+  header file defining the structure "parContent".
+
+  1) About the input header defining the parameters <headerParContent.h>
+     (ex: test_param.h)
+     
+     - Only one parameter per line
+     - Parameter definition must precede all other "sub" parameters (like
+       "flag_" or "n_")
+       Example (GOOD):
+         PIOSTRING *ADU;
+         PIOBYTE flag_ADU;
+         PIOLONG n_ADU;
+     - The whole file definition must:
+         + Start with exactly "typedef struct"
+         + End with "__TAG__parContent;" where __TAG__ is the tag you specify
+           as parameter ('tagPrefix') at make time.
+           (ex: "myTag_parContent;")
+
+  2) About the parameter file to be parsed (ex: Param_100_RD12.txt)
+
+     - For list parameters the "number_of_" definition must precede immediatly
+       to the list.
+       Example (GOOD):
+         number_of_SEED = 1
+         SEED1 = 1234
+     - All mandatory parameters (defined in <headerParContent.h>) must be
+       present.
+     - All parameters must exist in the <headerParContent.h> (ie. be part of
+       the 'struct').
+     - Line starting with '#' are considered to be comment.
+     - Empty lines are ingored.
+     - Redefinition is prohibited.
+     - Lines must be less or equal to 253 chars long (not counting newline).
+
+
+* For DEV (DEBUG)
+
+  It can be useful to compile the loader with the DEBUG flag on:
+  $> make CFG=-DDEBUG
+  This will produce more debug print.
+
+  Test (developper)
+
+  If you want to test the whole process with a default header file, then:
+  $> make test
+  $> ./test/testParLoader
+  It will customize a parLoader using as input header file "test_param.h"
+  and parse the content of several parameter text files (from samples/
+  directory), displaying some read parameter values.

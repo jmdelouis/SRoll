@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# usage from stim directory: qsub test/stim_test_m3.qsub
+
+#PBS -S /bin/sh
+#PBS -N stim_test
+#PBS -j oe
+#PBS -l nodes=1:ncpus=4,walltime=01:00:00
+
+module () {
+  eval $(/usr/bin/modulecmd bash $*)
+}
+
+module purge
+module load mpi/openmpi-1.6.5-ifort-14.0-gcc-4.8.1-BLCR-PBS
+
+cd /wrk/$LOGNAME/srollex/Task_pkg/SrollEx/v*/stim
+
+mpirun -x TMPDIR=/tmp -np 4 ./stimexe test/stim_test_m3_hprout.par &> stim_test.log
+
+exit 0

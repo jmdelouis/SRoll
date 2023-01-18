@@ -1,0 +1,16 @@
+#!/bin/sh
+#PBS -S /bin/sh
+#PBS -N sroll_353_all
+#PBS -j oe
+#PBS -l nodes=22:ppn=24,walltime=24:00:00
+
+cd /wrk/delouis/SROLL/Level2/Task_pkg/SrollEx/sroll
+
+
+# Configure module
+source ../srollex_setenv.sh
+
+mpirun --map-by node --display-map -x TMPDIR=/tmp -np 512 ./sroll /wrk/delouis/SROLL/Level2/Task_pkg/SrollEx/sroll/Params/fitang/param353.txt &> /pscratch1/delouis/fitang/353_SWB/DBG_sroll_proc.log
+
+
+exit 0

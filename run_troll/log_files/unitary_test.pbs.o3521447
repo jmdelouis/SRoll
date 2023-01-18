@@ -1,0 +1,9 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+DATARMOR computing node detected
+HEALPY - ok
+TENSORFLOW - ok
+./srollex_setenv.sh: line 147: svn: command not found
+No Modulefiles Currently Loaded.
+sroll package r configuration complete in /home1/datahome/tfoulqui/MySroll/extraball/SrollEx
+

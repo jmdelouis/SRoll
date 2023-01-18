@@ -1,0 +1,8 @@
+#PBS -q [[%queueName]]
+#PBS -l mppwidth=[[%nbTotProc]]
+#PBS -l walltime=[[%walltime]]
+#PBS -N [[%label]]
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+aprun -n [[%nbTotProc]] [[%srollDir]]sroll [[%paramFile]] &> [[%logfilename]]

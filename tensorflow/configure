@@ -1,0 +1,155 @@
+#!/bin/sh
+# Guess values for system-dependent variables and create Makefiles.
+#
+
+ln -s ${PWD}/../cfitsio ${PWD}/cfitsio
+
+HOST=$( hostname )
+
+echo ${HOST}
+case "${HOST}" in 
+     *.occigen) 
+     	 echo 'I am on OCCIGEN';
+	 OUTPATH=/scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd/545
+	 
+	 sed 's;@@PYPATH@@;/opt/software/occigen/tools/python/2.7.12/intel/17.0/bin/python;g;
+	      s;@@CC@@;icc;g;s;@@IMPORTF1@@;import tensorflow.compat.v1 as tf;g;		     
+	      s;@@IMPORTF2@@;tf.disable_v2_behavior();g' Makefile.in > Makefile
+	 
+	 sed 's;@@MAP128@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128;g;
+	 s;@@MAP2048@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048;g;
+	 s;@@MASK@@;/scratch/cnt0028/ias1717/SHARED/bware/sroll22_trick/SrollEx/tensorflow/mask_RD_545_10DEG;g;
+	 s;@@ROI@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs;g;
+	 s;@@PBR@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD;g;
+	 s;XXX;1.0;g;
+	 s;YYY;1_0;g;
+	 s;@@NUMTF@@;12;g;
+	 s;@@OUT@@;/scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd/545;g;
+	 s;@@RSTEP@@;200;g' param545_1_CNN.TMP > param545_1_CNN.py
+	 
+	 sed 's;@@MAP128@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128;g;
+	 s;@@MAP2048@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048;g;
+	 s;@@MASK@@;/scratch/cnt0028/ias1717/SHARED/bware/sroll22_trick/SrollEx/tensorflow/mask_RD_545_10DEG;g;
+	 s;@@ROI@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs;g;
+	 s;@@PBR@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD;g;
+	 s;XXX;1.0;g;
+	 s;YYY;1_0;g;
+	 s;@@NUMTF@@;12;g;		
+	 s;@@OUT@@;/scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd/545;g;
+	 s;@@RSTEP@@;200;g' param545_CNN.TMP > param545_CNN.py
+	 
+	 sed 's;@@MAP128@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128;g;
+	 s;@@MAP2048@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048;g;
+	 s;@@MASK@@;/scratch/cnt0028/ias1717/SHARED/bware/sroll22_trick/SrollEx/tensorflow/mask_RD_545_10DEG;g;
+	 s;@@ROI@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs;g;
+	 s;@@PBR@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD;g;
+	 s;XXX;1.0;g;
+	 s;YYY;1_0;g;
+	 s;@@NUMTF@@;12;g;		
+	 s;@@OUT@@;/scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd/545;g;
+	 s;@@PBRSIM@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/JAN18_stimHPR;g;
+	 s;@@PBRPSM@@;/scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/JAN18sky/nostim_HPR;g;
+	 s;@@RSTEP@@;200;g' param545_ONE.TMP.py > param545_ONE.py
+	 
+	 mkdir -p ${OUTPATH}/MAP
+	 mkdir -p ${OUTPATH}/VECT
+	 ;;
+      br146-050)
+	  echo 'I am on GAROUPE'
+	  OUTPATH=/export/home1/jmdeloui/DATA4SROLL4
+	
+	  sed 's;@@PYPATH@@;/venv/py3-phyocean/bin/python;g;s;@@CC@@;gcc;g;
+	      s;@@IMPORTF1@@;import tensorflow.compat.v1 as tf;g;		     
+	      s;@@IMPORTF2@@;tf.disable_v2_behavior();g' Makefile.in > Makefile
+	  
+	 sed 's;@@MAP128@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@MAP2048@@;export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@MASK@@;/export/home1/jmdeloui/DATA4SROLL4/mask_RD_545_10DEG;g;
+	     s;@@ROI@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBR@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;XXX;1.0;g;
+	     s;YYY;1_0;g;
+	     s;@@NUMTF@@;12;g;
+	     s;@@OUT@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@RSTEP@@;200;g' param545_1_CNN.TMP > param545_1_CNN.py
+	 
+	 sed 's;@@MAP128@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@MAP2048@@;export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@MASK@@;/export/home1/jmdeloui/DATA4SROLL4/mask_RD_545_10DEG;g;
+	     s;@@ROI@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBR@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;XXX;1.0;g;
+	     s;YYY;1_0;g;
+	     s;@@NUMTF@@;12;g;
+	     s;@@OUT@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@RSTEP@@;200;g' param545_CNN.TMP > param545_CNN.py
+	 
+	 
+	 sed 's;@@MAP128@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@MAP2048@@;export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@MASK@@;/export/home1/jmdeloui/DATA4SROLL4/mask_RD_545_10DEG;g;
+	     s;@@ROI@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBR@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;XXX;1.0;g;
+	     s;YYY;1_0;g;
+	     s;@@NUMTF@@;12;g;
+	     s;@@OUT@@;/export/home1/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBRSIM@@;/export/home1/jmdeloui/DATA4SROLL4;g;  
+	     s;@@PBRPSM@@;/export/home1/jmdeloui/DATA4SROLL4;g;     
+	     s;@@RSTEP@@;200;g' param545_ONE.TMP.py > param545_ONE.py
+	 
+	 mkdir -p ${OUTPATH}/MAP
+	 mkdir -p ${OUTPATH}/VECT
+	;;
+      datarmor*)
+	  echo 'I am on DATARMOR'
+	  OUTPATH=/home1/scratch/jmdeloui/DATA4SROLL4
+	 #sed 's;@@PYPATH@@;/home1/datahome/mlopezra/.conda/envs/base_env/tf/bin/python;g;s;@@CC@@;gcc;g;
+	 sed 's;@@PYPATH@@;/appli/anaconda/versions/4.8.1/bin/python;g;s;@@CC@@;gcc;g;
+	      s;@@IMPORTF1@@;import tensorflow.compat.v1 as tf;g;		     
+	      s;@@IMPORTF2@@;tf.disable_v2_behavior();g' Makefile.in > Makefile
+	  
+	 sed 's;@@MAP128@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@MAP2048@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@MASK@@;/home1/scratch/jmdeloui/DATA4SROLL4/mask_RD_545_10DEG;g;
+	     s;@@ROI@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBR@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;XXX;1.0;g;
+	     s;YYY;1_0;g;
+	     s;@@NUMTF@@;1;g;
+	     s;@@OUT@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@RSTEP@@;200;g' param545_1_CNN.TMP > param545_1_CNN.py
+	 
+	 sed 's;@@MAP128@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@MAP2048@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@MASK@@;/home1/scratch/jmdeloui/DATA4SROLL4/mask_RD_545_10DEG;g;
+	     s;@@ROI@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBR@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;XXX;1.0;g;
+	     s;YYY;1_0;g;
+	     s;@@NUMTF@@;24;g;
+	     s;@@OUT@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@RSTEP@@;200;g' param545_CNN.TMP > param545_CNN.py
+	 
+	 sed 's;@@MAP128@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@MAP2048@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@MASK@@;/home1/scratch/jmdeloui/DATA4SROLL4/mask_RD_545_10DEG;g;
+	     s;@@ROI@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBR@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;XXX;1.0;g;
+	     s;YYY;1_0;g;
+	     s;@@NUMTF@@;12;g;
+	     s;@@OUT@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;
+	     s;@@PBRSIM@@;/home1/scratch/jmdeloui/DATA4SROLL4;g;   
+	     s;@@PBRPSM@@;/home1/scratch/jmdeloui/DATA4SROLL4;g; 
+	     s;@@RSTEP@@;200;g' param545_ONE.TMP.py > param545_ONE.py
+
+	
+	 mkdir -p ${OUTPATH}/MAP
+	 mkdir -p ${OUTPATH}/VECT
+	;;
+      *) 
+	echo "WARNING : unknown host '${HOST}'! (Nothing done)" 
+	return 1
+	;; 
+esac

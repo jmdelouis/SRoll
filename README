@@ -1,0 +1,60 @@
+                                 **************
+                                 *  SROLL EX  *
+                                 **************
+
+README
+
+
+  Introduction:
+  ------------
+
+    SrollEx is a meta package composed of several components, the entry point is
+    in the "sroll" package.
+    Here is a quick presentation of each component:
+      * fftw: external lib
+      * nodmc:
+      *   -> nodmclib: noDMC shared lib
+      *   -> parloader: code generator for parsing parameter file
+      * sroll: entry point
+      * stim: new simulator
+      * pipe: script for launching sroll
+      *   -> paramfiles: input parameters files used by sroll
+      * tool: some misc tools for copying object from M3 or updating metadata
+
+
+  How to use it:
+  -------------
+
+    This section describe how to launch "sroll".
+
+    0) checkout official source code:
+        $> hl2_user_init
+        $> hl2_co -h SrollEx
+        # Go to root project dir:
+        $> cd Task_pkg/SrollEx/v00-00-000000_CVSHEAD/
+    1) >>> ! NEW ! <<<: set env configuration (for now it ensure loading of
+                        appropriate modules for openmpi/gcc/python...)
+        $> source srollex_setenv.sh
+    2) Compiling sroll:
+        $> cd sroll/
+        $> make
+    3) Launching 'sroll' using convenient script (located in "pipe/" dir):
+      3.a) First you have to create your own config file named "doQsub.cfg":
+        $> cp doQsub.cfg_TO_SPECIALIZE doQsub.cfg
+        $> vi doQsub.cfg
+        # Edit with appropriate values...
+      3.b) Then launch the qsub script:
+        Exemple:
+        $> python doQsub.py 353_HM2_SWB_HR2 353GHz REAL_HR2 SWB 512 10:00:00 BeginRing=13472 EndRing=27005
+        Explanation:
+        . launch sroll in qsub
+        . results will be located in dir "353_HM2_SWB_HR2"
+        . the reference input parameter file is one of those for "353GHz"
+        . REAL_HR2 specify that we replace inside this input parameter file all
+          the objects by thoses for HalfRing "2nd"
+        . SWB specify that we take the specific parameter file corresponding to SWB
+        . 512 is the total number of requested procs
+        . 10:00:00 desired walltime
+        . BeginRing=13472 EndRing=27005 , 'begin' and 'end' ring are specify
+          here since we want to compute sroll for HALF MISSION.
+          Note that default values are respectively 240/27005

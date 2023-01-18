@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -l select=64:ncpus=8,walltime=24:00:00
+#PBS -N do353
+#PBS -j oe
+
+cd /wrk/delouis/EXTRABALL
+source srollex_setenv.sh
+cd sroll
+
+mpirun -np 512 sroll TESTPAR/param353.txt 2> /redtruck/delouis/PROD_RD12ll/DATA/RD12_RC4/do353.log
+exit
+

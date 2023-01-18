@@ -1,0 +1,22 @@
+#!/bin/sh
+#PBS -S /bin/sh
+#PBS -N sroll_857_all
+#PBS -j oe
+#PBS -l nodes=11:ppn=24,walltime=5:00:00
+
+cd /wrk/delouis/SROLL/Level2/Task_pkg/SrollEx/sroll
+
+
+# Configure module
+source ../srollex_setenv.sh
+
+#mpirun --map-by node --display-map -x TMPDIR=/tmp -np 256 ./sroll /pscratch1/delouis/MONOBOL/857-1/param.txt &> /pscratch1/delouis/MONOBOL/857-1/DBG_sroll_proc.log
+#mpirun --map-by node --display-map -x TMPDIR=/tmp -np 256 ./sroll /pscratch1/delouis/MONOBOL/857-2/param.txt &> /pscratch1/delouis/MONOBOL/857-2/DBG_sroll_proc.log
+#mpirun --map-by node --display-map -x TMPDIR=/tmp -np 256 ./sroll /pscratch1/delouis/MONOBOL/857-3/param.txt &> /pscratch1/delouis/MONOBOL/857-3/DBG_sroll_proc.log
+#mpirun --map-by node --display-map -x TMPDIR=/tmp -np 256 ./sroll /pscratch1/delouis/MONOBOL/857-4/param.txt &> /pscratch1/delouis/MONOBOL/857-4/DBG_sroll_proc.log
+
+mpirun --map-by node --display-map -x TMPDIR=/tmp -np 256 ./sroll /wrk/delouis/SROLL/Level2/Task_pkg/SrollEx/sroll/Params/fitang/param857.txt &> /pscratch1/delouis/fitang/857/DBG_sroll_proc.log
+
+
+
+exit 0

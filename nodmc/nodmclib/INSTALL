@@ -1,0 +1,75 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+
+INSTALL
+
+  This document describe the ways to install the "no dmc lib" on your system.
+
+  For short if you have download the release file named like "no_dmc-1.0.tgz"
+  uncompress and untar it, then go to the created directory "no_dmc-1.0/" and
+  type the commands: "make", "make install"
+  This will compile then install the library and the related stuff as the
+  python wrapper and the no_dmc_metadata.py tool.
+  Note that you may have root privilege to install the lib in standard
+  directories.
+  If you want to work from CVS sources directly make sure to download a tagged
+  version (ex: v01-00-04) then proceed as for the release file.
+  CVS repository is available at:
+  http://cvs.planck.fr/cvs/Level2/Lib_pkg/NO_DMC_LIB
+
+  * REQUIREMENTS
+
+    - GNU Make 3.80 (or superior)
+    - gcc (GCC) 4.3.3 (or superior)
+
+    ** For the python wrapper (cf. 'pylib' rule)
+       - python 2.7.5 or 2.7.9 with modules:
+         . numpy 1.7.0 (or superior)
+         . Cython version 0.22
+
+  * INSTALLATION NAMES
+
+    By default, "make install" installs the package's commands under
+    "/usr/bin", include files under "/usr/include" and lib files
+    under "/usr/lib64".
+
+    If you use an unusual directory layout you can give
+    options like "BINDIR=DIR" to specify different values for particular
+    kinds of files.
+    List of the directories you can set and what kinds of files go in them:
+    BINDIR (default=/usr/bin): for binary files
+    INCLUDEDIR (default=/usr/include): for header files
+    LIBDIR (default=/usr/lib64): for library files
+
+    Note that by default the install process will automatically select the
+    appropriate subdirectory of the current python version to install the
+    python wrapper module (this is managed by python 'Distutils' tool).
+    Typically if your python path is like "/softs/python/2.7.X/" then module
+    will be installed in "/softs/python/2.7.X/lib/python2.7/site-packages/".
+
+  * STAGED INSTALLS
+
+    One shall want to install in a specified directory, for this purpose use the
+    DESTDIR variable as follow:
+
+    $> make DESTDIR=/tmp/stage install
+
+    So that instead of installing files in /usr/bin/, /usr/lib64/, /usr/include/
+    it will install in /tmp/stage/usr/bin/, /tmp/stage/usr/lib64/ and
+    /tmp/stage/usr/include/
+    Note also that in this case the python wrapper module will be installed in
+    a specifif path /tmp/stage/python/site-packages/
+
+    Additionaly, if one wants to install in DESTDIR without prefix '/usr':
+    $> make PREFIX="" DESTDIR=/tmp/stage install
+
+  * LDCONFIG
+
+    If you have root privilege and want to avoid your users to use
+    LD_LIBRARY_PATH so that they can load the installed library, please consider
+    to launch the command 'ldconfig' with appropriate parameters just after
+    'make install'.
+    Assuming default install path, the following command should do the trick:
+    $> ldconfig -n /usr/lib64

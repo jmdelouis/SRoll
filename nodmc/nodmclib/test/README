@@ -1,0 +1,44 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+TEST directory (for developpers of the lib)
+
+  This directory contains test files used by developpers of the "no dmc lib".
+
+  If you want some examples of usage for the library please refer to the
+  "examples/" directory instead.
+
+PREREQUISITE
+
+  In this document we will use the folowing conventions:
+  ${LIB_DIR}:   is the directory where the shared library file "libno_dmc.so" is
+                available.
+                ex: $(pwd)/../Linux-x86_64
+  ${PYLIB_DIR}: is the directory where the python wrapper shared library file
+                "nodmclib.so" is available.
+                ex: $(pwd)/../Linux-x86_64
+
+WHAT IS TESTED
+
+  Mainly the test directory is compose of 2 distinct test suites:
+
+  1) Unitary and functionnal test:
+     This type of test are check by the program "test_no_dmc_lib.c".
+     Compil prog:
+       $> make test
+     To run it (see requirement from "doc/README" section 2.c for detail):
+       $> cd Linux-x86_64/
+       $> export LD_LIBRARY_PATH=${LIB_DIR}:$LD_LIBRARY_PATH
+       $> ./test_libno_dmc
+
+  2) Comparision test (between former legacy DMC lib and NO_DMC_LIB):
+     This type of test are check by the Python script "compare_dmc.py"
+     To run this script:
+       $> export PYTHONPATH=${PYLIB_DIR}:$PYTHONPATH
+       $> export LD_LIBRARY_PATH=${LIB_DIR}:$LD_LIBRARY_PATH
+       $> python compare_dmc.py
+       Note: All output log should be "SUCCESS" ;)
+
+  Please note that several parameters are manageable directly from the
+  corresponding test source file.

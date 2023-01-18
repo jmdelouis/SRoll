@@ -1,0 +1,525 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/var/spool/PBS/mom_priv/jobs/5557938.datarmor0.SC: line 7: module: command not found
+DATARMOR computing node detected
+DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+HEALPY - ok
+DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+TENSORFLOW - ok
+./srollex_setenv.sh: line 168: svn: command not found
+No Modulefiles Currently Loaded.
+sroll package r configuration complete in /home1/datahome/tfoulqui/MySroll/extraball/SrollEx
+
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: at Mon Jun 28 08:49:39 2021
+troll.c: with 8 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+
+
+troll_readParam() from file "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/run_troll/test_sroll3_857_data.troll.par"
+troll_parLoader.c: reading BeginRing = 240
+troll_parLoader.c: reading EndRing = 26050
+troll_parLoader.c: reading RSTEP = 100
+troll_parLoader.c: reading AVFFF = 857
+troll_parLoader.c: reading AVGFREEFREE = 0
+troll_parLoader.c: reading AVFSYNC = 857
+troll_parLoader.c: reading AVGSYNCHRO = 0
+troll_parLoader.c: reading AVGDUST100 = 0
+troll_parLoader.c: reading AVFDUST = 857
+troll_parLoader.c: reading AVGDUST = 0
+troll_parLoader.c: reading AVFCO = 857
+troll_parLoader.c: reading AVG12CO = 0
+troll_parLoader.c: reading AVG13CO = 0
+troll_parLoader.c: reading CALCODUST = 0
+troll_parLoader.c: reading CUTRG = 1
+troll_parLoader.c: reading DODIPCAL = 1
+troll_parLoader.c: reading DOGAINDIP = 1
+troll_parLoader.c: reading DOMAXVRAIE = 1
+troll_parLoader.c: reading D_NOPOL = 0
+troll_parLoader.c: reading Nside = 2048
+troll_parLoader.c: reading REMDIP = 1
+troll_parLoader.c: reading REMHDIP = 1
+troll_parLoader.c: reading ADDDIP = 0
+troll_parLoader.c: reading KCMBIN = 0
+troll_parLoader.c: reading SAVEINTMAP = 0
+troll_parLoader.c: reading TESTPOL = 1
+troll_parLoader.c: reading XI2STOP = 1.0
+troll_parLoader.c: reading seuilcond = 1e-06
+troll_parLoader.c: reading NITT = 10
+troll_parLoader.c: reading FITANGLE = 1
+troll_parLoader.c: reading FITPOLEFF = 1
+troll_parLoader.c: reading saveCOV = 0
+troll_parLoader.c: reading saveCO = 0
+troll_parLoader.c: reading delta_psi = 0.0
+troll_parLoader.c: reading verbose = 0
+troll_parLoader.c: reading TEMPLATE_NSIDE = 1024
+troll_parLoader.c: reading BUILDTF = 0
+troll_parLoader.c: reading number_of_SEED = 1
+troll_parLoader.c: reading SEED1 = 1234
+troll_parLoader.c: reading number_of_ADDCO13 = 0
+troll_parLoader.c: reading GAINSTEP = 1
+troll_parLoader.c: reading number_of_NADU = 4
+troll_parLoader.c: reading NADU1 = 16
+troll_parLoader.c: reading NADU2 = 16
+troll_parLoader.c: reading NADU3 = 16
+troll_parLoader.c: reading NADU4 = 16
+troll_parLoader.c: reading number_of_NADUSTEP = 4
+troll_parLoader.c: reading NADUSTEP1 = 1
+troll_parLoader.c: reading NADUSTEP2 = 1
+troll_parLoader.c: reading NADUSTEP3 = 1
+troll_parLoader.c: reading NADUSTEP4 = 1
+troll_parLoader.c: reading number_of_DOCNN = 13
+troll_parLoader.c: reading DOCNN1 = 0
+troll_parLoader.c: reading DOCNN2 = 0
+troll_parLoader.c: reading DOCNN3 = 0
+troll_parLoader.c: reading DOCNN4 = 0
+troll_parLoader.c: reading DOCNN5 = 1
+troll_parLoader.c: reading DOCNN6 = 1
+troll_parLoader.c: reading DOCNN7 = 1
+troll_parLoader.c: reading DOCNN8 = 0
+troll_parLoader.c: reading DOCNN9 = 0
+troll_parLoader.c: reading DOCNN10 = 0
+troll_parLoader.c: reading DOCNN11 = 0
+troll_parLoader.c: reading DOCNN12 = 0
+troll_parLoader.c: reading DOCNN13 = 0
+troll_parLoader.c: reading CALLCNN = /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py
+troll_parLoader.c: reading CNN_XSIZE = 256
+troll_parLoader.c: reading CNN_YSIZE = 256
+troll_parLoader.c: reading CNN_RESIDU = 0.0
+troll_parLoader.c: reading N_IN_ITT = 300
+troll_parLoader.c: reading CNN_WEIGHTS = /home1/datawork/tfoulqui/data/heal_new
+troll_parLoader.c: reading INST_CNN = /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/
+troll_parLoader.c: reading MAP_CNN = /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/
+troll_parLoader.c: reading number_of_Calibration = 4
+troll_parLoader.c: reading Calibration1 = 3.30076826046e-16
+troll_parLoader.c: reading Calibration2 = 3.55811287601e-16
+troll_parLoader.c: reading Calibration3 = 3.18681631353e-16
+troll_parLoader.c: reading Calibration4 = 2.219187708e-16
+troll_parLoader.c: reading number_of_CrossPol = 4
+troll_parLoader.c: reading CrossPol1 = 0.887
+troll_parLoader.c: reading CrossPol2 = 0.883
+troll_parLoader.c: reading CrossPol3 = 0.856
+troll_parLoader.c: reading CrossPol4 = 0.897
+troll_parLoader.c: reading number_of_NEP = 4
+troll_parLoader.c: reading NEP1 = 2.17663807827e-16
+troll_parLoader.c: reading NEP2 = 2.36372259024e-16
+troll_parLoader.c: reading NEP3 = 2.08546999122e-16
+troll_parLoader.c: reading NEP4 = 2.01804359351e-16
+troll_parLoader.c: reading number_of_Monop = 4
+troll_parLoader.c: reading Monop1 = 2.7228011807e-14
+troll_parLoader.c: reading Monop2 = 3.20205460445e-14
+troll_parLoader.c: reading Monop3 = 2.14043411258e-14
+troll_parLoader.c: reading Monop4 = 3.3436884405e-14
+troll_parLoader.c: reading number_of_FSLCOEF = 4
+troll_parLoader.c: reading FSLCOEF1 = 1.0
+troll_parLoader.c: reading FSLCOEF2 = 1.0
+troll_parLoader.c: reading FSLCOEF3 = 1.0
+troll_parLoader.c: reading FSLCOEF4 = 1.0
+troll_parLoader.c: reading number_of_OUT_NOPOL = 5
+troll_parLoader.c: reading OUT_NOPOL1 = 1
+troll_parLoader.c: reading OUT_NOPOL2 = 1
+troll_parLoader.c: reading OUT_NOPOL3 = 1
+troll_parLoader.c: reading OUT_NOPOL4 = 1
+troll_parLoader.c: reading OUT_NOPOL5 = 1
+troll_parLoader.c: reading number_of_bolomask = 20
+troll_parLoader.c: reading bolomask1 = 1
+troll_parLoader.c: reading bolomask2 = 1
+troll_parLoader.c: reading bolomask3 = 1
+troll_parLoader.c: reading bolomask4 = 1
+troll_parLoader.c: reading bolomask5 = 1
+troll_parLoader.c: reading bolomask6 = 0
+troll_parLoader.c: reading bolomask7 = 0
+troll_parLoader.c: reading bolomask8 = 0
+troll_parLoader.c: reading bolomask9 = 0
+troll_parLoader.c: reading bolomask10 = 1
+troll_parLoader.c: reading bolomask11 = 0
+troll_parLoader.c: reading bolomask12 = 0
+troll_parLoader.c: reading bolomask13 = 0
+troll_parLoader.c: reading bolomask14 = 0
+troll_parLoader.c: reading bolomask15 = 1
+troll_parLoader.c: reading bolomask16 = 0
+troll_parLoader.c: reading bolomask17 = 0
+troll_parLoader.c: reading bolomask18 = 0
+troll_parLoader.c: reading bolomask19 = 0
+troll_parLoader.c: reading bolomask20 = 1
+troll_parLoader.c: reading number_of_MAPRINGS = 5
+troll_parLoader.c: reading MAPRINGS1 = 19
+troll_parLoader.c: reading MAPRINGS2 = 1
+troll_parLoader.c: reading MAPRINGS3 = 1
+troll_parLoader.c: reading MAPRINGS4 = 1
+troll_parLoader.c: reading MAPRINGS5 = 1
+troll_parLoader.c: reading Mask = /home1/datawork/tfoulqui/data/MASK_2048_GALACTIC/mask_RD_857
+troll_parLoader.c: reading Theo_CO = /home1/datawork/tfoulqui/data/MAP_JMD_1024/NEW_cleaned_12CO.float32.bin
+troll_parLoader.c: reading Theo_13CO = /home1/datawork/tfoulqui/data/MAP_JMD_1024/NEW_cleaned_13CO.float32.bin
+troll_parLoader.c: reading Theo_Dust_I = /home1/datawork/tfoulqui/data/MAP_JMD_1024/Dust_New_I
+troll_parLoader.c: reading Theo_Dust_Q = /home1/datawork/tfoulqui/data/MAP_JMD_1024/Dust_New_Q
+troll_parLoader.c: reading Theo_Dust_U = /home1/datawork/tfoulqui/data/MAP_JMD_1024/Dust_New_U
+troll_parLoader.c: reading TEMPLATEMAP = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_I = 4
+troll_parLoader.c: reading in_template_map_I1 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I2 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I3 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I4 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_Q = 4
+troll_parLoader.c: reading in_template_map_Q1 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q2 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q3 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q4 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_U = 4
+troll_parLoader.c: reading in_template_map_U1 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U2 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U3 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U4 = /home1/datawork/tfoulqui/data/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_Q = 4
+troll_parLoader.c: reading in_polar_fit_Q1 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q2 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q3 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q4 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_U = 4
+troll_parLoader.c: reading in_polar_fit_U1 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U2 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U3 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U4 = /home1/datawork/tfoulqui/data/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading number_of_Signal_noPS = 4
+troll_parLoader.c: reading Signal_noPS1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_THEO_SIMU
+troll_parLoader.c: reading number_of_ADU = 4
+troll_parLoader.c: reading ADU1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_adutot
+troll_parLoader.c: reading ADU2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_adutot
+troll_parLoader.c: reading ADU3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_adutot
+troll_parLoader.c: reading ADU4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_adutot
+troll_parLoader.c: reading number_of_Badring = 4
+troll_parLoader.c: reading Badring1 = /home1/datawork/tfoulqui/data/calROIs/25_857_1_discarded_rings_dx11
+troll_parLoader.c: reading Badring2 = /home1/datawork/tfoulqui/data/calROIs/35_857_2_discarded_rings_dx11
+troll_parLoader.c: reading Badring3 = /home1/datawork/tfoulqui/data/calROIs/65_857_3_discarded_rings_dx11
+troll_parLoader.c: reading Badring4 = /home1/datawork/tfoulqui/data/calROIs/74_857_4_discarded_rings_dx11
+troll_parLoader.c: reading number_of_DipOrb_noPS = 4
+troll_parLoader.c: reading DipOrb_noPS1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_diporb_quat
+troll_parLoader.c: reading number_of_Hit_noPS = 4
+troll_parLoader.c: reading Hit_noPS1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_hit
+troll_parLoader.c: reading Hit_noPS2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_hit
+troll_parLoader.c: reading Hit_noPS3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_hit
+troll_parLoader.c: reading Hit_noPS4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_hit
+troll_parLoader.c: reading number_of_Ptg_noPS = 4
+troll_parLoader.c: reading Ptg_noPS1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_ptg
+troll_parLoader.c: reading number_of_Theo_noPS = 20
+troll_parLoader.c: reading Theo_noPS1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_H0
+troll_parLoader.c: reading Theo_noPS2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_H0
+troll_parLoader.c: reading Theo_noPS3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_H0
+troll_parLoader.c: reading Theo_noPS4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_H0
+troll_parLoader.c: reading Theo_noPS5 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_H1
+troll_parLoader.c: reading Theo_noPS6 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_H1
+troll_parLoader.c: reading Theo_noPS7 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_H1
+troll_parLoader.c: reading Theo_noPS8 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_H1
+troll_parLoader.c: reading Theo_noPS9 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_H2
+troll_parLoader.c: reading Theo_noPS10 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_H2
+troll_parLoader.c: reading Theo_noPS11 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_H2
+troll_parLoader.c: reading Theo_noPS12 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_H2
+troll_parLoader.c: reading Theo_noPS13 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_H3
+troll_parLoader.c: reading Theo_noPS14 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_H3
+troll_parLoader.c: reading Theo_noPS15 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_H3
+troll_parLoader.c: reading Theo_noPS16 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_H3
+troll_parLoader.c: reading Theo_noPS17 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP7_2
+troll_parLoader.c: reading Theo_noPS18 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP7_2
+troll_parLoader.c: reading Theo_noPS19 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP7_2
+troll_parLoader.c: reading Theo_noPS20 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP7_2
+troll_parLoader.c: reading number_of_fsl = 4
+troll_parLoader.c: reading fsl1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_fsl
+troll_parLoader.c: reading fsl2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_fsl
+troll_parLoader.c: reading fsl3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_fsl
+troll_parLoader.c: reading fsl4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_fsl
+troll_parLoader.c: reading number_of_phase = 4
+troll_parLoader.c: reading phase1 = /home1/datawork/tfoulqui/data/PBR_JMD/857-1_REP6_phregul
+troll_parLoader.c: reading phase2 = /home1/datawork/tfoulqui/data/PBR_JMD/857-2_REP6_phregul
+troll_parLoader.c: reading phase3 = /home1/datawork/tfoulqui/data/PBR_JMD/857-3_REP6_phregul
+troll_parLoader.c: reading phase4 = /home1/datawork/tfoulqui/data/PBR_JMD/857-4_REP6_phregul
+troll_parLoader.c: reading number_of_rgcnn = 4
+troll_parLoader.c: reading rgcnn1 = /home1/datawork/tfoulqui/data/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn2 = /home1/datawork/tfoulqui/data/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn3 = /home1/datawork/tfoulqui/data/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn4 = /home1/datawork/tfoulqui/data/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading number_of_MAP = 5
+troll_parLoader.c: reading MAP1 = /home1/datawork/tfoulqui/MAP/sroll2_debug_857ghz_857ghz
+troll_parLoader.c: reading MAP2 = /home1/datawork/tfoulqui/MAP/sroll2_debug_857ghz_857-1
+troll_parLoader.c: reading MAP3 = /home1/datawork/tfoulqui/MAP/sroll2_debug_857ghz_857-2
+troll_parLoader.c: reading MAP4 = /home1/datawork/tfoulqui/MAP/sroll2_debug_857ghz_857-3
+troll_parLoader.c: reading MAP5 = /home1/datawork/tfoulqui/MAP/sroll2_debug_857ghz_857-4
+troll_parLoader.c: reading number_of_Out_Offset = 4
+troll_parLoader.c: reading Out_Offset1 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-1_offset
+troll_parLoader.c: reading Out_Offset2 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-2_offset
+troll_parLoader.c: reading Out_Offset3 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-3_offset
+troll_parLoader.c: reading Out_Offset4 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-4_offset
+troll_parLoader.c: reading number_of_Out_Offset_corr = 4
+troll_parLoader.c: reading Out_Offset_corr1 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-1_offset_corr
+troll_parLoader.c: reading Out_Offset_corr2 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-2_offset_corr
+troll_parLoader.c: reading Out_Offset_corr3 = /home1/datawork/tfoulqui/VEC/sroll2_debug__857ghz_857-3_offset_corr
+troll_parLoader.c: reading Out_Offset_corr4 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-4_offset_corr
+troll_parLoader.c: reading number_of_Out_xi2 = 4
+troll_parLoader.c: reading Out_xi21 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-1_xi2
+troll_parLoader.c: reading Out_xi22 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-2_xi2
+troll_parLoader.c: reading Out_xi23 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-3_xi2
+troll_parLoader.c: reading Out_xi24 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-4_xi2
+troll_parLoader.c: reading number_of_Out_xi2_corr = 4
+troll_parLoader.c: reading Out_xi2_corr1 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-1_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr2 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-2_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr3 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-3_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr4 = /home1/datawork/tfoulqui/VEC/sroll2_debug_857ghz_857-4_xi2_corr
+DOCO
+MAXFREQ 857
+USE 8 tensoflow rank
+Call python module in path
+/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll
+Call module : py_function_pwst_pol
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+RANK 0 uses the GPU 0
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+RANK 0 uses the GPU 0
+WARNING:tensorflow:From /home1/datahome/tfoulqui/.local/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+('Num GPUs('Num GPUs Available: ', ('Num GPUs Available: ',  Available: ', 0)
+0)
+0)
+LoadBalancing globalRangeRing      = 25811 
+LoadBalancing rings_per_rank       = 3226 
+LoadBalancing balancing_correction = 3 
+  rank#0/8 (r1i0n10, 118.33GB) begin=240 end=3466, (3227 rings, 1486e6 samples)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+  rank#1/8 (r1i0n10, 118.33GB) begin=3467 end=6693, (3227 rings, 1702e6 samples)
+  rank#2/8 (r1i0n10, 118.33GB) begin=6694 end=9920, (3227 rings, 1787e6 samples)
+  rank#3/8 (r1i0n10, 118.33GB) begin=9921 end=13146, (3226 rings, 1563e6 samples)
+  rank#4/8 (r1i0n10, 118.33GB) begin=13147 end=16372, (3226 rings, 1812e6 samples)
+  rank#5/8 (r1i0n10, 118.33GB) begin=16373 end=19598, (3226 rings, 1435e6 samples)
+  rank#6/8 (r1i0n10, 118.33GB) begin=19599 end=22824, (3226 rings, 1853e6 samples)
+  rank#7/8 (r1i0n10, 118.33GB) begin=22825 end=26050, (3226 rings, 1788e6 samples)
+NEP_tab[0 (857-1)]=0.913495
+NEP_tab[1 (857-2)]=0.920263
+NEP_tab[2 (857-3)]=0.906529
+NEP_tab[3 (857-4)]=1.259713
+DODISTOR [0]: 16 16
+DODISTOR [1]: 16 16
+DODISTOR [2]: 16 16
+DODISTOR [3]: 16 16
+REMDIP : 1
+SXI 0 2.29963
+RG_MAX 25586
+Com ring=240 Rank: 0[44861] MEM 3964.7[1190.4]MB Nd=15582  0.994539 5.62506e-07 
+
+after troll bolometer 857-1 (0/3): used VMEM 4089.4[PHYS 1744.6]MB
+SXI 1 2.26593
+RG_MAX 25405
+Com ring=240 Rank: 0[44861] MEM 4093.3[1748.8]MB Nd=15638  0.99449 5.89774e-07 
+
+after troll bolometer 857-2 (1/3): used VMEM 4215.9[PHYS 1871.8]MB
+SXI 2 2.3351
+RG_MAX 25594
+Com ring=240 Rank: 0[44861] MEM 4220.5[1876.4]MB Nd=15663  0.994528 5.71222e-07 
+
+after troll bolometer 857-3 (2/3): used VMEM 4366.6[PHYS 2022.6]MB
+SXI 3 1.20928
+RG_MAX 24531
+Com ring=240 Rank: 0[44861] MEM 4370.6[2026.6]MB Nd=15612  0.994487 5.81909e-07 
+
+after troll bolometer 857-4 (3/3): used VMEM 4491.2[PHYS 2147.4]MB
+FITANGLE
+FITPOL
+13CO
+
+Free memory per node before pixel balancing, at Mon Jun 28 08:55:20 2021
+rank 01/7, node 01/63, r1i0n10: 109.7GB free
+rank 02/7, node 02/63, r1i0n10: 109.7GB free
+rank 03/7, node 03/63, r1i0n10: 109.7GB free
+rank 04/7, node 04/63, r1i0n10: 109.7GB free
+rank 05/7, node 05/63, r1i0n10: 109.7GB free
+rank 06/7, node 06/63, r1i0n10: 109.7GB free
+rank 07/7, node 07/63, r1i0n10: 109.7GB free
+rank 00/7, node 00/63, r1i0n10: 109.7GB free
+NPIX 8
+Mask 0
+Sort pixel to make it run faster
+regrid
+sort
+rebin pixel
+Rank: 0[44861] MEM 3699.2[1622.2]MB line=9769
+Rank: 0[44861] MEM 3699.2[1622.2]MB line=9849
+Rank: 0(r1i0n10, free=106.17GB) [1/2] used MEM virt:3795.2[phys:1622.2]MB line=9954 ntbs:60MB
+Rank: 0(r1i0n10, free=106.00GB) [1/2] used MEM virt:3852.9[phys:1679.9]MB line=9954 ntbs:60MB
+Rank: 0(r1i0n10, free=106.00GB) [1/2] used MEM virt:3852.9[phys:1679.9]MB line=9954 ntbs:60MB
+Rank: 0(r1i0n10, free=106.01GB) [1/2] used MEM virt:3852.9[phys:1679.9]MB line=9954 ntbs:60MB
+Rank: 0(r1i0n10, free=105.99GB) [2/4] used MEM virt:3852.9[phys:1679.9]MB line=9954 ntbs:122MB
+Rank: 0(r1i0n10, free=105.79GB) [2/4] used MEM virt:3899.9[phys:1726.9]MB line=9954 ntbs:122MB
+Rank: 0(r1i0n10, free=105.60GB) [4/8] used MEM virt:3900.5[phys:1727.6]MB line=9954 ntbs:243MB
+Rank: 0[44861] MEM 3255.5[1178.5]MB line=10078
+
+Free memory per node before matrix computation, at Mon Jun 28 08:55:32 2021
+rank 04/7, node 04/63, r1i0n10: 111.1GB free
+rank 05/7, node 05/63, r1i0n10: 111.1GB free
+rank 06/7, node 06/63, r1i0n10: 111.1GB free
+rank 07/7, node 07/63, r1i0n10: 111.1GB free
+rank 01/7, node 01/63, r1i0n10: 111.1GB free
+rank 02/7, node 02/63, r1i0n10: 111.1GB free
+rank 00/7, node 00/63, r1i0n10: 111.1GB free
+rank 03/7, node 03/63, r1i0n10: 111.1GB free
+l_nmatpix[0] 227994
+Rank: 0[44861] MEM 3261.5[1184.5]MB line=10224
+NMATCO 4 NMATDUST 4
+ FREEFREE 0
+RK0 SHOULD DETERMINE 3648985 VALUES 0 259 517 778 1027 
+GAIN DIP BOL 857-1 (0/3): 0.999706
+GAIN DIP BOL 857-2 (1/3): 1.000514
+GAIN DIP BOL 857-3 (2/3): 0.999468
+GAIN DIP BOL 857-4 (3/3): 0.999736
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+BEG-ED 0 1823951 0 - 6291455 227994
+MAXSIZE 1087 1071
+NbGain 1027
+BEG 0 1823951 0 - 6291455 227994
+Rank: 0[44861] MEM 10850.0[1481.8]MB line=11231
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 0/10 1 
+
+==============================
+GAIN 1 1 1 1 
+QQ2 0
+iter = 0 - delta0 = 2.82817e+11 - delta_new = 2.82817e+11
+iter = 0-0 - delta_new = 2.82817e+11 1 0.933267s
+iter = 0-10 - delta_new = 3.75557e+08 1 0.193091s
+iter = 0-20 - delta_new = 7.88843e+06 1 0.192888s
+iter = 0-30 - delta_new = 1.40582e+06 1 0.192750s
+iter = 0-40 - delta_new = 99180.1 1 0.192913s
+iter = 0-50 - delta_new = 7842.35 1 0.192971s
+iter = 0-60 - delta_new = 12.9585 1 0.192874s
+iter = 0-70 - delta_new = 185.258 1 0.193050s
+iter = 0-80 - delta_new = 0.0428933 1 0.192857s
+iter = 0-90 - delta_new = 0.00412665 1 0.192472s
+iter = 0-100 - delta_new = 0.000231914 1 0.192779s
+iter = 0-110 - delta_new = 5.53832e-05 1 0.192191s
+iter = 0-120 - delta_new = 4.93138e-06 1 0.192189s
+iter = 0-130 - delta_new = 1.88294e-06 1 0.192316s
+iter = 0-140 - delta_new = 1.25912e-06 1 0.192272s
+iter = 0-150 - delta_new = 1.18199e-06 1 0.192375s
+iter = 0-160 - delta_new = 4.42472e-07 1 0.192348s
+iter = 0-170 - delta_new = 9.81838e-08 1 0.192160s
+iter = 0-180 - delta_new = 8.84953e-08 1 0.193039s
+iter = 0-190 - delta_new = 1.5552e-08 1 0.192271s
+iter = 0-200 - delta_new = 7.31543e-09 1 0.192190s
+iter = 0-210 - delta_new = 3.25874e-10 1 0.192195s
+iter = 0-220 - delta_new = 8.33907e-10 1 0.192555s
+iter = 0-230 - delta_new = 1.06542e-10 1 0.192892s
+iter = 0-240 - delta_new = 4.22909e-12 1 0.193068s
+iter = 0-250 - delta_new = 4.94681e-12 1 0.193012s
+iter = 0-260 - delta_new = 1.93191e-11 1 0.192209s
+iter = 0-270 - delta_new = 3.23647e-12 1 0.192279s
+
+iter = 280 - delta0 = 2.82817e+11 - delta_new = 2.69808e-13
+CG in iter = 280 (max=300)
+Rank: 0 Line=11256 MEM 10850.0[1567.1]MB
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+Traceback (most recent call last):
+  File "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pwst_pol.py", line 465, in init_shape_from_files
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+    netcdf = Dataset(MAP_CNN_path+'/MAP_CNN_netcdf.nc','r', format='NETCDF4')
+  File "netCDF4/_netCDF4.pyx", line 2015, in netCDF4._netCDF4.Dataset.__init__
+  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+IOError: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'
+  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+IOError: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'
+  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+IOError: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'
+IOError  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'
+  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+IOError: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'
+IOError: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'
+  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+IOError: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'
+  File "netCDF4/_netCDF4.pyx", line 1636, in netCDF4._netCDF4._ensure_nc_success
+IOError: [Errno 2] No such file or directory: '/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll//MAP_CNN_netcdf.nc'

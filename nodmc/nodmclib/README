@@ -1,0 +1,36 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+
+README
+
+  The "no DMC library" (aka NO_DMC_LIB) is a shared library (written in C) who
+  can access raw object data (previously created with the DMC). 
+
+  The library allow to access data in READONLY mode and do not require the DMC
+  anymore.
+
+  Find out how to use the library by reading corresponding README file in
+  the examples/ directory.
+
+  Find out how to install the library by reading the INSTALL document.
+
+DOCUMENTATION
+
+  Several dedicated documentation are available depending on the project part:
+  - General documentation about the "no dmc library": see doc/README
+  - Python "no dmc lib" wrapper: see pynodmclib/README
+  - Tools related to the library: see tools/README
+  - User examples: see examples/README
+  - About developer test: see test/README
+
+CVS
+
+  The latest source are at:
+  http://cvs.planck.fr/cvs/Level2/Lib_pkg/NO_DMC_LIB
+
+CONTACT
+
+  If you have problems, questions, ideas or suggestions, please contact the
+  author, see AUTHOR file.

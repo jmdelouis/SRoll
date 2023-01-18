@@ -1,0 +1,15 @@
+#!/bin/bash
+#PBS -q mpi_18
+#PBS -l select=18:ncpus=28:mem=115g
+#PBS -l walltime=04:00:00
+#PBS -N D@XXX@_@XX@
+
+cd /home1/datawork/jmdeloui/TROLL/extraball/SrollEx
+
+module purge
+source srollex_setenv.sh
+cd sroll
+module load impi/5.1.3.258
+export LD_LIBRARY_PATH=/home1/datahome/jmdeloui/conda-env/healpy/lib
+
+mpirun -np 256 ./troll /home1/datawork/jmdeloui/TROLL/extraball/SrollEx/run_troll/RUN/sroll3_data.@XXX@_@XX@.par &> /home1/datawork/jmdeloui/TROLL/extraball/SrollEx/run_troll/RUN/sroll3_data.@XXX@_@XX@.log

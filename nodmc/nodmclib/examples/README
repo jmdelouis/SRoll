@@ -1,0 +1,68 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+EXAMPLES
+
+  For all commands below we consider that you are in "examples/" directory after
+  installation.
+  If you don't have install but just extract the release file
+  (ex: no_dmc-1.0.tgz), you will have to manualy update the Makefile!
+  (see comments in file).
+
+
+* "example_libno_dmc.c"
+
+  This file present some simple usage of the C library NO_DMC_LIB.
+
+  ** Compilation
+
+  $> make examples
+  Will compile and place the executable file "example_libno_dmc" inplace.
+
+  ** Execution
+
+  $> ./example_libno_dmc
+
+  Note for you own program using NO_DMC_LIB:
+  If NO_DMC_LIB is not installed in default directory you may have to
+  update your LD_LIBRARY_PATH:
+  $> export LD_LIBRARY_PATH=${LIB_DIR}:$LD_LIBRARY_PATH
+  Where ${LIB_DIR} match the directory in which the library has been installed.
+
+  ** Expected output
+
+  Expected result in case of success:
+
+    ALL SUCCESS !
+
+
+* "example_no_dmc_python.py"
+
+  This file present some simple usage of the python wrapper of NO_DMC_LIB.
+
+  ** Requirements
+
+  The requirements for using the python wrapper are mainly:
+
+    - python 2.7.5 or 2.7.9 with modules:
+      . numpy 1.7.0 (or superior)
+      . Cython version 0.22
+
+  ** Execution
+
+  $> python example_no_dmc_python.py
+
+  Depending on the NO_DMC_LIB installation, you may have to update your
+  environment variables as follow:
+  $> export LD_LIBRARY_PATH=${LIB_DIR}:$LD_LIBRARY_PATH
+  $> export PYTHONPATH=${PY_LIB_DIR}:$PYTHONPATH
+  Where ${LIB_DIR} match the directory in which the library has been installed.
+  Where ${PY_LIB_DIR} match the directory in which the python wrapper module
+  has been installed.
+
+  ** Expected output
+
+  Expected result in case of success:
+
+    ALL SUCCESS !

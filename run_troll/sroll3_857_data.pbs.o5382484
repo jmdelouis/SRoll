@@ -1,0 +1,179 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+DATARMOR computing node detected
+DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+HEALPY - ok
+DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+TENSORFLOW - ok
+./srollex_setenv.sh: line 167: svn: command not found
+No Modulefiles Currently Loaded.
+sroll package r configuration complete in /home1/datahome/tfoulqui/MySroll/extraball/SrollEx
+
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+
+
+troll_readParam() from file "/home1/datahome/tfoulqui/MySroll/extraball/SrollEx/run_troll/sroll3_857_data.troll.par"
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+troll.c: Starting /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/troll_14tf
+troll.c: at Thu Jun 17 12:47:36 2021
+troll.c: with 1 MPI ranks and 28 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+troll_parLoader.c: reading BeginRing = 240
+troll_parLoader.c: reading EndRing = 26050
+troll_parLoader.c: reading RSTEP = 1000
+troll_parLoader.c: reading AVFFF = 857
+troll_parLoader.c: reading AVGFREEFREE = 0
+troll_parLoader.c: reading AVFSYNC = 857
+troll_parLoader.c: reading AVGSYNCHRO = 0
+troll_parLoader.c: reading AVGDUST100 = 0
+troll_parLoader.c: reading AVFDUST = 857
+troll_parLoader.c: reading AVGDUST = 0
+troll_parLoader.c: reading AVFCO = 857
+troll_parLoader.c: reading AVG12CO = 0
+troll_parLoader.c: reading AVG13CO = 0
+troll_parLoader.c: reading CALCODUST = 0
+troll_parLoader.c: reading CUTRG = 1
+troll_parLoader.c: reading DODIPCAL = 1
+troll_parLoader.c: reading DOGAINDIP = 1
+troll_parLoader.c: reading DOMAXVRAIE = 1
+troll_parLoader.c: reading D_NOPOL = 0
+troll_parLoader.c: reading Nside = 2048
+troll_parLoader.c: reading REMDIP = 1
+troll_parLoader.c: reading REMHDIP = 1
+troll_parLoader.c: reading ADDDIP = 0
+troll_parLoader.c: reading KCMBIN = 0
+troll_parLoader.c: reading SAVEINTMAP = 0
+troll_parLoader.c: reading TESTPOL = 1
+troll_parLoader.c: reading XI2STOP = 1.0
+troll_parLoader.c: reading seuilcond = 1e-06
+troll_parLoader.c: reading NITT = 10
+troll_parLoader.c: reading FITANGLE = 0
+troll_parLoader.c: reading FITPOLEFF = 0
+troll_parLoader.c: reading saveCOV = 0
+troll_parLoader.c: reading saveCO = 0
+troll_parLoader.c: reading verbose = 0
+troll_parLoader.c: reading TEMPLATE_NSIDE = 1024
+troll_parLoader.c: reading BUILDTF = 0
+troll_parLoader.c: reading number_of_SEED = 1
+troll_parLoader.c: reading SEED1 = 1234
+troll_parLoader.c: reading number_of_ADDCO13 = 0
+troll_parLoader.c: reading GAINSTEP = 1
+troll_parLoader.c: reading number_of_delta_psi = 4
+troll_parLoader.c: reading delta_psi1 = 0.0059394
+troll_parLoader.c: reading delta_psi2 = 0.00451064
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+troll_parLoader.c: reading delta_psi3 = -0.12537835
+troll_parLoader.c: reading delta_psi4 = 0.11311447
+troll_parLoader.c: reading number_of_NADU = 4
+troll_parLoader.c: reading NADU1 = 16
+troll_parLoader.c: reading NADU2 = 16
+troll_parLoader.c: reading NADU3 = 16
+troll_parLoader.c: reading NADU4 = 16
+troll_parLoader.c: reading number_of_NADUSTEP = 4
+troll_parLoader.c: reading NADUSTEP1 = 1
+troll_parLoader.c: reading NADUSTEP2 = 1
+troll_parLoader.c: reading NADUSTEP3 = 1
+troll_parLoader.c: reading NADUSTEP4 = 1
+troll_parLoader.c: reading number_of_DOCNN = 13
+troll_parLoader.c: reading DOCNN1 = 0
+troll_parLoader.c: reading DOCNN2 = 0
+troll_parLoader.c: reading DOCNN3 = 0
+troll_parLoader.c: reading DOCNN4 = 0
+troll_parLoader.c: reading DOCNN5 = 0
+troll_parLoader.c: reading DOCNN6 = 0
+troll_parLoader.c: reading DOCNN7 = 0
+troll_parLoader.c: reading DOCNN8 = 0
+troll_parLoader.c: reading DOCNN9 = 0
+troll_parLoader.c: reading DOCNN10 = 0
+troll_parLoader.c: reading DOCNN11 = 0
+troll_parLoader.c: reading DOCNN12 = 0
+troll_parLoader.c: reading DOCNN13 = 0
+troll_parLoader.c: reading CALLCNN = /home1/datahome/tfoulqui/MySroll/extraball/SrollEx/sroll/py_function_pol.py
+troll_parLoader.c: reading CNN_XSIZE = 12288
+troll_parLoader.c: reading CNN_YSIZE = 2
+troll_parLoader.c: reading CNN_RESIDU = 0.0
+troll_parLoader.c: reading CNN_NCOMP = 16
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+ERROR: Invalid parameter 'CNN_NCOMP': not defined in struct header file!
+Unable to parse the parameter file.
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[20278,1],2]
+  Exit code:    1
+--------------------------------------------------------------------------

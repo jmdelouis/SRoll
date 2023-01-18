@@ -1,0 +1,185 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+This README file serves as the main documentation for the NO DMC LIB.
+
+
+1) What is the NO_DMC_LIB?
+   =======================
+   The "no DMC library" (aka NO_DMC_LIB) is a shared library (written in C) who
+   can access raw object data (previously created with the DMC).
+   The library allow to access data in READONLY mode and do not require the DMC.
+   This library aims to be portable on other environnement (other than
+   magique3) to remain able to read object data.
+   To achieve this goal, a Makefile is available for compiling the lib without
+   using any dependance towards DMC. Nevertheless note that a static metadata
+   information file must be generated once per file using DMC, so that the no
+   dmc library be operational! (see 2.a)
+
+1.a) Status
+     ------
+   The library has been intensively tested and is therefore considered quite
+   stable, so that it may provide usefull service to people who want to work
+   outside DMC environment.
+   Please report any bug to the author (see AUTHOR file).
+
+1.b) NO_DMC_LIB components
+     ------------------------------
+   NO_DMC_LIB main component is a shared library written in C.
+   Furthermore a python wrapper is also available.
+   Beside these components there is also a python script allowing to generate
+   required metadata from DMC info.
+
+1.c) Support, limitations and warnings
+     -----------------------
+   At time of this document writing the support of the library is as follow:
+   (Support can be one of 'in progress', 'Beta', 'OK')
+
+   ****************************************************************************
+   * PIOTYPE   * Support     * Comment                                        *
+   ****************************************************************************
+   - PIOBYTE    - OK          -                                               -
+   ----------------------------------------------------------------------------
+   - PIOFLAG    - OK          -                                               -
+   ----------------------------------------------------------------------------
+   - PIOSHORT   - OK(*)       - (*) No test done (since no data of this type) -
+   ----------------------------------------------------------------------------
+   - PIOINT     - OK          -                                               -
+   ----------------------------------------------------------------------------
+   - PIOLONG    - OK          -                                               -
+   ----------------------------------------------------------------------------
+   - PIOFLOAT   - OK          -                                               -
+   ----------------------------------------------------------------------------
+   - PIODOUBLE  - OK          -                                               -
+   ----------------------------------------------------------------------------
+   - PIOSTRING  - OK          -                                               -
+   ----------------------------------------------------------------------------
+   - PIOCOMPLEX - BETA        - As it was recently added.                     -
+   ----------------------------------------------------------------------------
+
+   The LIMITATIONS are mainly:
+   * The library is NOT thread safe.
+   * TUPLEs object are NOT supported as is (user must use names as "obj" +
+     suffix "_TUPLE_X" in order to access each object in the tuple)
+   * The data allocated by the user MUST BE exactly of the same type as the
+     data to be read in object files (otherwise an error will be displayed when
+     possible).
+
+   !!! WARNINGS: !!!
+   * Unlike the legacy DMC read function for MAP object, the NO_DMC_LIB read
+     function add 'zeros' if user request outside object range index.
+
+   TODOs:
+   * For now, only the DMC "main" chunk data format is supported (the one having
+     flag in a separate file: ".pio.flg"). The other DMC format (named 'raw'
+     chunk) may be supported later...
+
+
+2) How to use it?
+   ==============
+   This section explain how to use the library.
+   Each following sub sections instructions are MANDATORY to be able to use the
+   library!
+
+2.a) Metadata generation (required by the NO_DMC_LIB)
+     ------------------------------------------------
+   The library rely on metadata to access objects, therefore these metadata
+   must have been generated previously to the library use. These metadata only
+   have to be generated once, unless DMC overwrite the object, requiring in
+   this case to update the metadata.
+   Please see tools/README for detail instruction on how to generate metadata.
+   
+2.b) Compile the library
+     -------------------
+   Hopefully this is as simple as:
+   $> make lib
+   This will produce a shared library file named "libno_dmc.so" in directory
+   "Linux-x86_64/".
+
+   Optionnaly one can compile with debug mode activated using the command:
+   $> make CFG=-DDEBUG lib
+
+   Please see INSTALL file for detail instruction on how to install the library
+   on your system.
+
+2.c) Use the library
+     ---------------
+   Mainly it is possible to use directly the C function from the shared library
+   or it is also possible to use one wrapper to the library.
+
+2.c.i) Use the library directly from your C program:
+       --------------------------------------------
+     Compile your program
+     --------------------
+   This section explain how to compile your program if it use the NO_DMC_LIB
+   library.
+   Please consider the next variable definitions:
+     LIB_DIR: full path to the directory containing the library file
+              "libno_dmc.so" (see "Linux-x86_64/" directory)
+     I_DIR:   full path to the directory containing the library header files
+              (see "NO_DMC_LIB/" directory)
+   Then the compilation command might look as the following:
+   $> gcc -I${I_DIR} -L${LIB_DIR} -Wall -o yourProgName yourProgName.c -lno_dmc
+   Note : '-I' option allow to find ".h" (header files) of the library
+   Note : '-L' option allow to find the ".so" file corresponding to the library
+          named in option '-l<lib_name>'
+
+     Execute your program
+     --------------------
+   This command is essential for your program to be able to found the library
+   at run time (see 2.c for variable definitions):
+   $> export LD_LIBRARY_PATH=${LIB_DIR}:$LD_LIBRARY_PATH
+
+   Note: this step might be unnecessary if the NO_DMC_LIB libray is referenced
+   in the /etc/ld.so.cache (see INSTALL file dedicated section named 'ldconfig')
+
+2.c.ii) Use the library via a wrapper:
+        ----------------------------
+   Currently only a Python wrapper exist.
+   To use it follow the procedure:
+   Compile the wrapper:
+   $> make pylib
+   Update your environment variables:
+   (for accessing the C library)
+   $> export LD_LIBRARY_PATH=${LIB_DIR}:$LD_LIBRARY_PATH
+   (for accessing the python wrapper)
+   $> export PYTHONPATH=${LIB_DIR}/nodmclib:$PYTHONPATH
+   In your Python script (or interpreter) import the 'nodmclib' module:
+   >>> import nodmclib
+   Use it as any other module (here the command is for obtaining all functions
+   of the module):
+   >>> dir(nodmclib)
+
+   For detail about how to use the python wrapper please refer to the specific
+   documentation in "pynodmclib/README"
+
+
+3) Test process (for developers)
+   ============
+   There is a C test program in the "test/" directory.
+   To compile it:
+   $> make test
+   To run it (see requirement from section 2.c for detail):
+   $> export LD_LIBRARY_PATH=${LIB_DIR}:$LD_LIBRARY_PATH
+   $> ./Linux-x86_64/test_libno_dmc
+
+   There is also a Python test script ("compare_dmc.py"), that allow to compare
+   legacy DMC with the NO_DMC_LIB library.
+
+   For more info about available test, see "test/README".
+
+
+4) Examples
+   ========
+   Some simple examples of the library usage are available in the "examples/" directory.
+   Note that there is:
+   - one example of C program
+   - one example of python script
+
+   To compile the C example program:
+   $> make examples
+
+   To run the examples please refer to section 2.c)
+
+   For more info about examples, see "examples/README".

@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -q mpi_2
+#PBS -l select=2:ncpus=28:mem=60g
+#PBS -l walltime=01:00:00
+#PBS -N S4
+
+source /usr/share/Modules/3.2.10/init/bash
+
+module purge
+module load impi/5.1.3.258
+export OMP_NUM_THREADS=12
+
+cd ~/sroll4/extraball/SrollEx/tensorflow
+mpirun -np 48 ./SRoll4.py param545_ONE.py --bolo '857-1' --doreference --cnn2d --rstep 10 --regul 1000 &> /scratch/home1/jmdeloui/test.log
+
+

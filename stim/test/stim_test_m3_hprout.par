@@ -1,0 +1,66 @@
+
+bolometer      = 143-1a
+brimo_filename = ../../../../brimo_4_27
+
+BeginRing      =   240
+EndRing        =   299
+rings_per_read =    10
+
+random_seed    = 0
+
+signal_in      = /data/dmc/MISS03/DATA/calTOIs/02_143_1a_LFER6_JC_v64
+signal_out     = 0
+flag_in        = /data/dmc/MISS03/DATA/calTOIs/02_143_1a_TotalFlag_v64
+flag_out       = 0
+hpr_out        = /redtruck/SimuData/stim_tests/143-1a_LFER6_JC_v64_hprout_withaber
+
+TOI_pixel_index = /data/dmc/MISS03/DATA/TOI_JMD/143-1a_PIXEL_IDX_WITHABER
+
+
+
+do_photonic_noise = 0
+photonic_white_noise = 0.0
+photonic_oof_slope   = 0.0
+photonic_oof_fknee   = 0.0
+
+
+do_LFER_convolve = 0
+
+
+do_electronic_noise = 0
+electronic_white_noise = 0.0
+
+
+do_sim_adu = 0
+dnl_name     = /data/dmc/MISS03/DATA/RAW_VECT_FIT_INFO/HFI_02_DNL_gp21
+rawgain_name = /data/dmc/MISS03/DATA/RAW_GAIN/02_INL_GP21
+rawcst_name  = /data/dmc/MISS03/DATA/RAW_CST/02_LM4K_GP21
+fourk_name   = /data/dmc/MISS03/DATA/RAW_4K/02_HARMS_LM4K_GP21
+electronic_noise_adu = 4.0
+
+
+do_compress_decompress = 0
+
+
+do_correct_adc = 0
+
+
+do_adu_to_volts = 0
+use_bolometer_nonlinearity = 0
+
+
+do_despike = 0
+
+
+do_gaindecorr = 0
+thermal_baseline = ""
+
+
+do_LFER_deconvolve = 0
+deconv_LPF_FILTER = 0
+deconv_R_FILTER = 0
+
+do_bl_demod = 0
+
+do_gapfiller = 1
+phase = /m3gpfs3/datadmc/dmc/MISS03/DATA/Sa_HFI_C_Bolo/Phase_dx11

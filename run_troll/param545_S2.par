@@ -1,0 +1,215 @@
+BeginRing = 240
+EndRing = 26050
+
+# sum of the bolometer coefficients  8x @100GHz (@FREQ=100)
+AVGFREEFREE = 0.0000
+AVFFF = 545
+# sum of the bolometer coefficients  8x @100GHz (@FREQ=100)
+AVGSYNCHRO = 0.000000
+AVFSYNC = 545
+# sum of the bolometer coefficients  8x @100GHz (@FREQ=100)
+AVGDUST100 = 0.000000
+AVFDUST = 545
+# FREQ TO SET CO TO 0
+AVFCO = 545
+
+
+AVGCO = 0
+AVGDUST = 0
+NITT = 10
+CALCODUST = 0
+CUTRG = 1
+#DEGREE = 0
+DODIPCAL = 1
+DOGAINDIP = 0
+DOMAXVRAIE = 1
+D_NOPOL = 0
+GAINSTEP = 1
+BUILDTF = 4
+
+number_of_NADU = 3
+NADU1 = 16
+NADU2 = 16
+NADU3 = 16
+
+number_of_NADUSTEP = 3
+NADUSTEP1 = 1
+NADUSTEP2 = 1
+NADUSTEP3 = 1
+
+Nside = 2048
+REMDIP = 1
+REMHDIP = 1
+RSTEP = 1
+SAVEINTMAP = 0
+TESTPOL = 1
+FITANGLE = 1
+FITPOLEFF = 1
+XI2STOP = 1.0
+seuilcond = 1e-06
+verbose = 0
+number_of_Calibration = 3
+Calibration1 = 3.29932298836e-16
+Calibration2 = 3.08792864906e-16
+Calibration3 = 2.64855405172e-16
+number_of_CrossPol = 3
+CrossPol1 = 0.913
+CrossPol2 = 0.894
+CrossPol3 = 0.89
+number_of_FSLCOEF = 3
+FSLCOEF1 = 1.0
+FSLCOEF2 = 1.0
+FSLCOEF3 = 1.0
+number_of_Monop = 3
+Monop1 = 3.82437622616e-14
+Monop2 = 2.57192447573e-14
+Monop3 = 2.82843952366e-14
+number_of_NEP = 3
+NEP1 = 2.06267796946e-16
+NEP2 = 1.7863247056e-16
+NEP3 = 1.63152889113e-16
+number_of_OUT_NOPOL = 4
+OUT_NOPOL1 = 1
+OUT_NOPOL2 = 1
+OUT_NOPOL3 = 1
+OUT_NOPOL4 = 1
+number_of_SEED = 1
+SEED1 = 1234
+number_of_bolomask = 12
+bolomask1 = 1
+bolomask2 = 1
+bolomask3 = 1
+bolomask4 = 1
+bolomask5 = 0
+bolomask6 = 0
+bolomask7 = 0
+bolomask8 = 1
+bolomask9 = 0
+bolomask10 = 0
+bolomask11 = 0
+bolomask12 = 1
+
+number_of_in_polar_fit_Q = 3
+in_polar_fit_Q1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/353_Q.float32.bin
+in_polar_fit_Q2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/353_Q.float32.bin
+in_polar_fit_Q3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/353_Q.float32.bin
+
+number_of_in_polar_fit_U = 3
+in_polar_fit_U1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/353_U.float32.bin
+in_polar_fit_U2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/353_U.float32.bin
+in_polar_fit_U3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/353_U.float32.bin
+
+Mask = /scratch/cnt0028/ias1717/SHARED//RD12_data/dmc/MISS03/DATA/MASK_2048_GALACTIC/mask_RD_545
+
+Theo_CO = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/NEW_cleaned_12CO_K.float32.bin
+Theo_13CO = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_128/NEW_cleaned_13CO_K.float32.bin
+
+Theo_Dust_I = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/MAP_JMD_128/Dust_I
+Theo_Dust_Q = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/MAP_JMD_128/Dust_Q
+Theo_Dust_U = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/MAP_JMD_128/Dust_U
+
+
+TEMPLATEMAP = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_545_2018.float32.bin
+
+number_of_in_template_map_I = 3
+in_template_map_I1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_545_2018.float32.bin
+in_template_map_I2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_545_2018.float32.bin
+in_template_map_I3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_545_2018.float32.bin
+
+
+number_of_in_template_map_Q = 3
+in_template_map_Q1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+in_template_map_Q2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+in_template_map_Q3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+
+number_of_in_template_map_U = 3
+in_template_map_U1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+in_template_map_U2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+in_template_map_U3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+
+
+number_of_ADU = 3
+ADU1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_adutot
+ADU2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_adutot
+ADU3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_adutot
+number_of_Badring = 3
+Badring1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs/14_545_1_discarded_rings_dx11
+Badring2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs/34_545_2_discarded_rings_dx11
+Badring3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs/73_545_4_discarded_rings_dx11
+number_of_DipOrb_noPS = 3
+DipOrb_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_diporb_quat
+DipOrb_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_diporb_quat
+DipOrb_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_diporb_quat
+number_of_Hit_noPS = 3
+Hit_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_hit
+Hit_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_hit
+Hit_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_hit
+number_of_Ptg_noPS = 3
+Ptg_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_ptg
+Ptg_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_ptg
+Ptg_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_ptg
+number_of_Signal_noPS = 3
+Signal_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6
+Signal_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6
+Signal_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6
+
+#number_of_Theo_noPS = 3
+#Theo_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_H0
+#Theo_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_H0
+#Theo_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_H0
+
+number_of_Theo_noPS = 27
+Theo_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_R0
+Theo_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_R0
+Theo_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_R0
+Theo_noPS4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_R1
+Theo_noPS5 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_R1
+Theo_noPS6 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_R1
+Theo_noPS7 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_R2
+Theo_noPS8 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_R2
+Theo_noPS9 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_R2
+Theo_noPS10 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_R3
+Theo_noPS11 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_R3
+Theo_noPS12 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_R3
+Theo_noPS13 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_H0
+Theo_noPS14 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_H0
+Theo_noPS15 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_H0
+Theo_noPS16 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_H1
+Theo_noPS17 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_H1
+Theo_noPS18 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_H1
+Theo_noPS19 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_H2
+Theo_noPS20 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_H2
+Theo_noPS21 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_H2
+Theo_noPS22 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_H3
+Theo_noPS23 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_H3
+Theo_noPS24 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_H3
+Theo_noPS25 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP7_2
+Theo_noPS26 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP7_2
+Theo_noPS27 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP7_2
+
+number_of_fsl = 3
+fsl1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-1_REP6_fsl
+fsl2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-2_REP6_fsl
+fsl3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/545-4_REP6_fsl
+number_of_MAP = 4
+MAP1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/MAP/545GHz_RD12_REP6_16_16_16
+MAP2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/MAP/545-1_RD12_REP6_16_16_16
+MAP3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/MAP/545-2_RD12_REP6_16_16_16
+MAP4 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/MAP/545-4_RD12_REP6_16_16_16
+number_of_Out_Offset = 3
+Out_Offset1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-1_offsets_PROD_REP6_RD12_545GHz_16_16_16
+Out_Offset2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-2_offsets_PROD_REP6_RD12_545GHz_16_16_16
+Out_Offset3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-4_offsets_PROD_REP6_RD12_545GHz_16_16_16
+number_of_Out_Offset_corr = 3
+Out_Offset_corr1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-1_offsets_fsl_PROD_REP6_RD12_545GHz
+Out_Offset_corr2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-2_offsets_fsl_PROD_REP6_RD12_545GHz
+Out_Offset_corr3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-4_offsets_fsl_PROD_REP6_RD12_545GHz
+number_of_Out_xi2 = 3
+Out_xi21 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-1_xi2_PROD_REP6_RD12_545GHz
+Out_xi22 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-2_xi2_PROD_REP6_RD12_545GHz
+Out_xi23 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-4_xi2_PROD_REP6_RD12_545GHz
+number_of_Out_xi2_corr = 3
+Out_xi2_corr1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd/545/VECT/545-1_xi2_fsl_PROD_REP6_RD12_545GHz
+Out_xi2_corr2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd/545/VECT/545-2_xi2_fsl_PROD_REP6_RD12_545GHz
+Out_xi2_corr3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll2r94_jmd//545/VECT/545-4_xi2_fsl_PROD_REP6_RD12_545GHz
+

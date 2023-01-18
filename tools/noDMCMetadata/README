@@ -1,0 +1,65 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+TOOLS
+
+* NO DMC METADATA
+
+  "no_dmc_metadata.py" is the python script used to create a metadata file
+  ("no_dmc_metadata.txt") associated to each object previously created with DMC.
+
+  These metadata are mandatory for the "no dmc lib" for accessing each object
+  data.
+
+  These metadata only have to be generated once, unless DMC overwrite the
+  object, requiring in this case to update the metadata.
+
+  IMPORTANT: Since this script make use of DMC requests in order to constitute
+             the metadata, one shall have a valid hl2 user environment!
+             See: http://wiki.planck.fr/index.php/PmWiki/InfrastructureHowto
+
+  In order to genererate the metadata execute the "no_dmc_metadata.py" python
+  script with appropriate parameters.
+
+  For example if you want to generate metadata for only one object named
+  "/data/my_grp/my_obj", use the following:
+  $> python no_dmc_metadata.py -o "/data/my_grp/my_obj"
+
+  For processing all objects of a specified group:
+  $> python no_dmc_metadata.py -g "/data/my_grp"
+
+  If you want to force re-generation of metadata (for example in the case where
+  DMC have overwrite object content) use option in capital letters: '-O' (for a
+  uniq object) or '-G' (for a group).
+
+  Note that the python script can display usage information with the "-h" option:
+  $> python no_dmc_metadata.py -h
+
+  CAUTION: Please do not use the -a, -A or -A_YES options unless you know exactly
+           what you are doing!
+
+* no_dmc_metadata_fix_backendname.py
+
+  This script allow to update the 'backendname' element in metadata file
+  according to specified arguments.
+
+  You may use this script when you move object data (and metadata) to another
+  directory so that NO_DMC_LIB can still access to them.
+
+  NOTE: this script does NOT require DMC stuff!
+
+  - Example of use:
+    Supposed that you want your metadata of all your objects in /mydir/ to be
+    updated.
+    Currently in yours "no_dmc_metadata.txt" there is an old path like:
+      Backendname : /old_path/dmc/dmc_objects/MISS03/122/024/1731634056890370585
+    So you would like it to become:
+      Backendname : /NEW_path/dmc/dmc_objects/MISS03/122/024/1731634056890370585
+    This can be obtain by the following command:
+    $> python no_dmc_metadata_fix_backendname.py /mydir/ /old_path/ /NEW_path/
+    It will process all "no_dmc_metadata.txt" found from "/mydir/" and sub
+    directories.
+
+    If you want to process only one specified file just give its path:
+    $> python no_dmc_metadata_fix_backendname.py /path_to_metadata/no_dmc_metadata.txt /old_path/ /NEW_path/

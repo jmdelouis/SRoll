@@ -1,0 +1,2158 @@
+troll.c: --------------------------
+troll.c: Starting /home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/troll_14tf
+troll.c: at Tue Apr 27 11:41:24 2021
+troll.c: with 4 MPI ranks and 6 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+
+
+troll_readParam() from file "/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/run_troll/sroll3_857_data.troll.par"
+troll_parLoader.c: reading BeginRing = 240
+troll_parLoader.c: reading EndRing = 26050
+troll_parLoader.c: reading RSTEP = 3000
+troll_parLoader.c: reading AVFFF = 857
+troll_parLoader.c: reading AVGFREEFREE = 0
+troll_parLoader.c: reading AVFSYNC = 857
+troll_parLoader.c: reading AVGSYNCHRO = 0
+troll_parLoader.c: reading AVGDUST100 = 0
+troll_parLoader.c: reading AVFDUST = 857
+troll_parLoader.c: reading AVGDUST = 0
+troll_parLoader.c: reading AVFCO = 857
+troll_parLoader.c: reading AVG12CO = 0
+troll_parLoader.c: reading AVG13CO = 0
+troll_parLoader.c: reading CALCODUST = 0
+troll_parLoader.c: reading CUTRG = 1
+troll_parLoader.c: reading DODIPCAL = 1
+troll_parLoader.c: reading DOGAINDIP = 1
+troll_parLoader.c: reading DOMAXVRAIE = 1
+troll_parLoader.c: reading D_NOPOL = 0
+troll_parLoader.c: reading Nside = 2048
+troll_parLoader.c: reading REMDIP = 1
+troll_parLoader.c: reading REMHDIP = 1
+troll_parLoader.c: reading ADDDIP = 0
+troll_parLoader.c: reading KCMBIN = 0
+troll_parLoader.c: reading SAVEINTMAP = 0
+troll_parLoader.c: reading TESTPOL = 1
+troll_parLoader.c: reading XI2STOP = 1.0
+troll_parLoader.c: reading seuilcond = 1e-06
+troll_parLoader.c: reading NITT = 10
+troll_parLoader.c: reading FITANGLE = 0
+troll_parLoader.c: reading FITPOLEFF = 0
+troll_parLoader.c: reading saveCOV = 0
+troll_parLoader.c: reading saveCO = 0
+troll_parLoader.c: reading delta_psi = 0.0
+troll_parLoader.c: reading verbose = 0
+troll_parLoader.c: reading TEMPLATE_NSIDE = 1024
+troll_parLoader.c: reading BUILDTF = 0
+troll_parLoader.c: reading number_of_SEED = 1
+troll_parLoader.c: reading SEED1 = 1234
+troll_parLoader.c: reading number_of_ADDCO13 = 0
+troll_parLoader.c: reading GAINSTEP = 1
+troll_parLoader.c: reading number_of_NADU = 4
+troll_parLoader.c: reading NADU1 = 16
+troll_parLoader.c: reading NADU2 = 16
+troll_parLoader.c: reading NADU3 = 16
+troll_parLoader.c: reading NADU4 = 16
+troll_parLoader.c: reading number_of_NADUSTEP = 4
+troll_parLoader.c: reading NADUSTEP1 = 1
+troll_parLoader.c: reading NADUSTEP2 = 1
+troll_parLoader.c: reading NADUSTEP3 = 1
+troll_parLoader.c: reading NADUSTEP4 = 1
+troll_parLoader.c: reading number_of_DOCNN = 13
+troll_parLoader.c: reading DOCNN1 = 0
+troll_parLoader.c: reading DOCNN2 = 0
+troll_parLoader.c: reading DOCNN3 = 0
+troll_parLoader.c: reading DOCNN4 = 0
+troll_parLoader.c: reading DOCNN5 = 0
+troll_parLoader.c: reading DOCNN6 = 0
+troll_parLoader.c: reading DOCNN7 = 0
+troll_parLoader.c: reading DOCNN8 = 0
+troll_parLoader.c: reading DOCNN9 = 0
+troll_parLoader.c: reading DOCNN10 = 0
+troll_parLoader.c: reading DOCNN11 = 0
+troll_parLoader.c: reading DOCNN12 = 0
+troll_parLoader.c: reading DOCNN13 = 0
+troll_parLoader.c: reading CALLCNN = /home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/py_function_pwst_pol.py
+troll_parLoader.c: reading CNN_XSIZE = 256
+troll_parLoader.c: reading CNN_YSIZE = 256
+troll_parLoader.c: reading CNN_RESIDU = 0.0
+troll_parLoader.c: reading CNN_NCOMP = 16
+troll_parLoader.c: reading CNN_NDCONV = 4
+troll_parLoader.c: reading CNN_KERNELSZ = 4
+troll_parLoader.c: reading CNN_SCALE = 4
+troll_parLoader.c: reading CNN_NPAR_FC = 1
+troll_parLoader.c: reading CNN_DO_RELU = 1
+troll_parLoader.c: reading CNN_DO_FULLY_CONNECTED = 1
+troll_parLoader.c: reading CNN_LOSS = LOGCOSH
+troll_parLoader.c: reading CNN_NORMALIZE_DATA_IN_LOSS = 0
+troll_parLoader.c: reading CNN_HUBER_LOSS_DELTA = 1e-4
+troll_parLoader.c: reading CNN_ITT = 300
+troll_parLoader.c: reading CNN_NUM_EPOCHS = 2000
+troll_parLoader.c: reading CNN_EVAL_FREQ = 100
+troll_parLoader.c: reading CNN_LEARNING_RATE = 0.03
+troll_parLoader.c: reading CNN_DECAY_RATE = 0.995
+troll_parLoader.c: reading CNN_BATCHSZ = 1
+troll_parLoader.c: reading CNN_TEST_CONVERGENCE = 0
+troll_parLoader.c: reading CNN_NO_NET = 0
+troll_parLoader.c: reading CNN_RANDSEED = 1234
+troll_parLoader.c: reading CNN_DO_TRANSFER_LEARNING = 0
+troll_parLoader.c: reading CNN_DO_SAVE_WEIGHTS = 0
+troll_parLoader.c: reading CNN_WEIGHTS = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_data_offset
+troll_parLoader.c: reading number_of_Calibration = 4
+troll_parLoader.c: reading Calibration1 = 3.30076826046e-16
+troll_parLoader.c: reading Calibration2 = 3.55811287601e-16
+troll_parLoader.c: reading Calibration3 = 3.18681631353e-16
+troll_parLoader.c: reading Calibration4 = 2.219187708e-16
+troll_parLoader.c: reading number_of_CrossPol = 4
+troll_parLoader.c: reading CrossPol1 = 0.887
+troll_parLoader.c: reading CrossPol2 = 0.883
+troll_parLoader.c: reading CrossPol3 = 0.856
+troll_parLoader.c: reading CrossPol4 = 0.897
+troll_parLoader.c: reading number_of_NEP = 4
+troll_parLoader.c: reading NEP1 = 2.17663807827e-16
+troll_parLoader.c: reading NEP2 = 2.36372259024e-16
+troll_parLoader.c: reading NEP3 = 2.08546999122e-16
+troll_parLoader.c: reading NEP4 = 2.01804359351e-16
+troll_parLoader.c: reading number_of_Monop = 4
+troll_parLoader.c: reading Monop1 = 2.7228011807e-14
+troll_parLoader.c: reading Monop2 = 3.20205460445e-14
+troll_parLoader.c: reading Monop3 = 2.14043411258e-14
+troll_parLoader.c: reading Monop4 = 3.3436884405e-14
+troll_parLoader.c: reading number_of_FSLCOEF = 4
+troll_parLoader.c: reading FSLCOEF1 = 1.0
+troll_parLoader.c: reading FSLCOEF2 = 1.0
+troll_parLoader.c: reading FSLCOEF3 = 1.0
+troll_parLoader.c: reading FSLCOEF4 = 1.0
+troll_parLoader.c: reading number_of_OUT_NOPOL = 5
+troll_parLoader.c: reading OUT_NOPOL1 = 1
+troll_parLoader.c: reading OUT_NOPOL2 = 1
+troll_parLoader.c: reading OUT_NOPOL3 = 1
+troll_parLoader.c: reading OUT_NOPOL4 = 1
+troll_parLoader.c: reading OUT_NOPOL5 = 1
+troll_parLoader.c: reading number_of_bolomask = 20
+troll_parLoader.c: reading bolomask1 = 1
+troll_parLoader.c: reading bolomask2 = 1
+troll_parLoader.c: reading bolomask3 = 1
+troll_parLoader.c: reading bolomask4 = 1
+troll_parLoader.c: reading bolomask5 = 1
+troll_parLoader.c: reading bolomask6 = 0
+troll_parLoader.c: reading bolomask7 = 0
+troll_parLoader.c: reading bolomask8 = 0
+troll_parLoader.c: reading bolomask9 = 0
+troll_parLoader.c: reading bolomask10 = 1
+troll_parLoader.c: reading bolomask11 = 0
+troll_parLoader.c: reading bolomask12 = 0
+troll_parLoader.c: reading bolomask13 = 0
+troll_parLoader.c: reading bolomask14 = 0
+troll_parLoader.c: reading bolomask15 = 1
+troll_parLoader.c: reading bolomask16 = 0
+troll_parLoader.c: reading bolomask17 = 0
+troll_parLoader.c: reading bolomask18 = 0
+troll_parLoader.c: reading bolomask19 = 0
+troll_parLoader.c: reading bolomask20 = 1
+troll_parLoader.c: reading number_of_MAPRINGS = 5
+troll_parLoader.c: reading MAPRINGS1 = 19
+troll_parLoader.c: reading MAPRINGS2 = 1
+troll_parLoader.c: reading MAPRINGS3 = 1
+troll_parLoader.c: reading MAPRINGS4 = 1
+troll_parLoader.c: reading MAPRINGS5 = 1
+troll_parLoader.c: reading Mask = /export/home/tfoulquier/data_sroll/MAP/mask_RD_857
+troll_parLoader.c: reading Theo_CO = /export/home/tfoulquier/data_sroll/NEW_cleaned_12CO.float32.bin
+troll_parLoader.c: reading Theo_13CO = /export/home/tfoulquier/data_sroll/NEW_cleaned_13CO.float32.bin
+troll_parLoader.c: reading Theo_Dust_I = /export/home/tfoulquier/data_sroll/MAP/Dust_New_I
+troll_parLoader.c: reading Theo_Dust_Q = /export/home/tfoulquier/data_sroll/MAP/Dust_New_Q
+troll_parLoader.c: reading Theo_Dust_U = /export/home/tfoulquier/data_sroll/MAP/Dust_New_U
+troll_parLoader.c: reading TEMPLATEMAP = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_I = 4
+troll_parLoader.c: reading in_template_map_I1 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I2 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I3 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I4 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_Q = 4
+troll_parLoader.c: reading in_template_map_Q1 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q2 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q3 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q4 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_U = 4
+troll_parLoader.c: reading in_template_map_U1 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U2 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U3 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U4 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_Q = 4
+troll_parLoader.c: reading in_polar_fit_Q1 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q2 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q3 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q4 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_U = 4
+troll_parLoader.c: reading in_polar_fit_U1 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U2 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U3 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U4 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading number_of_Signal_noPS = 4
+troll_parLoader.c: reading Signal_noPS1 = /export/home/tfoulquier/data_sroll/MAP/857-1_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS2 = /export/home/tfoulquier/data_sroll/MAP/857-2_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS3 = /export/home/tfoulquier/data_sroll/MAP/857-3_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS4 = /export/home/tfoulquier/data_sroll/MAP/857-4_REP6_THEO_SIMU
+troll_parLoader.c: reading number_of_ADU = 4
+troll_parLoader.c: reading ADU1 = /export/home/tfoulquier/data_sroll/MAP/857-1_REP6_adutot
+troll_parLoader.c: reading ADU2 = /export/home/tfoulquier/data_sroll/MAP/857-2_REP6_adutot
+troll_parLoader.c: reading ADU3 = /export/home/tfoulquier/data_sroll/MAP/857-3_REP6_adutot
+troll_parLoader.c: reading ADU4 = /export/home/tfoulquier/data_sroll/MAP/857-4_REP6_adutot
+troll_parLoader.c: reading number_of_Badring = 4
+troll_parLoader.c: reading Badring1 = /export/home1/jmdeloui/DATA4SROLL4/25_857_1_discarded_rings_dx11
+troll_parLoader.c: reading Badring2 = /export/home1/jmdeloui/DATA4SROLL4/35_857_2_discarded_rings_dx11
+troll_parLoader.c: reading Badring3 = /export/home1/jmdeloui/DATA4SROLL4/65_857_3_discarded_rings_dx11
+troll_parLoader.c: reading Badring4 = /export/home1/jmdeloui/DATA4SROLL4/74_857_4_discarded_rings_dx11
+troll_parLoader.c: reading number_of_DipOrb_noPS = 4
+troll_parLoader.c: reading DipOrb_noPS1 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS2 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS3 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS4 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_diporb_quat
+troll_parLoader.c: reading number_of_Hit_noPS = 4
+troll_parLoader.c: reading Hit_noPS1 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_hit
+troll_parLoader.c: reading Hit_noPS2 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_hit
+troll_parLoader.c: reading Hit_noPS3 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_hit
+troll_parLoader.c: reading Hit_noPS4 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_hit
+troll_parLoader.c: reading number_of_Ptg_noPS = 4
+troll_parLoader.c: reading Ptg_noPS1 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS2 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS3 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS4 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_ptg
+troll_parLoader.c: reading number_of_Theo_noPS = 20
+troll_parLoader.c: reading Theo_noPS1 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_H0
+troll_parLoader.c: reading Theo_noPS2 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_H0
+troll_parLoader.c: reading Theo_noPS3 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_H0
+troll_parLoader.c: reading Theo_noPS4 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_H0
+troll_parLoader.c: reading Theo_noPS5 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_H1
+troll_parLoader.c: reading Theo_noPS6 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_H1
+troll_parLoader.c: reading Theo_noPS7 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_H1
+troll_parLoader.c: reading Theo_noPS8 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_H1
+troll_parLoader.c: reading Theo_noPS9 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_H2
+troll_parLoader.c: reading Theo_noPS10 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_H2
+troll_parLoader.c: reading Theo_noPS11 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_H2
+troll_parLoader.c: reading Theo_noPS12 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_H2
+troll_parLoader.c: reading Theo_noPS13 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_H3
+troll_parLoader.c: reading Theo_noPS14 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_H3
+troll_parLoader.c: reading Theo_noPS15 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_H3
+troll_parLoader.c: reading Theo_noPS16 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_H3
+troll_parLoader.c: reading Theo_noPS17 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP7_2
+troll_parLoader.c: reading Theo_noPS18 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP7_2
+troll_parLoader.c: reading Theo_noPS19 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP7_2
+troll_parLoader.c: reading Theo_noPS20 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP7_2
+troll_parLoader.c: reading number_of_fsl = 4
+troll_parLoader.c: reading fsl1 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_fsl
+troll_parLoader.c: reading fsl2 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_fsl
+troll_parLoader.c: reading fsl3 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_fsl
+troll_parLoader.c: reading fsl4 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_fsl
+troll_parLoader.c: reading number_of_phase = 4
+troll_parLoader.c: reading phase1 = /export/home1/jmdeloui/DATA4SROLL4/857-1_REP6_phregul
+troll_parLoader.c: reading phase2 = /export/home1/jmdeloui/DATA4SROLL4/857-2_REP6_phregul
+troll_parLoader.c: reading phase3 = /export/home1/jmdeloui/DATA4SROLL4/857-3_REP6_phregul
+troll_parLoader.c: reading phase4 = /export/home1/jmdeloui/DATA4SROLL4/857-4_REP6_phregul
+troll_parLoader.c: reading number_of_rgcnn = 4
+troll_parLoader.c: reading rgcnn1 = /export/home/tfoulquier/data_sroll//MAP/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn2 = /export/home/tfoulquier/data_sroll//MAP/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn3 = /export/home/tfoulquier/data_sroll//MAP/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn4 = /export/home/tfoulquier/data_sroll//MAP/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading number_of_MAP = 5
+troll_parLoader.c: reading MAP1 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz
+troll_parLoader.c: reading MAP2 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1
+troll_parLoader.c: reading MAP3 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2
+troll_parLoader.c: reading MAP4 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3
+troll_parLoader.c: reading MAP5 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4
+troll_parLoader.c: reading number_of_Out_Offset = 4
+troll_parLoader.c: reading Out_Offset1 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_offset
+troll_parLoader.c: reading Out_Offset2 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_offset
+troll_parLoader.c: reading Out_Offset3 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-3_offset
+troll_parLoader.c: reading Out_Offset4 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-4_offset
+troll_parLoader.c: reading number_of_Out_Offset_corr = 4
+troll_parLoader.c: reading Out_Offset_corr1 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_offset_corr
+troll_parLoader.c: reading Out_Offset_corr2 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_offset_corr
+troll_parLoader.c: reading Out_Offset_corr3 = /export/home/tfoulquier/VEC/sroll2_debug__857ghz_857-3_offset_corr
+troll_parLoader.c: reading Out_Offset_corr4 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-4_offset_corr
+troll_parLoader.c: reading number_of_Out_xi2 = 4
+troll_parLoader.c: reading Out_xi21 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_xi2
+troll_parLoader.c: reading Out_xi22 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_xi2
+troll_parLoader.c: reading Out_xi23 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-3_xi2
+troll_parLoader.c: reading Out_xi24 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-4_xi2
+troll_parLoader.c: reading number_of_Out_xi2_corr = 4
+troll_parLoader.c: reading Out_xi2_corr1 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr2 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr3 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-3_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr4 = /export/home/tfoulquier/data_sroll/srollexx_work/VEC/sroll2_debug_857ghz_857-4_xi2_corr
+DOCO
+MAXFREQ 857
+Call python module in path
+/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll
+Call module : py_function_pwst_pol
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+plop
+plop
+WARNING:tensorflow:From /home3/homedir7/perso/tfoulqui/workspace/my_env/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+WARNING:tensorflow:From /home3/homedir7/perso/tfoulqui/workspace/my_env/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 3 uses the GPU 0
+RANK 1 uses the GPU 1
+plop
+plop
+WARNING:tensorflow:From /home3/homedir7/perso/tfoulqui/workspace/my_env/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+WARNING:tensorflow:From /home3/homedir7/perso/tfoulqui/workspace/my_env/lib/python2.7/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+RANK 2 uses the GPU 2
+('Num GPUs Available: ', 0)
+LoadBalancing globalRangeRing      = 25811 
+LoadBalancing rings_per_rank       = 6452 
+LoadBalancing balancing_correction = 3 
+NEP_tab[0 (857-1)]=0.913495
+NEP_tab[1 (857-2)]=0.920263
+NEP_tab[2 (857-3)]=0.906529
+NEP_tab[3 (857-4)]=1.259713
+DODISTOR [0]: 16 16
+DODISTOR [1]: 16 16
+DODISTOR [2]: 16 16
+DODISTOR [3]: 16 16
+REMDIP : 1
+SXI 0 2.29963
+RG_MAX 25586
+Com ring=240 Rank: 0[27610] MEM 9240.1[1655.0]MB Nd=15582  0.994539 5.62506e-07 
+
+after troll bolometer 857-1 (0/3): used VMEM 9248.3[PHYS 1728.2]MB
+SXI 1 2.26593
+RG_MAX 25405
+Com ring=240 Rank: 0[27610] MEM 9252.3[1732.7]MB Nd=15638  0.99449 5.89774e-07 
+
+after troll bolometer 857-2 (1/3): used VMEM 9260.2[PHYS 1740.8]MB
+SXI 2 2.3351
+RG_MAX 25594
+Com ring=240 Rank: 0[27610] MEM 9264.8[1745.3]MB Nd=15663  0.994528 5.71222e-07 
+
+after troll bolometer 857-3 (2/3): used VMEM 9274.3[PHYS 1755.0]MB
+SXI 3 1.20928
+RG_MAX 24531
+Com ring=240 Rank: 0[27610] MEM 9278.4[1758.8]MB Nd=15612  0.994487 5.81909e-07 
+
+after troll bolometer 857-4 (3/3): used VMEM 9286.4[PHYS 1767.1]MB
+13CO
+
+Free memory per node before pixel balancing, at Tue Apr 27 11:41:42 2021
+rank 00/3, node 00/00, br146-050: 55.3GB free
+NPIX 6
+Mask 0
+Sort pixel to make it run faster
+regrid
+sort
+rebin pixel
+Rank: 0[27610] MEM 8566.4[1328.1]MB line=9659
+Rank: 0[27610] MEM 8566.4[1328.1]MB line=9739
+Rank: 0(br146-050, free=53.22GB) [1/2] used MEM virt:8758.4[phys:1424.0]MB line=9845 ntbs:10MB
+Rank: 0(br146-050, free=53.20GB) [1/2] used MEM virt:8784.9[phys:1442.8]MB line=9845 ntbs:10MB
+Rank: 0(br146-050, free=53.14GB) [2/4] used MEM virt:8784.9[phys:1442.8]MB line=9845 ntbs:21MB
+Rank: 0[27610] MEM 8046.5[790.7]MB line=9969
+
+Free memory per node before matrix computation, at Tue Apr 27 11:41:53 2021
+rank 00/3, node 00/00, br146-050: 55.8GB free
+l_nmatpix[0] 17952
+Rank: 0[27610] MEM 8046.5[791.4]MB line=10115
+NMATCO 4 NMATDUST 4
+ FREEFREE 0
+RK0 SHOULD DETERMINE 143712 VALUES 0 12 24 36 46 
+GAIN DIP BOL 857-1 (0/3): 0.999716
+GAIN DIP BOL 857-2 (1/3): 1.000473
+GAIN DIP BOL 857-3 (2/3): 0.999564
+GAIN DIP BOL 857-4 (3/3): 0.999642
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+BEG-ED 0 71809 0 - 12582911 17952
+MAXSIZE 98 82
+NbGain 46
+BEG 0 71809 0 - 12582911 17952
+Rank: 0[27610] MEM 20910.6[1368.6]MB line=11121
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 0/10 1 
+
+==============================
+GAIN 1 1 1 1 
+QQ2 0
+iter = 0 - delta0 = 8.23516e+09 - delta_new = 8.23516e+09
+iter = 0-0 - delta_new = 8.23516e+09 1 0.361004s
+iter = 0-10 - delta_new = 1.91221e+06 1 0.082257s
+iter = 0-20 - delta_new = 59452.8 1 0.082229s
+iter = 0-30 - delta_new = 14827.1 1 0.082520s
+iter = 0-40 - delta_new = 838.777 1 0.082288s
+iter = 0-50 - delta_new = 5.65097 1 0.082247s
+iter = 0-60 - delta_new = 1.25405 1 0.082256s
+iter = 0-70 - delta_new = 0.0712925 1 0.082239s
+iter = 0-80 - delta_new = 0.00229466 1 0.089757s
+iter = 0-90 - delta_new = 0.000108785 1 0.082248s
+iter = 0-100 - delta_new = 1.34407e-05 1 0.082259s
+iter = 0-110 - delta_new = 1.62764e-07 1 0.082321s
+iter = 0-120 - delta_new = 3.55397e-07 1 0.082217s
+iter = 0-130 - delta_new = 7.70454e-09 1 0.082243s
+iter = 0-140 - delta_new = 4.14093e-08 1 0.082235s
+iter = 0-150 - delta_new = 1.00797e-09 1 0.082427s
+iter = 0-160 - delta_new = 4.2459e-10 1 0.082289s
+iter = 0-170 - delta_new = 8.24694e-11 1 0.082446s
+iter = 0-180 - delta_new = 9.4193e-12 1 0.082346s
+iter = 0-190 - delta_new = 2.38827e-11 1 0.082236s
+iter = 0-200 - delta_new = 3.55464e-12 1 0.082680s
+iter = 0-210 - delta_new = 2.80489e-12 1 0.082285s
+iter = 0-220 - delta_new = 6.6262e-12 1 0.082186s
+iter = 0-230 - delta_new = 3.55423e-12 1 0.082220s
+iter = 0-240 - delta_new = 1.84149e-12 1 0.082228s
+iter = 0-250 - delta_new = 2.14496e-12 1 0.082204s
+iter = 0-260 - delta_new = 2.09348e-12 1 0.082358s
+iter = 0-270 - delta_new = 3.46136e-13 1 0.082398s
+iter = 0-280 - delta_new = 7.0202e-13 1 0.082376s
+iter = 0-290 - delta_new = 4.47192e-13 1 0.082217s
+iter = 0-300 - delta_new = 1.10286e-13 1 0.082175s
+iter = 0-310 - delta_new = 3.39574e-14 1 0.082321s
+iter = 0-320 - delta_new = 4.24826e-14 1 0.082457s
+iter = 0-330 - delta_new = 4.54774e-14 1 0.082175s
+iter = 0-340 - delta_new = 9.98688e-15 1 0.082094s
+
+iter = 342 - delta0 = 8.23516e+09 - delta_new = 7.62526e-15
+CG in iter = 342 (max=500)
+GI XIGAIN 0.0007198728035
+TF=[6.95607e-05,0.000261361,-9.01704e-05,9.89586e-05,]
+TF=[-5.36528e-06,-2.75467e-06,0.000152209,-4.84572e-05,]
+TF=[0.000110528,0.000184171,0.000104989,0.000150326,]
+TF=[0.000183264,0.000232257,0.000211419,0.000191243,]
+TF=[0.236782,-3.04553,2.441,1.13145,]
+co13=[0.0063465,0.00890817,-0.0152818,2.71658e-05]
+co12=[-0.000527704,-0.00749199,0.00667873,0.00134096]
+dust=[-2.47074,3.91632,1.14885,-2.59358]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 1/10 1 
+
+==============================
+GAIN 0.999269 1.00014 1.00111 0.999473 
+QQ2 32759.1
+iter = 0 - delta0 = 8.23516e+09 - delta_new = 51361.4
+iter = 1-0 - delta_new = 51361.4 1 0.390844s
+iter = 1-10 - delta_new = 1.31179 1 0.082310s
+iter = 1-20 - delta_new = 0.16883 1 0.082343s
+iter = 1-30 - delta_new = 0.00333096 1 0.082135s
+iter = 1-40 - delta_new = 0.00125891 1 0.082260s
+iter = 1-50 - delta_new = 2.18936e-05 1 0.082317s
+iter = 1-60 - delta_new = 7.20756e-06 1 0.082171s
+iter = 1-70 - delta_new = 6.93926e-07 1 0.082565s
+iter = 1-80 - delta_new = 8.81766e-09 1 0.082169s
+iter = 1-90 - delta_new = 1.2353e-09 1 0.082254s
+iter = 1-100 - delta_new = 2.83708e-11 1 0.082318s
+iter = 1-110 - delta_new = 9.77816e-14 1 0.082419s
+iter = 1-120 - delta_new = 2.05204e-13 1 0.082214s
+iter = 1-130 - delta_new = 1.21968e-14 1 0.082193s
+
+iter = 134 - delta0 = 8.23516e+09 - delta_new = 7.88439e-15
+CG in iter = 134 (max=500)
+BUILD ADU MATRIX BOLO 0
+BUILD ADU MATRIX BOLO 1
+BUILD ADU MATRIX BOLO 2
+BUILD ADU MATRIX BOLO 3
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94218316166992 94218316671456
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095483532336 94095529036240
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875086055376 94875050342512
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088475353856 94088440887248
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.192074124e-06
+TF=[6.86949e-05,0.000260686,-9.08738e-05,9.81814e-05,]
+TF=[-5.32384e-06,-2.7642e-06,0.000152298,-4.84246e-05,]
+TF=[0.000110583,0.000184166,0.000104916,0.000150257,]
+TF=[0.000183257,0.000232219,0.000211357,0.000191216,]
+TF=[0.228742,-3.0529,2.43816,1.12365,]
+co13=[0.00633723,0.00891646,-0.0152766,2.28855e-05]
+co12=[-0.000527944,-0.00749467,0.00668255,0.00134007]
+dust=[-2.46578,3.91483,1.14103,-2.58924]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 2/10 1 
+
+==============================
+GAIN 0.99927 1.00014 1.00111 0.999474 
+QQ2 35127.7
+iter = 0 - delta0 = 8.23516e+09 - delta_new = 29.0425
+iter = 2-0 - delta_new = 29.0425 1 0.357214s
+iter = 2-10 - delta_new = 0.0325724 1 0.082538s
+iter = 2-20 - delta_new = 0.00203612 1 0.082321s
+iter = 2-30 - delta_new = 0.000330201 1 0.082418s
+iter = 2-40 - delta_new = 9.90294e-06 1 0.082399s
+iter = 2-50 - delta_new = 1.07425e-05 1 0.082458s
+iter = 2-60 - delta_new = 4.73534e-07 1 0.082604s
+iter = 2-70 - delta_new = 2.30583e-08 1 0.082407s
+iter = 2-80 - delta_new = 6.31212e-10 1 0.082456s
+iter = 2-90 - delta_new = 2.28252e-12 1 0.082400s
+iter = 2-100 - delta_new = 4.80485e-13 1 0.082359s
+iter = 2-110 - delta_new = 1.12083e-12 1 0.082575s
+iter = 2-120 - delta_new = 2.43029e-13 1 0.082532s
+
+iter = 128 - delta0 = 8.23516e+09 - delta_new = 7.66877e-15
+CG in iter = 128 (max=500)
+init shape done
+SIGMA : 0.007038 0.588205
+NPAR PER IMAGE 12288
+NPAR SIZE 1 12288
+[1,3072,1,16,],[4,1,16,16,]
+[1,12288,1,2,],[4,1,2,16,]
+NPAR PER IMAGE 4
+NPAR SIZE 4 4
+[4,128,128,5,],[5,5,5,4,]
+[4,256,256,1,],[5,5,1,5,]
+WARNING: Unrecognized loss selection. Using default RMSE loss.
+Initialized Network
+Itt 0 loss= 0.0009836 Dloss= 0.0009836 Lr=0.0300 Dt=10.2775
+Itt 10 loss= 0.0004603 Dloss= 0.0005234 Lr=0.0298 Dt=1.5562
+Itt 20 loss= 0.0003743 Dloss= 8.598e-05 Lr=0.0297 Dt=1.5236
+Itt 30 loss= 0.0003362 Dloss= 3.809e-05 Lr=0.0296 Dt=1.5300
+Itt 40 loss= 0.0003197 Dloss= 1.649e-05 Lr=0.0294 Dt=1.5288
+Itt 50 loss= 0.0003106 Dloss=  9.06e-06 Lr=0.0293 Dt=1.4680
+Itt 60 loss= 0.0003037 Dloss=  6.96e-06 Lr=0.0291 Dt=1.5212
+Itt 70 loss= 0.0002984 Dloss= 5.252e-06 Lr=0.0290 Dt=1.4946
+Itt 80 loss= 0.0002938 Dloss= 4.619e-06 Lr=0.0288 Dt=1.3996
+Itt 90 loss= 0.0002896 Dloss= 4.258e-06 Lr=0.0287 Dt=1.4427
+Itt 100 loss= 0.0002856 Dloss= 3.915e-06 Lr=0.0285 Dt=1.5186
+Itt 110 loss= 0.0002819 Dloss= 3.757e-06 Lr=0.0284 Dt=1.5067
+Itt 120 loss= 0.0002784 Dloss= 3.536e-06 Lr=0.0282 Dt=1.4379
+Itt 130 loss= 0.0002751 Dloss= 3.244e-06 Lr=0.0281 Dt=1.4656
+Itt 140 loss=  0.000272 Dloss= 3.063e-06 Lr=0.0280 Dt=1.4413
+Itt 150 loss= 0.0002691 Dloss= 2.976e-06 Lr=0.0278 Dt=1.4330
+Itt 160 loss= 0.0002662 Dloss= 2.847e-06 Lr=0.0277 Dt=1.3828
+Itt 170 loss= 0.0002635 Dloss= 2.721e-06 Lr=0.0275 Dt=1.4337
+Itt 180 loss= 0.0002609 Dloss=   2.6e-06 Lr=0.0274 Dt=1.3880
+Itt 190 loss= 0.0002585 Dloss= 2.413e-06 Lr=0.0273 Dt=1.4651
+Itt 200 loss= 0.0002562 Dloss= 2.325e-06 Lr=0.0271 Dt=1.4398
+Itt 210 loss=  0.000254 Dloss=  2.18e-06 Lr=0.0270 Dt=1.3813
+Itt 220 loss= 0.0002519 Dloss= 2.131e-06 Lr=0.0269 Dt=1.4516
+Itt 230 loss= 0.0002498 Dloss= 2.038e-06 Lr=0.0267 Dt=1.4739
+Itt 240 loss= 0.0002478 Dloss= 1.969e-06 Lr=0.0266 Dt=1.4719
+Itt 250 loss= 0.0002459 Dloss= 1.954e-06 Lr=0.0265 Dt=1.4484
+Itt 260 loss= 0.0002439 Dloss= 1.987e-06 Lr=0.0263 Dt=1.4985
+Itt 270 loss=  0.000242 Dloss= 1.883e-06 Lr=0.0262 Dt=1.4277
+Itt 280 loss= 0.0002404 Dloss= 1.663e-06 Lr=0.0261 Dt=1.4517
+Itt 290 loss= 0.0002387 Dloss= 1.639e-06 Lr=0.0259 Dt=1.3692
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088557571184 94088859071024
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095483532336 94095779455232
+Invert FIT_ADU MATRIX bolo=0 proc=0 94218409198768 94218506313104
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875170236640 94875135769520
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 0.000159938389
+TF=[0.000113807,0.000312901,-4.83394e-05,0.000170258,]
+TF=[3.90759e-05,3.31148e-05,0.000206487,4.58451e-06,]
+TF=[0.000101913,0.000181498,8.1611e-05,0.000143808,]
+TF=[0.000199858,0.000238421,0.000231465,0.000193336,]
+TF=[0.341379,-2.96834,2.52062,1.21134,]
+co13=[0.00589824,0.00837121,-0.0142604,-9.00012e-06]
+co12=[-0.000298682,-0.00707578,0.00621758,0.00115688]
+dust=[-2.28564,3.27117,1.08125,-2.06601]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 3/10 1 
+
+==============================
+GAIN 0.999383 0.999899 1.00107 0.999643 
+QQ2 35066.6
+iter = 0 - delta0 = 8.23516e+09 - delta_new = 1.42547e+73
+iter = 3-0 - delta_new = 1.42547e+73 1 0.386842s
+iter = 3-10 - delta_new = 3.80929e+71 1 0.082654s
+iter = 3-20 - delta_new = 3.12983e+70 1 0.082407s
+iter = 3-30 - delta_new = 1.02025e+70 1 0.082236s
+iter = 3-40 - delta_new = 2.9247e+70 1 0.082243s
+iter = 3-50 - delta_new = 6.52204e+69 1 0.082424s
+iter = 3-60 - delta_new = 9.94154e+67 1 0.082435s
+iter = 3-70 - delta_new = 3.3536e+67 1 0.082099s
+iter = 3-80 - delta_new = 2.68934e+63 1 0.082132s
+iter = 3-90 - delta_new = 2.185e+61 1 0.082446s
+iter = 3-100 - delta_new = 6.87135e+60 1 0.082495s
+iter = 3-110 - delta_new = 1.15803e+60 1 0.082478s
+iter = 3-120 - delta_new = 5.52041e+59 1 0.082386s
+iter = 3-130 - delta_new = 6.40077e+58 1 0.082156s
+iter = 3-140 - delta_new = 1.31012e+59 1 0.082163s
+iter = 3-150 - delta_new = 8.18013e+57 1 0.082104s
+iter = 3-160 - delta_new = 9.43905e+57 1 0.082463s
+iter = 3-170 - delta_new = 4.10072e+57 1 0.082599s
+iter = 3-180 - delta_new = 1.99729e+57 1 0.082355s
+iter = 3-190 - delta_new = 8.64039e+56 1 0.082298s
+iter = 3-200 - delta_new = 1.2885e+56 1 0.082252s
+iter = 3-210 - delta_new = 2.75747e+56 1 0.082416s
+iter = 3-220 - delta_new = 1.62774e+56 1 0.082549s
+iter = 3-230 - delta_new = 3.54547e+55 1 0.082450s
+iter = 3-240 - delta_new = 2.62234e+55 1 0.084793s
+iter = 3-250 - delta_new = 2.82494e+55 1 0.082283s
+iter = 3-260 - delta_new = 1.23804e+55 1 0.082516s
+iter = 3-270 - delta_new = 2.32243e+54 1 0.082572s
+iter = 3-280 - delta_new = 2.23223e+54 1 0.082533s
+iter = 3-290 - delta_new = 2.85591e+54 1 0.082481s
+iter = 3-300 - delta_new = 3.96514e+53 1 0.082416s
+iter = 3-310 - delta_new = 1.76517e+53 1 0.082345s
+iter = 3-320 - delta_new = 1.1316e+53 1 0.082488s
+iter = 3-330 - delta_new = 1.06686e+53 1 0.082355s
+iter = 3-340 - delta_new = 1.31909e+52 1 0.082427s
+iter = 3-350 - delta_new = 4.32731e+52 1 0.082555s
+iter = 3-360 - delta_new = 3.38377e+52 1 0.082447s
+iter = 3-370 - delta_new = 7.8095e+51 1 0.082440s
+iter = 3-380 - delta_new = 1.83451e+51 1 0.082273s
+iter = 3-390 - delta_new = 7.76251e+51 1 0.082372s
+iter = 3-400 - delta_new = 1.11919e+51 1 0.082561s
+iter = 3-410 - delta_new = 2.01112e+50 1 0.082344s
+iter = 3-420 - delta_new = 6.76407e+50 1 0.082628s
+iter = 3-430 - delta_new = 6.4451e+50 1 0.082658s
+iter = 3-440 - delta_new = 9.97607e+49 1 0.082335s
+iter = 3-450 - delta_new = 1.07354e+50 1 0.082409s
+iter = 3-460 - delta_new = 9.43607e+49 1 0.082666s
+iter = 3-470 - delta_new = 8.67363e+49 1 0.082197s
+iter = 3-480 - delta_new = 2.15829e+49 1 0.082605s
+iter = 3-490 - delta_new = 1.50375e+49 1 0.082305s
+
+iter = 500 - delta0 = 8.23516e+09 - delta_new = 2.77425e+49
+CG in iter = 500 (max=500)
+init shape done
+SIGMA : 272080283867167783596714297917440.000000 0.588205
+NPAR PER IMAGE 12288
+NPAR SIZE 1 12288
+[1,3072,1,16,],[4,1,16,16,]
+[1,12288,1,2,],[4,1,2,16,]
+NPAR PER IMAGE 4
+NPAR SIZE 4 4
+[4,128,128,5,],[5,5,5,4,]
+[4,256,256,1,],[5,5,1,5,]
+WARNING: Unrecognized loss selection. Using default RMSE loss.
+Initialized Network
+Itt 0 loss=      -nan Dloss=       nan Lr=0.0300 Dt=11.2998
+Itt 10 loss=      -nan Dloss=       nan Lr=0.0298 Dt=1.3536
+Itt 20 loss=      -nan Dloss=       nan Lr=0.0297 Dt=1.3830
+Itt 30 loss=      -nan Dloss=       nan Lr=0.0296 Dt=1.4239
+Itt 40 loss=      -nan Dloss=       nan Lr=0.0294 Dt=1.4212
+Itt 50 loss=      -nan Dloss=       nan Lr=0.0293 Dt=1.4742
+Itt 60 loss=      -nan Dloss=       nan Lr=0.0291 Dt=1.3972
+Itt 70 loss=      -nan Dloss=       nan Lr=0.0290 Dt=1.4066
+Itt 80 loss=      -nan Dloss=       nan Lr=0.0288 Dt=1.3815
+Itt 90 loss=      -nan Dloss=       nan Lr=0.0287 Dt=1.4277
+Itt 100 loss=      -nan Dloss=       nan Lr=0.0285 Dt=1.3648
+Itt 110 loss=      -nan Dloss=       nan Lr=0.0284 Dt=1.4442
+Itt 120 loss=      -nan Dloss=       nan Lr=0.0282 Dt=1.4372
+Itt 130 loss=      -nan Dloss=       nan Lr=0.0281 Dt=1.4402
+Itt 140 loss=      -nan Dloss=       nan Lr=0.0280 Dt=1.5009
+Itt 150 loss=      -nan Dloss=       nan Lr=0.0278 Dt=1.4530
+Itt 160 loss=      -nan Dloss=       nan Lr=0.0277 Dt=1.4659
+Itt 170 loss=      -nan Dloss=       nan Lr=0.0275 Dt=1.4275
+Itt 180 loss=      -nan Dloss=       nan Lr=0.0274 Dt=1.3883
+Itt 190 loss=      -nan Dloss=       nan Lr=0.0273 Dt=1.4351
+Itt 200 loss=      -nan Dloss=       nan Lr=0.0271 Dt=1.4486
+Itt 210 loss=      -nan Dloss=       nan Lr=0.0270 Dt=1.3509
+Itt 220 loss=      -nan Dloss=       nan Lr=0.0269 Dt=1.3977
+Itt 230 loss=      -nan Dloss=       nan Lr=0.0267 Dt=1.3691
+Itt 240 loss=      -nan Dloss=       nan Lr=0.0266 Dt=1.3242
+Itt 250 loss=      -nan Dloss=       nan Lr=0.0265 Dt=1.3991
+Itt 260 loss=      -nan Dloss=       nan Lr=0.0263 Dt=1.4378
+Itt 270 loss=      -nan Dloss=       nan Lr=0.0262 Dt=1.4362
+Itt 280 loss=      -nan Dloss=       nan Lr=0.0261 Dt=1.4327
+Itt 290 loss=      -nan Dloss=       nan Lr=0.0259 Dt=1.4949
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94218558690160 94218436299840
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095846525312 94095911011872
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875316083008 94875194360912
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088540502816 94088801430976
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.445131761e+32
+TF=[1.46442e+32,1.07331e+32,1.29674e+32,1.68042e+32,]
+TF=[-8.49593e+31,-7.64859e+31,-7.21618e+31,-3.18825e+31,]
+TF=[2.82437e+32,2.86275e+32,2.62153e+32,2.86213e+32,]
+TF=[1.06973e+32,1.14145e+32,4.05448e+31,1.18167e+32,]
+TF=[3.8005e+36,4.46198e+36,3.8726e+36,4.02718e+36,]
+co13=[9.73651e+31,1.9065e+32,-5.84174e+32,2.96158e+32]
+co12=[-1.24535e+32,-4.2789e+32,7.28039e+32,-1.75614e+32]
+dust=[-1.8609e+35,1.17417e+35,2.16123e+35,-1.47483e+35]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 4/10 1 
+
+==============================
+GAIN -6.03902e+31 -6.93377e+31 2.47438e+32 -1.1771e+32 
+QQ2 0
+NAN B2 PBS 0 0
+NAN D2 PBS 0 0 0
+NAN B2 PBS 1 0
+NAN D2 PBS 1 0 0
+NAN B2 PBS 2 0
+NAN D2 PBS 2 0 0
+NAN B2 PBS 3 0
+NAN D2 PBS 3 0 0
+NAN B2 PBS 4 0
+NAN D2 PBS 4 0 0
+NAN B2 PBS 5 0
+NAN D2 PBS 5 0 0
+NAN B2 PBS 6 0
+NAN D2 PBS 6 0 0
+NAN B2 PBS 7 0
+NAN D2 PBS 7 0 0
+NAN B2 PBS 8 0
+NAN D2 PBS 8 0 0
+NAN B2 PBS 9 0
+NAN D2 PBS 9 0 0
+NAN B2 PBS 10 0
+NAN D2 PBS 10 0 0
+NAN B2 PBS 11 0
+NAN D2 PBS 11 0 0
+NAN B2 PBS 12 0
+NAN D2 PBS 12 0 0
+NAN B2 PBS 13 0
+NAN D2 PBS 13 0 0
+NAN B2 PBS 14 0
+NAN D2 PBS 14 0 0
+NAN B2 PBS 15 0
+NAN D2 PBS 15 0 0
+NAN B2 PBS 16 0
+NAN D2 PBS 16 0 0
+NAN B2 PBS 17 0
+NAN D2 PBS 17 0 0
+NAN B2 PBS 18 0
+NAN D2 PBS 18 0 0
+NAN B2 PBS 19 0
+NAN D2 PBS 19 0 0
+NAN B2 PBS 20 0
+NAN D2 PBS 20 0 0
+NAN B2 PBS 21 0
+NAN D2 PBS 21 0 0
+NAN B2 PBS 22 0
+NAN D2 PBS 22 0 0
+NAN B2 PBS 23 0
+NAN D2 PBS 23 0 0
+NAN B2 PBS 24 0
+NAN D2 PBS 24 0 0
+NAN B2 PBS 25 0
+NAN D2 PBS 25 0 0
+NAN B2 PBS 26 0
+NAN D2 PBS 26 0 0
+NAN B2 PBS 27 0
+NAN D2 PBS 27 0 0
+NAN B2 PBS 28 0
+NAN D2 PBS 28 0 0
+NAN B2 PBS 29 0
+NAN D2 PBS 29 0 0
+NAN B2 PBS 30 0
+NAN D2 PBS 30 0 0
+NAN B2 PBS 31 0
+NAN D2 PBS 31 0 0
+NAN B2 PBS 32 0
+NAN D2 PBS 32 0 0
+NAN B2 PBS 33 0
+NAN D2 PBS 33 0 0
+NAN B2 PBS 34 0
+NAN D2 PBS 34 0 0
+NAN B2 PBS 35 0
+NAN D2 PBS 35 0 0
+NAN B2 PBS 36 0
+NAN D2 PBS 36 0 0
+NAN B2 PBS 37 0
+NAN D2 PBS 37 0 0
+NAN B2 PBS 38 0
+NAN D2 PBS 38 0 0
+NAN B2 PBS 39 0
+NAN D2 PBS 39 0 0
+NAN B2 PBS 40 0
+NAN D2 PBS 40 0 0
+NAN B2 PBS 41 0
+NAN D2 PBS 41 0 0
+NAN B2 PBS 42 0
+NAN D2 PBS 42 0 0
+NAN B2 PBS 43 0
+NAN D2 PBS 43 0 0
+NAN B2 PBS 44 0
+NAN D2 PBS 44 0 0
+NAN B2 PBS 45 0
+NAN D2 PBS 45 0 0
+NAN B2 PBS 46 0
+NAN D2 PBS 46 0 0
+NAN B2 PBS 47 0
+NAN D2 PBS 47 0 0
+NAN B2 PBS 48 0
+NAN D2 PBS 48 0 0
+NAN B2 PBS 49 0
+NAN D2 PBS 49 0 0
+NAN B2 PBS 50 0
+NAN D2 PBS 50 0 0
+NAN B2 PBS 51 0
+NAN D2 PBS 51 0 0
+NAN B2 PBS 52 0
+NAN D2 PBS 52 0 0
+NAN B2 PBS 53 0
+NAN D2 PBS 53 0 0
+NAN B2 PBS 54 0
+NAN D2 PBS 54 0 0
+NAN B2 PBS 55 0
+NAN D2 PBS 55 0 0
+NAN B2 PBS 56 0
+NAN D2 PBS 56 0 0
+NAN B2 PBS 57 0
+NAN D2 PBS 57 0 0
+NAN B2 PBS 58 0
+NAN D2 PBS 58 0 0
+NAN B2 PBS 59 0
+NAN D2 PBS 59 0 0
+NAN B2 PBS 60 0
+NAN D2 PBS 60 0 0
+NAN B2 PBS 61 0
+NAN D2 PBS 61 0 0
+NAN B2 PBS 62 0
+NAN D2 PBS 62 0 0
+NAN B2 PBS 63 0
+NAN D2 PBS 63 0 0
+NAN B2 PBS 64 0
+NAN D2 PBS 64 0 0
+NAN B2 PBS 65 0
+NAN D2 PBS 65 0 0
+NAN B2 PBS 66 0
+NAN D2 PBS 66 0 0
+NAN B2 PBS 67 0
+NAN D2 PBS 67 0 0
+NAN B2 PBS 68 0
+NAN D2 PBS 68 0 0
+NAN B2 PBS 69 0
+NAN D2 PBS 69 0 0
+NAN B2 PBS 70 0
+NAN D2 PBS 70 0 0
+NAN B2 PBS 71 0
+NAN D2 PBS 71 0 0
+NAN B2 PBS 72 0
+NAN D2 PBS 72 0 0
+NAN B2 PBS 73 0
+NAN D2 PBS 73 0 0
+NAN B2 PBS 74 0
+NAN D2 PBS 74 0 0
+NAN B2 PBS 75 0
+NAN D2 PBS 75 0 0
+NAN B2 PBS 76 0
+NAN D2 PBS 76 0 0
+NAN B2 PBS 77 0
+NAN D2 PBS 77 0 0
+NAN B2 PBS 78 0
+NAN D2 PBS 78 0 0
+NAN B2 PBS 79 0
+NAN D2 PBS 79 0 0
+NAN B2 PBS 80 0
+NAN D2 PBS 80 0 0
+NAN B2 PBS 81 0
+NAN D2 PBS 81 0 0
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+CG in iter = 0 (max=500)
+init shape done
+SIGMA : 0.000000 0.588205
+NPAR PER IMAGE 12288
+NPAR SIZE 1 12288
+[1,3072,1,16,],[4,1,16,16,]
+[1,12288,1,2,],[4,1,2,16,]
+NPAR PER IMAGE 4
+NPAR SIZE 4 4
+[4,128,128,5,],[5,5,5,4,]
+[4,256,256,1,],[5,5,1,5,]
+WARNING: Unrecognized loss selection. Using default RMSE loss.
+Initialized Network
+/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/py_function_pwst_pol.py:1025: RuntimeWarning: invalid value encountered in float_scalars
+  res[0]=l/myrun['regul']
+/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/py_function_pwst_pol.py:1025: RuntimeWarning: invalid value encountered in float_scalars
+  res[0]=l/myrun['regul']
+/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/py_function_pwst_pol.py:1025: RuntimeWarning: invalid value encountered in float_scalars
+  res[0]=l/myrun['regul']
+/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/py_function_pwst_pol.py:1025: RuntimeWarning: invalid value encountered in float_scalars
+  res[0]=l/myrun['regul']
+Itt 0 loss=      -nan Dloss=       nan Lr=0.0300 Dt=5.6718
+Itt 10 loss=      -nan Dloss=       nan Lr=0.0298 Dt=0.4588
+Itt 20 loss=      -nan Dloss=       nan Lr=0.0297 Dt=0.4498
+Itt 30 loss=      -nan Dloss=       nan Lr=0.0296 Dt=0.4516
+Itt 40 loss=      -nan Dloss=       nan Lr=0.0294 Dt=0.4512
+Itt 50 loss=      -nan Dloss=       nan Lr=0.0293 Dt=0.4649
+Itt 60 loss=      -nan Dloss=       nan Lr=0.0291 Dt=0.4592
+Itt 70 loss=      -nan Dloss=       nan Lr=0.0290 Dt=0.4499
+Itt 80 loss=      -nan Dloss=       nan Lr=0.0288 Dt=0.4833
+Itt 90 loss=      -nan Dloss=       nan Lr=0.0287 Dt=0.4754
+Itt 100 loss=      -nan Dloss=       nan Lr=0.0285 Dt=0.4651
+Itt 110 loss=      -nan Dloss=       nan Lr=0.0284 Dt=0.4585
+Itt 120 loss=      -nan Dloss=       nan Lr=0.0282 Dt=0.4548
+Itt 130 loss=      -nan Dloss=       nan Lr=0.0281 Dt=0.4407
+Itt 140 loss=      -nan Dloss=       nan Lr=0.0280 Dt=0.4417
+Itt 150 loss=      -nan Dloss=       nan Lr=0.0278 Dt=0.4508
+Itt 160 loss=      -nan Dloss=       nan Lr=0.0277 Dt=0.4625
+Itt 170 loss=      -nan Dloss=       nan Lr=0.0275 Dt=0.4722
+Itt 180 loss=      -nan Dloss=       nan Lr=0.0274 Dt=0.4560
+Itt 190 loss=      -nan Dloss=       nan Lr=0.0273 Dt=0.4534
+Itt 200 loss=      -nan Dloss=       nan Lr=0.0271 Dt=0.4499
+Itt 210 loss=      -nan Dloss=       nan Lr=0.0270 Dt=0.4723
+Itt 220 loss=      -nan Dloss=       nan Lr=0.0269 Dt=0.4746
+Itt 230 loss=      -nan Dloss=       nan Lr=0.0267 Dt=0.4609
+Itt 240 loss=      -nan Dloss=       nan Lr=0.0266 Dt=0.4995
+Itt 250 loss=      -nan Dloss=       nan Lr=0.0265 Dt=0.4666
+Itt 260 loss=      -nan Dloss=       nan Lr=0.0263 Dt=0.4597
+Itt 270 loss=      -nan Dloss=       nan Lr=0.0262 Dt=0.4645
+Itt 280 loss=      -nan Dloss=       nan Lr=0.0261 Dt=0.4607
+Itt 290 loss=      -nan Dloss=       nan Lr=0.0259 Dt=0.4450
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94218491257344 94218500257728
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095603160640 94095619410992
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875469262400 94875303002512
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088987450128 94088982988640
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.445131761e+32
+TF=[1.46442e+32,1.07331e+32,1.29674e+32,1.68042e+32,]
+TF=[-8.49593e+31,-7.64859e+31,-7.21618e+31,-3.18825e+31,]
+TF=[2.82437e+32,2.86275e+32,2.62153e+32,2.86213e+32,]
+TF=[1.06973e+32,1.14145e+32,4.05448e+31,1.18167e+32,]
+TF=[3.8005e+36,4.46198e+36,3.8726e+36,4.02718e+36,]
+co13=[9.73651e+31,1.9065e+32,-5.84174e+32,2.96158e+32]
+co12=[-1.24535e+32,-4.2789e+32,7.28039e+32,-1.75614e+32]
+dust=[-1.8609e+35,1.17417e+35,2.16123e+35,-1.47483e+35]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 5/10 1 
+
+==============================
+GAIN -1.2078e+32 -1.38675e+32 4.94877e+32 -2.35421e+32 
+QQ2 0
+NAN B2 PBS 0 0
+NAN D2 PBS 0 0 0
+NAN B2 PBS 1 0
+NAN D2 PBS 1 0 0
+NAN B2 PBS 2 0
+NAN D2 PBS 2 0 0
+NAN B2 PBS 3 0
+NAN D2 PBS 3 0 0
+NAN B2 PBS 4 0
+NAN D2 PBS 4 0 0
+NAN B2 PBS 5 0
+NAN D2 PBS 5 0 0
+NAN B2 PBS 6 0
+NAN D2 PBS 6 0 0
+NAN B2 PBS 7 0
+NAN D2 PBS 7 0 0
+NAN B2 PBS 8 0
+NAN D2 PBS 8 0 0
+NAN B2 PBS 9 0
+NAN D2 PBS 9 0 0
+NAN B2 PBS 10 0
+NAN D2 PBS 10 0 0
+NAN B2 PBS 11 0
+NAN D2 PBS 11 0 0
+NAN B2 PBS 12 0
+NAN D2 PBS 12 0 0
+NAN B2 PBS 13 0
+NAN D2 PBS 13 0 0
+NAN B2 PBS 14 0
+NAN D2 PBS 14 0 0
+NAN B2 PBS 15 0
+NAN D2 PBS 15 0 0
+NAN B2 PBS 16 0
+NAN D2 PBS 16 0 0
+NAN B2 PBS 17 0
+NAN D2 PBS 17 0 0
+NAN B2 PBS 18 0
+NAN D2 PBS 18 0 0
+NAN B2 PBS 19 0
+NAN D2 PBS 19 0 0
+NAN B2 PBS 20 0
+NAN D2 PBS 20 0 0
+NAN B2 PBS 21 0
+NAN D2 PBS 21 0 0
+NAN B2 PBS 22 0
+NAN D2 PBS 22 0 0
+NAN B2 PBS 23 0
+NAN D2 PBS 23 0 0
+NAN B2 PBS 24 0
+NAN D2 PBS 24 0 0
+NAN B2 PBS 25 0
+NAN D2 PBS 25 0 0
+NAN B2 PBS 26 0
+NAN D2 PBS 26 0 0
+NAN B2 PBS 27 0
+NAN D2 PBS 27 0 0
+NAN B2 PBS 28 0
+NAN D2 PBS 28 0 0
+NAN B2 PBS 29 0
+NAN D2 PBS 29 0 0
+NAN B2 PBS 30 0
+NAN D2 PBS 30 0 0
+NAN B2 PBS 31 0
+NAN D2 PBS 31 0 0
+NAN B2 PBS 32 0
+NAN D2 PBS 32 0 0
+NAN B2 PBS 33 0
+NAN D2 PBS 33 0 0
+NAN B2 PBS 34 0
+NAN D2 PBS 34 0 0
+NAN B2 PBS 35 0
+NAN D2 PBS 35 0 0
+NAN B2 PBS 36 0
+NAN D2 PBS 36 0 0
+NAN B2 PBS 37 0
+NAN D2 PBS 37 0 0
+NAN B2 PBS 38 0
+NAN D2 PBS 38 0 0
+NAN B2 PBS 39 0
+NAN D2 PBS 39 0 0
+NAN B2 PBS 40 0
+NAN D2 PBS 40 0 0
+NAN B2 PBS 41 0
+NAN D2 PBS 41 0 0
+NAN B2 PBS 42 0
+NAN D2 PBS 42 0 0
+NAN B2 PBS 43 0
+NAN D2 PBS 43 0 0
+NAN B2 PBS 44 0
+NAN D2 PBS 44 0 0
+NAN B2 PBS 45 0
+NAN D2 PBS 45 0 0
+NAN B2 PBS 46 0
+NAN D2 PBS 46 0 0
+NAN B2 PBS 47 0
+NAN D2 PBS 47 0 0
+NAN B2 PBS 48 0
+NAN D2 PBS 48 0 0
+NAN B2 PBS 49 0
+NAN D2 PBS 49 0 0
+NAN B2 PBS 50 0
+NAN D2 PBS 50 0 0
+NAN B2 PBS 51 0
+NAN D2 PBS 51 0 0
+NAN B2 PBS 52 0
+NAN D2 PBS 52 0 0
+NAN B2 PBS 53 0
+NAN D2 PBS 53 0 0
+NAN B2 PBS 54 0
+NAN D2 PBS 54 0 0
+NAN B2 PBS 55 0
+NAN D2 PBS 55 0 0
+NAN B2 PBS 56 0
+NAN D2 PBS 56 0 0
+NAN B2 PBS 57 0
+NAN D2 PBS 57 0 0
+NAN B2 PBS 58 0
+NAN D2 PBS 58 0 0
+NAN B2 PBS 59 0
+NAN D2 PBS 59 0 0
+NAN B2 PBS 60 0
+NAN D2 PBS 60 0 0
+NAN B2 PBS 61 0
+NAN D2 PBS 61 0 0
+NAN B2 PBS 62 0
+NAN D2 PBS 62 0 0
+NAN B2 PBS 63 0
+NAN D2 PBS 63 0 0
+NAN B2 PBS 64 0
+NAN D2 PBS 64 0 0
+NAN B2 PBS 65 0
+NAN D2 PBS 65 0 0
+NAN B2 PBS 66 0
+NAN D2 PBS 66 0 0
+NAN B2 PBS 67 0
+NAN D2 PBS 67 0 0
+NAN B2 PBS 68 0
+NAN D2 PBS 68 0 0
+NAN B2 PBS 69 0
+NAN D2 PBS 69 0 0
+NAN B2 PBS 70 0
+NAN D2 PBS 70 0 0
+NAN B2 PBS 71 0
+NAN D2 PBS 71 0 0
+NAN B2 PBS 72 0
+NAN D2 PBS 72 0 0
+NAN B2 PBS 73 0
+NAN D2 PBS 73 0 0
+NAN B2 PBS 74 0
+NAN D2 PBS 74 0 0
+NAN B2 PBS 75 0
+NAN D2 PBS 75 0 0
+NAN B2 PBS 76 0
+NAN D2 PBS 76 0 0
+NAN B2 PBS 77 0
+NAN D2 PBS 77 0 0
+NAN B2 PBS 78 0
+NAN D2 PBS 78 0 0
+NAN B2 PBS 79 0
+NAN D2 PBS 79 0 0
+NAN B2 PBS 80 0
+NAN D2 PBS 80 0 0
+NAN B2 PBS 81 0
+NAN D2 PBS 81 0 0
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+CG in iter = 0 (max=500)
+init shape done
+SIGMA : 0.000000 0.588205
+NPAR PER IMAGE 12288
+NPAR SIZE 1 12288
+[1,3072,1,16,],[4,1,16,16,]
+[1,12288,1,2,],[4,1,2,16,]
+NPAR PER IMAGE 4
+NPAR SIZE 4 4
+[4,128,128,5,],[5,5,5,4,]
+[4,256,256,1,],[5,5,1,5,]
+WARNING: Unrecognized loss selection. Using default RMSE loss.
+Initialized Network
+Itt 0 loss=      -nan Dloss=       nan Lr=0.0300 Dt=5.7301
+Itt 10 loss=      -nan Dloss=       nan Lr=0.0298 Dt=0.4592
+Itt 20 loss=      -nan Dloss=       nan Lr=0.0297 Dt=0.4561
+Itt 30 loss=      -nan Dloss=       nan Lr=0.0296 Dt=0.4440
+Itt 40 loss=      -nan Dloss=       nan Lr=0.0294 Dt=0.4703
+Itt 50 loss=      -nan Dloss=       nan Lr=0.0293 Dt=0.4712
+Itt 60 loss=      -nan Dloss=       nan Lr=0.0291 Dt=0.4438
+Itt 70 loss=      -nan Dloss=       nan Lr=0.0290 Dt=0.4436
+Itt 80 loss=      -nan Dloss=       nan Lr=0.0288 Dt=0.4441
+Itt 90 loss=      -nan Dloss=       nan Lr=0.0287 Dt=0.4565
+Itt 100 loss=      -nan Dloss=       nan Lr=0.0285 Dt=0.4568
+Itt 110 loss=      -nan Dloss=       nan Lr=0.0284 Dt=0.4621
+Itt 120 loss=      -nan Dloss=       nan Lr=0.0282 Dt=0.4501
+Itt 130 loss=      -nan Dloss=       nan Lr=0.0281 Dt=0.4426
+Itt 140 loss=      -nan Dloss=       nan Lr=0.0280 Dt=0.4705
+Itt 150 loss=      -nan Dloss=       nan Lr=0.0278 Dt=0.4572
+Itt 160 loss=      -nan Dloss=       nan Lr=0.0277 Dt=0.4550
+Itt 170 loss=      -nan Dloss=       nan Lr=0.0275 Dt=0.4485
+Itt 180 loss=      -nan Dloss=       nan Lr=0.0274 Dt=0.4801
+Itt 190 loss=      -nan Dloss=       nan Lr=0.0273 Dt=0.4628
+Itt 200 loss=      -nan Dloss=       nan Lr=0.0271 Dt=0.4570
+Itt 210 loss=      -nan Dloss=       nan Lr=0.0270 Dt=0.4553
+Itt 220 loss=      -nan Dloss=       nan Lr=0.0269 Dt=0.4478
+Itt 230 loss=      -nan Dloss=       nan Lr=0.0267 Dt=0.4499
+Itt 240 loss=      -nan Dloss=       nan Lr=0.0266 Dt=0.4653
+Itt 250 loss=      -nan Dloss=       nan Lr=0.0265 Dt=0.4525
+Itt 260 loss=      -nan Dloss=       nan Lr=0.0263 Dt=0.4568
+Itt 270 loss=      -nan Dloss=       nan Lr=0.0262 Dt=0.4701
+Itt 280 loss=      -nan Dloss=       nan Lr=0.0261 Dt=0.4528
+Itt 290 loss=      -nan Dloss=       nan Lr=0.0259 Dt=0.4540
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088875793936 94088896434704
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095847211632 94095844833200
+Invert FIT_ADU MATRIX bolo=0 proc=0 94218895560544 94218766366896
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875427968336 94875454028736
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.445131761e+32
+TF=[1.46442e+32,1.07331e+32,1.29674e+32,1.68042e+32,]
+TF=[-8.49593e+31,-7.64859e+31,-7.21618e+31,-3.18825e+31,]
+TF=[2.82437e+32,2.86275e+32,2.62153e+32,2.86213e+32,]
+TF=[1.06973e+32,1.14145e+32,4.05448e+31,1.18167e+32,]
+TF=[3.8005e+36,4.46198e+36,3.8726e+36,4.02718e+36,]
+co13=[9.73651e+31,1.9065e+32,-5.84174e+32,2.96158e+32]
+co12=[-1.24535e+32,-4.2789e+32,7.28039e+32,-1.75614e+32]
+dust=[-1.8609e+35,1.17417e+35,2.16123e+35,-1.47483e+35]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 6/10 1 
+
+==============================
+GAIN -1.81171e+32 -2.08013e+32 7.42315e+32 -3.53131e+32 
+QQ2 0
+NAN B2 PBS 0 0
+NAN D2 PBS 0 0 0
+NAN B2 PBS 1 0
+NAN D2 PBS 1 0 0
+NAN B2 PBS 2 0
+NAN D2 PBS 2 0 0
+NAN B2 PBS 3 0
+NAN D2 PBS 3 0 0
+NAN B2 PBS 4 0
+NAN D2 PBS 4 0 0
+NAN B2 PBS 5 0
+NAN D2 PBS 5 0 0
+NAN B2 PBS 6 0
+NAN D2 PBS 6 0 0
+NAN B2 PBS 7 0
+NAN D2 PBS 7 0 0
+NAN B2 PBS 8 0
+NAN D2 PBS 8 0 0
+NAN B2 PBS 9 0
+NAN D2 PBS 9 0 0
+NAN B2 PBS 10 0
+NAN D2 PBS 10 0 0
+NAN B2 PBS 11 0
+NAN D2 PBS 11 0 0
+NAN B2 PBS 12 0
+NAN D2 PBS 12 0 0
+NAN B2 PBS 13 0
+NAN D2 PBS 13 0 0
+NAN B2 PBS 14 0
+NAN D2 PBS 14 0 0
+NAN B2 PBS 15 0
+NAN D2 PBS 15 0 0
+NAN B2 PBS 16 0
+NAN D2 PBS 16 0 0
+NAN B2 PBS 17 0
+NAN D2 PBS 17 0 0
+NAN B2 PBS 18 0
+NAN D2 PBS 18 0 0
+NAN B2 PBS 19 0
+NAN D2 PBS 19 0 0
+NAN B2 PBS 20 0
+NAN D2 PBS 20 0 0
+NAN B2 PBS 21 0
+NAN D2 PBS 21 0 0
+NAN B2 PBS 22 0
+NAN D2 PBS 22 0 0
+NAN B2 PBS 23 0
+NAN D2 PBS 23 0 0
+NAN B2 PBS 24 0
+NAN D2 PBS 24 0 0
+NAN B2 PBS 25 0
+NAN D2 PBS 25 0 0
+NAN B2 PBS 26 0
+NAN D2 PBS 26 0 0
+NAN B2 PBS 27 0
+NAN D2 PBS 27 0 0
+NAN B2 PBS 28 0
+NAN D2 PBS 28 0 0
+NAN B2 PBS 29 0
+NAN D2 PBS 29 0 0
+NAN B2 PBS 30 0
+NAN D2 PBS 30 0 0
+NAN B2 PBS 31 0
+NAN D2 PBS 31 0 0
+NAN B2 PBS 32 0
+NAN D2 PBS 32 0 0
+NAN B2 PBS 33 0
+NAN D2 PBS 33 0 0
+NAN B2 PBS 34 0
+NAN D2 PBS 34 0 0
+NAN B2 PBS 35 0
+NAN D2 PBS 35 0 0
+NAN B2 PBS 36 0
+NAN D2 PBS 36 0 0
+NAN B2 PBS 37 0
+NAN D2 PBS 37 0 0
+NAN B2 PBS 38 0
+NAN D2 PBS 38 0 0
+NAN B2 PBS 39 0
+NAN D2 PBS 39 0 0
+NAN B2 PBS 40 0
+NAN D2 PBS 40 0 0
+NAN B2 PBS 41 0
+NAN D2 PBS 41 0 0
+NAN B2 PBS 42 0
+NAN D2 PBS 42 0 0
+NAN B2 PBS 43 0
+NAN D2 PBS 43 0 0
+NAN B2 PBS 44 0
+NAN D2 PBS 44 0 0
+NAN B2 PBS 45 0
+NAN D2 PBS 45 0 0
+NAN B2 PBS 46 0
+NAN D2 PBS 46 0 0
+NAN B2 PBS 47 0
+NAN D2 PBS 47 0 0
+NAN B2 PBS 48 0
+NAN D2 PBS 48 0 0
+NAN B2 PBS 49 0
+NAN D2 PBS 49 0 0
+NAN B2 PBS 50 0
+NAN D2 PBS 50 0 0
+NAN B2 PBS 51 0
+NAN D2 PBS 51 0 0
+NAN B2 PBS 52 0
+NAN D2 PBS 52 0 0
+NAN B2 PBS 53 0
+NAN D2 PBS 53 0 0
+NAN B2 PBS 54 0
+NAN D2 PBS 54 0 0
+NAN B2 PBS 55 0
+NAN D2 PBS 55 0 0
+NAN B2 PBS 56 0
+NAN D2 PBS 56 0 0
+NAN B2 PBS 57 0
+NAN D2 PBS 57 0 0
+NAN B2 PBS 58 0
+NAN D2 PBS 58 0 0
+NAN B2 PBS 59 0
+NAN D2 PBS 59 0 0
+NAN B2 PBS 60 0
+NAN D2 PBS 60 0 0
+NAN B2 PBS 61 0
+NAN D2 PBS 61 0 0
+NAN B2 PBS 62 0
+NAN D2 PBS 62 0 0
+NAN B2 PBS 63 0
+NAN D2 PBS 63 0 0
+NAN B2 PBS 64 0
+NAN D2 PBS 64 0 0
+NAN B2 PBS 65 0
+NAN D2 PBS 65 0 0
+NAN B2 PBS 66 0
+NAN D2 PBS 66 0 0
+NAN B2 PBS 67 0
+NAN D2 PBS 67 0 0
+NAN B2 PBS 68 0
+NAN D2 PBS 68 0 0
+NAN B2 PBS 69 0
+NAN D2 PBS 69 0 0
+NAN B2 PBS 70 0
+NAN D2 PBS 70 0 0
+NAN B2 PBS 71 0
+NAN D2 PBS 71 0 0
+NAN B2 PBS 72 0
+NAN D2 PBS 72 0 0
+NAN B2 PBS 73 0
+NAN D2 PBS 73 0 0
+NAN B2 PBS 74 0
+NAN D2 PBS 74 0 0
+NAN B2 PBS 75 0
+NAN D2 PBS 75 0 0
+NAN B2 PBS 76 0
+NAN D2 PBS 76 0 0
+NAN B2 PBS 77 0
+NAN D2 PBS 77 0 0
+NAN B2 PBS 78 0
+NAN D2 PBS 78 0 0
+NAN B2 PBS 79 0
+NAN D2 PBS 79 0 0
+NAN B2 PBS 80 0
+NAN D2 PBS 80 0 0
+NAN B2 PBS 81 0
+NAN D2 PBS 81 0 0
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+CG in iter = 0 (max=500)
+init shape done
+SIGMA : 0.000000 0.588205
+NPAR PER IMAGE 12288
+NPAR SIZE 1 12288
+[1,3072,1,16,],[4,1,16,16,]
+[1,12288,1,2,],[4,1,2,16,]
+NPAR PER IMAGE 4
+NPAR SIZE 4 4
+[4,128,128,5,],[5,5,5,4,]
+[4,256,256,1,],[5,5,1,5,]
+WARNING: Unrecognized loss selection. Using default RMSE loss.
+Initialized Network
+Itt 0 loss=      -nan Dloss=       nan Lr=0.0300 Dt=5.7871
+Itt 10 loss=      -nan Dloss=       nan Lr=0.0298 Dt=0.4745
+Itt 20 loss=      -nan Dloss=       nan Lr=0.0297 Dt=0.4758
+Itt 30 loss=      -nan Dloss=       nan Lr=0.0296 Dt=0.4772
+Itt 40 loss=      -nan Dloss=       nan Lr=0.0294 Dt=0.4647
+Itt 50 loss=      -nan Dloss=       nan Lr=0.0293 Dt=0.4752
+Itt 60 loss=      -nan Dloss=       nan Lr=0.0291 Dt=0.4398
+Itt 70 loss=      -nan Dloss=       nan Lr=0.0290 Dt=0.5500
+Itt 80 loss=      -nan Dloss=       nan Lr=0.0288 Dt=0.4682
+Itt 90 loss=      -nan Dloss=       nan Lr=0.0287 Dt=0.4337
+Itt 100 loss=      -nan Dloss=       nan Lr=0.0285 Dt=0.4780
+Itt 110 loss=      -nan Dloss=       nan Lr=0.0284 Dt=0.4431
+Itt 120 loss=      -nan Dloss=       nan Lr=0.0282 Dt=0.4626
+Itt 130 loss=      -nan Dloss=       nan Lr=0.0281 Dt=0.5023
+Itt 140 loss=      -nan Dloss=       nan Lr=0.0280 Dt=0.4594
+Itt 150 loss=      -nan Dloss=       nan Lr=0.0278 Dt=0.4444
+Itt 160 loss=      -nan Dloss=       nan Lr=0.0277 Dt=0.4391
+Itt 170 loss=      -nan Dloss=       nan Lr=0.0275 Dt=0.4578
+Itt 180 loss=      -nan Dloss=       nan Lr=0.0274 Dt=0.4500
+Itt 190 loss=      -nan Dloss=       nan Lr=0.0273 Dt=0.4681
+Itt 200 loss=      -nan Dloss=       nan Lr=0.0271 Dt=0.4803
+Itt 210 loss=      -nan Dloss=       nan Lr=0.0270 Dt=0.4469
+Itt 220 loss=      -nan Dloss=       nan Lr=0.0269 Dt=0.4424
+Itt 230 loss=      -nan Dloss=       nan Lr=0.0267 Dt=0.4552
+Itt 240 loss=      -nan Dloss=       nan Lr=0.0266 Dt=0.4528
+Itt 250 loss=      -nan Dloss=       nan Lr=0.0265 Dt=0.4464
+Itt 260 loss=      -nan Dloss=       nan Lr=0.0263 Dt=0.4539
+Itt 270 loss=      -nan Dloss=       nan Lr=0.0262 Dt=0.4430
+Itt 280 loss=      -nan Dloss=       nan Lr=0.0261 Dt=0.4540
+Itt 290 loss=      -nan Dloss=       nan Lr=0.0259 Dt=0.4449
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088984479424 94088849004496
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095731791504 94096162832656
+Invert FIT_ADU MATRIX bolo=0 proc=0 94218989615552 94218748246000
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875451975120 94875408761856
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.445131761e+32
+TF=[1.46442e+32,1.07331e+32,1.29674e+32,1.68042e+32,]
+TF=[-8.49593e+31,-7.64859e+31,-7.21618e+31,-3.18825e+31,]
+TF=[2.82437e+32,2.86275e+32,2.62153e+32,2.86213e+32,]
+TF=[1.06973e+32,1.14145e+32,4.05448e+31,1.18167e+32,]
+TF=[3.8005e+36,4.46198e+36,3.8726e+36,4.02718e+36,]
+co13=[9.73651e+31,1.9065e+32,-5.84174e+32,2.96158e+32]
+co12=[-1.24535e+32,-4.2789e+32,7.28039e+32,-1.75614e+32]
+dust=[-1.8609e+35,1.17417e+35,2.16123e+35,-1.47483e+35]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 7/10 1 
+
+==============================
+GAIN -2.41561e+32 -2.77351e+32 9.89754e+32 -4.70842e+32 
+QQ2 0
+NAN B2 PBS 0 0
+NAN D2 PBS 0 0 0
+NAN B2 PBS 1 0
+NAN D2 PBS 1 0 0
+NAN B2 PBS 2 0
+NAN D2 PBS 2 0 0
+NAN B2 PBS 3 0
+NAN D2 PBS 3 0 0
+NAN B2 PBS 4 0
+NAN D2 PBS 4 0 0
+NAN B2 PBS 5 0
+NAN D2 PBS 5 0 0
+NAN B2 PBS 6 0
+NAN D2 PBS 6 0 0
+NAN B2 PBS 7 0
+NAN D2 PBS 7 0 0
+NAN B2 PBS 8 0
+NAN D2 PBS 8 0 0
+NAN B2 PBS 9 0
+NAN D2 PBS 9 0 0
+NAN B2 PBS 10 0
+NAN D2 PBS 10 0 0
+NAN B2 PBS 11 0
+NAN D2 PBS 11 0 0
+NAN B2 PBS 12 0
+NAN D2 PBS 12 0 0
+NAN B2 PBS 13 0
+NAN D2 PBS 13 0 0
+NAN B2 PBS 14 0
+NAN D2 PBS 14 0 0
+NAN B2 PBS 15 0
+NAN D2 PBS 15 0 0
+NAN B2 PBS 16 0
+NAN D2 PBS 16 0 0
+NAN B2 PBS 17 0
+NAN D2 PBS 17 0 0
+NAN B2 PBS 18 0
+NAN D2 PBS 18 0 0
+NAN B2 PBS 19 0
+NAN D2 PBS 19 0 0
+NAN B2 PBS 20 0
+NAN D2 PBS 20 0 0
+NAN B2 PBS 21 0
+NAN D2 PBS 21 0 0
+NAN B2 PBS 22 0
+NAN D2 PBS 22 0 0
+NAN B2 PBS 23 0
+NAN D2 PBS 23 0 0
+NAN B2 PBS 24 0
+NAN D2 PBS 24 0 0
+NAN B2 PBS 25 0
+NAN D2 PBS 25 0 0
+NAN B2 PBS 26 0
+NAN D2 PBS 26 0 0
+NAN B2 PBS 27 0
+NAN D2 PBS 27 0 0
+NAN B2 PBS 28 0
+NAN D2 PBS 28 0 0
+NAN B2 PBS 29 0
+NAN D2 PBS 29 0 0
+NAN B2 PBS 30 0
+NAN D2 PBS 30 0 0
+NAN B2 PBS 31 0
+NAN D2 PBS 31 0 0
+NAN B2 PBS 32 0
+NAN D2 PBS 32 0 0
+NAN B2 PBS 33 0
+NAN D2 PBS 33 0 0
+NAN B2 PBS 34 0
+NAN D2 PBS 34 0 0
+NAN B2 PBS 35 0
+NAN D2 PBS 35 0 0
+NAN B2 PBS 36 0
+NAN D2 PBS 36 0 0
+NAN B2 PBS 37 0
+NAN D2 PBS 37 0 0
+NAN B2 PBS 38 0
+NAN D2 PBS 38 0 0
+NAN B2 PBS 39 0
+NAN D2 PBS 39 0 0
+NAN B2 PBS 40 0
+NAN D2 PBS 40 0 0
+NAN B2 PBS 41 0
+NAN D2 PBS 41 0 0
+NAN B2 PBS 42 0
+NAN D2 PBS 42 0 0
+NAN B2 PBS 43 0
+NAN D2 PBS 43 0 0
+NAN B2 PBS 44 0
+NAN D2 PBS 44 0 0
+NAN B2 PBS 45 0
+NAN D2 PBS 45 0 0
+NAN B2 PBS 46 0
+NAN D2 PBS 46 0 0
+NAN B2 PBS 47 0
+NAN D2 PBS 47 0 0
+NAN B2 PBS 48 0
+NAN D2 PBS 48 0 0
+NAN B2 PBS 49 0
+NAN D2 PBS 49 0 0
+NAN B2 PBS 50 0
+NAN D2 PBS 50 0 0
+NAN B2 PBS 51 0
+NAN D2 PBS 51 0 0
+NAN B2 PBS 52 0
+NAN D2 PBS 52 0 0
+NAN B2 PBS 53 0
+NAN D2 PBS 53 0 0
+NAN B2 PBS 54 0
+NAN D2 PBS 54 0 0
+NAN B2 PBS 55 0
+NAN D2 PBS 55 0 0
+NAN B2 PBS 56 0
+NAN D2 PBS 56 0 0
+NAN B2 PBS 57 0
+NAN D2 PBS 57 0 0
+NAN B2 PBS 58 0
+NAN D2 PBS 58 0 0
+NAN B2 PBS 59 0
+NAN D2 PBS 59 0 0
+NAN B2 PBS 60 0
+NAN D2 PBS 60 0 0
+NAN B2 PBS 61 0
+NAN D2 PBS 61 0 0
+NAN B2 PBS 62 0
+NAN D2 PBS 62 0 0
+NAN B2 PBS 63 0
+NAN D2 PBS 63 0 0
+NAN B2 PBS 64 0
+NAN D2 PBS 64 0 0
+NAN B2 PBS 65 0
+NAN D2 PBS 65 0 0
+NAN B2 PBS 66 0
+NAN D2 PBS 66 0 0
+NAN B2 PBS 67 0
+NAN D2 PBS 67 0 0
+NAN B2 PBS 68 0
+NAN D2 PBS 68 0 0
+NAN B2 PBS 69 0
+NAN D2 PBS 69 0 0
+NAN B2 PBS 70 0
+NAN D2 PBS 70 0 0
+NAN B2 PBS 71 0
+NAN D2 PBS 71 0 0
+NAN B2 PBS 72 0
+NAN D2 PBS 72 0 0
+NAN B2 PBS 73 0
+NAN D2 PBS 73 0 0
+NAN B2 PBS 74 0
+NAN D2 PBS 74 0 0
+NAN B2 PBS 75 0
+NAN D2 PBS 75 0 0
+NAN B2 PBS 76 0
+NAN D2 PBS 76 0 0
+NAN B2 PBS 77 0
+NAN D2 PBS 77 0 0
+NAN B2 PBS 78 0
+NAN D2 PBS 78 0 0
+NAN B2 PBS 79 0
+NAN D2 PBS 79 0 0
+NAN B2 PBS 80 0
+NAN D2 PBS 80 0 0
+NAN B2 PBS 81 0
+NAN D2 PBS 81 0 0
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+CG in iter = 0 (max=500)
+init shape done
+SIGMA : 0.000000 0.588205
+NPAR PER IMAGE 12288
+NPAR SIZE 1 12288
+[1,3072,1,16,],[4,1,16,16,]
+[1,12288,1,2,],[4,1,2,16,]
+NPAR PER IMAGE 4
+NPAR SIZE 4 4
+[4,128,128,5,],[5,5,5,4,]
+[4,256,256,1,],[5,5,1,5,]
+WARNING: Unrecognized loss selection. Using default RMSE loss.
+Initialized Network
+Itt 0 loss=      -nan Dloss=       nan Lr=0.0300 Dt=5.8925
+Itt 10 loss=      -nan Dloss=       nan Lr=0.0298 Dt=0.4656
+Itt 20 loss=      -nan Dloss=       nan Lr=0.0297 Dt=0.4885
+Itt 30 loss=      -nan Dloss=       nan Lr=0.0296 Dt=0.4580
+Itt 40 loss=      -nan Dloss=       nan Lr=0.0294 Dt=0.4397
+Itt 50 loss=      -nan Dloss=       nan Lr=0.0293 Dt=0.4404
+Itt 60 loss=      -nan Dloss=       nan Lr=0.0291 Dt=0.4564
+Itt 70 loss=      -nan Dloss=       nan Lr=0.0290 Dt=0.4634
+Itt 80 loss=      -nan Dloss=       nan Lr=0.0288 Dt=0.4578
+Itt 90 loss=      -nan Dloss=       nan Lr=0.0287 Dt=0.4565
+Itt 100 loss=      -nan Dloss=       nan Lr=0.0285 Dt=0.4651
+Itt 110 loss=      -nan Dloss=       nan Lr=0.0284 Dt=0.4448
+Itt 120 loss=      -nan Dloss=       nan Lr=0.0282 Dt=0.4590
+Itt 130 loss=      -nan Dloss=       nan Lr=0.0281 Dt=0.4422
+Itt 140 loss=      -nan Dloss=       nan Lr=0.0280 Dt=0.4685
+Itt 150 loss=      -nan Dloss=       nan Lr=0.0278 Dt=0.4394
+Itt 160 loss=      -nan Dloss=       nan Lr=0.0277 Dt=0.4674
+Itt 170 loss=      -nan Dloss=       nan Lr=0.0275 Dt=0.4520
+Itt 180 loss=      -nan Dloss=       nan Lr=0.0274 Dt=0.4470
+Itt 190 loss=      -nan Dloss=       nan Lr=0.0273 Dt=0.4415
+Itt 200 loss=      -nan Dloss=       nan Lr=0.0271 Dt=0.4729
+Itt 210 loss=      -nan Dloss=       nan Lr=0.0270 Dt=0.4494
+Itt 220 loss=      -nan Dloss=       nan Lr=0.0269 Dt=0.4507
+Itt 230 loss=      -nan Dloss=       nan Lr=0.0267 Dt=0.4519
+Itt 240 loss=      -nan Dloss=       nan Lr=0.0266 Dt=0.4477
+Itt 250 loss=      -nan Dloss=       nan Lr=0.0265 Dt=0.4539
+Itt 260 loss=      -nan Dloss=       nan Lr=0.0263 Dt=0.4412
+Itt 270 loss=      -nan Dloss=       nan Lr=0.0262 Dt=0.4694
+Itt 280 loss=      -nan Dloss=       nan Lr=0.0261 Dt=0.4776
+Itt 290 loss=      -nan Dloss=       nan Lr=0.0259 Dt=0.4563
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875805894896 94875795173120
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088850819664 94088702690800
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095724696288 94096169470528
+Invert FIT_ADU MATRIX bolo=0 proc=0 94219012882592 94219048646976
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.445131761e+32
+TF=[1.46442e+32,1.07331e+32,1.29674e+32,1.68042e+32,]
+TF=[-8.49593e+31,-7.64859e+31,-7.21618e+31,-3.18825e+31,]
+TF=[2.82437e+32,2.86275e+32,2.62153e+32,2.86213e+32,]
+TF=[1.06973e+32,1.14145e+32,4.05448e+31,1.18167e+32,]
+TF=[3.8005e+36,4.46198e+36,3.8726e+36,4.02718e+36,]
+co13=[9.73651e+31,1.9065e+32,-5.84174e+32,2.96158e+32]
+co12=[-1.24535e+32,-4.2789e+32,7.28039e+32,-1.75614e+32]
+dust=[-1.8609e+35,1.17417e+35,2.16123e+35,-1.47483e+35]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 8/10 1 
+
+==============================
+GAIN -3.01951e+32 -3.46689e+32 1.23719e+33 -5.88552e+32 
+QQ2 0
+NAN B2 PBS 0 0
+NAN D2 PBS 0 0 0
+NAN B2 PBS 1 0
+NAN D2 PBS 1 0 0
+NAN B2 PBS 2 0
+NAN D2 PBS 2 0 0
+NAN B2 PBS 3 0
+NAN D2 PBS 3 0 0
+NAN B2 PBS 4 0
+NAN D2 PBS 4 0 0
+NAN B2 PBS 5 0
+NAN D2 PBS 5 0 0
+NAN B2 PBS 6 0
+NAN D2 PBS 6 0 0
+NAN B2 PBS 7 0
+NAN D2 PBS 7 0 0
+NAN B2 PBS 8 0
+NAN D2 PBS 8 0 0
+NAN B2 PBS 9 0
+NAN D2 PBS 9 0 0
+NAN B2 PBS 10 0
+NAN D2 PBS 10 0 0
+NAN B2 PBS 11 0
+NAN D2 PBS 11 0 0
+NAN B2 PBS 12 0
+NAN D2 PBS 12 0 0
+NAN B2 PBS 13 0
+NAN D2 PBS 13 0 0
+NAN B2 PBS 14 0
+NAN D2 PBS 14 0 0
+NAN B2 PBS 15 0
+NAN D2 PBS 15 0 0
+NAN B2 PBS 16 0
+NAN D2 PBS 16 0 0
+NAN B2 PBS 17 0
+NAN D2 PBS 17 0 0
+NAN B2 PBS 18 0
+NAN D2 PBS 18 0 0
+NAN B2 PBS 19 0
+NAN D2 PBS 19 0 0
+NAN B2 PBS 20 0
+NAN D2 PBS 20 0 0
+NAN B2 PBS 21 0
+NAN D2 PBS 21 0 0
+NAN B2 PBS 22 0
+NAN D2 PBS 22 0 0
+NAN B2 PBS 23 0
+NAN D2 PBS 23 0 0
+NAN B2 PBS 24 0
+NAN D2 PBS 24 0 0
+NAN B2 PBS 25 0
+NAN D2 PBS 25 0 0
+NAN B2 PBS 26 0
+NAN D2 PBS 26 0 0
+NAN B2 PBS 27 0
+NAN D2 PBS 27 0 0
+NAN B2 PBS 28 0
+NAN D2 PBS 28 0 0
+NAN B2 PBS 29 0
+NAN D2 PBS 29 0 0
+NAN B2 PBS 30 0
+NAN D2 PBS 30 0 0
+NAN B2 PBS 31 0
+NAN D2 PBS 31 0 0
+NAN B2 PBS 32 0
+NAN D2 PBS 32 0 0
+NAN B2 PBS 33 0
+NAN D2 PBS 33 0 0
+NAN B2 PBS 34 0
+NAN D2 PBS 34 0 0
+NAN B2 PBS 35 0
+NAN D2 PBS 35 0 0
+NAN B2 PBS 36 0
+NAN D2 PBS 36 0 0
+NAN B2 PBS 37 0
+NAN D2 PBS 37 0 0
+NAN B2 PBS 38 0
+NAN D2 PBS 38 0 0
+NAN B2 PBS 39 0
+NAN D2 PBS 39 0 0
+NAN B2 PBS 40 0
+NAN D2 PBS 40 0 0
+NAN B2 PBS 41 0
+NAN D2 PBS 41 0 0
+NAN B2 PBS 42 0
+NAN D2 PBS 42 0 0
+NAN B2 PBS 43 0
+NAN D2 PBS 43 0 0
+NAN B2 PBS 44 0
+NAN D2 PBS 44 0 0
+NAN B2 PBS 45 0
+NAN D2 PBS 45 0 0
+NAN B2 PBS 46 0
+NAN D2 PBS 46 0 0
+NAN B2 PBS 47 0
+NAN D2 PBS 47 0 0
+NAN B2 PBS 48 0
+NAN D2 PBS 48 0 0
+NAN B2 PBS 49 0
+NAN D2 PBS 49 0 0
+NAN B2 PBS 50 0
+NAN D2 PBS 50 0 0
+NAN B2 PBS 51 0
+NAN D2 PBS 51 0 0
+NAN B2 PBS 52 0
+NAN D2 PBS 52 0 0
+NAN B2 PBS 53 0
+NAN D2 PBS 53 0 0
+NAN B2 PBS 54 0
+NAN D2 PBS 54 0 0
+NAN B2 PBS 55 0
+NAN D2 PBS 55 0 0
+NAN B2 PBS 56 0
+NAN D2 PBS 56 0 0
+NAN B2 PBS 57 0
+NAN D2 PBS 57 0 0
+NAN B2 PBS 58 0
+NAN D2 PBS 58 0 0
+NAN B2 PBS 59 0
+NAN D2 PBS 59 0 0
+NAN B2 PBS 60 0
+NAN D2 PBS 60 0 0
+NAN B2 PBS 61 0
+NAN D2 PBS 61 0 0
+NAN B2 PBS 62 0
+NAN D2 PBS 62 0 0
+NAN B2 PBS 63 0
+NAN D2 PBS 63 0 0
+NAN B2 PBS 64 0
+NAN D2 PBS 64 0 0
+NAN B2 PBS 65 0
+NAN D2 PBS 65 0 0
+NAN B2 PBS 66 0
+NAN D2 PBS 66 0 0
+NAN B2 PBS 67 0
+NAN D2 PBS 67 0 0
+NAN B2 PBS 68 0
+NAN D2 PBS 68 0 0
+NAN B2 PBS 69 0
+NAN D2 PBS 69 0 0
+NAN B2 PBS 70 0
+NAN D2 PBS 70 0 0
+NAN B2 PBS 71 0
+NAN D2 PBS 71 0 0
+NAN B2 PBS 72 0
+NAN D2 PBS 72 0 0
+NAN B2 PBS 73 0
+NAN D2 PBS 73 0 0
+NAN B2 PBS 74 0
+NAN D2 PBS 74 0 0
+NAN B2 PBS 75 0
+NAN D2 PBS 75 0 0
+NAN B2 PBS 76 0
+NAN D2 PBS 76 0 0
+NAN B2 PBS 77 0
+NAN D2 PBS 77 0 0
+NAN B2 PBS 78 0
+NAN D2 PBS 78 0 0
+NAN B2 PBS 79 0
+NAN D2 PBS 79 0 0
+NAN B2 PBS 80 0
+NAN D2 PBS 80 0 0
+NAN B2 PBS 81 0
+NAN D2 PBS 81 0 0
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+CG in iter = 0 (max=500)
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875805894896 94875792383984
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088850819664 94088705014496
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095724696288 94096171074880
+Invert FIT_ADU MATRIX bolo=0 proc=0 94219012882592 94219046417888
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.445131761e+32
+TF=[1.46442e+32,1.07331e+32,1.29674e+32,1.68042e+32,]
+TF=[-8.49593e+31,-7.64859e+31,-7.21618e+31,-3.18825e+31,]
+TF=[2.82437e+32,2.86275e+32,2.62153e+32,2.86213e+32,]
+TF=[1.06973e+32,1.14145e+32,4.05448e+31,1.18167e+32,]
+TF=[3.8005e+36,4.46198e+36,3.8726e+36,4.02718e+36,]
+co13=[9.73651e+31,1.9065e+32,-5.84174e+32,2.96158e+32]
+co12=[-1.24535e+32,-4.2789e+32,7.28039e+32,-1.75614e+32]
+dust=[-1.8609e+35,1.17417e+35,2.16123e+35,-1.47483e+35]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 9/10 1 
+
+==============================
+GAIN -3.62341e+32 -4.16026e+32 1.48463e+33 -7.06262e+32 
+QQ2 0
+NAN B2 PBS 0 0
+NAN D2 PBS 0 0 0
+NAN B2 PBS 1 0
+NAN D2 PBS 1 0 0
+NAN B2 PBS 2 0
+NAN D2 PBS 2 0 0
+NAN B2 PBS 3 0
+NAN D2 PBS 3 0 0
+NAN B2 PBS 4 0
+NAN D2 PBS 4 0 0
+NAN B2 PBS 5 0
+NAN D2 PBS 5 0 0
+NAN B2 PBS 6 0
+NAN D2 PBS 6 0 0
+NAN B2 PBS 7 0
+NAN D2 PBS 7 0 0
+NAN B2 PBS 8 0
+NAN D2 PBS 8 0 0
+NAN B2 PBS 9 0
+NAN D2 PBS 9 0 0
+NAN B2 PBS 10 0
+NAN D2 PBS 10 0 0
+NAN B2 PBS 11 0
+NAN D2 PBS 11 0 0
+NAN B2 PBS 12 0
+NAN D2 PBS 12 0 0
+NAN B2 PBS 13 0
+NAN D2 PBS 13 0 0
+NAN B2 PBS 14 0
+NAN D2 PBS 14 0 0
+NAN B2 PBS 15 0
+NAN D2 PBS 15 0 0
+NAN B2 PBS 16 0
+NAN D2 PBS 16 0 0
+NAN B2 PBS 17 0
+NAN D2 PBS 17 0 0
+NAN B2 PBS 18 0
+NAN D2 PBS 18 0 0
+NAN B2 PBS 19 0
+NAN D2 PBS 19 0 0
+NAN B2 PBS 20 0
+NAN D2 PBS 20 0 0
+NAN B2 PBS 21 0
+NAN D2 PBS 21 0 0
+NAN B2 PBS 22 0
+NAN D2 PBS 22 0 0
+NAN B2 PBS 23 0
+NAN D2 PBS 23 0 0
+NAN B2 PBS 24 0
+NAN D2 PBS 24 0 0
+NAN B2 PBS 25 0
+NAN D2 PBS 25 0 0
+NAN B2 PBS 26 0
+NAN D2 PBS 26 0 0
+NAN B2 PBS 27 0
+NAN D2 PBS 27 0 0
+NAN B2 PBS 28 0
+NAN D2 PBS 28 0 0
+NAN B2 PBS 29 0
+NAN D2 PBS 29 0 0
+NAN B2 PBS 30 0
+NAN D2 PBS 30 0 0
+NAN B2 PBS 31 0
+NAN D2 PBS 31 0 0
+NAN B2 PBS 32 0
+NAN D2 PBS 32 0 0
+NAN B2 PBS 33 0
+NAN D2 PBS 33 0 0
+NAN B2 PBS 34 0
+NAN D2 PBS 34 0 0
+NAN B2 PBS 35 0
+NAN D2 PBS 35 0 0
+NAN B2 PBS 36 0
+NAN D2 PBS 36 0 0
+NAN B2 PBS 37 0
+NAN D2 PBS 37 0 0
+NAN B2 PBS 38 0
+NAN D2 PBS 38 0 0
+NAN B2 PBS 39 0
+NAN D2 PBS 39 0 0
+NAN B2 PBS 40 0
+NAN D2 PBS 40 0 0
+NAN B2 PBS 41 0
+NAN D2 PBS 41 0 0
+NAN B2 PBS 42 0
+NAN D2 PBS 42 0 0
+NAN B2 PBS 43 0
+NAN D2 PBS 43 0 0
+NAN B2 PBS 44 0
+NAN D2 PBS 44 0 0
+NAN B2 PBS 45 0
+NAN D2 PBS 45 0 0
+NAN B2 PBS 46 0
+NAN D2 PBS 46 0 0
+NAN B2 PBS 47 0
+NAN D2 PBS 47 0 0
+NAN B2 PBS 48 0
+NAN D2 PBS 48 0 0
+NAN B2 PBS 49 0
+NAN D2 PBS 49 0 0
+NAN B2 PBS 50 0
+NAN D2 PBS 50 0 0
+NAN B2 PBS 51 0
+NAN D2 PBS 51 0 0
+NAN B2 PBS 52 0
+NAN D2 PBS 52 0 0
+NAN B2 PBS 53 0
+NAN D2 PBS 53 0 0
+NAN B2 PBS 54 0
+NAN D2 PBS 54 0 0
+NAN B2 PBS 55 0
+NAN D2 PBS 55 0 0
+NAN B2 PBS 56 0
+NAN D2 PBS 56 0 0
+NAN B2 PBS 57 0
+NAN D2 PBS 57 0 0
+NAN B2 PBS 58 0
+NAN D2 PBS 58 0 0
+NAN B2 PBS 59 0
+NAN D2 PBS 59 0 0
+NAN B2 PBS 60 0
+NAN D2 PBS 60 0 0
+NAN B2 PBS 61 0
+NAN D2 PBS 61 0 0
+NAN B2 PBS 62 0
+NAN D2 PBS 62 0 0
+NAN B2 PBS 63 0
+NAN D2 PBS 63 0 0
+NAN B2 PBS 64 0
+NAN D2 PBS 64 0 0
+NAN B2 PBS 65 0
+NAN D2 PBS 65 0 0
+NAN B2 PBS 66 0
+NAN D2 PBS 66 0 0
+NAN B2 PBS 67 0
+NAN D2 PBS 67 0 0
+NAN B2 PBS 68 0
+NAN D2 PBS 68 0 0
+NAN B2 PBS 69 0
+NAN D2 PBS 69 0 0
+NAN B2 PBS 70 0
+NAN D2 PBS 70 0 0
+NAN B2 PBS 71 0
+NAN D2 PBS 71 0 0
+NAN B2 PBS 72 0
+NAN D2 PBS 72 0 0
+NAN B2 PBS 73 0
+NAN D2 PBS 73 0 0
+NAN B2 PBS 74 0
+NAN D2 PBS 74 0 0
+NAN B2 PBS 75 0
+NAN D2 PBS 75 0 0
+NAN B2 PBS 76 0
+NAN D2 PBS 76 0 0
+NAN B2 PBS 77 0
+NAN D2 PBS 77 0 0
+NAN B2 PBS 78 0
+NAN D2 PBS 78 0 0
+NAN B2 PBS 79 0
+NAN D2 PBS 79 0 0
+NAN B2 PBS 80 0
+NAN D2 PBS 80 0 0
+NAN B2 PBS 81 0
+NAN D2 PBS 81 0 0
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+
+iter = 0 - delta0 = 8.23516e+09 - delta_new = -nan
+CG in iter = 0 (max=500)
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=3 proc=3 94088850819664 94088702690800
+Invert FIT_ADU MATRIX bolo=2 proc=2 94875805894896 94875795173120
+Invert FIT_ADU MATRIX bolo=1 proc=1 94095724696288 94096169470528
+Invert FIT_ADU MATRIX bolo=0 proc=0 94219012882592 94219048646976
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.445131761e+32
+TF=[1.46442e+32,1.07331e+32,1.29674e+32,1.68042e+32,]
+TF=[-8.49593e+31,-7.64859e+31,-7.21618e+31,-3.18825e+31,]
+TF=[2.82437e+32,2.86275e+32,2.62153e+32,2.86213e+32,]
+TF=[1.06973e+32,1.14145e+32,4.05448e+31,1.18167e+32,]
+TF=[3.8005e+36,4.46198e+36,3.8726e+36,4.02718e+36,]
+co13=[9.73651e+31,1.9065e+32,-5.84174e+32,2.96158e+32]
+co12=[-1.24535e+32,-4.2789e+32,7.28039e+32,-1.75614e+32]
+dust=[-1.8609e+35,1.17417e+35,2.16123e+35,-1.47483e+35]
+Write OFF  206488
+Write GAIN  206488
+Write OFF  206488
+Write GAIN  206488
+Write OFF  206488
+Write GAIN  206488
+Write OFF  206488
+Write GAIN  206488
+Save X2 NO CUTRG
+Write MAT  288
+AVVGAIN: -37964616685220330626613248.000000
+Rank: 0[27610] MEM 12627.6[2987.8]MB line=11345
+Rank: 0[27610] MEM 18195.8[8555.8]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_D.fits
+line: 11889 rank: 0 file: troll.c
+Rank: 0[27610] MEM 18579.8[8942.1]MB line=11435
+11790 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_D.fits
+line: 11889 rank: 0 file: troll.c
+Write DIFF  256000
+Write DIFF2  256000
+Write NDIFF  256000
+Write DIFF  256000
+Write DIFF2  256000
+Write NDIFF  256000
+Write DIFF  256000
+Write DIFF2  256000
+Write NDIFF  256000
+Write DIFF  -1
+Write DIFF2  -1
+Write NDIFF  -1
+troll.c: --------------------------
+troll.c: Finished sucessfully at Tue Apr 27 11:47:45 2021
+troll.c: --------------------------

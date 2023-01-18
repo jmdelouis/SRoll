@@ -1,0 +1,2811 @@
+srun: Warning: can't honor --ntasks-per-node set to 24 which doesn't match the requested tasks 256 with the number of requested nodes 30. Ignoring --ntasks-per-node.
+troll.c: --------------------------
+troll.c: Starting /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/sroll/troll_14tf
+troll.c: at Thu Feb 18 16:56:40 2021
+troll.c: with 256 MPI ranks and 1 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+
+
+troll_readParam() from file "/scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/run_troll/sroll3_857.troll.par"
+troll_parLoader.c: reading BeginRing = 240
+troll_parLoader.c: reading EndRing = 26050
+troll_parLoader.c: reading RSTEP = 1000
+troll_parLoader.c: reading AVFFF = 857
+troll_parLoader.c: reading AVGFREEFREE = 0
+troll_parLoader.c: reading AVFSYNC = 857
+troll_parLoader.c: reading AVGSYNCHRO = 0
+troll_parLoader.c: reading AVGDUST100 = 0
+troll_parLoader.c: reading AVFDUST = 857
+troll_parLoader.c: reading AVGDUST = 0
+troll_parLoader.c: reading AVFCO = 857
+troll_parLoader.c: reading AVG12CO = 0
+troll_parLoader.c: reading AVG13CO = 0
+troll_parLoader.c: reading CALCODUST = 0
+troll_parLoader.c: reading CUTRG = 1
+troll_parLoader.c: reading DODIPCAL = 1
+troll_parLoader.c: reading DOGAINDIP = 1
+troll_parLoader.c: reading DOMAXVRAIE = 1
+troll_parLoader.c: reading D_NOPOL = 0
+troll_parLoader.c: reading Nside = 2048
+troll_parLoader.c: reading REMDIP = 1
+troll_parLoader.c: reading REMHDIP = 1
+troll_parLoader.c: reading ADDDIP = 0
+troll_parLoader.c: reading KCMBIN = 0
+troll_parLoader.c: reading SAVEINTMAP = 0
+troll_parLoader.c: reading TESTPOL = 1
+troll_parLoader.c: reading XI2STOP = 1.0
+troll_parLoader.c: reading seuilcond = 1e-06
+troll_parLoader.c: reading NITT = 10
+troll_parLoader.c: reading FITANGLE = 0
+troll_parLoader.c: reading FITPOLEFF = 0
+troll_parLoader.c: reading saveCOV = 0
+troll_parLoader.c: reading saveCO = 0
+troll_parLoader.c: reading delta_psi = 0.0
+troll_parLoader.c: reading verbose = 0
+troll_parLoader.c: reading TEMPLATE_NSIDE = 1024
+troll_parLoader.c: reading BUILDTF = 0
+troll_parLoader.c: reading number_of_SEED = 1
+troll_parLoader.c: reading SEED1 = 1234
+troll_parLoader.c: reading number_of_ADDCO13 = 0
+troll_parLoader.c: reading GAINSTEP = 1
+troll_parLoader.c: reading number_of_NADU = 4
+troll_parLoader.c: reading NADU1 = 16
+troll_parLoader.c: reading NADU2 = 16
+troll_parLoader.c: reading NADU3 = 16
+troll_parLoader.c: reading NADU4 = 16
+troll_parLoader.c: reading number_of_NADUSTEP = 4
+troll_parLoader.c: reading NADUSTEP1 = 1
+troll_parLoader.c: reading NADUSTEP2 = 1
+troll_parLoader.c: reading NADUSTEP3 = 1
+troll_parLoader.c: reading NADUSTEP4 = 1
+troll_parLoader.c: reading number_of_DOCNN = 13
+troll_parLoader.c: reading DOCNN1 = 0
+troll_parLoader.c: reading DOCNN2 = 0
+troll_parLoader.c: reading DOCNN3 = 0
+troll_parLoader.c: reading DOCNN4 = 0
+troll_parLoader.c: reading DOCNN5 = 0
+troll_parLoader.c: reading DOCNN6 = 0
+troll_parLoader.c: reading DOCNN7 = 0
+troll_parLoader.c: reading DOCNN8 = 0
+troll_parLoader.c: reading DOCNN9 = 0
+troll_parLoader.c: reading DOCNN10 = 0
+troll_parLoader.c: reading DOCNN11 = 0
+troll_parLoader.c: reading DOCNN12 = 0
+troll_parLoader.c: reading DOCNN13 = 0
+troll_parLoader.c: reading CALLCNN = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/sroll/py_function_pol.py
+troll_parLoader.c: reading CNN_XSIZE = 12288
+troll_parLoader.c: reading CNN_YSIZE = 2
+troll_parLoader.c: reading CNN_RESIDU = 0.0
+troll_parLoader.c: reading CNN_ITT = 1000
+troll_parLoader.c: reading number_of_Calibration = 4
+troll_parLoader.c: reading Calibration1 = 3.30076826046e-16
+troll_parLoader.c: reading Calibration2 = 3.55811287601e-16
+troll_parLoader.c: reading Calibration3 = 3.18681631353e-16
+troll_parLoader.c: reading Calibration4 = 2.219187708e-16
+troll_parLoader.c: reading number_of_CrossPol = 4
+troll_parLoader.c: reading CrossPol1 = 0.887
+troll_parLoader.c: reading CrossPol2 = 0.883
+troll_parLoader.c: reading CrossPol3 = 0.856
+troll_parLoader.c: reading CrossPol4 = 0.897
+troll_parLoader.c: reading number_of_NEP = 4
+troll_parLoader.c: reading NEP1 = 2.17663807827e-16
+troll_parLoader.c: reading NEP2 = 2.36372259024e-16
+troll_parLoader.c: reading NEP3 = 2.08546999122e-16
+troll_parLoader.c: reading NEP4 = 2.01804359351e-16
+troll_parLoader.c: reading number_of_Monop = 4
+troll_parLoader.c: reading Monop1 = 2.7228011807e-14
+troll_parLoader.c: reading Monop2 = 3.20205460445e-14
+troll_parLoader.c: reading Monop3 = 2.14043411258e-14
+troll_parLoader.c: reading Monop4 = 3.3436884405e-14
+troll_parLoader.c: reading number_of_FSLCOEF = 4
+troll_parLoader.c: reading FSLCOEF1 = 1.0
+troll_parLoader.c: reading FSLCOEF2 = 1.0
+troll_parLoader.c: reading FSLCOEF3 = 1.0
+troll_parLoader.c: reading FSLCOEF4 = 1.0
+troll_parLoader.c: reading number_of_OUT_NOPOL = 5
+troll_parLoader.c: reading OUT_NOPOL1 = 1
+troll_parLoader.c: reading OUT_NOPOL2 = 1
+troll_parLoader.c: reading OUT_NOPOL3 = 1
+troll_parLoader.c: reading OUT_NOPOL4 = 1
+troll_parLoader.c: reading OUT_NOPOL5 = 1
+troll_parLoader.c: reading number_of_bolomask = 20
+troll_parLoader.c: reading bolomask1 = 1
+troll_parLoader.c: reading bolomask2 = 1
+troll_parLoader.c: reading bolomask3 = 1
+troll_parLoader.c: reading bolomask4 = 1
+troll_parLoader.c: reading bolomask5 = 1
+troll_parLoader.c: reading bolomask6 = 0
+troll_parLoader.c: reading bolomask7 = 0
+troll_parLoader.c: reading bolomask8 = 0
+troll_parLoader.c: reading bolomask9 = 0
+troll_parLoader.c: reading bolomask10 = 1
+troll_parLoader.c: reading bolomask11 = 0
+troll_parLoader.c: reading bolomask12 = 0
+troll_parLoader.c: reading bolomask13 = 0
+troll_parLoader.c: reading bolomask14 = 0
+troll_parLoader.c: reading bolomask15 = 1
+troll_parLoader.c: reading bolomask16 = 0
+troll_parLoader.c: reading bolomask17 = 0
+troll_parLoader.c: reading bolomask18 = 0
+troll_parLoader.c: reading bolomask19 = 0
+troll_parLoader.c: reading bolomask20 = 1
+troll_parLoader.c: reading number_of_MAPRINGS = 5
+troll_parLoader.c: reading MAPRINGS1 = 19
+troll_parLoader.c: reading MAPRINGS2 = 1
+troll_parLoader.c: reading MAPRINGS3 = 1
+troll_parLoader.c: reading MAPRINGS4 = 1
+troll_parLoader.c: reading MAPRINGS5 = 1
+troll_parLoader.c: reading Mask = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/MASK_2048_GALACTIC/mask_RD_857
+troll_parLoader.c: reading Theo_CO = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/NEW_cleaned_12CO.float32.bin
+troll_parLoader.c: reading Theo_13CO = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/NEW_cleaned_13CO.float32.bin
+troll_parLoader.c: reading Theo_Dust_I = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/Dust_New_I
+troll_parLoader.c: reading Theo_Dust_Q = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/Dust_New_Q
+troll_parLoader.c: reading Theo_Dust_U = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/Dust_New_U
+troll_parLoader.c: reading TEMPLATEMAP = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_I = 4
+troll_parLoader.c: reading in_template_map_I1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_Q = 4
+troll_parLoader.c: reading in_template_map_Q1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_U = 4
+troll_parLoader.c: reading in_template_map_U1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_2048/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_Q = 4
+troll_parLoader.c: reading in_polar_fit_Q1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_Q.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_U = 4
+troll_parLoader.c: reading in_polar_fit_U1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/sroll_templates/MAP_JMD_1024/353_U.float32.bin
+troll_parLoader.c: reading number_of_Signal_noPS = 4
+troll_parLoader.c: reading Signal_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_THEO_SIMU
+troll_parLoader.c: reading number_of_ADU = 4
+troll_parLoader.c: reading ADU1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_adutot
+troll_parLoader.c: reading ADU2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_adutot
+troll_parLoader.c: reading ADU3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_adutot
+troll_parLoader.c: reading ADU4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_adutot
+troll_parLoader.c: reading number_of_Badring = 4
+troll_parLoader.c: reading Badring1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs/25_857_1_discarded_rings_dx11
+troll_parLoader.c: reading Badring2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs/35_857_2_discarded_rings_dx11
+troll_parLoader.c: reading Badring3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs/65_857_3_discarded_rings_dx11
+troll_parLoader.c: reading Badring4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/calROIs/74_857_4_discarded_rings_dx11
+troll_parLoader.c: reading number_of_DipOrb_noPS = 4
+troll_parLoader.c: reading DipOrb_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_diporb_quat
+troll_parLoader.c: reading number_of_Hit_noPS = 4
+troll_parLoader.c: reading Hit_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_hit
+troll_parLoader.c: reading Hit_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_hit
+troll_parLoader.c: reading Hit_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_hit
+troll_parLoader.c: reading Hit_noPS4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_hit
+troll_parLoader.c: reading number_of_Ptg_noPS = 4
+troll_parLoader.c: reading Ptg_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_ptg
+troll_parLoader.c: reading number_of_Theo_noPS = 20
+troll_parLoader.c: reading Theo_noPS1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_H0
+troll_parLoader.c: reading Theo_noPS2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_H0
+troll_parLoader.c: reading Theo_noPS3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_H0
+troll_parLoader.c: reading Theo_noPS4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_H0
+troll_parLoader.c: reading Theo_noPS5 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_H1
+troll_parLoader.c: reading Theo_noPS6 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_H1
+troll_parLoader.c: reading Theo_noPS7 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_H1
+troll_parLoader.c: reading Theo_noPS8 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_H1
+troll_parLoader.c: reading Theo_noPS9 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_H2
+troll_parLoader.c: reading Theo_noPS10 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_H2
+troll_parLoader.c: reading Theo_noPS11 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_H2
+troll_parLoader.c: reading Theo_noPS12 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_H2
+troll_parLoader.c: reading Theo_noPS13 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_H3
+troll_parLoader.c: reading Theo_noPS14 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_H3
+troll_parLoader.c: reading Theo_noPS15 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_H3
+troll_parLoader.c: reading Theo_noPS16 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_H3
+troll_parLoader.c: reading Theo_noPS17 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP7_2
+troll_parLoader.c: reading Theo_noPS18 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP7_2
+troll_parLoader.c: reading Theo_noPS19 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP7_2
+troll_parLoader.c: reading Theo_noPS20 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP7_2
+troll_parLoader.c: reading number_of_fsl = 4
+troll_parLoader.c: reading fsl1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_fsl
+troll_parLoader.c: reading fsl2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_fsl
+troll_parLoader.c: reading fsl3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_fsl
+troll_parLoader.c: reading fsl4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_fsl
+troll_parLoader.c: reading number_of_phase = 4
+troll_parLoader.c: reading phase1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-1_REP6_phregul
+troll_parLoader.c: reading phase2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-2_REP6_phregul
+troll_parLoader.c: reading phase3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-3_REP6_phregul
+troll_parLoader.c: reading phase4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/857-4_REP6_phregul
+troll_parLoader.c: reading number_of_rgcnn = 4
+troll_parLoader.c: reading rgcnn1 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn2 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn3 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn4 = /scratch/cnt0028/ias1717/SHARED/RD12_data/dmc/MISS03/DATA/PBR_JMD/NULL_rgadutot.int32.bin
+troll_parLoader.c: reading number_of_MAP = 5
+troll_parLoader.c: reading MAP1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/MAP/sroll2_debug_857ghz_857ghz
+troll_parLoader.c: reading MAP2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/MAP/sroll2_debug_857ghz_857-1
+troll_parLoader.c: reading MAP3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/MAP/sroll2_debug_857ghz_857-2
+troll_parLoader.c: reading MAP4 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/MAP/sroll2_debug_857ghz_857-3
+troll_parLoader.c: reading MAP5 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/MAP/sroll2_debug_857ghz_857-4
+troll_parLoader.c: reading number_of_Out_Offset = 4
+troll_parLoader.c: reading Out_Offset1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-1_offset
+troll_parLoader.c: reading Out_Offset2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-2_offset
+troll_parLoader.c: reading Out_Offset3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-3_offset
+troll_parLoader.c: reading Out_Offset4 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-4_offset
+troll_parLoader.c: reading number_of_Out_Offset_corr = 4
+troll_parLoader.c: reading Out_Offset_corr1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-1_offset_corr
+troll_parLoader.c: reading Out_Offset_corr2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-2_offset_corr
+troll_parLoader.c: reading Out_Offset_corr3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug__857ghz_857-3_offset_corr
+troll_parLoader.c: reading Out_Offset_corr4 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-4_offset_corr
+troll_parLoader.c: reading number_of_Out_xi2 = 4
+troll_parLoader.c: reading Out_xi21 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-1_xi2
+troll_parLoader.c: reading Out_xi22 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-2_xi2
+troll_parLoader.c: reading Out_xi23 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-3_xi2
+troll_parLoader.c: reading Out_xi24 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-4_xi2
+troll_parLoader.c: reading number_of_Out_xi2_corr = 4
+troll_parLoader.c: reading Out_xi2_corr1 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-1_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr2 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-2_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr3 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-3_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr4 = /scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/VEC/sroll2_debug_857ghz_857-4_xi2_corr
+DOCO
+MAXFREQ 857
+Call python module in path
+/scratch/cnt0028/ias1717/SHARED/bware/sroll3_theo/extraball/SrollEx/sroll
+Call module : py_function_pol
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+
+WARNING: version mismatch between CFITSIO header (v3.36) and linked library (v3.41).
+
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+LoadBalancing globalRangeRing      = 25811 
+LoadBalancing rings_per_rank       = 100 
+LoadBalancing balancing_correction = 211 
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+NEP_tab[0 (857-1)]=0.913495
+NEP_tab[1 (857-2)]=0.920263
+NEP_tab[2 (857-3)]=0.906529
+NEP_tab[3 (857-4)]=1.259713
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+('Num GPUs Available: ', 0)
+DODISTOR [0]: 16 16
+DODISTOR [1]: 16 16
+DODISTOR [2]: 16 16
+DODISTOR [3]: 16 16
+REMDIP : 1
+SXI 0 2.29963
+RG_MAX 25586
+Com ring=240 Rank: 0[7857] MEM 4321.0[1701.0]MB Nd=15582  0.994539 5.62802e-07 
+
+after troll bolometer 857-1 (0/3): used VMEM 4321.0[PHYS 1701.1]MB
+SXI 1 2.26593
+RG_MAX 25405
+Com ring=240 Rank: 0[7857] MEM 4325.0[1705.5]MB Nd=15638  0.99449 5.89774e-07 
+
+after troll bolometer 857-2 (1/3): used VMEM 4325.0[PHYS 1705.7]MB
+SXI 2 2.3351
+RG_MAX 25594
+Com ring=240 Rank: 0[7857] MEM 4329.6[1710.1]MB Nd=15663  0.994528 5.71416e-07 
+
+after troll bolometer 857-3 (2/3): used VMEM 4329.6[PHYS 1710.3]MB
+SXI 3 1.20928
+RG_MAX 24531
+Com ring=240 Rank: 0[7857] MEM 4333.6[1714.2]MB Nd=15612  0.994487 5.81718e-07 
+
+after troll bolometer 857-4 (3/3): used VMEM 4333.6[PHYS 1714.3]MB
+13CO
+
+Free memory per node before pixel balancing, at Thu Feb 18 16:57:52 2021
+rank 05/255, node 05/29, n2236.occigen: 115.9GB free
+rank 03/255, node 03/29, n2198.occigen: 115.6GB free
+rank 01/255, node 01/29, n2051.occigen: 115.5GB free
+rank 08/255, node 08/29, n2335.occigen: 115.5GB free
+rank 21/255, node 21/29, n2838.occigen: 116.6GB free
+rank 16/255, node 16/29, n2506.occigen: 116.3GB free
+rank 06/255, node 06/29, n2237.occigen: 115.9GB free
+rank 23/255, node 23/29, n2842.occigen: 116.6GB free
+rank 25/255, node 25/29, n2845.occigen: 116.7GB free
+rank 22/255, node 22/29, n2839.occigen: 116.7GB free
+rank 18/255, node 18/29, n2625.occigen: 116.3GB free
+rank 20/255, node 20/29, n2636.occigen: 116.3GB free
+rank 04/255, node 04/29, n2235.occigen: 115.9GB free
+rank 27/255, node 27/29, n2926.occigen: 116.4GB free
+rank 13/255, node 13/29, n2429.occigen: 115.5GB free
+rank 12/255, node 12/29, n2427.occigen: 115.5GB free
+rank 24/255, node 24/29, n2843.occigen: 116.6GB free
+rank 29/255, node 29/29, n2936.occigen: 116.3GB free
+rank 26/255, node 26/29, n2850.occigen: 116.5GB free
+rank 19/255, node 19/29, n2626.occigen: 116.3GB free
+rank 14/255, node 14/29, n2500.occigen: 115.6GB free
+rank 07/255, node 07/29, n2334.occigen: 115.5GB free
+rank 28/255, node 28/29, n2927.occigen: 116.3GB free
+rank 11/255, node 11/29, n2426.occigen: 115.5GB free
+rank 02/255, node 02/29, n2057.occigen: 115.5GB free
+rank 09/255, node 09/29, n2384.occigen: 115.6GB free
+rank 00/255, node 00/29, n2050.occigen: 115.4GB free
+rank 10/255, node 10/29, n2385.occigen: 115.6GB free
+NPIX 6
+rank 15/255, node 15/29, n2501.occigen: 115.6GB free
+rank 17/255, node 17/29, n2565.occigen: 116.3GB free
+Mask 0
+Sort pixel to make it run faster
+regrid
+sort
+rebin pixel
+Rank: 0[7857] MEM 3475.5[1202.2]MB line=9520
+Rank: 0[7857] MEM 3475.5[1202.2]MB line=9600
+Rank: 0(n2050.occigen, free=108.80GB) [1/2] used MEM virt:3478.6[phys:1203.4]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.09GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.10GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.11GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.11GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.12GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.12GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.13GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.13GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.14GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.14GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.15GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.15GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.16GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.16GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.16GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.17GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.17GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.18GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.18GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.19GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.19GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.19GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.20GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.20GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.21GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.21GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.21GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [1/2] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [2/4] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.23GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [4/8] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [8/16] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [16/32] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [16/32] used MEM virt:3478.6[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [16/32] used MEM virt:3479.1[phys:1203.7]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [16/32] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [16/32] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [16/32] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.22GB) [16/32] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.21GB) [16/32] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:0MB
+Rank: 0(n2050.occigen, free=112.21GB) [32/64] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:1MB
+Rank: 0(n2050.occigen, free=112.20GB) [32/64] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:1MB
+Rank: 0(n2050.occigen, free=112.20GB) [32/64] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:1MB
+Rank: 0(n2050.occigen, free=112.20GB) [32/64] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:1MB
+Rank: 0(n2050.occigen, free=112.19GB) [64/128] used MEM virt:3479.1[phys:1204.3]MB line=9706 ntbs:3MB
+Rank: 0(n2050.occigen, free=112.17GB) [64/128] used MEM virt:3484.0[phys:1207.9]MB line=9706 ntbs:3MB
+Rank: 0(n2050.occigen, free=112.14GB) [128/256] used MEM virt:3484.0[phys:1208.0]MB line=9706 ntbs:7MB
+Rank: 0[7857] MEM 2723.8[447.7]MB line=9830
+Rank: 64[6332] MEM 2592.4[446.8]MB line=9830
+Rank: 192[65109] MEM 2589.3[445.3]MB line=9830
+
+Free memory per node before matrix computation, at Thu Feb 18 16:59:12 2021
+rank 25/255, node 25/29, n2845.occigen: 119.8GB free
+rank 23/255, node 23/29, n2842.occigen: 119.7GB free
+rank 04/255, node 04/29, n2235.occigen: 119.4GB free
+rank 06/255, node 06/29, n2237.occigen: 119.4GB free
+rank 12/255, node 12/29, n2427.occigen: 119.0GB free
+rank 05/255, node 05/29, n2236.occigen: 119.4GB free
+rank 22/255, node 22/29, n2839.occigen: 119.7GB free
+rank 00/255, node 00/29, n2050.occigen: 118.9GB free
+Rank: 128[48536] MEM 2586.9[443.0]MB line=9830
+rank 11/255, node 11/29, n2426.occigen: 119.0GB free
+rank 15/255, node 15/29, n2501.occigen: 119.1GB free
+rank 08/255, node 08/29, n2335.occigen: 119.0GB free
+rank 18/255, node 18/29, n2625.occigen: 119.4GB free
+l_nmatpix[0] 6955
+rank 02/255, node 02/29, n2057.occigen: 119.0GB free
+rank 07/255, node 07/29, n2334.occigen: 119.0GB free
+rank 13/255, node 13/29, n2429.occigen: 119.1GB free
+rank 29/255, node 29/29, n2936.occigen: 119.4GB free
+rank 21/255, node 21/29, n2838.occigen: 119.7GB free
+rank 27/255, node 27/29, n2926.occigen: 119.5GB free
+rank 19/255, node 19/29, n2626.occigen: 119.4GB free
+rank 16/255, node 16/29, n2506.occigen: 119.4GB free
+rank 03/255, node 03/29, n2198.occigen: 119.1GB free
+rank 20/255, node 20/29, n2636.occigen: 119.4GB free
+rank 01/255, node 01/29, n2051.occigen: 119.0GB free
+rank 10/255, node 10/29, n2385.occigen: 119.1GB free
+rank 17/255, node 17/29, n2565.occigen: 119.4GB free
+rank 26/255, node 26/29, n2850.occigen: 119.6GB free
+rank 24/255, node 24/29, n2843.occigen: 119.7GB free
+rank 14/255, node 14/29, n2500.occigen: 119.0GB free
+rank 28/255, node 28/29, n2927.occigen: 119.4GB free
+rank 09/255, node 09/29, n2384.occigen: 119.1GB free
+Rank: 0[7857] MEM 2734.7[448.6]MB line=9976
+Rank: 64[6332] MEM 2593.2[447.6]MB line=9976
+Rank: 128[48536] MEM 2587.6[443.8]MB line=9976
+Rank: 192[65109] MEM 2590.0[446.2]MB line=9976
+NMATCO 4 NMATDUST 4
+ FREEFREE 0
+RK0 SHOULD DETERMINE 3562000 VALUES 0 253 505 759 1002 
+GAIN DIP BOL 857-1 (0/3): 0.999795
+GAIN DIP BOL 857-2 (1/3): 1.000369
+GAIN DIP BOL 857-3 (2/3): 0.999596
+GAIN DIP BOL 857-4 (3/3): 0.999888
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+BEG-ED 0 1780475 0 - 196607 6955
+MAXSIZE 1054 1038
+NbGain 1002
+BEG 0 1780475 0 - 196607 6955
+Rank: 0[7857] MEM 3029.0[490.2]MB line=10982
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 0/10 1 
+
+==============================
+GAIN 1 1 1 1 
+QQ2 0
+iter = 0 - delta0 = 2.72252e+11 - delta_new = 2.72252e+11
+iter = 0-0 - delta_new = 2.72252e+11 1 0.033943s
+iter = 0-10 - delta_new = 2.95092e+08 1 0.006857s
+iter = 0-20 - delta_new = 3.51035e+06 1 0.005532s
+iter = 0-30 - delta_new = 336188 1 0.005450s
+iter = 0-40 - delta_new = 4.77487e+06 1 0.005443s
+iter = 0-50 - delta_new = 595.889 1 0.005477s
+iter = 0-60 - delta_new = 3.24034 1 0.005559s
+iter = 0-70 - delta_new = 0.397782 1 0.005509s
+iter = 0-80 - delta_new = 0.0411166 1 0.005486s
+iter = 0-90 - delta_new = 0.000309673 1 0.005442s
+
+iter = 100 - delta0 = 2.72252e+11 - delta_new = 1.07701e-09
+CG in iter = 100 (max=100)
+GI XIGAIN 0.0007385101181
+TF=[2.96642e-05,0.000363903,-0.0005304,-8.37899e-05,]
+TF=[-9.00349e-05,-9.24132e-05,-1.13833e-05,-5.95173e-05,]
+TF=[3.48422e-06,6.02382e-05,-5.29278e-05,1.27571e-05,]
+TF=[2.64208e-05,-8.15508e-06,4.41644e-06,1.12193e-05,]
+TF=[0.207131,0.413937,-1.78657,-0.0501571,]
+co13=[0.00290108,0.0104818,-0.0128229,-0.000559959]
+co12=[-3.28898e-05,-0.00655269,0.00557184,0.00101374]
+dust=[-3.33859,5.35958,0.0520151,-2.0479]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 1/10 1 
+
+==============================
+GAIN 0.99901 1.0007 1.00072 0.999567 
+QQ2 135161
+iter = 0 - delta0 = 2.72252e+11 - delta_new = 1.76212e+06
+iter = 1-0 - delta_new = 1.76212e+06 1 0.029852s
+iter = 1-10 - delta_new = 613.166 1 0.005605s
+iter = 1-20 - delta_new = 13.1038 1 0.005504s
+iter = 1-30 - delta_new = 0.635307 1 0.005549s
+iter = 1-40 - delta_new = 1.96954 1 0.005584s
+iter = 1-50 - delta_new = 0.00345367 1 0.005535s
+iter = 1-60 - delta_new = 8.97878e-05 1 0.005538s
+iter = 1-70 - delta_new = 8.12638e-07 1 0.005438s
+iter = 1-80 - delta_new = 1.1452e-07 1 0.005555s
+iter = 1-90 - delta_new = 1.01165e-08 1 0.005568s
+
+iter = 97 - delta0 = 2.72252e+11 - delta_new = 4.25109e-14
+CG in iter = 97 (max=100)
+BUILD ADU MATRIX BOLO 0
+BUILD ADU MATRIX BOLO 1
+BUILD ADU MATRIX BOLO 2
+BUILD ADU MATRIX BOLO 3
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 233327680 251845904
+Invert FIT_ADU MATRIX bolo=1 proc=1 240933680 214345120
+Invert FIT_ADU MATRIX bolo=2 proc=2 230415104 204071776
+Invert FIT_ADU MATRIX bolo=3 proc=3 254757680 197658576
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 1.682578801e-06
+TF=[2.91263e-05,0.00036428,-0.000530604,-8.40378e-05,]
+TF=[-8.9984e-05,-9.24723e-05,-1.13646e-05,-5.94883e-05,]
+TF=[3.4478e-06,6.02884e-05,-5.29523e-05,1.27348e-05,]
+TF=[2.63627e-05,-8.14739e-06,4.42564e-06,1.11967e-05,]
+TF=[0.203241,0.415046,-1.78689,-0.052136,]
+co13=[0.00289197,0.0104954,-0.0128254,-0.000562025]
+co12=[-3.26922e-05,-0.00655705,0.00557605,0.00101369]
+dust=[-3.33015,5.35602,0.0445087,-2.04531]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 2/10 1 
+
+==============================
+GAIN 0.999012 1.0007 1.00072 0.999568 
+QQ2 139425
+iter = 0 - delta0 = 2.72252e+11 - delta_new = 278.051
+iter = 2-0 - delta_new = 278.051 1 0.030018s
+iter = 2-10 - delta_new = 0.0445984 1 0.005461s
+iter = 2-20 - delta_new = 0.000807373 1 0.005557s
+iter = 2-30 - delta_new = 0.000141573 1 0.005531s
+iter = 2-40 - delta_new = 1.469e-05 1 0.005452s
+iter = 2-50 - delta_new = 1.62511e-07 1 0.005503s
+iter = 2-60 - delta_new = 4.01145e-06 1 0.005630s
+iter = 2-70 - delta_new = 1.1296e-09 1 0.005521s
+iter = 2-80 - delta_new = 4.1501e-10 1 0.005440s
+
+iter = 90 - delta0 = 2.72252e+11 - delta_new = 2.28453e-13
+CG in iter = 90 (max=100)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)
+TypeError: init_shape() takes exactly 25 arguments (4 given)

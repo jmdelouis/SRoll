@@ -1,0 +1,73 @@
+
+bolometer      = 143-1a
+brimo_filename = /wrk/symottet/srollex/brimo_4_27
+
+# CONF REF
+#BeginRing      =   240
+#EndRing        =   26050
+#rings_per_read =    100
+
+BeginRing      =   240
+EndRing        = 27005
+rings_per_read =    20
+
+iteration_number = 0
+
+signal_in      = /pscratch1/RD12_data/dmc/MISS03/DATA/e2e_common_TOI/143-1a_fgdip
+signal_out     = /pscratch1/symottet/stimtest_toi/143-1a_test
+flag_in        = /pscratch1/RD12_data/dmc/MISS03/DATA/calTOIs/02_143_1a_TotalFlag_v64
+flag_out       = 0
+badring        = /pscratch1/RD12_data/dmc/MISS03/DATA/calROIs/02_143_1a_discarded_rings_v64_extended
+#hpr_out        = /pscratch1/delouis/tmp_CM_STIM_OUT/TMP_DATA_SIGNAL_143-1a_LFER6_JC_v64_hprout
+hpr_out        = /pscratch1/cmadsen/OUTPUT_FROM_STIM/TMP_DATA_SIGNAL_143-1a_LFER6_JC_v64_hprout
+#hpr_out        = /pscratch1/symottet/stimtest_hpr/143-1a_test
+
+TOI_pixel_index = /pscratch1/RD12_data/dmc/MISS03/DATA/e2e_common_TOI/143-1a_HPRIDX_NOAB_TotalFlag_dx11
+
+
+
+do_photonic_noise = 1
+
+
+do_LFER_convolve = 1
+
+
+do_electronic_noise = 0
+
+
+do_sim_adu = 0
+dnl_name     = /data/dmc/MISS03/DATA/RAW_VECT_FIT_INFO/HFI_02_DNL_gp21
+rawgain_name = /data/dmc/MISS03/DATA/RAW_GAIN/02_INL_GP21
+rawcst_name  = /data/dmc/MISS03/DATA/RAW_CST/02_LM4K_GP21
+fourk_name   = /data/dmc/MISS03/DATA/RAW_4K/02_HARMS_LM4K_GP21
+electronic_noise_adu = 4.0
+
+
+do_compress_decompress = 0
+
+
+do_correct_adc = 0
+
+
+do_adu_to_volts = 0
+use_bolometer_nonlinearity = 0
+
+
+do_despike = 0
+
+
+do_bl_demod = 0
+thermal_baseline = 0
+
+
+do_gaindecorr = 0
+
+
+do_gapfiller = 0
+phase = 0
+
+
+do_LFER_deconvolve = 1
+# 0 = use default values
+deconv_LPF_FILTER = 0
+deconv_R_FILTER = 0

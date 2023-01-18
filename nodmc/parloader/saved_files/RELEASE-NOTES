@@ -1,0 +1,89 @@
+                                  *************
+                                  * ParLoader *
+                                  *************
+
+                              --= RELEASE-NOTES =--
+
+
+-------------------------------------------------------------------------------
+
+>> ParLoader 1.4 <<
+
+   Release date: 
+   CVS tag: <none>
+
+   * Changes:
+     <none>
+
+   * Bug Fixes:
+     <none>
+
+   * Minor:
+     - Improve handling of error cases related to 'number_of' parameter.
+
+-------------------------------------------------------------------------------
+
+>> ParLoader 1.3 <<
+
+   Release date: 2015-06-08
+   CVS tag: <none>
+
+   * Changes:
+     - The parameter file parser is now much more strict regarding convertion
+       to required value type.
+     - Now check that lines from input parameter file are not longer than 253
+       characters (not including new line char).
+     - Standardize error code returned by readParam(): 1 in case of error, 0
+       otherwise.
+
+   * Bug Fixes:
+     - Now support to read different parameter files in the same instance.
+
+   * Minor:
+     - Greatly improve test process.
+
+-------------------------------------------------------------------------------
+
+>> ParLoader 1.2 <<
+
+   Release date: 2015-04-16
+   CVS tag: <none>
+
+   * Changes:
+     - Makefile: now use default path to NODMCLIB on Magique3.
+
+   * Bug Fixes:
+     - Fix invalid free call in "parLoader.c".
+     - Fix auto header inclusion in the parLoader.h
+       User can now use any header file for defining ParContent struct: need to
+       be declared in the Makefile 'currentParContentDefHeaderFile' variable.
+
+-------------------------------------------------------------------------------
+
+>> ParLoader 1.1 <<
+
+   Release date: 2015-04-09
+   CVS tag: <none>
+
+   * Changes:
+     - Makefile: now requires user update for NO_DMC_LIB paths.
+     - Replace use of strdup() function by strdupnodmc() (from NO_DMC_LIB):
+       preventing use of extra compilation flag.
+     - Make use of util functions from NO_DMC_LIB. (avoiding redefinition)
+
+   * Bug Fixes:
+     <none>
+
+   * Minor:
+     - Remove debug print.
+
+-------------------------------------------------------------------------------
+
+>> ParLoader 1.0 <<
+
+   Release date: 2015-04-07
+   CVS tag: <none>
+
+   Initial release.
+
+-------------------------------------------------------------------------------

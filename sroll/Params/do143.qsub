@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -l select=65:ncpus=8,walltime=24:00:00
+#PBS -N prodfit
+#PBS -j oe
+
+cd /wrk/delouis/srel75/extraball/SrollEx/sroll
+
+
+# Configure module
+source ../srollex_setenv.sh
+mpirun -np 520 hostname > hostlist.log
+
+
+awk '{a[$1]=1}END{printf "mpirun -np 512 -H ";aa="";for (i in a) {if (i!="bq045") {printf aa""i;aa=","}};print " ./sroll /wrk/delouis/srel75/extraball/SrollEx/sroll/Params/param143_noswb.txt &> /redtruck/delouis/fitang/143_SWB/DBG_sroll_proc.log"}' hostlist.log > sh.sh
+
+
+source sh.sh
+
+
+exit 0

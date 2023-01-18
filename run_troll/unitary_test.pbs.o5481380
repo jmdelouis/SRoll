@@ -1,0 +1,11 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+DATARMOR computing node detected
+DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+HEALPY - ok
+DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 is no longer maintained. pip 21.0 will drop support for Python 2.7 in January 2021. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+TENSORFLOW - ok
+./srollex_setenv.sh: line 167: svn: command not found
+No Modulefiles Currently Loaded.
+sroll package r configuration complete in /home1/datahome/tfoulqui/MySroll/extraball/SrollEx
+

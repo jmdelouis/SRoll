@@ -1,0 +1,86 @@
+#
+# Makefile for SRoll4 software:
+#
+# Jan-2020 : original version by 
+
+
+# Default library name:
+PACKAGE		= SRoll4
+
+# SROLL4 version numbers:
+SROLL4_MAJOR	= 1
+SROLL4_MINOR	= 0
+
+prefix		= ${PWD}
+TAR = tar
+CC =		@@CC@@
+CFLAGS =	-fPIC -O3 -I$(CFITSIO_ROOT)/cfitsio
+LDFLAGS =	-shared 
+SHLIB_SUFFIX = .so
+SROLL4_SHLIB =	lib${PACKAGE}${SHLIB_SUFFIX}.${SROLL4_MAJOR}.${SROLL4_MINOR}
+SROLL4_SHLIB_SONAME = lib${PACKAGE}${SHLIB_SUFFIX}
+
+SROLLDIR = ${PWD}
+
+# --- CFITSIO package ---
+CFITSIO_ROOT := $(SROLLDIR)/cfitsio
+CFITSIO_TAR  := $(CFITSIO_ROOT)/cfitsio3410.tar.gz
+CFITSIO_DIR  := $(CFITSIO_ROOT)/cfitsio
+CFITSIO_LIB  := $(CFITSIO_DIR)/libcfitsio.a
+
+CORE_SOURCES = 	fsroll.c spline.c chealpix.c
+
+SOURCES = ${CORE_SOURCES} 
+
+OBJECTS = 	${SOURCES:.c=.o}
+
+CORE_OBJECTS = 	${CORE_SOURCES:.c=.o} ${ZLIB_SOURCES:.c=.o}
+
+
+# ============ description of all targets =============
+#       -  <<-- ignore error code
+
+all:	cfitsio
+		@if [ "x${FC}" = x ]; then \
+			${MAKE} all-nos4; \
+		else \
+			${MAKE} stand_alone; \
+		fi
+
+all-nos4:
+		${MAKE} stand_alone "FITSIO_SRC="
+
+stand_alone:	cfitsio lib${PACKAGE}.so SRoll4.py 
+
+lib${PACKAGE}.a:	${OBJECTS} 
+		${ARCHIVE} $@ ${OBJECTS}; \
+		${RANLIB} $@;
+
+shared: lib${PACKAGE}${SHLIB_SUFFIX}
+
+lib${PACKAGE}.so: ${OBJECTS} 
+		${CC} -fPIC ${LDFLAGS} -o ${SROLL4_SHLIB} ${OBJECTS} -lm ${LIBS} $(CFITSIO_ROOT)/cfitsio/libcfitsio.a
+		@if [ "x${SROLL4_SHLIB_SONAME}" != x ]; then \
+			ln -sf ${SROLL4_SHLIB} ${SROLL4_SHLIB_SONAME}; \
+		fi
+
+cfitsio: $(CFITSIO_LIB)
+
+$(CFITSIO_LIB) :
+	cd $(CFITSIO_ROOT) && $(TAR) zxf $(CFITSIO_TAR)
+	cd $(CFITSIO_DIR) && ./configure
+	$(MAKE) -C $(CFITSIO_DIR) all shared
+
+.c.o: 
+		${CC} -c -o ${<D}/${@F} ${CFLAGS} ${CPPFLAGS} ${DEFS} $<
+
+clean:
+	-	/bin/rm -rf SRoll4.py *.o zlib/*.o *.dSYM lib${PACKAGE}* y.output so_locations \
+		${UTILS} ${FPACK_UTILS} testprog.fit
+
+SRoll4.py: SRoll4.TMP.py
+		sed 's;PYPATH;@@PYPATH@@;g;s;S4PATH;${prefix};g;s;IMPORTTF1;@@IMPORTF1@@;g;s;IMPORTTF2;@@IMPORTF2@@;g' SRoll4.TMP.py > SRoll4.py
+		/bin/chmod a+x SRoll4.py
+
+distclean:	clean
+	-	/bin/rm -f Makefile config.log config.status configure.lineno

@@ -1,0 +1,16 @@
+# This section is dedicated to M4
+[M4]
+# Where the sroll executable is
+srollBaseDir = 
+# From where the generic parameters files are loaded
+srollParamDir = 
+# Input directory for sroll (NO TRAILING SLASH!)
+srollIn = 
+# Output directory for sroll (NO TRAILING SLASH!)
+srollOut = 
+
+#[Edison (NERSC)]
+#srollBaseDir = 
+#srollParamDir = 
+#srollIn = 
+#srollOut = 

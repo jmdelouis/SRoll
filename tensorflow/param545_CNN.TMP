@@ -1,0 +1,110 @@
+
+exec(open('IMO_4_27.py').read())
+
+BeginRing = SURVBEG['full']
+EndRing   = SURVEND['full']
+
+NUM_EPOCHS = 10000
+EVAL_FREQUENCY = 500
+NITT_CNN = 200
+PRT_FREQUENCY = 10
+DECAY_RATE = 1.0
+LEARNING_RATE = 0.01
+WLoss = XXX
+NITT = 7
+NITTCALIB = 5
+DORELU=False
+SEED = 1234
+DOPLOT = False
+
+rgsize=27664
+Nside = 2048
+Nside_cnn=2048
+RSTEP = @@RSTEP@@
+verbose = 0
+BATCH_SIZE=-1
+
+bolo=['545-1','545-2','545-4']
+bolo2=[BOLOID[b] for b in bolo]
+
+Calibration = [DX11CALIB[b] for b in bolo]
+Monop       = [DX11MONOP[b] for b in bolo]
+NEP         = [DX11NEP[b] for b in bolo]
+
+DOFULLYCONNECTED=False
+NUMBER_TF = @@NUMTF@@
+
+seuilcond      = 1e-06
+CrossPol       = [XPOL[b] for b in bolo]
+in_polar_fit_Q = ['BINARY:FLOAT32:@@MAP128@@/353_Q.float32.bin' for b in bolo]
+in_polar_fit_U = ['BINARY:FLOAT32:@@MAP128@@/353_U.float32.bin' for b in bolo]
+
+Mask = 'BINARY:FLOAT32:@@MASK@@'
+
+Badring = ['BINARY:INT32:@@ROI@@/%s_discarded_rings_dx11'%(b) for b in bolo2]
+
+Signal = ['BINARY:FLOAT32:@@PBR@@/%s_REP6_splinefill_JAN20'%(b) for b in bolo]
+Hit    = ['BINARY:FLOAT32:@@PBR@@/%s_REP6_hit'%(b) for b in bolo]
+Ptg_PH = ['BINARY:FLOAT64:@@PBR@@/%s_REP6_ptg'%(b) for b in bolo]
+Ptg_TH = ['BINARY:FLOAT64:@@PBR@@/%s_REP6_ptg_TUPLE_1'%(b) for b in bolo]
+Ptg_PSI = ['BINARY:FLOAT64:@@PBR@@/%s_REP6_ptg_TUPLE_2'%(b) for b in bolo]
+
+#==========================================================================================================================================
+# SYSTEMATIC TO FIT :
+#==========================================================================================================================================
+# Can be described by a Timeline information in Template or by a map information in TemplateMap
+#==========================================================================================================================================
+# Template/TemplateMap:
+# * First column = 'LINEAR|CALIB|ADU' : LINEAR fit and remove the template, CALIB fit and use as calibration pattern, ADU fit using the ADCNL model
+# * Second column = The data 
+# * Third column =  'NA' if nothing to do, List of 3 value (e.g. [0.0,0,len(bolo)]) indicates that fitted amplitude mean from detector 0 to len(bolo)
+#   is equal to 0.0 
+#==========================================================================================================================================
+
+#tmpname=['REP6_R0','REP6_R1','REP6_R2','REP6_R3','REP6_H0','REP6_H1','REP6_H2','REP6_H3']
+tmpname=['REP6_H0','REP6_H1','REP6_H2','REP6_H3'] #,'REP7_2']
+#tmpname=['REP6_R0','REP6_R1','REP6_R2','REP6_R3','REP6_H0','REP6_H1','REP6_H2','REP6_H3']
+#tmpname=['REP6_H0']
+
+NHIDDEN=4
+             #[['ADU','SPLINE1D','BINARY:FLOAT32:@@PBR@@/%s_REP6_adutot'%(b),32]] for b in bolo+
+Template  = [[[i,'LINEAR',      'BINARY:FLOAT32:@@PBR@@/%s_%s'%(b,i),'ABSOLUT'] for i in tmpname]+
+             [['OOF_NOISE','CNN1D',   
+               'BINARY:FLOAT32:@@PBR@@/%s_REP6_phregul'%(b), #x parameter
+               'LINEAR',        # choose how the parameter are used (LINEAR|HIST)
+               [0,2*np.pi],   # data range
+               'RING',        # y parameter (RING=one per ring|ONE= one,means only 1D data|HPIX[2|2048]=healpix pixels)
+               NHIDDEN,            # Number of parameters
+               [NHIDDEN*2,NHIDDEN*2,NHIDDEN*2,1],  # number of channels 
+               7,             # kernel size (7 is the only debugged one for circular cnn)
+               'CIRCULAR',    # data model
+               128            # Output size from CNN
+           ]] for b in bolo]
+
+TemplateMap = [[['12CO','LINEAR',128,'BINARY:FLOAT32:@@MAP128@@/NEW_cleaned_12CO_K.float32.bin','RELATIV',0.0],
+                ['13CO','LINEAR',128,'BINARY:FLOAT32:@@MAP128@@/NEW_cleaned_13CO_K.float32.bin','RELATIV',0.0],
+                ['DUST','LINEAR',128,'BINARY:FLOAT32:@@MAP128@@/NEW_DUST_I.float32.bin','RELATIV',0.0],
+                ['POLEFF','POLEFF',128,'BINARY:FLOAT32:@@MAP128@@/353_@POLAR@.float32.bin','ABSOLUT'],
+                ['POLANG','POLANG',128,'BINARY:FLOAT32:@@MAP128@@/353_@POLAR@.float32.bin','ABSOLUT'],
+                ['GAIN','CALIB',2048,'BINARY:FLOAT32:@@MAP2048@@/map_545_2018.float32.bin','RELATIV',0.0]] for b in bolo]
+       
+domodel=False 
+#==========================================================================================================================================
+# INFORMATION TO REMOVE :
+#==========================================================================================================================================
+# First column defines the coefficient
+# Second colum defines the data
+#==========================================================================================================================================
+Added  = [[[-1.0,'BINARY:FLOAT32:@@PBR@@/%s_REP6_fsl'%(b)]] +
+          [[-1.0,'BINARY:FLOAT32:@@PBR@@/%s_REP6_diporb_quat'%(b)]] for b in bolo]
+
+OUTCLEANCALIB=False
+
+MAP = [['@@OUT@@/MAP/545GHz_RD12_REP6_CNN_YYY_Full','NOPOL',[1,1,1],SURVBEG['full'],SURVEND['full']],
+       ['@@OUT@@/MAP/545GHz_RD12_REP6_CNN_YYY_hm1', 'NOPOL',[1,1,1],SURVBEG['hm1'],SURVEND['hm1']],
+       ['@@OUT@@/MAP/545GHz_RD12_REP6_CNN_YYY_hm2', 'NOPOL',[1,1,1],SURVBEG['hm2'],SURVEND['hm2']]]
+
+Out_Offset = ['@@OUT@@/VECT/%s_offsets_PROD_REP6_RD12_545GHz_CNN_YYY'%(b) for b in bolo]
+Out_chi2   = ['@@OUT@@/VECT/%s_chi2_PROD_REP6_RD12_545GHz_CNN_YYY'%(b) for b in bolo]
+
+

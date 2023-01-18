@@ -1,0 +1,1830 @@
+        -:    0:Source:/export/home/tfoulquier/env_sroll/include/python3.6m/numpy/ndarraytypes.h
+        -:    0:Graph:troll.gcno
+        -:    0:Data:troll.gcda
+        -:    0:Runs:4
+        -:    0:Programs:1
+        -:    1:#ifndef NDARRAYTYPES_H
+        -:    2:#define NDARRAYTYPES_H
+        -:    3:
+        -:    4:#include "npy_common.h"
+        -:    5:#include "npy_endian.h"
+        -:    6:#include "npy_cpu.h"
+        -:    7:#include "utils.h"
+        -:    8:
+        -:    9:#define NPY_NO_EXPORT NPY_VISIBILITY_HIDDEN
+        -:   10:
+        -:   11:/* Only use thread if configured in config and python supports it */
+        -:   12:#if defined WITH_THREAD && !NPY_NO_SMP
+        -:   13:        #define NPY_ALLOW_THREADS 1
+        -:   14:#else
+        -:   15:        #define NPY_ALLOW_THREADS 0
+        -:   16:#endif
+        -:   17:
+        -:   18:#ifndef __has_extension
+        -:   19:#define __has_extension(x) 0
+        -:   20:#endif
+        -:   21:
+        -:   22:#if !defined(_NPY_NO_DEPRECATIONS) && \
+        -:   23:    ((defined(__GNUC__)&& __GNUC__ >= 6) || \
+        -:   24:     __has_extension(attribute_deprecated_with_message))
+        -:   25:#define NPY_ATTR_DEPRECATE(text) __attribute__ ((deprecated (text)))
+        -:   26:#else
+        -:   27:#define NPY_ATTR_DEPRECATE(text)
+        -:   28:#endif
+        -:   29:
+        -:   30:/*
+        -:   31: * There are several places in the code where an array of dimensions
+        -:   32: * is allocated statically.  This is the size of that static
+        -:   33: * allocation.
+        -:   34: *
+        -:   35: * The array creation itself could have arbitrary dimensions but all
+        -:   36: * the places where static allocation is used would need to be changed
+        -:   37: * to dynamic (including inside of several structures)
+        -:   38: */
+        -:   39:
+        -:   40:#define NPY_MAXDIMS 32
+        -:   41:#define NPY_MAXARGS 32
+        -:   42:
+        -:   43:/* Used for Converter Functions "O&" code in ParseTuple */
+        -:   44:#define NPY_FAIL 0
+        -:   45:#define NPY_SUCCEED 1
+        -:   46:
+        -:   47:/*
+        -:   48: * Binary compatibility version number.  This number is increased
+        -:   49: * whenever the C-API is changed such that binary compatibility is
+        -:   50: * broken, i.e. whenever a recompile of extension modules is needed.
+        -:   51: */
+        -:   52:#define NPY_VERSION NPY_ABI_VERSION
+        -:   53:
+        -:   54:/*
+        -:   55: * Minor API version.  This number is increased whenever a change is
+        -:   56: * made to the C-API -- whether it breaks binary compatibility or not.
+        -:   57: * Some changes, such as adding a function pointer to the end of the
+        -:   58: * function table, can be made without breaking binary compatibility.
+        -:   59: * In this case, only the NPY_FEATURE_VERSION (*not* NPY_VERSION)
+        -:   60: * would be increased.  Whenever binary compatibility is broken, both
+        -:   61: * NPY_VERSION and NPY_FEATURE_VERSION should be increased.
+        -:   62: */
+        -:   63:#define NPY_FEATURE_VERSION NPY_API_VERSION
+        -:   64:
+        -:   65:enum NPY_TYPES {    NPY_BOOL=0,
+        -:   66:                    NPY_BYTE, NPY_UBYTE,
+        -:   67:                    NPY_SHORT, NPY_USHORT,
+        -:   68:                    NPY_INT, NPY_UINT,
+        -:   69:                    NPY_LONG, NPY_ULONG,
+        -:   70:                    NPY_LONGLONG, NPY_ULONGLONG,
+        -:   71:                    NPY_FLOAT, NPY_DOUBLE, NPY_LONGDOUBLE,
+        -:   72:                    NPY_CFLOAT, NPY_CDOUBLE, NPY_CLONGDOUBLE,
+        -:   73:                    NPY_OBJECT=17,
+        -:   74:                    NPY_STRING, NPY_UNICODE,
+        -:   75:                    NPY_VOID,
+        -:   76:                    /*
+        -:   77:                     * New 1.6 types appended, may be integrated
+        -:   78:                     * into the above in 2.0.
+        -:   79:                     */
+        -:   80:                    NPY_DATETIME, NPY_TIMEDELTA, NPY_HALF,
+        -:   81:
+        -:   82:                    NPY_NTYPES,
+        -:   83:                    NPY_NOTYPE,
+        -:   84:                    NPY_CHAR NPY_ATTR_DEPRECATE("Use NPY_STRING"),
+        -:   85:                    NPY_USERDEF=256,  /* leave room for characters */
+        -:   86:
+        -:   87:                    /* The number of types not including the new 1.6 types */
+        -:   88:                    NPY_NTYPES_ABI_COMPATIBLE=21
+        -:   89:};
+        -:   90:#ifdef _MSC_VER
+        -:   91:#pragma deprecated(NPY_CHAR)
+        -:   92:#endif
+        -:   93:
+        -:   94:/* basetype array priority */
+        -:   95:#define NPY_PRIORITY 0.0
+        -:   96:
+        -:   97:/* default subtype priority */
+        -:   98:#define NPY_SUBTYPE_PRIORITY 1.0
+        -:   99:
+        -:  100:/* default scalar priority */
+        -:  101:#define NPY_SCALAR_PRIORITY -1000000.0
+        -:  102:
+        -:  103:/* How many floating point types are there (excluding half) */
+        -:  104:#define NPY_NUM_FLOATTYPE 3
+        -:  105:
+        -:  106:/*
+        -:  107: * These characters correspond to the array type and the struct
+        -:  108: * module
+        -:  109: */
+        -:  110:
+        -:  111:enum NPY_TYPECHAR {
+        -:  112:        NPY_BOOLLTR = '?',
+        -:  113:        NPY_BYTELTR = 'b',
+        -:  114:        NPY_UBYTELTR = 'B',
+        -:  115:        NPY_SHORTLTR = 'h',
+        -:  116:        NPY_USHORTLTR = 'H',
+        -:  117:        NPY_INTLTR = 'i',
+        -:  118:        NPY_UINTLTR = 'I',
+        -:  119:        NPY_LONGLTR = 'l',
+        -:  120:        NPY_ULONGLTR = 'L',
+        -:  121:        NPY_LONGLONGLTR = 'q',
+        -:  122:        NPY_ULONGLONGLTR = 'Q',
+        -:  123:        NPY_HALFLTR = 'e',
+        -:  124:        NPY_FLOATLTR = 'f',
+        -:  125:        NPY_DOUBLELTR = 'd',
+        -:  126:        NPY_LONGDOUBLELTR = 'g',
+        -:  127:        NPY_CFLOATLTR = 'F',
+        -:  128:        NPY_CDOUBLELTR = 'D',
+        -:  129:        NPY_CLONGDOUBLELTR = 'G',
+        -:  130:        NPY_OBJECTLTR = 'O',
+        -:  131:        NPY_STRINGLTR = 'S',
+        -:  132:        NPY_STRINGLTR2 = 'a',
+        -:  133:        NPY_UNICODELTR = 'U',
+        -:  134:        NPY_VOIDLTR = 'V',
+        -:  135:        NPY_DATETIMELTR = 'M',
+        -:  136:        NPY_TIMEDELTALTR = 'm',
+        -:  137:        NPY_CHARLTR = 'c',
+        -:  138:
+        -:  139:        /*
+        -:  140:         * No Descriptor, just a define -- this let's
+        -:  141:         * Python users specify an array of integers
+        -:  142:         * large enough to hold a pointer on the
+        -:  143:         * platform
+        -:  144:         */
+        -:  145:        NPY_INTPLTR = 'p',
+        -:  146:        NPY_UINTPLTR = 'P',
+        -:  147:
+        -:  148:        /*
+        -:  149:         * These are for dtype 'kinds', not dtype 'typecodes'
+        -:  150:         * as the above are for.
+        -:  151:         */
+        -:  152:        NPY_GENBOOLLTR ='b',
+        -:  153:        NPY_SIGNEDLTR = 'i',
+        -:  154:        NPY_UNSIGNEDLTR = 'u',
+        -:  155:        NPY_FLOATINGLTR = 'f',
+        -:  156:        NPY_COMPLEXLTR = 'c'
+        -:  157:};
+        -:  158:
+        -:  159:typedef enum {
+        -:  160:        NPY_QUICKSORT=0,
+        -:  161:        NPY_HEAPSORT=1,
+        -:  162:        NPY_MERGESORT=2
+        -:  163:} NPY_SORTKIND;
+        -:  164:#define NPY_NSORTS (NPY_MERGESORT + 1)
+        -:  165:
+        -:  166:
+        -:  167:typedef enum {
+        -:  168:        NPY_INTROSELECT=0
+        -:  169:} NPY_SELECTKIND;
+        -:  170:#define NPY_NSELECTS (NPY_INTROSELECT + 1)
+        -:  171:
+        -:  172:
+        -:  173:typedef enum {
+        -:  174:        NPY_SEARCHLEFT=0,
+        -:  175:        NPY_SEARCHRIGHT=1
+        -:  176:} NPY_SEARCHSIDE;
+        -:  177:#define NPY_NSEARCHSIDES (NPY_SEARCHRIGHT + 1)
+        -:  178:
+        -:  179:
+        -:  180:typedef enum {
+        -:  181:        NPY_NOSCALAR=-1,
+        -:  182:        NPY_BOOL_SCALAR,
+        -:  183:        NPY_INTPOS_SCALAR,
+        -:  184:        NPY_INTNEG_SCALAR,
+        -:  185:        NPY_FLOAT_SCALAR,
+        -:  186:        NPY_COMPLEX_SCALAR,
+        -:  187:        NPY_OBJECT_SCALAR
+        -:  188:} NPY_SCALARKIND;
+        -:  189:#define NPY_NSCALARKINDS (NPY_OBJECT_SCALAR + 1)
+        -:  190:
+        -:  191:/* For specifying array memory layout or iteration order */
+        -:  192:typedef enum {
+        -:  193:        /* Fortran order if inputs are all Fortran, C otherwise */
+        -:  194:        NPY_ANYORDER=-1,
+        -:  195:        /* C order */
+        -:  196:        NPY_CORDER=0,
+        -:  197:        /* Fortran order */
+        -:  198:        NPY_FORTRANORDER=1,
+        -:  199:        /* An order as close to the inputs as possible */
+        -:  200:        NPY_KEEPORDER=2
+        -:  201:} NPY_ORDER;
+        -:  202:
+        -:  203:/* For specifying allowed casting in operations which support it */
+        -:  204:typedef enum {
+        -:  205:        /* Only allow identical types */
+        -:  206:        NPY_NO_CASTING=0,
+        -:  207:        /* Allow identical and byte swapped types */
+        -:  208:        NPY_EQUIV_CASTING=1,
+        -:  209:        /* Only allow safe casts */
+        -:  210:        NPY_SAFE_CASTING=2,
+        -:  211:        /* Allow safe casts or casts within the same kind */
+        -:  212:        NPY_SAME_KIND_CASTING=3,
+        -:  213:        /* Allow any casts */
+        -:  214:        NPY_UNSAFE_CASTING=4
+        -:  215:} NPY_CASTING;
+        -:  216:
+        -:  217:typedef enum {
+        -:  218:        NPY_CLIP=0,
+        -:  219:        NPY_WRAP=1,
+        -:  220:        NPY_RAISE=2
+        -:  221:} NPY_CLIPMODE;
+        -:  222:
+        -:  223:/* The special not-a-time (NaT) value */
+        -:  224:#define NPY_DATETIME_NAT NPY_MIN_INT64
+        -:  225:
+        -:  226:/*
+        -:  227: * Upper bound on the length of a DATETIME ISO 8601 string
+        -:  228: *   YEAR: 21 (64-bit year)
+        -:  229: *   MONTH: 3
+        -:  230: *   DAY: 3
+        -:  231: *   HOURS: 3
+        -:  232: *   MINUTES: 3
+        -:  233: *   SECONDS: 3
+        -:  234: *   ATTOSECONDS: 1 + 3*6
+        -:  235: *   TIMEZONE: 5
+        -:  236: *   NULL TERMINATOR: 1
+        -:  237: */
+        -:  238:#define NPY_DATETIME_MAX_ISO8601_STRLEN (21+3*5+1+3*6+6+1)
+        -:  239:
+        -:  240:typedef enum {
+        -:  241:        NPY_FR_Y = 0,  /* Years */
+        -:  242:        NPY_FR_M = 1,  /* Months */
+        -:  243:        NPY_FR_W = 2,  /* Weeks */
+        -:  244:        /* Gap where 1.6 NPY_FR_B (value 3) was */
+        -:  245:        NPY_FR_D = 4,  /* Days */
+        -:  246:        NPY_FR_h = 5,  /* hours */
+        -:  247:        NPY_FR_m = 6,  /* minutes */
+        -:  248:        NPY_FR_s = 7,  /* seconds */
+        -:  249:        NPY_FR_ms = 8, /* milliseconds */
+        -:  250:        NPY_FR_us = 9, /* microseconds */
+        -:  251:        NPY_FR_ns = 10,/* nanoseconds */
+        -:  252:        NPY_FR_ps = 11,/* picoseconds */
+        -:  253:        NPY_FR_fs = 12,/* femtoseconds */
+        -:  254:        NPY_FR_as = 13,/* attoseconds */
+        -:  255:        NPY_FR_GENERIC = 14 /* Generic, unbound units, can convert to anything */
+        -:  256:} NPY_DATETIMEUNIT;
+        -:  257:
+        -:  258:/*
+        -:  259: * NOTE: With the NPY_FR_B gap for 1.6 ABI compatibility, NPY_DATETIME_NUMUNITS
+        -:  260: *       is technically one more than the actual number of units.
+        -:  261: */
+        -:  262:#define NPY_DATETIME_NUMUNITS (NPY_FR_GENERIC + 1)
+        -:  263:#define NPY_DATETIME_DEFAULTUNIT NPY_FR_GENERIC
+        -:  264:
+        -:  265:/*
+        -:  266: * Business day conventions for mapping invalid business
+        -:  267: * days to valid business days.
+        -:  268: */
+        -:  269:typedef enum {
+        -:  270:    /* Go forward in time to the following business day. */
+        -:  271:    NPY_BUSDAY_FORWARD,
+        -:  272:    NPY_BUSDAY_FOLLOWING = NPY_BUSDAY_FORWARD,
+        -:  273:    /* Go backward in time to the preceding business day. */
+        -:  274:    NPY_BUSDAY_BACKWARD,
+        -:  275:    NPY_BUSDAY_PRECEDING = NPY_BUSDAY_BACKWARD,
+        -:  276:    /*
+        -:  277:     * Go forward in time to the following business day, unless it
+        -:  278:     * crosses a month boundary, in which case go backward
+        -:  279:     */
+        -:  280:    NPY_BUSDAY_MODIFIEDFOLLOWING,
+        -:  281:    /*
+        -:  282:     * Go backward in time to the preceding business day, unless it
+        -:  283:     * crosses a month boundary, in which case go forward.
+        -:  284:     */
+        -:  285:    NPY_BUSDAY_MODIFIEDPRECEDING,
+        -:  286:    /* Produce a NaT for non-business days. */
+        -:  287:    NPY_BUSDAY_NAT,
+        -:  288:    /* Raise an exception for non-business days. */
+        -:  289:    NPY_BUSDAY_RAISE
+        -:  290:} NPY_BUSDAY_ROLL;
+        -:  291:
+        -:  292:/************************************************************
+        -:  293: * NumPy Auxiliary Data for inner loops, sort functions, etc.
+        -:  294: ************************************************************/
+        -:  295:
+        -:  296:/*
+        -:  297: * When creating an auxiliary data struct, this should always appear
+        -:  298: * as the first member, like this:
+        -:  299: *
+        -:  300: * typedef struct {
+        -:  301: *     NpyAuxData base;
+        -:  302: *     double constant;
+        -:  303: * } constant_multiplier_aux_data;
+        -:  304: */
+        -:  305:typedef struct NpyAuxData_tag NpyAuxData;
+        -:  306:
+        -:  307:/* Function pointers for freeing or cloning auxiliary data */
+        -:  308:typedef void (NpyAuxData_FreeFunc) (NpyAuxData *);
+        -:  309:typedef NpyAuxData *(NpyAuxData_CloneFunc) (NpyAuxData *);
+        -:  310:
+        -:  311:struct NpyAuxData_tag {
+        -:  312:    NpyAuxData_FreeFunc *free;
+        -:  313:    NpyAuxData_CloneFunc *clone;
+        -:  314:    /* To allow for a bit of expansion without breaking the ABI */
+        -:  315:    void *reserved[2];
+        -:  316:};
+        -:  317:
+        -:  318:/* Macros to use for freeing and cloning auxiliary data */
+        -:  319:#define NPY_AUXDATA_FREE(auxdata) \
+        -:  320:    do { \
+        -:  321:        if ((auxdata) != NULL) { \
+        -:  322:            (auxdata)->free(auxdata); \
+        -:  323:        } \
+        -:  324:    } while(0)
+        -:  325:#define NPY_AUXDATA_CLONE(auxdata) \
+        -:  326:    ((auxdata)->clone(auxdata))
+        -:  327:
+        -:  328:#define NPY_ERR(str) fprintf(stderr, #str); fflush(stderr);
+        -:  329:#define NPY_ERR2(str) fprintf(stderr, str); fflush(stderr);
+        -:  330:
+        -:  331:#define NPY_STRINGIFY(x) #x
+        -:  332:#define NPY_TOSTRING(x) NPY_STRINGIFY(x)
+        -:  333:
+        -:  334:  /*
+        -:  335:   * Macros to define how array, and dimension/strides data is
+        -:  336:   * allocated.
+        -:  337:   */
+        -:  338:
+        -:  339:  /* Data buffer - PyDataMem_NEW/FREE/RENEW are in multiarraymodule.c */
+        -:  340:
+        -:  341:#define NPY_USE_PYMEM 1
+        -:  342:
+        -:  343:#if NPY_USE_PYMEM == 1
+        -:  344:   /* numpy sometimes calls PyArray_malloc() with the GIL released. On Python
+        -:  345:      3.3 and older, it was safe to call PyMem_Malloc() with the GIL released.
+        -:  346:      On Python 3.4 and newer, it's better to use PyMem_RawMalloc() to be able
+        -:  347:      to use tracemalloc. On Python 3.6, calling PyMem_Malloc() with the GIL
+        -:  348:      released is now a fatal error in debug mode. */
+        -:  349:#  if PY_VERSION_HEX >= 0x03040000
+        -:  350:#    define PyArray_malloc PyMem_RawMalloc
+        -:  351:#    define PyArray_free PyMem_RawFree
+        -:  352:#    define PyArray_realloc PyMem_RawRealloc
+        -:  353:#  else
+        -:  354:#    define PyArray_malloc PyMem_Malloc
+        -:  355:#    define PyArray_free PyMem_Free
+        -:  356:#    define PyArray_realloc PyMem_Realloc
+        -:  357:#  endif
+        -:  358:#else
+        -:  359:#define PyArray_malloc malloc
+        -:  360:#define PyArray_free free
+        -:  361:#define PyArray_realloc realloc
+        -:  362:#endif
+        -:  363:
+        -:  364:/* Dimensions and strides */
+        -:  365:#define PyDimMem_NEW(size)                                         \
+        -:  366:    ((npy_intp *)PyArray_malloc(size*sizeof(npy_intp)))
+        -:  367:
+        -:  368:#define PyDimMem_FREE(ptr) PyArray_free(ptr)
+        -:  369:
+        -:  370:#define PyDimMem_RENEW(ptr,size)                                   \
+        -:  371:        ((npy_intp *)PyArray_realloc(ptr,size*sizeof(npy_intp)))
+        -:  372:
+        -:  373:/* forward declaration */
+        -:  374:struct _PyArray_Descr;
+        -:  375:
+        -:  376:/* These must deal with unaligned and swapped data if necessary */
+        -:  377:typedef PyObject * (PyArray_GetItemFunc) (void *, void *);
+        -:  378:typedef int (PyArray_SetItemFunc)(PyObject *, void *, void *);
+        -:  379:
+        -:  380:typedef void (PyArray_CopySwapNFunc)(void *, npy_intp, void *, npy_intp,
+        -:  381:                                     npy_intp, int, void *);
+        -:  382:
+        -:  383:typedef void (PyArray_CopySwapFunc)(void *, void *, int, void *);
+        -:  384:typedef npy_bool (PyArray_NonzeroFunc)(void *, void *);
+        -:  385:
+        -:  386:
+        -:  387:/*
+        -:  388: * These assume aligned and notswapped data -- a buffer will be used
+        -:  389: * before or contiguous data will be obtained
+        -:  390: */
+        -:  391:
+        -:  392:typedef int (PyArray_CompareFunc)(const void *, const void *, void *);
+        -:  393:typedef int (PyArray_ArgFunc)(void*, npy_intp, npy_intp*, void *);
+        -:  394:
+        -:  395:typedef void (PyArray_DotFunc)(void *, npy_intp, void *, npy_intp, void *,
+        -:  396:                               npy_intp, void *);
+        -:  397:
+        -:  398:typedef void (PyArray_VectorUnaryFunc)(void *, void *, npy_intp, void *,
+        -:  399:                                       void *);
+        -:  400:
+        -:  401:/*
+        -:  402: * XXX the ignore argument should be removed next time the API version
+        -:  403: * is bumped. It used to be the separator.
+        -:  404: */
+        -:  405:typedef int (PyArray_ScanFunc)(FILE *fp, void *dptr,
+        -:  406:                               char *ignore, struct _PyArray_Descr *);
+        -:  407:typedef int (PyArray_FromStrFunc)(char *s, void *dptr, char **endptr,
+        -:  408:                                  struct _PyArray_Descr *);
+        -:  409:
+        -:  410:typedef int (PyArray_FillFunc)(void *, npy_intp, void *);
+        -:  411:
+        -:  412:typedef int (PyArray_SortFunc)(void *, npy_intp, void *);
+        -:  413:typedef int (PyArray_ArgSortFunc)(void *, npy_intp *, npy_intp, void *);
+        -:  414:typedef int (PyArray_PartitionFunc)(void *, npy_intp, npy_intp,
+        -:  415:                                    npy_intp *, npy_intp *,
+        -:  416:                                    void *);
+        -:  417:typedef int (PyArray_ArgPartitionFunc)(void *, npy_intp *, npy_intp, npy_intp,
+        -:  418:                                       npy_intp *, npy_intp *,
+        -:  419:                                       void *);
+        -:  420:
+        -:  421:typedef int (PyArray_FillWithScalarFunc)(void *, npy_intp, void *, void *);
+        -:  422:
+        -:  423:typedef int (PyArray_ScalarKindFunc)(void *);
+        -:  424:
+        -:  425:typedef void (PyArray_FastClipFunc)(void *in, npy_intp n_in, void *min,
+        -:  426:                                    void *max, void *out);
+        -:  427:typedef void (PyArray_FastPutmaskFunc)(void *in, void *mask, npy_intp n_in,
+        -:  428:                                       void *values, npy_intp nv);
+        -:  429:typedef int  (PyArray_FastTakeFunc)(void *dest, void *src, npy_intp *indarray,
+        -:  430:                                       npy_intp nindarray, npy_intp n_outer,
+        -:  431:                                       npy_intp m_middle, npy_intp nelem,
+        -:  432:                                       NPY_CLIPMODE clipmode);
+        -:  433:
+        -:  434:typedef struct {
+        -:  435:        npy_intp *ptr;
+        -:  436:        int len;
+        -:  437:} PyArray_Dims;
+        -:  438:
+        -:  439:typedef struct {
+        -:  440:        /*
+        -:  441:         * Functions to cast to most other standard types
+        -:  442:         * Can have some NULL entries. The types
+        -:  443:         * DATETIME, TIMEDELTA, and HALF go into the castdict
+        -:  444:         * even though they are built-in.
+        -:  445:         */
+        -:  446:        PyArray_VectorUnaryFunc *cast[NPY_NTYPES_ABI_COMPATIBLE];
+        -:  447:
+        -:  448:        /* The next four functions *cannot* be NULL */
+        -:  449:
+        -:  450:        /*
+        -:  451:         * Functions to get and set items with standard Python types
+        -:  452:         * -- not array scalars
+        -:  453:         */
+        -:  454:        PyArray_GetItemFunc *getitem;
+        -:  455:        PyArray_SetItemFunc *setitem;
+        -:  456:
+        -:  457:        /*
+        -:  458:         * Copy and/or swap data.  Memory areas may not overlap
+        -:  459:         * Use memmove first if they might
+        -:  460:         */
+        -:  461:        PyArray_CopySwapNFunc *copyswapn;
+        -:  462:        PyArray_CopySwapFunc *copyswap;
+        -:  463:
+        -:  464:        /*
+        -:  465:         * Function to compare items
+        -:  466:         * Can be NULL
+        -:  467:         */
+        -:  468:        PyArray_CompareFunc *compare;
+        -:  469:
+        -:  470:        /*
+        -:  471:         * Function to select largest
+        -:  472:         * Can be NULL
+        -:  473:         */
+        -:  474:        PyArray_ArgFunc *argmax;
+        -:  475:
+        -:  476:        /*
+        -:  477:         * Function to compute dot product
+        -:  478:         * Can be NULL
+        -:  479:         */
+        -:  480:        PyArray_DotFunc *dotfunc;
+        -:  481:
+        -:  482:        /*
+        -:  483:         * Function to scan an ASCII file and
+        -:  484:         * place a single value plus possible separator
+        -:  485:         * Can be NULL
+        -:  486:         */
+        -:  487:        PyArray_ScanFunc *scanfunc;
+        -:  488:
+        -:  489:        /*
+        -:  490:         * Function to read a single value from a string
+        -:  491:         * and adjust the pointer; Can be NULL
+        -:  492:         */
+        -:  493:        PyArray_FromStrFunc *fromstr;
+        -:  494:
+        -:  495:        /*
+        -:  496:         * Function to determine if data is zero or not
+        -:  497:         * If NULL a default version is
+        -:  498:         * used at Registration time.
+        -:  499:         */
+        -:  500:        PyArray_NonzeroFunc *nonzero;
+        -:  501:
+        -:  502:        /*
+        -:  503:         * Used for arange.
+        -:  504:         * Can be NULL.
+        -:  505:         */
+        -:  506:        PyArray_FillFunc *fill;
+        -:  507:
+        -:  508:        /*
+        -:  509:         * Function to fill arrays with scalar values
+        -:  510:         * Can be NULL
+        -:  511:         */
+        -:  512:        PyArray_FillWithScalarFunc *fillwithscalar;
+        -:  513:
+        -:  514:        /*
+        -:  515:         * Sorting functions
+        -:  516:         * Can be NULL
+        -:  517:         */
+        -:  518:        PyArray_SortFunc *sort[NPY_NSORTS];
+        -:  519:        PyArray_ArgSortFunc *argsort[NPY_NSORTS];
+        -:  520:
+        -:  521:        /*
+        -:  522:         * Dictionary of additional casting functions
+        -:  523:         * PyArray_VectorUnaryFuncs
+        -:  524:         * which can be populated to support casting
+        -:  525:         * to other registered types. Can be NULL
+        -:  526:         */
+        -:  527:        PyObject *castdict;
+        -:  528:
+        -:  529:        /*
+        -:  530:         * Functions useful for generalizing
+        -:  531:         * the casting rules.
+        -:  532:         * Can be NULL;
+        -:  533:         */
+        -:  534:        PyArray_ScalarKindFunc *scalarkind;
+        -:  535:        int **cancastscalarkindto;
+        -:  536:        int *cancastto;
+        -:  537:
+        -:  538:        PyArray_FastClipFunc *fastclip;
+        -:  539:        PyArray_FastPutmaskFunc *fastputmask;
+        -:  540:        PyArray_FastTakeFunc *fasttake;
+        -:  541:
+        -:  542:        /*
+        -:  543:         * Function to select smallest
+        -:  544:         * Can be NULL
+        -:  545:         */
+        -:  546:        PyArray_ArgFunc *argmin;
+        -:  547:
+        -:  548:} PyArray_ArrFuncs;
+        -:  549:
+        -:  550:/* The item must be reference counted when it is inserted or extracted. */
+        -:  551:#define NPY_ITEM_REFCOUNT   0x01
+        -:  552:/* Same as needing REFCOUNT */
+        -:  553:#define NPY_ITEM_HASOBJECT  0x01
+        -:  554:/* Convert to list for pickling */
+        -:  555:#define NPY_LIST_PICKLE     0x02
+        -:  556:/* The item is a POINTER  */
+        -:  557:#define NPY_ITEM_IS_POINTER 0x04
+        -:  558:/* memory needs to be initialized for this data-type */
+        -:  559:#define NPY_NEEDS_INIT      0x08
+        -:  560:/* operations need Python C-API so don't give-up thread. */
+        -:  561:#define NPY_NEEDS_PYAPI     0x10
+        -:  562:/* Use f.getitem when extracting elements of this data-type */
+        -:  563:#define NPY_USE_GETITEM     0x20
+        -:  564:/* Use f.setitem when setting creating 0-d array from this data-type.*/
+        -:  565:#define NPY_USE_SETITEM     0x40
+        -:  566:/* A sticky flag specifically for structured arrays */
+        -:  567:#define NPY_ALIGNED_STRUCT  0x80
+        -:  568:
+        -:  569:/*
+        -:  570: *These are inherited for global data-type if any data-types in the
+        -:  571: * field have them
+        -:  572: */
+        -:  573:#define NPY_FROM_FIELDS    (NPY_NEEDS_INIT | NPY_LIST_PICKLE | \
+        -:  574:                            NPY_ITEM_REFCOUNT | NPY_NEEDS_PYAPI)
+        -:  575:
+        -:  576:#define NPY_OBJECT_DTYPE_FLAGS (NPY_LIST_PICKLE | NPY_USE_GETITEM | \
+        -:  577:                                NPY_ITEM_IS_POINTER | NPY_ITEM_REFCOUNT | \
+        -:  578:                                NPY_NEEDS_INIT | NPY_NEEDS_PYAPI)
+        -:  579:
+        -:  580:#define PyDataType_FLAGCHK(dtype, flag) \
+        -:  581:        (((dtype)->flags & (flag)) == (flag))
+        -:  582:
+        -:  583:#define PyDataType_REFCHK(dtype) \
+        -:  584:        PyDataType_FLAGCHK(dtype, NPY_ITEM_REFCOUNT)
+        -:  585:
+        -:  586:typedef struct _PyArray_Descr {
+        -:  587:        PyObject_HEAD
+        -:  588:        /*
+        -:  589:         * the type object representing an
+        -:  590:         * instance of this type -- should not
+        -:  591:         * be two type_numbers with the same type
+        -:  592:         * object.
+        -:  593:         */
+        -:  594:        PyTypeObject *typeobj;
+        -:  595:        /* kind for this type */
+        -:  596:        char kind;
+        -:  597:        /* unique-character representing this type */
+        -:  598:        char type;
+        -:  599:        /*
+        -:  600:         * '>' (big), '<' (little), '|'
+        -:  601:         * (not-applicable), or '=' (native).
+        -:  602:         */
+        -:  603:        char byteorder;
+        -:  604:        /* flags describing data type */
+        -:  605:        char flags;
+        -:  606:        /* number representing this type */
+        -:  607:        int type_num;
+        -:  608:        /* element size (itemsize) for this type */
+        -:  609:        int elsize;
+        -:  610:        /* alignment needed for this type */
+        -:  611:        int alignment;
+        -:  612:        /*
+        -:  613:         * Non-NULL if this type is
+        -:  614:         * is an array (C-contiguous)
+        -:  615:         * of some other type
+        -:  616:         */
+        -:  617:        struct _arr_descr *subarray;
+        -:  618:        /*
+        -:  619:         * The fields dictionary for this type
+        -:  620:         * For statically defined descr this
+        -:  621:         * is always Py_None
+        -:  622:         */
+        -:  623:        PyObject *fields;
+        -:  624:        /*
+        -:  625:         * An ordered tuple of field names or NULL
+        -:  626:         * if no fields are defined
+        -:  627:         */
+        -:  628:        PyObject *names;
+        -:  629:        /*
+        -:  630:         * a table of functions specific for each
+        -:  631:         * basic data descriptor
+        -:  632:         */
+        -:  633:        PyArray_ArrFuncs *f;
+        -:  634:        /* Metadata about this dtype */
+        -:  635:        PyObject *metadata;
+        -:  636:        /*
+        -:  637:         * Metadata specific to the C implementation
+        -:  638:         * of the particular dtype. This was added
+        -:  639:         * for NumPy 1.7.0.
+        -:  640:         */
+        -:  641:        NpyAuxData *c_metadata;
+        -:  642:        /* Cached hash value (-1 if not yet computed).
+        -:  643:         * This was added for NumPy 2.0.0.
+        -:  644:         */
+        -:  645:        npy_hash_t hash;
+        -:  646:} PyArray_Descr;
+        -:  647:
+        -:  648:typedef struct _arr_descr {
+        -:  649:        PyArray_Descr *base;
+        -:  650:        PyObject *shape;       /* a tuple */
+        -:  651:} PyArray_ArrayDescr;
+        -:  652:
+        -:  653:/*
+        -:  654: * The main array object structure.
+        -:  655: *
+        -:  656: * It has been recommended to use the inline functions defined below
+        -:  657: * (PyArray_DATA and friends) to access fields here for a number of
+        -:  658: * releases. Direct access to the members themselves is deprecated.
+        -:  659: * To ensure that your code does not use deprecated access,
+        -:  660: * #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+        -:  661: * (or NPY_1_8_API_VERSION or higher as required).
+        -:  662: */
+        -:  663:/* This struct will be moved to a private header in a future release */
+        -:  664:typedef struct tagPyArrayObject_fields {
+        -:  665:    PyObject_HEAD
+        -:  666:    /* Pointer to the raw data buffer */
+        -:  667:    char *data;
+        -:  668:    /* The number of dimensions, also called 'ndim' */
+        -:  669:    int nd;
+        -:  670:    /* The size in each dimension, also called 'shape' */
+        -:  671:    npy_intp *dimensions;
+        -:  672:    /*
+        -:  673:     * Number of bytes to jump to get to the
+        -:  674:     * next element in each dimension
+        -:  675:     */
+        -:  676:    npy_intp *strides;
+        -:  677:    /*
+        -:  678:     * This object is decref'd upon
+        -:  679:     * deletion of array. Except in the
+        -:  680:     * case of UPDATEIFCOPY which has
+        -:  681:     * special handling.
+        -:  682:     *
+        -:  683:     * For views it points to the original
+        -:  684:     * array, collapsed so no chains of
+        -:  685:     * views occur.
+        -:  686:     *
+        -:  687:     * For creation from buffer object it
+        -:  688:     * points to an object that should be
+        -:  689:     * decref'd on deletion
+        -:  690:     *
+        -:  691:     * For UPDATEIFCOPY flag this is an
+        -:  692:     * array to-be-updated upon deletion
+        -:  693:     * of this one
+        -:  694:     */
+        -:  695:    PyObject *base;
+        -:  696:    /* Pointer to type structure */
+        -:  697:    PyArray_Descr *descr;
+        -:  698:    /* Flags describing array -- see below */
+        -:  699:    int flags;
+        -:  700:    /* For weak references */
+        -:  701:    PyObject *weakreflist;
+        -:  702:} PyArrayObject_fields;
+        -:  703:
+        -:  704:/*
+        -:  705: * To hide the implementation details, we only expose
+        -:  706: * the Python struct HEAD.
+        -:  707: */
+        -:  708:#if !defined(NPY_NO_DEPRECATED_API) || \
+        -:  709:    (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
+        -:  710:/*
+        -:  711: * Can't put this in npy_deprecated_api.h like the others.
+        -:  712: * PyArrayObject field access is deprecated as of NumPy 1.7.
+        -:  713: */
+        -:  714:typedef PyArrayObject_fields PyArrayObject;
+        -:  715:#else
+        -:  716:typedef struct tagPyArrayObject {
+        -:  717:        PyObject_HEAD
+        -:  718:} PyArrayObject;
+        -:  719:#endif
+        -:  720:
+        -:  721:#define NPY_SIZEOF_PYARRAYOBJECT (sizeof(PyArrayObject_fields))
+        -:  722:
+        -:  723:/* Array Flags Object */
+        -:  724:typedef struct PyArrayFlagsObject {
+        -:  725:        PyObject_HEAD
+        -:  726:        PyObject *arr;
+        -:  727:        int flags;
+        -:  728:} PyArrayFlagsObject;
+        -:  729:
+        -:  730:/* Mirrors buffer object to ptr */
+        -:  731:
+        -:  732:typedef struct {
+        -:  733:        PyObject_HEAD
+        -:  734:        PyObject *base;
+        -:  735:        void *ptr;
+        -:  736:        npy_intp len;
+        -:  737:        int flags;
+        -:  738:} PyArray_Chunk;
+        -:  739:
+        -:  740:typedef struct {
+        -:  741:    NPY_DATETIMEUNIT base;
+        -:  742:    int num;
+        -:  743:} PyArray_DatetimeMetaData;
+        -:  744:
+        -:  745:typedef struct {
+        -:  746:    NpyAuxData base;
+        -:  747:    PyArray_DatetimeMetaData meta;
+        -:  748:} PyArray_DatetimeDTypeMetaData;
+        -:  749:
+        -:  750:/*
+        -:  751: * This structure contains an exploded view of a date-time value.
+        -:  752: * NaT is represented by year == NPY_DATETIME_NAT.
+        -:  753: */
+        -:  754:typedef struct {
+        -:  755:        npy_int64 year;
+        -:  756:        npy_int32 month, day, hour, min, sec, us, ps, as;
+        -:  757:} npy_datetimestruct;
+        -:  758:
+        -:  759:/* This is not used internally. */
+        -:  760:typedef struct {
+        -:  761:        npy_int64 day;
+        -:  762:        npy_int32 sec, us, ps, as;
+        -:  763:} npy_timedeltastruct;
+        -:  764:
+        -:  765:typedef int (PyArray_FinalizeFunc)(PyArrayObject *, PyObject *);
+        -:  766:
+        -:  767:/*
+        -:  768: * Means c-style contiguous (last index varies the fastest). The data
+        -:  769: * elements right after each other.
+        -:  770: *
+        -:  771: * This flag may be requested in constructor functions.
+        -:  772: * This flag may be tested for in PyArray_FLAGS(arr).
+        -:  773: */
+        -:  774:#define NPY_ARRAY_C_CONTIGUOUS    0x0001
+        -:  775:
+        -:  776:/*
+        -:  777: * Set if array is a contiguous Fortran array: the first index varies
+        -:  778: * the fastest in memory (strides array is reverse of C-contiguous
+        -:  779: * array)
+        -:  780: *
+        -:  781: * This flag may be requested in constructor functions.
+        -:  782: * This flag may be tested for in PyArray_FLAGS(arr).
+        -:  783: */
+        -:  784:#define NPY_ARRAY_F_CONTIGUOUS    0x0002
+        -:  785:
+        -:  786:/*
+        -:  787: * Note: all 0-d arrays are C_CONTIGUOUS and F_CONTIGUOUS. If a
+        -:  788: * 1-d array is C_CONTIGUOUS it is also F_CONTIGUOUS. Arrays with
+        -:  789: * more then one dimension can be C_CONTIGUOUS and F_CONTIGUOUS
+        -:  790: * at the same time if they have either zero or one element.
+        -:  791: * If NPY_RELAXED_STRIDES_CHECKING is set, a higher dimensional
+        -:  792: * array is always C_CONTIGUOUS and F_CONTIGUOUS if it has zero elements
+        -:  793: * and the array is contiguous if ndarray.squeeze() is contiguous.
+        -:  794: * I.e. dimensions for which `ndarray.shape[dimension] == 1` are
+        -:  795: * ignored.
+        -:  796: */
+        -:  797:
+        -:  798:/*
+        -:  799: * If set, the array owns the data: it will be free'd when the array
+        -:  800: * is deleted.
+        -:  801: *
+        -:  802: * This flag may be tested for in PyArray_FLAGS(arr).
+        -:  803: */
+        -:  804:#define NPY_ARRAY_OWNDATA         0x0004
+        -:  805:
+        -:  806:/*
+        -:  807: * An array never has the next four set; they're only used as parameter
+        -:  808: * flags to the various FromAny functions
+        -:  809: *
+        -:  810: * This flag may be requested in constructor functions.
+        -:  811: */
+        -:  812:
+        -:  813:/* Cause a cast to occur regardless of whether or not it is safe. */
+        -:  814:#define NPY_ARRAY_FORCECAST       0x0010
+        -:  815:
+        -:  816:/*
+        -:  817: * Always copy the array. Returned arrays are always CONTIGUOUS,
+        -:  818: * ALIGNED, and WRITEABLE.
+        -:  819: *
+        -:  820: * This flag may be requested in constructor functions.
+        -:  821: */
+        -:  822:#define NPY_ARRAY_ENSURECOPY      0x0020
+        -:  823:
+        -:  824:/*
+        -:  825: * Make sure the returned array is a base-class ndarray
+        -:  826: *
+        -:  827: * This flag may be requested in constructor functions.
+        -:  828: */
+        -:  829:#define NPY_ARRAY_ENSUREARRAY     0x0040
+        -:  830:
+        -:  831:/*
+        -:  832: * Make sure that the strides are in units of the element size Needed
+        -:  833: * for some operations with record-arrays.
+        -:  834: *
+        -:  835: * This flag may be requested in constructor functions.
+        -:  836: */
+        -:  837:#define NPY_ARRAY_ELEMENTSTRIDES  0x0080
+        -:  838:
+        -:  839:/*
+        -:  840: * Array data is aligned on the appropriate memory address for the type
+        -:  841: * stored according to how the compiler would align things (e.g., an
+        -:  842: * array of integers (4 bytes each) starts on a memory address that's
+        -:  843: * a multiple of 4)
+        -:  844: *
+        -:  845: * This flag may be requested in constructor functions.
+        -:  846: * This flag may be tested for in PyArray_FLAGS(arr).
+        -:  847: */
+        -:  848:#define NPY_ARRAY_ALIGNED         0x0100
+        -:  849:
+        -:  850:/*
+        -:  851: * Array data has the native endianness
+        -:  852: *
+        -:  853: * This flag may be requested in constructor functions.
+        -:  854: */
+        -:  855:#define NPY_ARRAY_NOTSWAPPED      0x0200
+        -:  856:
+        -:  857:/*
+        -:  858: * Array data is writeable
+        -:  859: *
+        -:  860: * This flag may be requested in constructor functions.
+        -:  861: * This flag may be tested for in PyArray_FLAGS(arr).
+        -:  862: */
+        -:  863:#define NPY_ARRAY_WRITEABLE       0x0400
+        -:  864:
+        -:  865:/*
+        -:  866: * If this flag is set, then base contains a pointer to an array of
+        -:  867: * the same size that should be updated with the current contents of
+        -:  868: * this array when this array is deallocated
+        -:  869: *
+        -:  870: * This flag may be requested in constructor functions.
+        -:  871: * This flag may be tested for in PyArray_FLAGS(arr).
+        -:  872: */
+        -:  873:#define NPY_ARRAY_UPDATEIFCOPY    0x1000
+        -:  874:
+        -:  875:/*
+        -:  876: * NOTE: there are also internal flags defined in multiarray/arrayobject.h,
+        -:  877: * which start at bit 31 and work down.
+        -:  878: */
+        -:  879:
+        -:  880:#define NPY_ARRAY_BEHAVED      (NPY_ARRAY_ALIGNED | \
+        -:  881:                                NPY_ARRAY_WRITEABLE)
+        -:  882:#define NPY_ARRAY_BEHAVED_NS   (NPY_ARRAY_ALIGNED | \
+        -:  883:                                NPY_ARRAY_WRITEABLE | \
+        -:  884:                                NPY_ARRAY_NOTSWAPPED)
+        -:  885:#define NPY_ARRAY_CARRAY       (NPY_ARRAY_C_CONTIGUOUS | \
+        -:  886:                                NPY_ARRAY_BEHAVED)
+        -:  887:#define NPY_ARRAY_CARRAY_RO    (NPY_ARRAY_C_CONTIGUOUS | \
+        -:  888:                                NPY_ARRAY_ALIGNED)
+        -:  889:#define NPY_ARRAY_FARRAY       (NPY_ARRAY_F_CONTIGUOUS | \
+        -:  890:                                NPY_ARRAY_BEHAVED)
+        -:  891:#define NPY_ARRAY_FARRAY_RO    (NPY_ARRAY_F_CONTIGUOUS | \
+        -:  892:                                NPY_ARRAY_ALIGNED)
+        -:  893:#define NPY_ARRAY_DEFAULT      (NPY_ARRAY_CARRAY)
+        -:  894:#define NPY_ARRAY_IN_ARRAY     (NPY_ARRAY_CARRAY_RO)
+        -:  895:#define NPY_ARRAY_OUT_ARRAY    (NPY_ARRAY_CARRAY)
+        -:  896:#define NPY_ARRAY_INOUT_ARRAY  (NPY_ARRAY_CARRAY | \
+        -:  897:                                NPY_ARRAY_UPDATEIFCOPY)
+        -:  898:#define NPY_ARRAY_IN_FARRAY    (NPY_ARRAY_FARRAY_RO)
+        -:  899:#define NPY_ARRAY_OUT_FARRAY   (NPY_ARRAY_FARRAY)
+        -:  900:#define NPY_ARRAY_INOUT_FARRAY (NPY_ARRAY_FARRAY | \
+        -:  901:                                NPY_ARRAY_UPDATEIFCOPY)
+        -:  902:
+        -:  903:#define NPY_ARRAY_UPDATE_ALL   (NPY_ARRAY_C_CONTIGUOUS | \
+        -:  904:                                NPY_ARRAY_F_CONTIGUOUS | \
+        -:  905:                                NPY_ARRAY_ALIGNED)
+        -:  906:
+        -:  907:/* This flag is for the array interface, not PyArrayObject */
+        -:  908:#define NPY_ARR_HAS_DESCR  0x0800
+        -:  909:
+        -:  910:
+        -:  911:
+        -:  912:
+        -:  913:/*
+        -:  914: * Size of internal buffers used for alignment Make BUFSIZE a multiple
+        -:  915: * of sizeof(npy_cdouble) -- usually 16 so that ufunc buffers are aligned
+        -:  916: */
+        -:  917:#define NPY_MIN_BUFSIZE ((int)sizeof(npy_cdouble))
+        -:  918:#define NPY_MAX_BUFSIZE (((int)sizeof(npy_cdouble))*1000000)
+        -:  919:#define NPY_BUFSIZE 8192
+        -:  920:/* buffer stress test size: */
+        -:  921:/*#define NPY_BUFSIZE 17*/
+        -:  922:
+        -:  923:#define PyArray_MAX(a,b) (((a)>(b))?(a):(b))
+        -:  924:#define PyArray_MIN(a,b) (((a)<(b))?(a):(b))
+        -:  925:#define PyArray_CLT(p,q) ((((p).real==(q).real) ? ((p).imag < (q).imag) : \
+        -:  926:                               ((p).real < (q).real)))
+        -:  927:#define PyArray_CGT(p,q) ((((p).real==(q).real) ? ((p).imag > (q).imag) : \
+        -:  928:                               ((p).real > (q).real)))
+        -:  929:#define PyArray_CLE(p,q) ((((p).real==(q).real) ? ((p).imag <= (q).imag) : \
+        -:  930:                               ((p).real <= (q).real)))
+        -:  931:#define PyArray_CGE(p,q) ((((p).real==(q).real) ? ((p).imag >= (q).imag) : \
+        -:  932:                               ((p).real >= (q).real)))
+        -:  933:#define PyArray_CEQ(p,q) (((p).real==(q).real) && ((p).imag == (q).imag))
+        -:  934:#define PyArray_CNE(p,q) (((p).real!=(q).real) || ((p).imag != (q).imag))
+        -:  935:
+        -:  936:/*
+        -:  937: * C API: consists of Macros and functions.  The MACROS are defined
+        -:  938: * here.
+        -:  939: */
+        -:  940:
+        -:  941:
+        -:  942:#define PyArray_ISCONTIGUOUS(m) PyArray_CHKFLAGS(m, NPY_ARRAY_C_CONTIGUOUS)
+        -:  943:#define PyArray_ISWRITEABLE(m) PyArray_CHKFLAGS(m, NPY_ARRAY_WRITEABLE)
+        -:  944:#define PyArray_ISALIGNED(m) PyArray_CHKFLAGS(m, NPY_ARRAY_ALIGNED)
+        -:  945:
+        -:  946:#define PyArray_IS_C_CONTIGUOUS(m) PyArray_CHKFLAGS(m, NPY_ARRAY_C_CONTIGUOUS)
+        -:  947:#define PyArray_IS_F_CONTIGUOUS(m) PyArray_CHKFLAGS(m, NPY_ARRAY_F_CONTIGUOUS)
+        -:  948:
+        -:  949:/* the variable is used in some places, so always define it */
+        -:  950:#define NPY_BEGIN_THREADS_DEF PyThreadState *_save=NULL;
+        -:  951:#if NPY_ALLOW_THREADS
+        -:  952:#define NPY_BEGIN_ALLOW_THREADS Py_BEGIN_ALLOW_THREADS
+        -:  953:#define NPY_END_ALLOW_THREADS Py_END_ALLOW_THREADS
+        -:  954:#define NPY_BEGIN_THREADS do {_save = PyEval_SaveThread();} while (0);
+        -:  955:#define NPY_END_THREADS   do { if (_save) \
+        -:  956:                { PyEval_RestoreThread(_save); _save = NULL;} } while (0);
+        -:  957:#define NPY_BEGIN_THREADS_THRESHOLDED(loop_size) do { if (loop_size > 500) \
+        -:  958:                { _save = PyEval_SaveThread();} } while (0);
+        -:  959:
+        -:  960:#define NPY_BEGIN_THREADS_DESCR(dtype) \
+        -:  961:        do {if (!(PyDataType_FLAGCHK(dtype, NPY_NEEDS_PYAPI))) \
+        -:  962:                NPY_BEGIN_THREADS;} while (0);
+        -:  963:
+        -:  964:#define NPY_END_THREADS_DESCR(dtype) \
+        -:  965:        do {if (!(PyDataType_FLAGCHK(dtype, NPY_NEEDS_PYAPI))) \
+        -:  966:                NPY_END_THREADS; } while (0);
+        -:  967:
+        -:  968:#define NPY_ALLOW_C_API_DEF  PyGILState_STATE __save__;
+        -:  969:#define NPY_ALLOW_C_API      do {__save__ = PyGILState_Ensure();} while (0);
+        -:  970:#define NPY_DISABLE_C_API    do {PyGILState_Release(__save__);} while (0);
+        -:  971:#else
+        -:  972:#define NPY_BEGIN_ALLOW_THREADS
+        -:  973:#define NPY_END_ALLOW_THREADS
+        -:  974:#define NPY_BEGIN_THREADS
+        -:  975:#define NPY_END_THREADS
+        -:  976:#define NPY_BEGIN_THREADS_THRESHOLDED(loop_size)
+        -:  977:#define NPY_BEGIN_THREADS_DESCR(dtype)
+        -:  978:#define NPY_END_THREADS_DESCR(dtype)
+        -:  979:#define NPY_ALLOW_C_API_DEF
+        -:  980:#define NPY_ALLOW_C_API
+        -:  981:#define NPY_DISABLE_C_API
+        -:  982:#endif
+        -:  983:
+        -:  984:/**********************************
+        -:  985: * The nditer object, added in 1.6
+        -:  986: **********************************/
+        -:  987:
+        -:  988:/* The actual structure of the iterator is an internal detail */
+        -:  989:typedef struct NpyIter_InternalOnly NpyIter;
+        -:  990:
+        -:  991:/* Iterator function pointers that may be specialized */
+        -:  992:typedef int (NpyIter_IterNextFunc)(NpyIter *iter);
+        -:  993:typedef void (NpyIter_GetMultiIndexFunc)(NpyIter *iter,
+        -:  994:                                      npy_intp *outcoords);
+        -:  995:
+        -:  996:/*** Global flags that may be passed to the iterator constructors ***/
+        -:  997:
+        -:  998:/* Track an index representing C order */
+        -:  999:#define NPY_ITER_C_INDEX                    0x00000001
+        -: 1000:/* Track an index representing Fortran order */
+        -: 1001:#define NPY_ITER_F_INDEX                    0x00000002
+        -: 1002:/* Track a multi-index */
+        -: 1003:#define NPY_ITER_MULTI_INDEX                0x00000004
+        -: 1004:/* User code external to the iterator does the 1-dimensional innermost loop */
+        -: 1005:#define NPY_ITER_EXTERNAL_LOOP              0x00000008
+        -: 1006:/* Convert all the operands to a common data type */
+        -: 1007:#define NPY_ITER_COMMON_DTYPE               0x00000010
+        -: 1008:/* Operands may hold references, requiring API access during iteration */
+        -: 1009:#define NPY_ITER_REFS_OK                    0x00000020
+        -: 1010:/* Zero-sized operands should be permitted, iteration checks IterSize for 0 */
+        -: 1011:#define NPY_ITER_ZEROSIZE_OK                0x00000040
+        -: 1012:/* Permits reductions (size-0 stride with dimension size > 1) */
+        -: 1013:#define NPY_ITER_REDUCE_OK                  0x00000080
+        -: 1014:/* Enables sub-range iteration */
+        -: 1015:#define NPY_ITER_RANGED                     0x00000100
+        -: 1016:/* Enables buffering */
+        -: 1017:#define NPY_ITER_BUFFERED                   0x00000200
+        -: 1018:/* When buffering is enabled, grows the inner loop if possible */
+        -: 1019:#define NPY_ITER_GROWINNER                  0x00000400
+        -: 1020:/* Delay allocation of buffers until first Reset* call */
+        -: 1021:#define NPY_ITER_DELAY_BUFALLOC             0x00000800
+        -: 1022:/* When NPY_KEEPORDER is specified, disable reversing negative-stride axes */
+        -: 1023:#define NPY_ITER_DONT_NEGATE_STRIDES        0x00001000
+        -: 1024:/*
+        -: 1025: * If output operands overlap with other operands (based on heuristics that
+        -: 1026: * has false positives but no false negatives), make temporary copies to
+        -: 1027: * eliminate overlap.
+        -: 1028: */
+        -: 1029:#define NPY_ITER_COPY_IF_OVERLAP            0x00002000
+        -: 1030:
+        -: 1031:/*** Per-operand flags that may be passed to the iterator constructors ***/
+        -: 1032:
+        -: 1033:/* The operand will be read from and written to */
+        -: 1034:#define NPY_ITER_READWRITE                  0x00010000
+        -: 1035:/* The operand will only be read from */
+        -: 1036:#define NPY_ITER_READONLY                   0x00020000
+        -: 1037:/* The operand will only be written to */
+        -: 1038:#define NPY_ITER_WRITEONLY                  0x00040000
+        -: 1039:/* The operand's data must be in native byte order */
+        -: 1040:#define NPY_ITER_NBO                        0x00080000
+        -: 1041:/* The operand's data must be aligned */
+        -: 1042:#define NPY_ITER_ALIGNED                    0x00100000
+        -: 1043:/* The operand's data must be contiguous (within the inner loop) */
+        -: 1044:#define NPY_ITER_CONTIG                     0x00200000
+        -: 1045:/* The operand may be copied to satisfy requirements */
+        -: 1046:#define NPY_ITER_COPY                       0x00400000
+        -: 1047:/* The operand may be copied with UPDATEIFCOPY to satisfy requirements */
+        -: 1048:#define NPY_ITER_UPDATEIFCOPY               0x00800000
+        -: 1049:/* Allocate the operand if it is NULL */
+        -: 1050:#define NPY_ITER_ALLOCATE                   0x01000000
+        -: 1051:/* If an operand is allocated, don't use any subtype */
+        -: 1052:#define NPY_ITER_NO_SUBTYPE                 0x02000000
+        -: 1053:/* This is a virtual array slot, operand is NULL but temporary data is there */
+        -: 1054:#define NPY_ITER_VIRTUAL                    0x04000000
+        -: 1055:/* Require that the dimension match the iterator dimensions exactly */
+        -: 1056:#define NPY_ITER_NO_BROADCAST               0x08000000
+        -: 1057:/* A mask is being used on this array, affects buffer -> array copy */
+        -: 1058:#define NPY_ITER_WRITEMASKED                0x10000000
+        -: 1059:/* This array is the mask for all WRITEMASKED operands */
+        -: 1060:#define NPY_ITER_ARRAYMASK                  0x20000000
+        -: 1061:/* Assume iterator order data access for COPY_IF_OVERLAP */
+        -: 1062:#define NPY_ITER_OVERLAP_ASSUME_ELEMENTWISE 0x40000000
+        -: 1063:
+        -: 1064:#define NPY_ITER_GLOBAL_FLAGS               0x0000ffff
+        -: 1065:#define NPY_ITER_PER_OP_FLAGS               0xffff0000
+        -: 1066:
+        -: 1067:
+        -: 1068:/*****************************
+        -: 1069: * Basic iterator object
+        -: 1070: *****************************/
+        -: 1071:
+        -: 1072:/* FWD declaration */
+        -: 1073:typedef struct PyArrayIterObject_tag PyArrayIterObject;
+        -: 1074:
+        -: 1075:/*
+        -: 1076: * type of the function which translates a set of coordinates to a
+        -: 1077: * pointer to the data
+        -: 1078: */
+        -: 1079:typedef char* (*npy_iter_get_dataptr_t)(PyArrayIterObject* iter, npy_intp*);
+        -: 1080:
+        -: 1081:struct PyArrayIterObject_tag {
+        -: 1082:        PyObject_HEAD
+        -: 1083:        int               nd_m1;            /* number of dimensions - 1 */
+        -: 1084:        npy_intp          index, size;
+        -: 1085:        npy_intp          coordinates[NPY_MAXDIMS];/* N-dimensional loop */
+        -: 1086:        npy_intp          dims_m1[NPY_MAXDIMS];    /* ao->dimensions - 1 */
+        -: 1087:        npy_intp          strides[NPY_MAXDIMS];    /* ao->strides or fake */
+        -: 1088:        npy_intp          backstrides[NPY_MAXDIMS];/* how far to jump back */
+        -: 1089:        npy_intp          factors[NPY_MAXDIMS];     /* shape factors */
+        -: 1090:        PyArrayObject     *ao;
+        -: 1091:        char              *dataptr;        /* pointer to current item*/
+        -: 1092:        npy_bool          contiguous;
+        -: 1093:
+        -: 1094:        npy_intp          bounds[NPY_MAXDIMS][2];
+        -: 1095:        npy_intp          limits[NPY_MAXDIMS][2];
+        -: 1096:        npy_intp          limits_sizes[NPY_MAXDIMS];
+        -: 1097:        npy_iter_get_dataptr_t translate;
+        -: 1098:} ;
+        -: 1099:
+        -: 1100:
+        -: 1101:/* Iterator API */
+        -: 1102:#define PyArrayIter_Check(op) PyObject_TypeCheck(op, &PyArrayIter_Type)
+        -: 1103:
+        -: 1104:#define _PyAIT(it) ((PyArrayIterObject *)(it))
+        -: 1105:#define PyArray_ITER_RESET(it) do { \
+        -: 1106:        _PyAIT(it)->index = 0; \
+        -: 1107:        _PyAIT(it)->dataptr = PyArray_BYTES(_PyAIT(it)->ao); \
+        -: 1108:        memset(_PyAIT(it)->coordinates, 0, \
+        -: 1109:               (_PyAIT(it)->nd_m1+1)*sizeof(npy_intp)); \
+        -: 1110:} while (0)
+        -: 1111:
+        -: 1112:#define _PyArray_ITER_NEXT1(it) do { \
+        -: 1113:        (it)->dataptr += _PyAIT(it)->strides[0]; \
+        -: 1114:        (it)->coordinates[0]++; \
+        -: 1115:} while (0)
+        -: 1116:
+        -: 1117:#define _PyArray_ITER_NEXT2(it) do { \
+        -: 1118:        if ((it)->coordinates[1] < (it)->dims_m1[1]) { \
+        -: 1119:                (it)->coordinates[1]++; \
+        -: 1120:                (it)->dataptr += (it)->strides[1]; \
+        -: 1121:        } \
+        -: 1122:        else { \
+        -: 1123:                (it)->coordinates[1] = 0; \
+        -: 1124:                (it)->coordinates[0]++; \
+        -: 1125:                (it)->dataptr += (it)->strides[0] - \
+        -: 1126:                        (it)->backstrides[1]; \
+        -: 1127:        } \
+        -: 1128:} while (0)
+        -: 1129:
+        -: 1130:#define PyArray_ITER_NEXT(it) do { \
+        -: 1131:        _PyAIT(it)->index++; \
+        -: 1132:        if (_PyAIT(it)->nd_m1 == 0) { \
+        -: 1133:                _PyArray_ITER_NEXT1(_PyAIT(it)); \
+        -: 1134:        } \
+        -: 1135:        else if (_PyAIT(it)->contiguous) \
+        -: 1136:                _PyAIT(it)->dataptr += PyArray_DESCR(_PyAIT(it)->ao)->elsize; \
+        -: 1137:        else if (_PyAIT(it)->nd_m1 == 1) { \
+        -: 1138:                _PyArray_ITER_NEXT2(_PyAIT(it)); \
+        -: 1139:        } \
+        -: 1140:        else { \
+        -: 1141:                int __npy_i; \
+        -: 1142:                for (__npy_i=_PyAIT(it)->nd_m1; __npy_i >= 0; __npy_i--) { \
+        -: 1143:                        if (_PyAIT(it)->coordinates[__npy_i] < \
+        -: 1144:                            _PyAIT(it)->dims_m1[__npy_i]) { \
+        -: 1145:                                _PyAIT(it)->coordinates[__npy_i]++; \
+        -: 1146:                                _PyAIT(it)->dataptr += \
+        -: 1147:                                        _PyAIT(it)->strides[__npy_i]; \
+        -: 1148:                                break; \
+        -: 1149:                        } \
+        -: 1150:                        else { \
+        -: 1151:                                _PyAIT(it)->coordinates[__npy_i] = 0; \
+        -: 1152:                                _PyAIT(it)->dataptr -= \
+        -: 1153:                                        _PyAIT(it)->backstrides[__npy_i]; \
+        -: 1154:                        } \
+        -: 1155:                } \
+        -: 1156:        } \
+        -: 1157:} while (0)
+        -: 1158:
+        -: 1159:#define PyArray_ITER_GOTO(it, destination) do { \
+        -: 1160:        int __npy_i; \
+        -: 1161:        _PyAIT(it)->index = 0; \
+        -: 1162:        _PyAIT(it)->dataptr = PyArray_BYTES(_PyAIT(it)->ao); \
+        -: 1163:        for (__npy_i = _PyAIT(it)->nd_m1; __npy_i>=0; __npy_i--) { \
+        -: 1164:                if (destination[__npy_i] < 0) { \
+        -: 1165:                        destination[__npy_i] += \
+        -: 1166:                                _PyAIT(it)->dims_m1[__npy_i]+1; \
+        -: 1167:                } \
+        -: 1168:                _PyAIT(it)->dataptr += destination[__npy_i] * \
+        -: 1169:                        _PyAIT(it)->strides[__npy_i]; \
+        -: 1170:                _PyAIT(it)->coordinates[__npy_i] = \
+        -: 1171:                        destination[__npy_i]; \
+        -: 1172:                _PyAIT(it)->index += destination[__npy_i] * \
+        -: 1173:                        ( __npy_i==_PyAIT(it)->nd_m1 ? 1 : \
+        -: 1174:                          _PyAIT(it)->dims_m1[__npy_i+1]+1) ; \
+        -: 1175:        } \
+        -: 1176:} while (0)
+        -: 1177:
+        -: 1178:#define PyArray_ITER_GOTO1D(it, ind) do { \
+        -: 1179:        int __npy_i; \
+        -: 1180:        npy_intp __npy_ind = (npy_intp) (ind); \
+        -: 1181:        if (__npy_ind < 0) __npy_ind += _PyAIT(it)->size; \
+        -: 1182:        _PyAIT(it)->index = __npy_ind; \
+        -: 1183:        if (_PyAIT(it)->nd_m1 == 0) { \
+        -: 1184:                _PyAIT(it)->dataptr = PyArray_BYTES(_PyAIT(it)->ao) + \
+        -: 1185:                        __npy_ind * _PyAIT(it)->strides[0]; \
+        -: 1186:        } \
+        -: 1187:        else if (_PyAIT(it)->contiguous) \
+        -: 1188:                _PyAIT(it)->dataptr = PyArray_BYTES(_PyAIT(it)->ao) + \
+        -: 1189:                        __npy_ind * PyArray_DESCR(_PyAIT(it)->ao)->elsize; \
+        -: 1190:        else { \
+        -: 1191:                _PyAIT(it)->dataptr = PyArray_BYTES(_PyAIT(it)->ao); \
+        -: 1192:                for (__npy_i = 0; __npy_i<=_PyAIT(it)->nd_m1; \
+        -: 1193:                     __npy_i++) { \
+        -: 1194:                        _PyAIT(it)->dataptr += \
+        -: 1195:                                (__npy_ind / _PyAIT(it)->factors[__npy_i]) \
+        -: 1196:                                * _PyAIT(it)->strides[__npy_i]; \
+        -: 1197:                        __npy_ind %= _PyAIT(it)->factors[__npy_i]; \
+        -: 1198:                } \
+        -: 1199:        } \
+        -: 1200:} while (0)
+        -: 1201:
+        -: 1202:#define PyArray_ITER_DATA(it) ((void *)(_PyAIT(it)->dataptr))
+        -: 1203:
+        -: 1204:#define PyArray_ITER_NOTDONE(it) (_PyAIT(it)->index < _PyAIT(it)->size)
+        -: 1205:
+        -: 1206:
+        -: 1207:/*
+        -: 1208: * Any object passed to PyArray_Broadcast must be binary compatible
+        -: 1209: * with this structure.
+        -: 1210: */
+        -: 1211:
+        -: 1212:typedef struct {
+        -: 1213:        PyObject_HEAD
+        -: 1214:        int                  numiter;                 /* number of iters */
+        -: 1215:        npy_intp             size;                    /* broadcasted size */
+        -: 1216:        npy_intp             index;                   /* current index */
+        -: 1217:        int                  nd;                      /* number of dims */
+        -: 1218:        npy_intp             dimensions[NPY_MAXDIMS]; /* dimensions */
+        -: 1219:        PyArrayIterObject    *iters[NPY_MAXARGS];     /* iterators */
+        -: 1220:} PyArrayMultiIterObject;
+        -: 1221:
+        -: 1222:#define _PyMIT(m) ((PyArrayMultiIterObject *)(m))
+        -: 1223:#define PyArray_MultiIter_RESET(multi) do {                                   \
+        -: 1224:        int __npy_mi;                                                         \
+        -: 1225:        _PyMIT(multi)->index = 0;                                             \
+        -: 1226:        for (__npy_mi=0; __npy_mi < _PyMIT(multi)->numiter;  __npy_mi++) {    \
+        -: 1227:                PyArray_ITER_RESET(_PyMIT(multi)->iters[__npy_mi]);           \
+        -: 1228:        }                                                                     \
+        -: 1229:} while (0)
+        -: 1230:
+        -: 1231:#define PyArray_MultiIter_NEXT(multi) do {                                    \
+        -: 1232:        int __npy_mi;                                                         \
+        -: 1233:        _PyMIT(multi)->index++;                                               \
+        -: 1234:        for (__npy_mi=0; __npy_mi < _PyMIT(multi)->numiter;   __npy_mi++) {   \
+        -: 1235:                PyArray_ITER_NEXT(_PyMIT(multi)->iters[__npy_mi]);            \
+        -: 1236:        }                                                                     \
+        -: 1237:} while (0)
+        -: 1238:
+        -: 1239:#define PyArray_MultiIter_GOTO(multi, dest) do {                            \
+        -: 1240:        int __npy_mi;                                                       \
+        -: 1241:        for (__npy_mi=0; __npy_mi < _PyMIT(multi)->numiter; __npy_mi++) {   \
+        -: 1242:                PyArray_ITER_GOTO(_PyMIT(multi)->iters[__npy_mi], dest);    \
+        -: 1243:        }                                                                   \
+        -: 1244:        _PyMIT(multi)->index = _PyMIT(multi)->iters[0]->index;              \
+        -: 1245:} while (0)
+        -: 1246:
+        -: 1247:#define PyArray_MultiIter_GOTO1D(multi, ind) do {                          \
+        -: 1248:        int __npy_mi;                                                      \
+        -: 1249:        for (__npy_mi=0; __npy_mi < _PyMIT(multi)->numiter; __npy_mi++) {  \
+        -: 1250:                PyArray_ITER_GOTO1D(_PyMIT(multi)->iters[__npy_mi], ind);  \
+        -: 1251:        }                                                                  \
+        -: 1252:        _PyMIT(multi)->index = _PyMIT(multi)->iters[0]->index;             \
+        -: 1253:} while (0)
+        -: 1254:
+        -: 1255:#define PyArray_MultiIter_DATA(multi, i)                \
+        -: 1256:        ((void *)(_PyMIT(multi)->iters[i]->dataptr))
+        -: 1257:
+        -: 1258:#define PyArray_MultiIter_NEXTi(multi, i)               \
+        -: 1259:        PyArray_ITER_NEXT(_PyMIT(multi)->iters[i])
+        -: 1260:
+        -: 1261:#define PyArray_MultiIter_NOTDONE(multi)                \
+        -: 1262:        (_PyMIT(multi)->index < _PyMIT(multi)->size)
+        -: 1263:
+        -: 1264:
+        -: 1265:/*
+        -: 1266: * Store the information needed for fancy-indexing over an array. The
+        -: 1267: * fields are slightly unordered to keep consec, dataptr and subspace
+        -: 1268: * where they were originally.
+        -: 1269: */
+        -: 1270:typedef struct {
+        -: 1271:        PyObject_HEAD
+        -: 1272:        /*
+        -: 1273:         * Multi-iterator portion --- needs to be present in this
+        -: 1274:         * order to work with PyArray_Broadcast
+        -: 1275:         */
+        -: 1276:
+        -: 1277:        int                   numiter;                 /* number of index-array
+        -: 1278:                                                          iterators */
+        -: 1279:        npy_intp              size;                    /* size of broadcasted
+        -: 1280:                                                          result */
+        -: 1281:        npy_intp              index;                   /* current index */
+        -: 1282:        int                   nd;                      /* number of dims */
+        -: 1283:        npy_intp              dimensions[NPY_MAXDIMS]; /* dimensions */
+        -: 1284:        NpyIter               *outer;                  /* index objects
+        -: 1285:                                                          iterator */
+        -: 1286:        void                  *unused[NPY_MAXDIMS - 2];
+        -: 1287:        PyArrayObject         *array;
+        -: 1288:        /* Flat iterator for the indexed array. For compatibility solely. */
+        -: 1289:        PyArrayIterObject     *ait;
+        -: 1290:
+        -: 1291:        /*
+        -: 1292:         * Subspace array. For binary compatibility (was an iterator,
+        -: 1293:         * but only the check for NULL should be used).
+        -: 1294:         */
+        -: 1295:        PyArrayObject         *subspace;
+        -: 1296:
+        -: 1297:        /*
+        -: 1298:         * if subspace iteration, then this is the array of axes in
+        -: 1299:         * the underlying array represented by the index objects
+        -: 1300:         */
+        -: 1301:        int                   iteraxes[NPY_MAXDIMS];
+        -: 1302:        npy_intp              fancy_strides[NPY_MAXDIMS];
+        -: 1303:
+        -: 1304:        /* pointer when all fancy indices are 0 */
+        -: 1305:        char                  *baseoffset;
+        -: 1306:
+        -: 1307:        /*
+        -: 1308:         * after binding consec denotes at which axis the fancy axes
+        -: 1309:         * are inserted.
+        -: 1310:         */
+        -: 1311:        int                   consec;
+        -: 1312:        char                  *dataptr;
+        -: 1313:
+        -: 1314:        int                   nd_fancy;
+        -: 1315:        npy_intp              fancy_dims[NPY_MAXDIMS];
+        -: 1316:
+        -: 1317:        /* Whether the iterator (any of the iterators) requires API */
+        -: 1318:        int                   needs_api;
+        -: 1319:
+        -: 1320:        /*
+        -: 1321:         * Extra op information.
+        -: 1322:         */
+        -: 1323:        PyArrayObject         *extra_op;
+        -: 1324:        PyArray_Descr         *extra_op_dtype;         /* desired dtype */
+        -: 1325:        npy_uint32            *extra_op_flags;         /* Iterator flags */
+        -: 1326:
+        -: 1327:        NpyIter               *extra_op_iter;
+        -: 1328:        NpyIter_IterNextFunc  *extra_op_next;
+        -: 1329:        char                  **extra_op_ptrs;
+        -: 1330:
+        -: 1331:        /*
+        -: 1332:         * Information about the iteration state.
+        -: 1333:         */
+        -: 1334:        NpyIter_IterNextFunc  *outer_next;
+        -: 1335:        char                  **outer_ptrs;
+        -: 1336:        npy_intp              *outer_strides;
+        -: 1337:
+        -: 1338:        /*
+        -: 1339:         * Information about the subspace iterator.
+        -: 1340:         */
+        -: 1341:        NpyIter               *subspace_iter;
+        -: 1342:        NpyIter_IterNextFunc  *subspace_next;
+        -: 1343:        char                  **subspace_ptrs;
+        -: 1344:        npy_intp              *subspace_strides;
+        -: 1345:
+        -: 1346:        /* Count for the external loop (which ever it is) for API iteration */
+        -: 1347:        npy_intp              iter_count;
+        -: 1348:
+        -: 1349:} PyArrayMapIterObject;
+        -: 1350:
+        -: 1351:enum {
+        -: 1352:    NPY_NEIGHBORHOOD_ITER_ZERO_PADDING,
+        -: 1353:    NPY_NEIGHBORHOOD_ITER_ONE_PADDING,
+        -: 1354:    NPY_NEIGHBORHOOD_ITER_CONSTANT_PADDING,
+        -: 1355:    NPY_NEIGHBORHOOD_ITER_CIRCULAR_PADDING,
+        -: 1356:    NPY_NEIGHBORHOOD_ITER_MIRROR_PADDING
+        -: 1357:};
+        -: 1358:
+        -: 1359:typedef struct {
+        -: 1360:    PyObject_HEAD
+        -: 1361:
+        -: 1362:    /*
+        -: 1363:     * PyArrayIterObject part: keep this in this exact order
+        -: 1364:     */
+        -: 1365:    int               nd_m1;            /* number of dimensions - 1 */
+        -: 1366:    npy_intp          index, size;
+        -: 1367:    npy_intp          coordinates[NPY_MAXDIMS];/* N-dimensional loop */
+        -: 1368:    npy_intp          dims_m1[NPY_MAXDIMS];    /* ao->dimensions - 1 */
+        -: 1369:    npy_intp          strides[NPY_MAXDIMS];    /* ao->strides or fake */
+        -: 1370:    npy_intp          backstrides[NPY_MAXDIMS];/* how far to jump back */
+        -: 1371:    npy_intp          factors[NPY_MAXDIMS];     /* shape factors */
+        -: 1372:    PyArrayObject     *ao;
+        -: 1373:    char              *dataptr;        /* pointer to current item*/
+        -: 1374:    npy_bool          contiguous;
+        -: 1375:
+        -: 1376:    npy_intp          bounds[NPY_MAXDIMS][2];
+        -: 1377:    npy_intp          limits[NPY_MAXDIMS][2];
+        -: 1378:    npy_intp          limits_sizes[NPY_MAXDIMS];
+        -: 1379:    npy_iter_get_dataptr_t translate;
+        -: 1380:
+        -: 1381:    /*
+        -: 1382:     * New members
+        -: 1383:     */
+        -: 1384:    npy_intp nd;
+        -: 1385:
+        -: 1386:    /* Dimensions is the dimension of the array */
+        -: 1387:    npy_intp dimensions[NPY_MAXDIMS];
+        -: 1388:
+        -: 1389:    /*
+        -: 1390:     * Neighborhood points coordinates are computed relatively to the
+        -: 1391:     * point pointed by _internal_iter
+        -: 1392:     */
+        -: 1393:    PyArrayIterObject* _internal_iter;
+        -: 1394:    /*
+        -: 1395:     * To keep a reference to the representation of the constant value
+        -: 1396:     * for constant padding
+        -: 1397:     */
+        -: 1398:    char* constant;
+        -: 1399:
+        -: 1400:    int mode;
+        -: 1401:} PyArrayNeighborhoodIterObject;
+        -: 1402:
+        -: 1403:/*
+        -: 1404: * Neighborhood iterator API
+        -: 1405: */
+        -: 1406:
+        -: 1407:/* General: those work for any mode */
+        -: 1408:static NPY_INLINE int
+        -: 1409:PyArrayNeighborhoodIter_Reset(PyArrayNeighborhoodIterObject* iter);
+        -: 1410:static NPY_INLINE int
+        -: 1411:PyArrayNeighborhoodIter_Next(PyArrayNeighborhoodIterObject* iter);
+        -: 1412:#if 0
+        -: 1413:static NPY_INLINE int
+        -: 1414:PyArrayNeighborhoodIter_Next2D(PyArrayNeighborhoodIterObject* iter);
+        -: 1415:#endif
+        -: 1416:
+        -: 1417:/*
+        -: 1418: * Include inline implementations - functions defined there are not
+        -: 1419: * considered public API
+        -: 1420: */
+        -: 1421:#define _NPY_INCLUDE_NEIGHBORHOOD_IMP
+        -: 1422:#include "_neighborhood_iterator_imp.h"
+        -: 1423:#undef _NPY_INCLUDE_NEIGHBORHOOD_IMP
+        -: 1424:
+        -: 1425:/* The default array type */
+        -: 1426:#define NPY_DEFAULT_TYPE NPY_DOUBLE
+        -: 1427:
+        -: 1428:/*
+        -: 1429: * All sorts of useful ways to look into a PyArrayObject. It is recommended
+        -: 1430: * to use PyArrayObject * objects instead of always casting from PyObject *,
+        -: 1431: * for improved type checking.
+        -: 1432: *
+        -: 1433: * In many cases here the macro versions of the accessors are deprecated,
+        -: 1434: * but can't be immediately changed to inline functions because the
+        -: 1435: * preexisting macros accept PyObject * and do automatic casts. Inline
+        -: 1436: * functions accepting PyArrayObject * provides for some compile-time
+        -: 1437: * checking of correctness when working with these objects in C.
+        -: 1438: */
+        -: 1439:
+        -: 1440:#define PyArray_ISONESEGMENT(m) (PyArray_NDIM(m) == 0 || \
+        -: 1441:                             PyArray_CHKFLAGS(m, NPY_ARRAY_C_CONTIGUOUS) || \
+        -: 1442:                             PyArray_CHKFLAGS(m, NPY_ARRAY_F_CONTIGUOUS))
+        -: 1443:
+        -: 1444:#define PyArray_ISFORTRAN(m) (PyArray_CHKFLAGS(m, NPY_ARRAY_F_CONTIGUOUS) && \
+        -: 1445:                             (!PyArray_CHKFLAGS(m, NPY_ARRAY_C_CONTIGUOUS)))
+        -: 1446:
+        -: 1447:#define PyArray_FORTRAN_IF(m) ((PyArray_CHKFLAGS(m, NPY_ARRAY_F_CONTIGUOUS) ? \
+        -: 1448:                               NPY_ARRAY_F_CONTIGUOUS : 0))
+        -: 1449:
+        -: 1450:#if (defined(NPY_NO_DEPRECATED_API) && (NPY_1_7_API_VERSION <= NPY_NO_DEPRECATED_API))
+        -: 1451:/*
+        -: 1452: * Changing access macros into functions, to allow for future hiding
+        -: 1453: * of the internal memory layout. This later hiding will allow the 2.x series
+        -: 1454: * to change the internal representation of arrays without affecting
+        -: 1455: * ABI compatibility.
+        -: 1456: */
+        -: 1457:
+        -: 1458:static NPY_INLINE int
+    #####: 1459:PyArray_NDIM(const PyArrayObject *arr)
+        -: 1460:{
+    #####: 1461:    return ((PyArrayObject_fields *)arr)->nd;
+        -: 1462:}
+        -: 1463:
+        -: 1464:static NPY_INLINE void *
+      272: 1465:PyArray_DATA(PyArrayObject *arr)
+        -: 1466:{
+      272: 1467:    return ((PyArrayObject_fields *)arr)->data;
+        -: 1468:}
+        -: 1469:
+        -: 1470:static NPY_INLINE char *
+        -: 1471:PyArray_BYTES(PyArrayObject *arr)
+        -: 1472:{
+        -: 1473:    return ((PyArrayObject_fields *)arr)->data;
+        -: 1474:}
+        -: 1475:
+        -: 1476:static NPY_INLINE npy_intp *
+        -: 1477:PyArray_DIMS(PyArrayObject *arr)
+        -: 1478:{
+        -: 1479:    return ((PyArrayObject_fields *)arr)->dimensions;
+        -: 1480:}
+        -: 1481:
+        -: 1482:static NPY_INLINE npy_intp *
+        -: 1483:PyArray_STRIDES(PyArrayObject *arr)
+        -: 1484:{
+        -: 1485:    return ((PyArrayObject_fields *)arr)->strides;
+        -: 1486:}
+        -: 1487:
+        -: 1488:static NPY_INLINE npy_intp
+    #####: 1489:PyArray_DIM(const PyArrayObject *arr, int idim)
+        -: 1490:{
+    #####: 1491:    return ((PyArrayObject_fields *)arr)->dimensions[idim];
+        -: 1492:}
+        -: 1493:
+        -: 1494:static NPY_INLINE npy_intp
+        -: 1495:PyArray_STRIDE(const PyArrayObject *arr, int istride)
+        -: 1496:{
+        -: 1497:    return ((PyArrayObject_fields *)arr)->strides[istride];
+        -: 1498:}
+        -: 1499:
+        -: 1500:static NPY_INLINE NPY_RETURNS_BORROWED_REF PyObject *
+        -: 1501:PyArray_BASE(PyArrayObject *arr)
+        -: 1502:{
+        -: 1503:    return ((PyArrayObject_fields *)arr)->base;
+        -: 1504:}
+        -: 1505:
+        -: 1506:static NPY_INLINE NPY_RETURNS_BORROWED_REF PyArray_Descr *
+        -: 1507:PyArray_DESCR(PyArrayObject *arr)
+        -: 1508:{
+        -: 1509:    return ((PyArrayObject_fields *)arr)->descr;
+        -: 1510:}
+        -: 1511:
+        -: 1512:static NPY_INLINE int
+        -: 1513:PyArray_FLAGS(const PyArrayObject *arr)
+        -: 1514:{
+        -: 1515:    return ((PyArrayObject_fields *)arr)->flags;
+        -: 1516:}
+        -: 1517:
+        -: 1518:static NPY_INLINE npy_intp
+        -: 1519:PyArray_ITEMSIZE(const PyArrayObject *arr)
+        -: 1520:{
+        -: 1521:    return ((PyArrayObject_fields *)arr)->descr->elsize;
+        -: 1522:}
+        -: 1523:
+        -: 1524:static NPY_INLINE int
+        -: 1525:PyArray_TYPE(const PyArrayObject *arr)
+        -: 1526:{
+        -: 1527:    return ((PyArrayObject_fields *)arr)->descr->type_num;
+        -: 1528:}
+        -: 1529:
+        -: 1530:static NPY_INLINE int
+        -: 1531:PyArray_CHKFLAGS(const PyArrayObject *arr, int flags)
+        -: 1532:{
+        -: 1533:    return (PyArray_FLAGS(arr) & flags) == flags;
+        -: 1534:}
+        -: 1535:
+        -: 1536:static NPY_INLINE PyObject *
+        -: 1537:PyArray_GETITEM(const PyArrayObject *arr, const char *itemptr)
+        -: 1538:{
+        -: 1539:    return ((PyArrayObject_fields *)arr)->descr->f->getitem(
+        -: 1540:                                        (void *)itemptr, (PyArrayObject *)arr);
+        -: 1541:}
+        -: 1542:
+        -: 1543:static NPY_INLINE int
+        -: 1544:PyArray_SETITEM(PyArrayObject *arr, char *itemptr, PyObject *v)
+        -: 1545:{
+        -: 1546:    return ((PyArrayObject_fields *)arr)->descr->f->setitem(
+        -: 1547:                                                        v, itemptr, arr);
+        -: 1548:}
+        -: 1549:
+        -: 1550:#else
+        -: 1551:
+        -: 1552:/* These macros are deprecated as of NumPy 1.7. */
+        -: 1553:#define PyArray_NDIM(obj) (((PyArrayObject_fields *)(obj))->nd)
+        -: 1554:#define PyArray_BYTES(obj) (((PyArrayObject_fields *)(obj))->data)
+        -: 1555:#define PyArray_DATA(obj) ((void *)((PyArrayObject_fields *)(obj))->data)
+        -: 1556:#define PyArray_DIMS(obj) (((PyArrayObject_fields *)(obj))->dimensions)
+        -: 1557:#define PyArray_STRIDES(obj) (((PyArrayObject_fields *)(obj))->strides)
+        -: 1558:#define PyArray_DIM(obj,n) (PyArray_DIMS(obj)[n])
+        -: 1559:#define PyArray_STRIDE(obj,n) (PyArray_STRIDES(obj)[n])
+        -: 1560:#define PyArray_BASE(obj) (((PyArrayObject_fields *)(obj))->base)
+        -: 1561:#define PyArray_DESCR(obj) (((PyArrayObject_fields *)(obj))->descr)
+        -: 1562:#define PyArray_FLAGS(obj) (((PyArrayObject_fields *)(obj))->flags)
+        -: 1563:#define PyArray_CHKFLAGS(m, FLAGS) \
+        -: 1564:        ((((PyArrayObject_fields *)(m))->flags & (FLAGS)) == (FLAGS))
+        -: 1565:#define PyArray_ITEMSIZE(obj) \
+        -: 1566:                    (((PyArrayObject_fields *)(obj))->descr->elsize)
+        -: 1567:#define PyArray_TYPE(obj) \
+        -: 1568:                    (((PyArrayObject_fields *)(obj))->descr->type_num)
+        -: 1569:#define PyArray_GETITEM(obj,itemptr) \
+        -: 1570:        PyArray_DESCR(obj)->f->getitem((char *)(itemptr), \
+        -: 1571:                                     (PyArrayObject *)(obj))
+        -: 1572:
+        -: 1573:#define PyArray_SETITEM(obj,itemptr,v) \
+        -: 1574:        PyArray_DESCR(obj)->f->setitem((PyObject *)(v), \
+        -: 1575:                                     (char *)(itemptr), \
+        -: 1576:                                     (PyArrayObject *)(obj))
+        -: 1577:#endif
+        -: 1578:
+        -: 1579:static NPY_INLINE PyArray_Descr *
+        -: 1580:PyArray_DTYPE(PyArrayObject *arr)
+        -: 1581:{
+        -: 1582:    return ((PyArrayObject_fields *)arr)->descr;
+        -: 1583:}
+        -: 1584:
+        -: 1585:static NPY_INLINE npy_intp *
+        -: 1586:PyArray_SHAPE(PyArrayObject *arr)
+        -: 1587:{
+        -: 1588:    return ((PyArrayObject_fields *)arr)->dimensions;
+        -: 1589:}
+        -: 1590:
+        -: 1591:/*
+        -: 1592: * Enables the specified array flags. Does no checking,
+        -: 1593: * assumes you know what you're doing.
+        -: 1594: */
+        -: 1595:static NPY_INLINE void
+        -: 1596:PyArray_ENABLEFLAGS(PyArrayObject *arr, int flags)
+        -: 1597:{
+        -: 1598:    ((PyArrayObject_fields *)arr)->flags |= flags;
+        -: 1599:}
+        -: 1600:
+        -: 1601:/*
+        -: 1602: * Clears the specified array flags. Does no checking,
+        -: 1603: * assumes you know what you're doing.
+        -: 1604: */
+        -: 1605:static NPY_INLINE void
+        -: 1606:PyArray_CLEARFLAGS(PyArrayObject *arr, int flags)
+        -: 1607:{
+        -: 1608:    ((PyArrayObject_fields *)arr)->flags &= ~flags;
+        -: 1609:}
+        -: 1610:
+        -: 1611:#define PyTypeNum_ISBOOL(type) ((type) == NPY_BOOL)
+        -: 1612:
+        -: 1613:#define PyTypeNum_ISUNSIGNED(type) (((type) == NPY_UBYTE) ||   \
+        -: 1614:                                 ((type) == NPY_USHORT) ||     \
+        -: 1615:                                 ((type) == NPY_UINT) ||       \
+        -: 1616:                                 ((type) == NPY_ULONG) ||      \
+        -: 1617:                                 ((type) == NPY_ULONGLONG))
+        -: 1618:
+        -: 1619:#define PyTypeNum_ISSIGNED(type) (((type) == NPY_BYTE) ||      \
+        -: 1620:                               ((type) == NPY_SHORT) ||        \
+        -: 1621:                               ((type) == NPY_INT) ||          \
+        -: 1622:                               ((type) == NPY_LONG) ||         \
+        -: 1623:                               ((type) == NPY_LONGLONG))
+        -: 1624:
+        -: 1625:#define PyTypeNum_ISINTEGER(type) (((type) >= NPY_BYTE) &&     \
+        -: 1626:                                ((type) <= NPY_ULONGLONG))
+        -: 1627:
+        -: 1628:#define PyTypeNum_ISFLOAT(type) ((((type) >= NPY_FLOAT) && \
+        -: 1629:                              ((type) <= NPY_LONGDOUBLE)) || \
+        -: 1630:                              ((type) == NPY_HALF))
+        -: 1631:
+        -: 1632:#define PyTypeNum_ISNUMBER(type) (((type) <= NPY_CLONGDOUBLE) || \
+        -: 1633:                                  ((type) == NPY_HALF))
+        -: 1634:
+        -: 1635:#define PyTypeNum_ISSTRING(type) (((type) == NPY_STRING) ||    \
+        -: 1636:                                  ((type) == NPY_UNICODE))
+        -: 1637:
+        -: 1638:#define PyTypeNum_ISCOMPLEX(type) (((type) >= NPY_CFLOAT) &&   \
+        -: 1639:                                ((type) <= NPY_CLONGDOUBLE))
+        -: 1640:
+        -: 1641:#define PyTypeNum_ISPYTHON(type) (((type) == NPY_LONG) ||      \
+        -: 1642:                                  ((type) == NPY_DOUBLE) ||    \
+        -: 1643:                                  ((type) == NPY_CDOUBLE) ||   \
+        -: 1644:                                  ((type) == NPY_BOOL) ||      \
+        -: 1645:                                  ((type) == NPY_OBJECT ))
+        -: 1646:
+        -: 1647:#define PyTypeNum_ISFLEXIBLE(type) (((type) >=NPY_STRING) &&  \
+        -: 1648:                                    ((type) <=NPY_VOID))
+        -: 1649:
+        -: 1650:#define PyTypeNum_ISDATETIME(type) (((type) >=NPY_DATETIME) &&  \
+        -: 1651:                                    ((type) <=NPY_TIMEDELTA))
+        -: 1652:
+        -: 1653:#define PyTypeNum_ISUSERDEF(type) (((type) >= NPY_USERDEF) && \
+        -: 1654:                                   ((type) < NPY_USERDEF+     \
+        -: 1655:                                    NPY_NUMUSERTYPES))
+        -: 1656:
+        -: 1657:#define PyTypeNum_ISEXTENDED(type) (PyTypeNum_ISFLEXIBLE(type) ||  \
+        -: 1658:                                    PyTypeNum_ISUSERDEF(type))
+        -: 1659:
+        -: 1660:#define PyTypeNum_ISOBJECT(type) ((type) == NPY_OBJECT)
+        -: 1661:
+        -: 1662:
+        -: 1663:#define PyDataType_ISBOOL(obj) PyTypeNum_ISBOOL(_PyADt(obj))
+        -: 1664:#define PyDataType_ISUNSIGNED(obj) PyTypeNum_ISUNSIGNED(((PyArray_Descr*)(obj))->type_num)
+        -: 1665:#define PyDataType_ISSIGNED(obj) PyTypeNum_ISSIGNED(((PyArray_Descr*)(obj))->type_num)
+        -: 1666:#define PyDataType_ISINTEGER(obj) PyTypeNum_ISINTEGER(((PyArray_Descr*)(obj))->type_num )
+        -: 1667:#define PyDataType_ISFLOAT(obj) PyTypeNum_ISFLOAT(((PyArray_Descr*)(obj))->type_num)
+        -: 1668:#define PyDataType_ISNUMBER(obj) PyTypeNum_ISNUMBER(((PyArray_Descr*)(obj))->type_num)
+        -: 1669:#define PyDataType_ISSTRING(obj) PyTypeNum_ISSTRING(((PyArray_Descr*)(obj))->type_num)
+        -: 1670:#define PyDataType_ISCOMPLEX(obj) PyTypeNum_ISCOMPLEX(((PyArray_Descr*)(obj))->type_num)
+        -: 1671:#define PyDataType_ISPYTHON(obj) PyTypeNum_ISPYTHON(((PyArray_Descr*)(obj))->type_num)
+        -: 1672:#define PyDataType_ISFLEXIBLE(obj) PyTypeNum_ISFLEXIBLE(((PyArray_Descr*)(obj))->type_num)
+        -: 1673:#define PyDataType_ISDATETIME(obj) PyTypeNum_ISDATETIME(((PyArray_Descr*)(obj))->type_num)
+        -: 1674:#define PyDataType_ISUSERDEF(obj) PyTypeNum_ISUSERDEF(((PyArray_Descr*)(obj))->type_num)
+        -: 1675:#define PyDataType_ISEXTENDED(obj) PyTypeNum_ISEXTENDED(((PyArray_Descr*)(obj))->type_num)
+        -: 1676:#define PyDataType_ISOBJECT(obj) PyTypeNum_ISOBJECT(((PyArray_Descr*)(obj))->type_num)
+        -: 1677:#define PyDataType_HASFIELDS(obj) (((PyArray_Descr *)(obj))->names != NULL)
+        -: 1678:#define PyDataType_HASSUBARRAY(dtype) ((dtype)->subarray != NULL)
+        -: 1679:
+        -: 1680:#define PyArray_ISBOOL(obj) PyTypeNum_ISBOOL(PyArray_TYPE(obj))
+        -: 1681:#define PyArray_ISUNSIGNED(obj) PyTypeNum_ISUNSIGNED(PyArray_TYPE(obj))
+        -: 1682:#define PyArray_ISSIGNED(obj) PyTypeNum_ISSIGNED(PyArray_TYPE(obj))
+        -: 1683:#define PyArray_ISINTEGER(obj) PyTypeNum_ISINTEGER(PyArray_TYPE(obj))
+        -: 1684:#define PyArray_ISFLOAT(obj) PyTypeNum_ISFLOAT(PyArray_TYPE(obj))
+        -: 1685:#define PyArray_ISNUMBER(obj) PyTypeNum_ISNUMBER(PyArray_TYPE(obj))
+        -: 1686:#define PyArray_ISSTRING(obj) PyTypeNum_ISSTRING(PyArray_TYPE(obj))
+        -: 1687:#define PyArray_ISCOMPLEX(obj) PyTypeNum_ISCOMPLEX(PyArray_TYPE(obj))
+        -: 1688:#define PyArray_ISPYTHON(obj) PyTypeNum_ISPYTHON(PyArray_TYPE(obj))
+        -: 1689:#define PyArray_ISFLEXIBLE(obj) PyTypeNum_ISFLEXIBLE(PyArray_TYPE(obj))
+        -: 1690:#define PyArray_ISDATETIME(obj) PyTypeNum_ISDATETIME(PyArray_TYPE(obj))
+        -: 1691:#define PyArray_ISUSERDEF(obj) PyTypeNum_ISUSERDEF(PyArray_TYPE(obj))
+        -: 1692:#define PyArray_ISEXTENDED(obj) PyTypeNum_ISEXTENDED(PyArray_TYPE(obj))
+        -: 1693:#define PyArray_ISOBJECT(obj) PyTypeNum_ISOBJECT(PyArray_TYPE(obj))
+        -: 1694:#define PyArray_HASFIELDS(obj) PyDataType_HASFIELDS(PyArray_DESCR(obj))
+        -: 1695:
+        -: 1696:    /*
+        -: 1697:     * FIXME: This should check for a flag on the data-type that
+        -: 1698:     * states whether or not it is variable length.  Because the
+        -: 1699:     * ISFLEXIBLE check is hard-coded to the built-in data-types.
+        -: 1700:     */
+        -: 1701:#define PyArray_ISVARIABLE(obj) PyTypeNum_ISFLEXIBLE(PyArray_TYPE(obj))
+        -: 1702:
+        -: 1703:#define PyArray_SAFEALIGNEDCOPY(obj) (PyArray_ISALIGNED(obj) && !PyArray_ISVARIABLE(obj))
+        -: 1704:
+        -: 1705:
+        -: 1706:#define NPY_LITTLE '<'
+        -: 1707:#define NPY_BIG '>'
+        -: 1708:#define NPY_NATIVE '='
+        -: 1709:#define NPY_SWAP 's'
+        -: 1710:#define NPY_IGNORE '|'
+        -: 1711:
+        -: 1712:#if NPY_BYTE_ORDER == NPY_BIG_ENDIAN
+        -: 1713:#define NPY_NATBYTE NPY_BIG
+        -: 1714:#define NPY_OPPBYTE NPY_LITTLE
+        -: 1715:#else
+        -: 1716:#define NPY_NATBYTE NPY_LITTLE
+        -: 1717:#define NPY_OPPBYTE NPY_BIG
+        -: 1718:#endif
+        -: 1719:
+        -: 1720:#define PyArray_ISNBO(arg) ((arg) != NPY_OPPBYTE)
+        -: 1721:#define PyArray_IsNativeByteOrder PyArray_ISNBO
+        -: 1722:#define PyArray_ISNOTSWAPPED(m) PyArray_ISNBO(PyArray_DESCR(m)->byteorder)
+        -: 1723:#define PyArray_ISBYTESWAPPED(m) (!PyArray_ISNOTSWAPPED(m))
+        -: 1724:
+        -: 1725:#define PyArray_FLAGSWAP(m, flags) (PyArray_CHKFLAGS(m, flags) &&       \
+        -: 1726:                                    PyArray_ISNOTSWAPPED(m))
+        -: 1727:
+        -: 1728:#define PyArray_ISCARRAY(m) PyArray_FLAGSWAP(m, NPY_ARRAY_CARRAY)
+        -: 1729:#define PyArray_ISCARRAY_RO(m) PyArray_FLAGSWAP(m, NPY_ARRAY_CARRAY_RO)
+        -: 1730:#define PyArray_ISFARRAY(m) PyArray_FLAGSWAP(m, NPY_ARRAY_FARRAY)
+        -: 1731:#define PyArray_ISFARRAY_RO(m) PyArray_FLAGSWAP(m, NPY_ARRAY_FARRAY_RO)
+        -: 1732:#define PyArray_ISBEHAVED(m) PyArray_FLAGSWAP(m, NPY_ARRAY_BEHAVED)
+        -: 1733:#define PyArray_ISBEHAVED_RO(m) PyArray_FLAGSWAP(m, NPY_ARRAY_ALIGNED)
+        -: 1734:
+        -: 1735:
+        -: 1736:#define PyDataType_ISNOTSWAPPED(d) PyArray_ISNBO(((PyArray_Descr *)(d))->byteorder)
+        -: 1737:#define PyDataType_ISBYTESWAPPED(d) (!PyDataType_ISNOTSWAPPED(d))
+        -: 1738:
+        -: 1739:/************************************************************
+        -: 1740: * A struct used by PyArray_CreateSortedStridePerm, new in 1.7.
+        -: 1741: ************************************************************/
+        -: 1742:
+        -: 1743:typedef struct {
+        -: 1744:    npy_intp perm, stride;
+        -: 1745:} npy_stride_sort_item;
+        -: 1746:
+        -: 1747:/************************************************************
+        -: 1748: * This is the form of the struct that's returned pointed by the
+        -: 1749: * PyCObject attribute of an array __array_struct__. See
+        -: 1750: * http://docs.scipy.org/doc/numpy/reference/arrays.interface.html for the full
+        -: 1751: * documentation.
+        -: 1752: ************************************************************/
+        -: 1753:typedef struct {
+        -: 1754:    int two;              /*
+        -: 1755:                           * contains the integer 2 as a sanity
+        -: 1756:                           * check
+        -: 1757:                           */
+        -: 1758:
+        -: 1759:    int nd;               /* number of dimensions */
+        -: 1760:
+        -: 1761:    char typekind;        /*
+        -: 1762:                           * kind in array --- character code of
+        -: 1763:                           * typestr
+        -: 1764:                           */
+        -: 1765:
+        -: 1766:    int itemsize;         /* size of each element */
+        -: 1767:
+        -: 1768:    int flags;            /*
+        -: 1769:                           * how should be data interpreted. Valid
+        -: 1770:                           * flags are CONTIGUOUS (1), F_CONTIGUOUS (2),
+        -: 1771:                           * ALIGNED (0x100), NOTSWAPPED (0x200), and
+        -: 1772:                           * WRITEABLE (0x400).  ARR_HAS_DESCR (0x800)
+        -: 1773:                           * states that arrdescr field is present in
+        -: 1774:                           * structure
+        -: 1775:                           */
+        -: 1776:
+        -: 1777:    npy_intp *shape;       /*
+        -: 1778:                            * A length-nd array of shape
+        -: 1779:                            * information
+        -: 1780:                            */
+        -: 1781:
+        -: 1782:    npy_intp *strides;    /* A length-nd array of stride information */
+        -: 1783:
+        -: 1784:    void *data;           /* A pointer to the first element of the array */
+        -: 1785:
+        -: 1786:    PyObject *descr;      /*
+        -: 1787:                           * A list of fields or NULL (ignored if flags
+        -: 1788:                           * does not have ARR_HAS_DESCR flag set)
+        -: 1789:                           */
+        -: 1790:} PyArrayInterface;
+        -: 1791:
+        -: 1792:/*
+        -: 1793: * This is a function for hooking into the PyDataMem_NEW/FREE/RENEW functions.
+        -: 1794: * See the documentation for PyDataMem_SetEventHook.
+        -: 1795: */
+        -: 1796:typedef void (PyDataMem_EventHookFunc)(void *inp, void *outp, size_t size,
+        -: 1797:                                       void *user_data);
+        -: 1798:
+        -: 1799:/*
+        -: 1800: * Use the keyword NPY_DEPRECATED_INCLUDES to ensure that the header files
+        -: 1801: * npy_*_*_deprecated_api.h are only included from here and nowhere else.
+        -: 1802: */
+        -: 1803:#ifdef NPY_DEPRECATED_INCLUDES
+        -: 1804:#error "Do not use the reserved keyword NPY_DEPRECATED_INCLUDES."
+        -: 1805:#endif
+        -: 1806:#define NPY_DEPRECATED_INCLUDES
+        -: 1807:#if !defined(NPY_NO_DEPRECATED_API) || \
+        -: 1808:    (NPY_NO_DEPRECATED_API < NPY_1_7_API_VERSION)
+        -: 1809:#include "npy_1_7_deprecated_api.h"
+        -: 1810:#endif
+        -: 1811:/*
+        -: 1812: * There is no file npy_1_8_deprecated_api.h since there are no additional
+        -: 1813: * deprecated API features in NumPy 1.8.
+        -: 1814: *
+        -: 1815: * Note to maintainers: insert code like the following in future NumPy
+        -: 1816: * versions.
+        -: 1817: *
+        -: 1818: * #if !defined(NPY_NO_DEPRECATED_API) || \
+        -: 1819: *     (NPY_NO_DEPRECATED_API < NPY_1_9_API_VERSION)
+        -: 1820: * #include "npy_1_9_deprecated_api.h"
+        -: 1821: * #endif
+        -: 1822: */
+        -: 1823:#undef NPY_DEPRECATED_INCLUDES
+        -: 1824:
+        -: 1825:#endif /* NPY_ARRAYTYPES_H */

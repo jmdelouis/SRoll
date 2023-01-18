@@ -1,0 +1,1112 @@
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/troll_14tf
+troll.c: at Tue Jun 22 16:18:43 2021
+troll.c: with 4 MPI ranks and 6 OMP threads
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=14
+
+
+troll_readParam() from file "test_sroll3_857_data.troll.par"
+troll_parLoader.c: reading BeginRing = 2
+troll_parLoader.c: reading EndRing = 260
+troll_parLoader.c: reading RSTEP = 1000
+troll_parLoader.c: reading AVFFF = 857
+troll_parLoader.c: reading AVGFREEFREE = 0
+troll_parLoader.c: reading AVFSYNC = 857
+troll_parLoader.c: reading AVGSYNCHRO = 0
+troll_parLoader.c: reading AVGDUST100 = 0
+troll_parLoader.c: reading AVFDUST = 857
+troll_parLoader.c: reading AVGDUST = 0
+troll_parLoader.c: reading AVFCO = 857
+troll_parLoader.c: reading AVG12CO = 0
+troll_parLoader.c: reading AVG13CO = 0
+troll_parLoader.c: reading CALCODUST = 0
+troll_parLoader.c: reading CUTRG = 1
+troll_parLoader.c: reading DODIPCAL = 1
+troll_parLoader.c: reading DOGAINDIP = 1
+troll_parLoader.c: reading DOMAXVRAIE = 1
+troll_parLoader.c: reading D_NOPOL = 0
+troll_parLoader.c: reading Nside = 2048
+troll_parLoader.c: reading REMDIP = 1
+troll_parLoader.c: reading REMHDIP = 1
+troll_parLoader.c: reading ADDDIP = 0
+troll_parLoader.c: reading KCMBIN = 0
+troll_parLoader.c: reading SAVEINTMAP = 0
+troll_parLoader.c: reading TESTPOL = 1
+troll_parLoader.c: reading XI2STOP = 1.0
+troll_parLoader.c: reading seuilcond = 1e-06
+troll_parLoader.c: reading NITT = 10
+troll_parLoader.c: reading FITANGLE = 1
+troll_parLoader.c: reading FITPOLEFF = 1
+troll_parLoader.c: reading saveCOV = 0
+troll_parLoader.c: reading saveCO = 0
+troll_parLoader.c: reading delta_psi = 0.0
+troll_parLoader.c: reading verbose = 0
+troll_parLoader.c: reading TEMPLATE_NSIDE = 1024
+troll_parLoader.c: reading BUILDTF = 0
+troll_parLoader.c: reading number_of_SEED = 1
+troll_parLoader.c: reading SEED1 = 1234
+troll_parLoader.c: reading number_of_ADDCO13 = 0
+troll_parLoader.c: reading GAINSTEP = 1
+troll_parLoader.c: reading number_of_NADU = 4
+troll_parLoader.c: reading NADU1 = 16
+troll_parLoader.c: reading NADU2 = 16
+troll_parLoader.c: reading NADU3 = 16
+troll_parLoader.c: reading NADU4 = 16
+troll_parLoader.c: reading number_of_NADUSTEP = 4
+troll_parLoader.c: reading NADUSTEP1 = 1
+troll_parLoader.c: reading NADUSTEP2 = 1
+troll_parLoader.c: reading NADUSTEP3 = 1
+troll_parLoader.c: reading NADUSTEP4 = 1
+troll_parLoader.c: reading number_of_DOCNN = 13
+troll_parLoader.c: reading DOCNN1 = 0
+troll_parLoader.c: reading DOCNN2 = 0
+troll_parLoader.c: reading DOCNN3 = 0
+troll_parLoader.c: reading DOCNN4 = 0
+troll_parLoader.c: reading DOCNN5 = 1
+troll_parLoader.c: reading DOCNN6 = 1
+troll_parLoader.c: reading DOCNN7 = 1
+troll_parLoader.c: reading DOCNN8 = 0
+troll_parLoader.c: reading DOCNN9 = 0
+troll_parLoader.c: reading DOCNN10 = 0
+troll_parLoader.c: reading DOCNN11 = 0
+troll_parLoader.c: reading DOCNN12 = 0
+troll_parLoader.c: reading DOCNN13 = 0
+troll_parLoader.c: reading CALLCNN = /home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/py_function_pwst_pol.py
+troll_parLoader.c: reading CNN_XSIZE = 256
+troll_parLoader.c: reading CNN_YSIZE = 256
+troll_parLoader.c: reading CNN_RESIDU = 0.0
+troll_parLoader.c: reading N_IN_ITT = 300
+troll_parLoader.c: reading INST_CNN = /home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll
+troll_parLoader.c: reading MAP_CNN = /home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll
+troll_parLoader.c: reading CNN_WEIGHTS = /export/home/jmdeloui/heal_new
+troll_parLoader.c: reading number_of_Calibration = 4
+troll_parLoader.c: reading Calibration1 = 3.30076826046e-16
+troll_parLoader.c: reading Calibration2 = 3.55811287601e-16
+troll_parLoader.c: reading Calibration3 = 3.18681631353e-16
+troll_parLoader.c: reading Calibration4 = 2.219187708e-16
+troll_parLoader.c: reading number_of_CrossPol = 4
+troll_parLoader.c: reading CrossPol1 = 0.887
+troll_parLoader.c: reading CrossPol2 = 0.883
+troll_parLoader.c: reading CrossPol3 = 0.856
+troll_parLoader.c: reading CrossPol4 = 0.897
+troll_parLoader.c: reading number_of_NEP = 4
+troll_parLoader.c: reading NEP1 = 2.17663807827e-16
+troll_parLoader.c: reading NEP2 = 2.36372259024e-16
+troll_parLoader.c: reading NEP3 = 2.08546999122e-16
+troll_parLoader.c: reading NEP4 = 2.01804359351e-16
+troll_parLoader.c: reading number_of_Monop = 4
+troll_parLoader.c: reading Monop1 = 2.7228011807e-14
+troll_parLoader.c: reading Monop2 = 3.20205460445e-14
+troll_parLoader.c: reading Monop3 = 2.14043411258e-14
+troll_parLoader.c: reading Monop4 = 3.3436884405e-14
+troll_parLoader.c: reading number_of_FSLCOEF = 4
+troll_parLoader.c: reading FSLCOEF1 = 1.0
+troll_parLoader.c: reading FSLCOEF2 = 1.0
+troll_parLoader.c: reading FSLCOEF3 = 1.0
+troll_parLoader.c: reading FSLCOEF4 = 1.0
+troll_parLoader.c: reading number_of_OUT_NOPOL = 5
+troll_parLoader.c: reading OUT_NOPOL1 = 1
+troll_parLoader.c: reading OUT_NOPOL2 = 1
+troll_parLoader.c: reading OUT_NOPOL3 = 1
+troll_parLoader.c: reading OUT_NOPOL4 = 1
+troll_parLoader.c: reading OUT_NOPOL5 = 1
+troll_parLoader.c: reading number_of_bolomask = 20
+troll_parLoader.c: reading bolomask1 = 1
+troll_parLoader.c: reading bolomask2 = 1
+troll_parLoader.c: reading bolomask3 = 1
+troll_parLoader.c: reading bolomask4 = 1
+troll_parLoader.c: reading bolomask5 = 1
+troll_parLoader.c: reading bolomask6 = 0
+troll_parLoader.c: reading bolomask7 = 0
+troll_parLoader.c: reading bolomask8 = 0
+troll_parLoader.c: reading bolomask9 = 0
+troll_parLoader.c: reading bolomask10 = 1
+troll_parLoader.c: reading bolomask11 = 0
+troll_parLoader.c: reading bolomask12 = 0
+troll_parLoader.c: reading bolomask13 = 0
+troll_parLoader.c: reading bolomask14 = 0
+troll_parLoader.c: reading bolomask15 = 1
+troll_parLoader.c: reading bolomask16 = 0
+troll_parLoader.c: reading bolomask17 = 0
+troll_parLoader.c: reading bolomask18 = 0
+troll_parLoader.c: reading bolomask19 = 0
+troll_parLoader.c: reading bolomask20 = 1
+troll_parLoader.c: reading number_of_MAPRINGS = 5
+troll_parLoader.c: reading MAPRINGS1 = 19
+troll_parLoader.c: reading MAPRINGS2 = 1
+troll_parLoader.c: reading MAPRINGS3 = 1
+troll_parLoader.c: reading MAPRINGS4 = 1
+troll_parLoader.c: reading MAPRINGS5 = 1
+troll_parLoader.c: reading Mask = /export/home/tfoulquier/data_sroll/MAP/mask_RD_857
+troll_parLoader.c: reading Theo_CO = /export/home/tfoulquier/data_sroll/NEW_cleaned_12CO.float32.bin
+troll_parLoader.c: reading Theo_13CO = /export/home/tfoulquier/data_sroll/NEW_cleaned_13CO.float32.bin
+troll_parLoader.c: reading Theo_Dust_I = /export/home/tfoulquier/data_sroll/MAP/Dust_New_I
+troll_parLoader.c: reading Theo_Dust_Q = /export/home/tfoulquier/data_sroll/MAP/Dust_New_Q
+troll_parLoader.c: reading Theo_Dust_U = /export/home/tfoulquier/data_sroll/MAP/Dust_New_U
+troll_parLoader.c: reading TEMPLATEMAP = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_I = 4
+troll_parLoader.c: reading in_template_map_I1 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I2 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I3 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading in_template_map_I4 = /export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_Q = 4
+troll_parLoader.c: reading in_template_map_Q1 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q2 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q3 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_Q4 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_template_map_U = 4
+troll_parLoader.c: reading in_template_map_U1 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U2 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U3 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading in_template_map_U4 = /export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_Q = 4
+troll_parLoader.c: reading in_polar_fit_Q1 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q2 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q3 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading in_polar_fit_Q4 = /export/home/tfoulquier/data_sroll/MAP/353_Q.float32.bin
+troll_parLoader.c: reading number_of_in_polar_fit_U = 4
+troll_parLoader.c: reading in_polar_fit_U1 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U2 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U3 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading in_polar_fit_U4 = /export/home/tfoulquier/data_sroll/MAP/353_U.float32.bin
+troll_parLoader.c: reading number_of_Signal_noPS = 4
+troll_parLoader.c: reading Signal_noPS1 = /export/home/tfoulquier/data_sroll/MAP/857-1_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS2 = /export/home/tfoulquier/data_sroll/MAP/857-2_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS3 = /export/home/tfoulquier/data_sroll/MAP/857-3_REP6_THEO_SIMU
+troll_parLoader.c: reading Signal_noPS4 = /export/home/tfoulquier/data_sroll/MAP/857-4_REP6_THEO_SIMU
+troll_parLoader.c: reading number_of_ADU = 4
+troll_parLoader.c: reading ADU1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_adutot
+troll_parLoader.c: reading ADU2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_adutot
+troll_parLoader.c: reading ADU3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_adutot
+troll_parLoader.c: reading ADU4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_adutot
+troll_parLoader.c: reading number_of_Badring = 4
+troll_parLoader.c: reading Badring1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_25_857_1_discarded_rings_dx11
+troll_parLoader.c: reading Badring2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_35_857_2_discarded_rings_dx11
+troll_parLoader.c: reading Badring3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_65_857_3_discarded_rings_dx11
+troll_parLoader.c: reading Badring4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_74_857_4_discarded_rings_dx11
+troll_parLoader.c: reading number_of_DipOrb_noPS = 4
+troll_parLoader.c: reading DipOrb_noPS1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_diporb_quat
+troll_parLoader.c: reading DipOrb_noPS4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_diporb_quat
+troll_parLoader.c: reading number_of_Hit_noPS = 4
+troll_parLoader.c: reading Hit_noPS1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_hit
+troll_parLoader.c: reading Hit_noPS2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_hit
+troll_parLoader.c: reading Hit_noPS3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_hit
+troll_parLoader.c: reading Hit_noPS4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_hit
+troll_parLoader.c: reading number_of_Ptg_noPS = 4
+troll_parLoader.c: reading Ptg_noPS1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_ptg
+troll_parLoader.c: reading Ptg_noPS4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_ptg
+troll_parLoader.c: reading number_of_Theo_noPS = 20
+troll_parLoader.c: reading Theo_noPS1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_H0
+troll_parLoader.c: reading Theo_noPS2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_H0
+troll_parLoader.c: reading Theo_noPS3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_H0
+troll_parLoader.c: reading Theo_noPS4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_H0
+troll_parLoader.c: reading Theo_noPS5 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_H1
+troll_parLoader.c: reading Theo_noPS6 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_H1
+troll_parLoader.c: reading Theo_noPS7 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_H1
+troll_parLoader.c: reading Theo_noPS8 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_H1
+troll_parLoader.c: reading Theo_noPS9 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_H2
+troll_parLoader.c: reading Theo_noPS10 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_H2
+troll_parLoader.c: reading Theo_noPS11 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_H2
+troll_parLoader.c: reading Theo_noPS12 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_H2
+troll_parLoader.c: reading Theo_noPS13 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_H3
+troll_parLoader.c: reading Theo_noPS14 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_H3
+troll_parLoader.c: reading Theo_noPS15 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_H3
+troll_parLoader.c: reading Theo_noPS16 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_H3
+troll_parLoader.c: reading Theo_noPS17 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP7_2
+troll_parLoader.c: reading Theo_noPS18 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP7_2
+troll_parLoader.c: reading Theo_noPS19 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP7_2
+troll_parLoader.c: reading Theo_noPS20 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP7_2
+troll_parLoader.c: reading number_of_fsl = 4
+troll_parLoader.c: reading fsl1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_fsl
+troll_parLoader.c: reading fsl2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_fsl
+troll_parLoader.c: reading fsl3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_fsl
+troll_parLoader.c: reading fsl4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_fsl
+troll_parLoader.c: reading number_of_phase = 4
+troll_parLoader.c: reading phase1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-1_REP6_phregul
+troll_parLoader.c: reading phase2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-2_REP6_phregul
+troll_parLoader.c: reading phase3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-3_REP6_phregul
+troll_parLoader.c: reading phase4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_857-4_REP6_phregul
+troll_parLoader.c: reading number_of_rgcnn = 4
+troll_parLoader.c: reading rgcnn1 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn2 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn3 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_NULL_rgadutot.int32.bin
+troll_parLoader.c: reading rgcnn4 = /export/home/tfoulquier/data_sroll/reduced_MAP/reduced_NULL_rgadutot.int32.bin
+troll_parLoader.c: reading number_of_MAP = 5
+troll_parLoader.c: reading MAP1 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz
+troll_parLoader.c: reading MAP2 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1
+troll_parLoader.c: reading MAP3 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2
+troll_parLoader.c: reading MAP4 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3
+troll_parLoader.c: reading MAP5 = /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4
+troll_parLoader.c: reading number_of_Out_Offset = 4
+troll_parLoader.c: reading Out_Offset1 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_offset
+troll_parLoader.c: reading Out_Offset2 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_offset
+troll_parLoader.c: reading Out_Offset3 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-3_offset
+troll_parLoader.c: reading Out_Offset4 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-4_offset
+troll_parLoader.c: reading number_of_Out_Offset_corr = 4
+troll_parLoader.c: reading Out_Offset_corr1 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_offset_corr
+troll_parLoader.c: reading Out_Offset_corr2 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_offset_corr
+troll_parLoader.c: reading Out_Offset_corr3 = /export/home/tfoulquier/VEC/sroll2_debug__857ghz_857-3_offset_corr
+troll_parLoader.c: reading Out_Offset_corr4 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-4_offset_corr
+troll_parLoader.c: reading number_of_Out_xi2 = 4
+troll_parLoader.c: reading Out_xi21 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_xi2
+troll_parLoader.c: reading Out_xi22 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_xi2
+troll_parLoader.c: reading Out_xi23 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-3_xi2
+troll_parLoader.c: reading Out_xi24 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-4_xi2
+troll_parLoader.c: reading number_of_Out_xi2_corr = 4
+troll_parLoader.c: reading Out_xi2_corr1 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-1_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr2 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-2_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr3 = /export/home/tfoulquier/VEC/sroll2_debug_857ghz_857-3_xi2_corr
+troll_parLoader.c: reading Out_xi2_corr4 = /export/home/tfoulquier/data_sroll/srollexx_work/VEC/sroll2_debug_857ghz_857-4_xi2_corr
+DOCO
+MAXFREQ 857
+USE 4 tensoflow rank
+Call python module in path
+/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll
+Call module : py_function_pwst_pol
+2021-06-22 16:18:44.463723: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer.so.6'; dlerror: libnvinfer.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.463827: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer_plugin.so.6'; dlerror: libnvinfer_plugin.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.463836: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:30] Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2021-06-22 16:18:44.525737: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer.so.6'; dlerror: libnvinfer.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.525843: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer_plugin.so.6'; dlerror: libnvinfer_plugin.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.525853: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:30] Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2021-06-22 16:18:44.527684: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer.so.6'; dlerror: libnvinfer.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.527793: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer_plugin.so.6'; dlerror: libnvinfer_plugin.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.527803: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:30] Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2021-06-22 16:18:44.543716: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer.so.6'; dlerror: libnvinfer.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.543815: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer_plugin.so.6'; dlerror: libnvinfer_plugin.so.6: cannot open shared object file: No such file or directory
+2021-06-22 16:18:44.543826: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:30] Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+WARNING:tensorflow:From /export/home/tfoulquier/env_sroll/lib/python3.6/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 0 uses the GPU 0
+Num GPUs Available:  0
+LoadBalancing globalRangeRing      = 259 
+LoadBalancing rings_per_rank       = 64 
+LoadBalancing balancing_correction = 3 
+  rank#0/4 (br146-050, 59.75GB) begin=2 end=66, (65 rings, 0e6 samples)
+WARNING:tensorflow:From /export/home/tfoulquier/env_sroll/lib/python3.6/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 2 uses the GPU 2
+WARNING:tensorflow:From /export/home/tfoulquier/env_sroll/lib/python3.6/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 1 uses the GPU 1
+WARNING:tensorflow:From /export/home/tfoulquier/env_sroll/lib/python3.6/site-packages/tensorflow_core/python/compat/v2_compat.py:88: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+RANK 3 uses the GPU 0
+  rank#1/4 (br146-050, 59.73GB) begin=67 end=131, (65 rings, 0e6 samples)
+  rank#2/4 (br146-050, 59.73GB) begin=132 end=196, (65 rings, 0e6 samples)
+  rank#3/4 (br146-050, 59.73GB) begin=197 end=260, (64 rings, 0e6 samples)
+NEP_tab[0 (857-1)]=0.913495
+NEP_tab[1 (857-2)]=0.920263
+NEP_tab[2 (857-3)]=0.906529
+NEP_tab[3 (857-4)]=1.259713
+debug print => nbolo = 4 mpi_size = 4 
+debug print => nbolo = 4 mpi_size = 4 
+debug print => nbolo = 4 mpi_size = 4 
+DODISTOR [0]: 16 16
+DODISTOR [1]: 16 16
+DODISTOR [2]: 16 16
+DODISTOR [3]: 16 16
+REMDIP : 1
+debug print => nbolo = 4 mpi_size = 4 
+SXI 0 2.29963
+RG_MAX 257
+
+after troll bolometer 857-1 (0/3): used VMEM 9588.9[PHYS 1560.3]MB
+SXI 1 2.26593
+RG_MAX 255
+
+after troll bolometer 857-2 (1/3): used VMEM 9589.1[PHYS 1560.3]MB
+SXI 2 2.3351
+RG_MAX 257
+
+after troll bolometer 857-3 (2/3): used VMEM 9589.1[PHYS 1560.3]MB
+SXI 3 1.20928
+RG_MAX 246
+
+after troll bolometer 857-4 (3/3): used VMEM 9589.1[PHYS 1560.3]MB
+FITANGLE
+FITPOL
+13CO
+
+Free memory per node before pixel balancing, at Tue Jun 22 16:18:47 2021
+rank 00/3, node 00/00, br146-050: 57.9GB free
+NPIX 8
+Mask 0
+Sort pixel to make it run faster
+regrid
+sort
+rebin pixel
+Rank: 0[7020] MEM 8869.2[1224.5]MB line=9769
+Rank: 0[7020] MEM 8869.2[1224.5]MB line=9849
+Rank: 0(br146-050, free=55.54GB) [1/2] used MEM virt:9061.2[phys:1320.4]MB line=9954 ntbs:3MB
+Rank: 0(br146-050, free=55.53GB) [1/2] used MEM virt:9064.9[phys:1324.5]MB line=9954 ntbs:3MB
+Rank: 0(br146-050, free=55.51GB) [2/4] used MEM virt:9072.4[phys:1332.0]MB line=9954 ntbs:7MB
+Rank: 0[7020] MEM 8314.3[667.7]MB line=10078
+
+Free memory per node before matrix computation, at Tue Jun 22 16:19:06 2021
+rank 00/3, node 00/00, br146-050: 58.1GB free
+l_nmatpix[0] 4871
+Rank: 0[7020] MEM 8326.3[679.7]MB line=10224
+NMATCO 4 NMATDUST 4
+ FREEFREE 0
+RK0 SHOULD DETERMINE 39042 VALUES 0 3 6 9 12 
+GAIN DIP BOL 857-1 (0/3): -0.000000
+GAIN DIP BOL 857-2 (1/3): 0.000000
+GAIN DIP BOL 857-3 (2/3): 0.000000
+GAIN DIP BOL 857-4 (3/3): -0.000000
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  1
+BEG-ED 0 19487 0 - 12582911 4871
+MAXSIZE 72 56
+NbGain 12
+BEG 0 19487 0 - 12582911 4871
+Rank: 0[7020] MEM 23494.4[1257.3]MB line=11231
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 0/10 1 
+
+==============================
+GAIN 1 1 1 1 
+QQ2 0
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 2.95586e+09
+iter = 0-0 - delta_new = 2.95586e+09 1 0.991830s
+iter = 0-10 - delta_new = 3.67249e+06 1 0.195068s
+iter = 0-20 - delta_new = 545927 1 0.195057s
+iter = 0-30 - delta_new = 1.85851e+06 1 0.195081s
+iter = 0-40 - delta_new = 166942 1 0.195051s
+iter = 0-50 - delta_new = 19825.8 1 0.195176s
+iter = 0-60 - delta_new = 71249.8 1 0.195014s
+iter = 0-70 - delta_new = 369163 1 0.195027s
+iter = 0-80 - delta_new = 8.85616e+06 1 0.195053s
+iter = 0-90 - delta_new = 9.11607 1 0.194998s
+iter = 0-100 - delta_new = 0.00446809 1 0.195049s
+iter = 0-110 - delta_new = 9.42792e-05 1 0.195042s
+iter = 0-120 - delta_new = 6.03592e-06 1 0.195005s
+iter = 0-130 - delta_new = 9.88833e-08 1 0.194963s
+iter = 0-140 - delta_new = 2.06957e-09 1 0.195041s
+iter = 0-150 - delta_new = 7.03868e-11 1 0.195022s
+iter = 0-160 - delta_new = 1.0653e-11 1 0.194992s
+iter = 0-170 - delta_new = 2.85115e-12 1 0.195019s
+iter = 0-180 - delta_new = 1.18202e-13 1 0.195032s
+iter = 0-190 - delta_new = 5.69496e-15 1 0.195142s
+iter = 0-200 - delta_new = 1.65374e-14 1 0.195059s
+iter = 0-210 - delta_new = 7.11822e-15 1 0.195009s
+
+iter = 214 - delta0 = 2.95586e+09 - delta_new = 2.95053e-15
+CG in iter = 214 (max=300)
+Rank: 0 Line=11256 MEM 23494.4[1259.3]MB
+MAX 0 2 NNBPIX 12582912
+MAX 0 2 ALL_NDATA 49112
+MAX 0 0 NNBPIX 12582912
+MAX 0 0 ALL_NDATA 49123
+MAX 0 3 NNBPIX 12582912
+MAX 0 3 ALL_NDATA 49139
+MAX 0 1 NNBPIX 12582912
+MAX 0 1 ALL_NDATA 49011
+SIGMA : 14.664776 1.155356
+iPOLEFF   1 423625.438 451195.062 416330.250 519929.969 
+iPOLEFF   1 423625.438 451195.062 416330.250 519929.969 
+iPOLEFF   1 423625.438 451195.062 416330.250 519929.969 
+WAVELET INDEX 32
+WAVELET INDEX 32
+WAVELET INDEX 32
+WAVELET INDEX 32
+WAVELET INDEX 16
+WAVELET INDEX 16
+WAVELET INDEX 16
+WAVELET INDEX 16
+WAVELET INDEX 8
+WAVELET INDEX 8
+WAVELET INDEX 8
+WAVELET INDEX 8
+WAVELET INDEX 4
+WAVELET INDEX 4
+WAVELET INDEX 4
+WAVELET INDEX 4
+WAVELET INDEX 2
+WAVELET INDEX 2
+WAVELET INDEX 2
+WAVELET INDEX 2
+WAVELET INDEX 1
+WAVELET INDEX 1
+WAVELET INDEX 1
+WAVELET INDEX 1
+coef  (12,)
+coef  (12,)
+coef  (12,)
+coef  (12,)
+WARNING: Unrecognized loss selection. Using default RMSE loss.
+cross WST loss weight  0
+IndexedSlices(indices=Tensor("gradients_1/concat_1:0", shape=(98246,), dtype=int32), values=Tensor("gradients_1/concat:0", shape=(98246,), dtype=float32), dense_shape=Tensor("gradients_1/GatherV2_78_grad/Cast:0", shape=(1,), dtype=int32)) <tf.Variable 'MAP:0' shape=(24576,) dtype=float32_ref>
+Tensor("gradients_2/mul_147_grad/tuple/control_dependency_1:0", shape=(262144,), dtype=float32) <tf.Variable 'FSL:0' shape=(262144,) dtype=float32_ref>
+MEMORY USED #SAMPLES 13090703.0
+MEMORY USED GB 0.048766668885946274
+MEMORY USED #SAMPLES 13090460.0
+MEMORY USED GB 0.04876576364040375
+MEMORY USED #SAMPLES 13089551.0
+MEMORY USED GB 0.048762377351522446
+MEMORY USED #SAMPLES 13090559.0
+MEMORY USED GB 0.048766132444143295
+Rank: 0 Line=11262 MEM 23494.4[1259.3]MB
+GI XIGAIN 1.536377712
+TF=[-45.8517,-46.2096,-45.8413,-46.4302,]
+TF=[123.228,124.405,123.567,126.893,]
+TF=[12.3587,12.542,12.3673,12.8782,]
+TF=[29.96,30.2454,30.0682,30.8,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[-1.37169,3.89457,1.65439,-4.17728]
+co12=[0.387816,-0.055362,-0.204519,-0.127935]
+dust=[1470,3215.84,4368.45,-9054.37]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 1/10 1 
+
+==============================
+GAIN 1.01327 2.32756 2.17083 -1.51165 
+QQ2 13100.3
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 4.53012e+10
+iter = 1-0 - delta_new = 4.53012e+10 1 0.999315s
+iter = 1-10 - delta_new = 2.1833e+07 1 0.189681s
+iter = 1-20 - delta_new = 1.42513e+07 1 0.189605s
+iter = 1-30 - delta_new = 1.02206e+08 1 0.190253s
+iter = 1-40 - delta_new = 8.33103e+06 1 0.189564s
+iter = 1-50 - delta_new = 8.68019e+08 1 0.189503s
+iter = 1-60 - delta_new = 56811.8 1 0.189490s
+iter = 1-70 - delta_new = 171.45 1 0.189563s
+iter = 1-80 - delta_new = 3.78414e-06 1 0.189498s
+iter = 1-90 - delta_new = 5.22993e-10 1 0.189643s
+iter = 1-100 - delta_new = 1.84712e-12 1 0.189497s
+iter = 1-110 - delta_new = 3.90983e-15 1 0.189528s
+iter = 1-120 - delta_new = 2.42166e-14 1 0.192360s
+
+iter = 123 - delta0 = 2.95586e+09 - delta_new = 2.16834e-15
+CG in iter = 123 (max=300)
+Rank: 0 Line=11256 MEM 24947.2[1621.6]MB
+SIGMA : 151.845067 1.155356
+Rank: 0 Line=11262 MEM 24947.2[1621.6]MB
+BUILD ADU MATRIX BOLO 0
+BUILD ADU MATRIX BOLO 1
+BUILD ADU MATRIX BOLO 2
+BUILD ADU MATRIX BOLO 3
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904517948288 94904529350960
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855360210496 93855364418000
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487501703344 94487515836512
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530591235488 94530595469024
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 9.092067661
+TF=[-1120.42,-1140.12,-1122.6,-1159.01,]
+TF=[3379.38,3411.58,3389.07,3479.42,]
+TF=[471.513,475.486,472.922,486.14,]
+TF=[1149.94,1157.82,1151.89,1179.52,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[-43.7743,-37.6834,-11.8671,93.3247]
+co12=[17.1893,-2.38784,5.85794,-20.6594]
+dust=[23540,-47200.4,1252.91,22407]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 2/10 1 
+
+==============================
+GAIN 1.59834 -9.31152 -0.480067 12.1933 
+QQ2 3.77288e+06
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 1.09547e+11
+iter = 2-0 - delta_new = 1.09547e+11 1 0.994056s
+iter = 2-10 - delta_new = 2.63464e+09 1 0.189533s
+iter = 2-20 - delta_new = 8.74201e+07 1 0.189569s
+iter = 2-30 - delta_new = 7.88954e+07 1 0.190633s
+iter = 2-40 - delta_new = 7.91659e+06 1 0.189500s
+iter = 2-50 - delta_new = 3.51475e+06 1 0.189532s
+iter = 2-60 - delta_new = 186933 1 0.189659s
+iter = 2-70 - delta_new = 199904 1 0.189556s
+iter = 2-80 - delta_new = 963832 1 0.189564s
+iter = 2-90 - delta_new = 4.39876e+06 1 0.189511s
+iter = 2-100 - delta_new = 453.282 1 0.189517s
+iter = 2-110 - delta_new = 0.00823224 1 0.189521s
+iter = 2-120 - delta_new = 0.000446701 1 0.189521s
+iter = 2-130 - delta_new = 9.61328e-06 1 0.189534s
+iter = 2-140 - delta_new = 2.63811e-06 1 0.189550s
+iter = 2-150 - delta_new = 1.14981e-08 1 0.189561s
+iter = 2-160 - delta_new = 3.33956e-08 1 0.189585s
+iter = 2-170 - delta_new = 1.23765e-08 1 0.189555s
+iter = 2-180 - delta_new = 6.41549e-08 1 0.189508s
+iter = 2-190 - delta_new = 4.63035e-08 1 0.189491s
+iter = 2-200 - delta_new = 6.69922e-07 1 0.189570s
+iter = 2-210 - delta_new = 3.65605e-08 1 0.190633s
+iter = 2-220 - delta_new = 7.60532e-08 1 0.189529s
+iter = 2-230 - delta_new = 2.7602e-08 1 0.189579s
+iter = 2-240 - delta_new = 7.588e-09 1 0.189581s
+iter = 2-250 - delta_new = 1.39121e-08 1 0.189602s
+iter = 2-260 - delta_new = 2.73445e-08 1 0.190635s
+iter = 2-270 - delta_new = 1.28066e-07 1 0.189507s
+iter = 2-280 - delta_new = 8.80119e-08 1 0.189511s
+iter = 2-290 - delta_new = 6.38711e-08 1 0.189510s
+
+iter = 300 - delta0 = 2.95586e+09 - delta_new = 4.07639e-07
+CG in iter = 300 (max=300)
+Rank: 0 Line=11256 MEM 25005.1[1680.8]MB
+SIGMA : 191.708903 1.155356
+Rank: 0 Line=11262 MEM 25005.1[1680.8]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904542454880 94904495019024
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855376338064 93855363341312
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530596889664 94530601587184
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487510096352 94487518288608
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 86.20865126
+TF=[-1167.19,-1190.97,-1170.39,-1199.96,]
+TF=[3702.03,3740.2,3713,3806.39,]
+TF=[486.604,485.739,486.989,505.186,]
+TF=[1166.68,1176.2,1169.14,1196.54,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[22.3575,207.794,69.949,-300.1]
+co12=[18.0227,21.9587,6.60576,-46.5871]
+dust=[59423.3,269437,111933,-440795]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 3/10 1 
+
+==============================
+GAIN 13.6142 84.9262 33.1621 -127.702 
+QQ2 -52754.7
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 1.90786e+10
+iter = 3-0 - delta_new = 1.90786e+10 1 0.996705s
+iter = 3-10 - delta_new = 1.14855e+09 1 0.194337s
+iter = 3-20 - delta_new = 2.46088e+07 1 0.189505s
+iter = 3-30 - delta_new = 1.02762e+07 1 0.189531s
+iter = 3-40 - delta_new = 7.91747e+06 1 0.189586s
+iter = 3-50 - delta_new = 1.71159e+07 1 0.189536s
+iter = 3-60 - delta_new = 4.20744e+08 1 0.189575s
+iter = 3-70 - delta_new = 3.29596e+06 1 0.189555s
+iter = 3-80 - delta_new = 9.35799e+07 1 0.191280s
+iter = 3-90 - delta_new = 12114.6 1 0.189605s
+iter = 3-100 - delta_new = 0.838617 1 0.189549s
+iter = 3-110 - delta_new = 0.00773923 1 0.189567s
+iter = 3-120 - delta_new = 0.00065402 1 0.189529s
+iter = 3-130 - delta_new = 9.83849e-05 1 0.190220s
+iter = 3-140 - delta_new = 3.19266e-05 1 0.189655s
+iter = 3-150 - delta_new = 2.41118e-06 1 0.189524s
+iter = 3-160 - delta_new = 4.18645e-08 1 0.191716s
+iter = 3-170 - delta_new = 4.8248e-08 1 0.189596s
+iter = 3-180 - delta_new = 1.45393e-08 1 0.189587s
+iter = 3-190 - delta_new = 1.92752e-11 1 0.189585s
+iter = 3-200 - delta_new = 6.73361e-12 1 0.189603s
+iter = 3-210 - delta_new = 1.4212e-12 1 0.189503s
+iter = 3-220 - delta_new = 2.15308e-11 1 0.189538s
+iter = 3-230 - delta_new = 6.73328e-12 1 0.189543s
+iter = 3-240 - delta_new = 1.9597e-11 1 0.189577s
+iter = 3-250 - delta_new = 7.0031e-11 1 0.189536s
+iter = 3-260 - delta_new = 2.7957e-11 1 0.189559s
+iter = 3-270 - delta_new = 8.53401e-11 1 0.189509s
+iter = 3-280 - delta_new = 1.60411e-11 1 0.189532s
+iter = 3-290 - delta_new = 6.55354e-11 1 0.189637s
+
+iter = 300 - delta0 = 2.95586e+09 - delta_new = 1.21052e-10
+CG in iter = 300 (max=300)
+Rank: 0 Line=11256 MEM 25053.1[1730.0]MB
+SIGMA : 1122.263089 1.155356
+Rank: 0 Line=11262 MEM 25053.1[1730.0]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904517948288 94904488140176
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855360210496 93855373694656
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487501703344 94487515253936
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530604692704 94530602523440
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 424.1947886
+TF=[-7411.05,-7538.75,-7424.74,-7672.16,]
+TF=[22145.4,22348.1,22208.4,22816.5,]
+TF=[3237.32,3258.05,3245.97,3354.05,]
+TF=[7960.27,8007.13,7971.74,8179.87,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[-609.293,-1665.73,-489.265,2764.29]
+co12=[123.258,-111.421,44.7751,-56.6122]
+dust=[-33598.1,-1.47705e+06,-194948,1.7056e+06]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 4/10 1 
+
+==============================
+GAIN -58.0823 -418.531 -63.8096 544.423 
+QQ2 11873.5
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 1.9072e+10
+iter = 4-0 - delta_new = 1.9072e+10 1 0.996615s
+iter = 4-10 - delta_new = 3.41654e+08 1 0.189596s
+iter = 4-20 - delta_new = 6.26523e+06 1 0.189532s
+iter = 4-30 - delta_new = 3.93853e+06 1 0.189511s
+iter = 4-40 - delta_new = 948606 1 0.189545s
+iter = 4-50 - delta_new = 24205.3 1 0.189531s
+iter = 4-60 - delta_new = 2.03268e+06 1 0.189540s
+iter = 4-70 - delta_new = 2.36256e+06 1 0.189555s
+iter = 4-80 - delta_new = 4.75662e+06 1 0.189545s
+iter = 4-90 - delta_new = 2.97149e+06 1 0.189568s
+iter = 4-100 - delta_new = 2.77072 1 0.189538s
+iter = 4-110 - delta_new = 0.0349878 1 0.189535s
+iter = 4-120 - delta_new = 0.000285 1 0.189524s
+iter = 4-130 - delta_new = 3.24027e-05 1 0.189707s
+iter = 4-140 - delta_new = 3.80833e-07 1 0.189511s
+iter = 4-150 - delta_new = 1.49956e-07 1 0.189552s
+iter = 4-160 - delta_new = 1.83234e-09 1 0.189534s
+iter = 4-170 - delta_new = 1.00281e-10 1 0.189525s
+iter = 4-180 - delta_new = 9.62213e-10 1 0.189545s
+iter = 4-190 - delta_new = 4.58369e-09 1 0.189524s
+iter = 4-200 - delta_new = 1.42766e-09 1 0.189642s
+iter = 4-210 - delta_new = 7.04834e-09 1 0.190043s
+iter = 4-220 - delta_new = 4.93085e-09 1 0.189587s
+iter = 4-230 - delta_new = 6.7606e-10 1 0.189575s
+iter = 4-240 - delta_new = 7.8215e-10 1 0.189499s
+iter = 4-250 - delta_new = 1.38138e-09 1 0.189512s
+iter = 4-260 - delta_new = 1.5531e-09 1 0.189541s
+iter = 4-270 - delta_new = 8.32043e-09 1 0.189519s
+iter = 4-280 - delta_new = 1.97531e-09 1 0.189547s
+iter = 4-290 - delta_new = 3.84267e-10 1 0.189476s
+
+iter = 300 - delta0 = 2.95586e+09 - delta_new = 1.3644e-10
+CG in iter = 300 (max=300)
+Rank: 0 Line=11256 MEM 25102.1[1779.1]MB
+SIGMA : 2624.755547 1.155356
+Rank: 0 Line=11262 MEM 25102.1[1779.1]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904542454880 94904534283856
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855361182720 93855366680576
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530596889664 94530559381888
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487528029168 94487517965264
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 2072.853879
+TF=[-4020.44,-4097.96,-4031.19,-4132.99,]
+TF=[11648.9,11782.5,11681.2,11940.3,]
+TF=[957.896,957.814,961.766,1000.83,]
+TF=[2121.78,2146.63,2126.17,2183.05,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[1608.2,5981.33,1437.13,-9026.65]
+co12=[19.8683,302.749,14.7602,-337.377]
+dust=[1.99271e+06,6.34987e+06,1.80042e+06,-1.0143e+07]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 5/10 1 
+
+==============================
+GAIN 586.681 1760.26 529.134 -2872.08 
+QQ2 42.1873
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 2.38011e+10
+iter = 5-0 - delta_new = 2.38011e+10 1 0.996739s
+iter = 5-10 - delta_new = 1.98195e+08 1 0.189595s
+iter = 5-20 - delta_new = 9.45612e+06 1 0.189552s
+iter = 5-30 - delta_new = 2.50746e+06 1 0.189612s
+iter = 5-40 - delta_new = 2.1256e+08 1 0.189560s
+iter = 5-50 - delta_new = 9.24879e+07 1 0.189537s
+iter = 5-60 - delta_new = 1.95542e+06 1 0.191628s
+iter = 5-70 - delta_new = 2.08221e+06 1 0.189564s
+iter = 5-80 - delta_new = 26794.2 1 0.189559s
+iter = 5-90 - delta_new = 0.00433772 1 0.189516s
+iter = 5-100 - delta_new = 1.15408e-08 1 0.190620s
+iter = 5-110 - delta_new = 6.24202e-10 1 0.189517s
+iter = 5-120 - delta_new = 6.46809e-10 1 0.189655s
+iter = 5-130 - delta_new = 3.76398e-12 1 0.189525s
+iter = 5-140 - delta_new = 5.75975e-13 1 0.189582s
+iter = 5-150 - delta_new = 3.48566e-13 1 0.189578s
+iter = 5-160 - delta_new = 1.04664e-14 1 0.189565s
+iter = 5-170 - delta_new = 7.98265e-15 1 0.189587s
+
+iter = 176 - delta0 = 2.95586e+09 - delta_new = 2.80258e-15
+CG in iter = 176 (max=300)
+Rank: 0 Line=11256 MEM 25151.5[1828.8]MB
+SIGMA : 33028.629350 1.155356
+Rank: 0 Line=11262 MEM 25151.5[1828.8]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904534982720 94904496453584
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855360210496 93855363452256
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530604692704 94530594246768
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487487607952 94487516726800
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 13645.05732
+TF=[215597,219334,216059,222689,]
+TF=[-660963,-667401,-662872,-680153,]
+TF=[-78731.5,-79287.1,-78953.4,-81289,]
+TF=[-185021,-186258,-185382,-189998,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[-6727.97,-35912.6,-11966.6,54607.2]
+co12=[-3051.23,-923.965,-903.744,4878.93]
+dust=[-1.78739e+07,-3.8287e+07,-1.3636e+07,6.9797e+07]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 6/10 1 
+
+==============================
+GAIN -4197.42 -12014.8 -3605.64 19821.8 
+QQ2 -53.1653
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 2.36964e+10
+iter = 6-0 - delta_new = 2.36964e+10 1 0.967899s
+iter = 6-10 - delta_new = 1.15257e+08 1 0.189541s
+iter = 6-20 - delta_new = 8.9546e+06 1 0.189634s
+iter = 6-30 - delta_new = 1.77342e+06 1 0.189548s
+iter = 6-40 - delta_new = 2.98102e+07 1 0.189540s
+iter = 6-50 - delta_new = 1.3799e+07 1 0.189560s
+iter = 6-60 - delta_new = 6.78546e+06 1 0.189580s
+iter = 6-70 - delta_new = 5.14835e+07 1 0.189528s
+iter = 6-80 - delta_new = 490.107 1 0.189582s
+iter = 6-90 - delta_new = 0.0221717 1 0.189548s
+iter = 6-100 - delta_new = 3.59948e-08 1 0.189607s
+iter = 6-110 - delta_new = 1.40186e-09 1 0.189548s
+iter = 6-120 - delta_new = 1.60249e-09 1 0.189545s
+iter = 6-130 - delta_new = 7.50856e-12 1 0.189517s
+iter = 6-140 - delta_new = 9.63104e-14 1 0.189517s
+iter = 6-150 - delta_new = 2.23793e-13 1 0.189511s
+iter = 6-160 - delta_new = 1.4843e-14 1 0.189510s
+iter = 6-170 - delta_new = 5.52677e-15 1 0.189501s
+
+iter = 172 - delta0 = 2.95586e+09 - delta_new = 2.80185e-15
+CG in iter = 172 (max=300)
+Rank: 0 Line=11256 MEM 25201.3[1878.6]MB
+SIGMA : 227083.315522 1.155356
+Rank: 0 Line=11262 MEM 25201.3[1878.6]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904496762064 94904535327936
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855376338064 93855354607680
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487528029168 94487509043600
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530596889664 94530585331360
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 94049.35221
+TF=[-1.46853e+06,-1.49399e+06,-1.47164e+06,-1.51655e+06,]
+TF=[4.50637e+06,4.55029e+06,4.51939e+06,4.63713e+06,]
+TF=[532741,536550,534222,549998,]
+TF=[1.25031e+06,1.25865e+06,1.2528e+06,1.28386e+06,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[49002.4,249445,83087.8,-381535]
+co12=[20910.4,6595.46,6147.95,-33653.8]
+dust=[1.22495e+08,2.65627e+08,9.10843e+07,-4.79207e+08]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 7/10 1 
+
+==============================
+GAIN 28817.1 83532.9 24030.9 -136377 
+QQ2 9.18103
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 2.3385e+10
+iter = 7-0 - delta_new = 2.3385e+10 1 0.996404s
+iter = 7-10 - delta_new = 1.48306e+08 1 0.205374s
+iter = 7-20 - delta_new = 1.16574e+07 1 0.189685s
+iter = 7-30 - delta_new = 1.10981e+06 1 0.189539s
+iter = 7-40 - delta_new = 1.32915e+07 1 0.189572s
+iter = 7-50 - delta_new = 2.90992e+06 1 0.189629s
+iter = 7-60 - delta_new = 2.23483e+06 1 0.189605s
+iter = 7-70 - delta_new = 105561 1 0.189529s
+iter = 7-80 - delta_new = 37821.3 1 0.189576s
+iter = 7-90 - delta_new = 0.00554377 1 0.189548s
+iter = 7-100 - delta_new = 8.63623e-09 1 0.189552s
+iter = 7-110 - delta_new = 1.37809e-09 1 0.189539s
+iter = 7-120 - delta_new = 1.7772e-09 1 0.189767s
+iter = 7-130 - delta_new = 4.20778e-12 1 0.189654s
+iter = 7-140 - delta_new = 1.31227e-12 1 0.189549s
+iter = 7-150 - delta_new = 7.84794e-13 1 0.189545s
+iter = 7-160 - delta_new = 3.41494e-14 1 0.189567s
+iter = 7-170 - delta_new = 8.22129e-14 1 0.189516s
+
+iter = 180 - delta0 = 2.95586e+09 - delta_new = 2.00301e-15
+CG in iter = 180 (max=300)
+Rank: 0 Line=11256 MEM 25250.6[1928.3]MB
+SIGMA : 1468996.061072 1.155356
+Rank: 0 Line=11262 MEM 25250.6[1928.3]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904534982720 94904531431328
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855360210496 93855370076432
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487487607952 94487513746112
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530604692704 94530603697264
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 641621.3777
+TF=[9.34433e+06,9.5064e+06,9.36406e+06,9.64909e+06,]
+TF=[-2.86405e+07,-2.89201e+07,-2.87231e+07,-2.94702e+07,]
+TF=[-3.34691e+06,-3.37066e+06,-3.35615e+06,-3.4555e+06,]
+TF=[-7.84265e+06,-7.89501e+06,-7.85832e+06,-8.05338e+06,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[-353617,-1.71882e+06,-556840,2.62928e+06]
+co12=[-132923,-47851.5,-38791.4,219566]
+dust=[-8.17183e+08,-1.82808e+09,-6.08552e+08,3.25382e+09]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 8/10 1 
+
+==============================
+GAIN -194616 -571544 -161924 928088 
+QQ2 -1.447
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 2.32088e+10
+iter = 8-0 - delta_new = 2.32088e+10 1 0.968329s
+iter = 8-10 - delta_new = 1.5458e+08 1 0.189539s
+iter = 8-20 - delta_new = 1.16767e+07 1 0.190918s
+iter = 8-30 - delta_new = 1.86092e+06 1 0.190087s
+iter = 8-40 - delta_new = 1.30356e+07 1 0.189709s
+iter = 8-50 - delta_new = 5.94361e+07 1 0.189572s
+iter = 8-60 - delta_new = 2.48217e+06 1 0.189525s
+iter = 8-70 - delta_new = 2.06306e+06 1 0.189580s
+iter = 8-80 - delta_new = 56406.4 1 0.189562s
+iter = 8-90 - delta_new = 0.114716 1 0.189594s
+iter = 8-100 - delta_new = 9.31699e-08 1 0.189504s
+iter = 8-110 - delta_new = 1.57019e-08 1 0.189583s
+iter = 8-120 - delta_new = 5.17905e-10 1 0.189555s
+iter = 8-130 - delta_new = 1.01141e-10 1 0.189552s
+iter = 8-140 - delta_new = 1.54945e-11 1 0.189532s
+iter = 8-150 - delta_new = 1.85165e-11 1 0.189570s
+iter = 8-160 - delta_new = 3.27191e-11 1 0.194359s
+iter = 8-170 - delta_new = 8.75189e-13 1 0.189683s
+iter = 8-180 - delta_new = 8.91469e-13 1 0.189538s
+iter = 8-190 - delta_new = 1.52362e-12 1 0.189514s
+iter = 8-200 - delta_new = 4.81671e-13 1 0.189541s
+iter = 8-210 - delta_new = 1.09045e-13 1 0.191739s
+iter = 8-220 - delta_new = 3.38392e-14 1 0.189489s
+iter = 8-230 - delta_new = 3.026e-14 1 0.189582s
+iter = 8-240 - delta_new = 1.27096e-14 1 0.189574s
+iter = 8-250 - delta_new = 1.37096e-14 1 0.191009s
+iter = 8-260 - delta_new = 3.92774e-15 1 0.189785s
+
+iter = 261 - delta0 = 2.95586e+09 - delta_new = 2.83107e-15
+CG in iter = 261 (max=300)
+Rank: 0 Line=11256 MEM 25300.0[1977.6]MB
+SIGMA : 9790775.147910 1.155356
+Rank: 0 Line=11262 MEM 25300.0[1977.6]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904496762064 94904518310336
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855368701968 93855354469744
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487484017072 94487503896672
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530596889664 94530589929600
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 4356937.277
+TF=[-6.19135e+07,-6.29875e+07,-6.20442e+07,-6.39313e+07,]
+TF=[1.89686e+08,1.91539e+08,1.90233e+08,1.95178e+08,]
+TF=[2.21044e+07,2.22607e+07,2.21654e+07,2.28226e+07,]
+TF=[5.17777e+07,5.21234e+07,5.18811e+07,5.31701e+07,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[2.43283e+06,1.17052e+07,3.75897e+06,-1.7897e+07]
+co12=[879493,331073,256469,-1.46703e+06]
+dust=[5.50871e+09,1.24441e+10,4.11612e+09,-2.2069e+10]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 9/10 1 
+
+==============================
+GAIN 1.31814e+06 3.88165e+06 1.09868e+06 -6.29847e+06 
+QQ2 0.212764
+iter = 0 - delta0 = 2.95586e+09 - delta_new = 2.31744e+10
+iter = 9-0 - delta_new = 2.31744e+10 1 1.002659s
+iter = 9-10 - delta_new = 1.5385e+08 1 0.189517s
+iter = 9-20 - delta_new = 1.08839e+07 1 0.189520s
+iter = 9-30 - delta_new = 1.35634e+06 1 0.189463s
+iter = 9-40 - delta_new = 4.25887e+08 1 0.189521s
+iter = 9-50 - delta_new = 8.24484e+06 1 0.189494s
+iter = 9-60 - delta_new = 2.10197e+06 1 0.190461s
+iter = 9-70 - delta_new = 101702 1 0.189504s
+iter = 9-80 - delta_new = 157407 1 0.189517s
+iter = 9-90 - delta_new = 5.65407 1 0.189528s
+iter = 9-100 - delta_new = 3.00696e-08 1 0.189510s
+iter = 9-110 - delta_new = 3.44244e-09 1 0.189429s
+iter = 9-120 - delta_new = 9.46684e-10 1 0.189523s
+iter = 9-130 - delta_new = 3.28899e-12 1 0.189510s
+iter = 9-140 - delta_new = 4.82617e-13 1 0.189525s
+iter = 9-150 - delta_new = 1.93297e-13 1 0.189492s
+
+iter = 158 - delta0 = 2.95586e+09 - delta_new = 2.5165e-15
+CG in iter = 158 (max=300)
+Rank: 0 Line=11256 MEM 25349.9[2027.9]MB
+SIGMA : 66388609.820821 1.155356
+Rank: 0 Line=11262 MEM 25349.9[2027.9]MB
+Fit ADU BOLO 0
+Fit ADU BOLO 1
+Fit ADU BOLO 2
+Fit ADU BOLO 3
+Invert FIT_ADU MATRIX bolo=0 proc=0 94904534982720 94904529911856
+Invert FIT_ADU MATRIX bolo=2 proc=2 93855385044496 93855366401040
+Invert FIT_ADU MATRIX bolo=1 proc=1 94530604692704 94530594876368
+Invert FIT_ADU MATRIX bolo=3 proc=3 94487487607952 94487516959744
+Write CORRNL  409600
+Write CORRNL  409600
+GI XIGAIN 29570054.57
+TF=[4.19776e+08,4.27058e+08,4.20663e+08,4.33458e+08,]
+TF=[-1.28606e+09,-1.29862e+09,-1.28977e+09,-1.3233e+09,]
+TF=[-1.499e+08,-1.50959e+08,-1.50314e+08,-1.54771e+08,]
+TF=[-3.5114e+08,-3.53485e+08,-3.51842e+08,-3.60585e+08,]
+TF=[0,0,0,0,]
+polang=[0,0,0,0]
+poleff=[0,0,0,0]
+co13=[-1.65003e+07,-7.94398e+07,-2.55032e+07,1.21443e+08]
+co12=[-5.96152e+06,-2.24717e+06,-1.73889e+06,9.94758e+06]
+dust=[-3.73812e+10,-8.44524e+10,-2.79545e+10,1.49788e+11]
+Write OFF  2072
+Write GAIN  2072
+Write OFF  2072
+Write GAIN  2072
+Write OFF  2072
+Write GAIN  2072
+Write OFF  2072
+Write GAIN  2072
+Save X2 NO CUTRG
+Write MAT  352
+AVVGAIN: 3.262957
+Rank: 0[7020] MEM 11575.1[2076.5]MB line=11465
+Rank: 0[7020] MEM 17143.3[7644.4]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_full_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm1_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_hm2_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fullodd_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857ghz_fulleven_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-1_full_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-2_full_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-3_full_D.fits
+line: 12007 rank: 0 file: troll.c
+Rank: 0[7020] MEM 17527.3[8029.3]MB line=11553
+11908 0 : 0 12582911 12582912
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_I.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_I.fits
+removed existing MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_D.fits
+WRITE MAP: /export/home/tfoulquier/MAP/sroll2_debug_857ghz_857-4_full_D.fits
+line: 12007 rank: 0 file: troll.c
+Write DIFF  256000
+Write DIFF2  256000
+Write NDIFF  256000
+Write DIFF  256000
+Write DIFF2  256000
+Write NDIFF  256000
+Write DIFF  256000
+Write DIFF2  256000
+Write NDIFF  256000
+Write DIFF  -1
+Write DIFF2  -1
+Write NDIFF  -1
+A MEM 6.55GB AVAIL 55.25GB
+NPAR PER IMAGE 4 1 2
+NPAR PER IMAGE 2 2 2
+init shape done
+B MEM 6.76GB AVAIL 55.04GB
+C MEM 6.76GB AVAIL 55.04GB
+D MEM 7.53GB AVAIL 54.29GB
+E MEM 6.99GB AVAIL 54.81GB
+F MEM 7.19GB AVAIL 54.61GB
+Initialized Network
+G MEM 7.72GB AVAIL 54.08GB
+H MEM 7.65GB AVAIL 54.13GB
+Initialized Variables
+troll.c: --------------------------
+troll.c: Finished sucessfully at Tue Jun 22 16:28:18 2021
+troll.c: --------------------------

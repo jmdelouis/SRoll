@@ -1,0 +1,54 @@
+                                 **************
+                                 * NO DMC LIB *
+                                 **************
+
+                              --= RELEASE-NOTES =--
+
+-------------------------------------------------------------------------------
+
+>> NO DMC LIB 1.2 <<
+
+   Release date: 2015-09-24
+   CVS tag: 
+
+   * Changes:
+     - The python tool used for generating metadata (no_dmc_metadata.py)
+       changed its option names:
+       Now "-f" option require a filename and option "-o" require an object name
+     - Add new function for reading PIOCOMPLEX data:
+       "noDMC_readObject_PIOCOMPLEX()"
+       NOTE: python wrapper does not support it yet!
+     - Add new function for retrieving keyword information associated to an
+       object:
+       "getMetadataKeywordFor()"
+
+   * Bug Fixes:
+     - Fiw retrieving of keywords list from DMC object when it include ":" char.
+
+-------------------------------------------------------------------------------
+
+>> NO DMC LIB 1.1 <<
+
+   Release date: 2015-04-09
+   CVS tag: v01-01-00
+
+   * Changes:
+     <none>
+
+   * Bug Fixes:
+     - Add few missing free instructions (no more memory leaks)
+
+   * Minor:
+     - Replace use of strdup() function by a local definition strdupnodmc():
+       preventing use of extra compilation flag.
+
+-------------------------------------------------------------------------------
+
+>> NO DMC LIB 1.0 <<
+
+   Release date: 2015-04-03
+   CVS tag: v01-00-04
+
+   Initial release.
+
+-------------------------------------------------------------------------------

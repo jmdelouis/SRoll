@@ -1,0 +1,14 @@
+#!/bin/sh
+#PBS -S /bin/sh
+#PBS -N [[%label]]
+#PBS -j oe
+#PBS -l nodes=[[%nbNode]]:ppn=24,walltime=[[%walltime]]
+
+
+cd [[%srollDir]]
+
+# Configure module
+source ../srollex_setenv.sh
+
+mpirun --map-by node --display-map -x TMPDIR=/tmp -np [[%nbTotProc]] ./sroll [[%paramFile]] &> [[%logfilename]]
+exit 0

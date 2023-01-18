@@ -1,0 +1,48 @@
+
+/*
+ *
+ * Template for hprcalpol6 parameter file reader include file
+ * Automatically produced from ./../xml/hprcalpol6.pie
+ *
+ * Created by delouis on Thu Mar 26 11:12:14 2015 (PIE version v00-05-67)
+ *
+ * Command line was something like :
+ * PIE ./../xml/hprcalpol6.pie MYFILE.h -Lh
+ *
+ */
+
+/*
+ *
+ * This include file contains the definition of a structure that will
+ * be filled by reading the parameter file.
+ *
+ */
+
+#ifndef __TAG__PARAM_H_
+#define __TAG__PARAM_H_
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <complex.h>
+
+#include "no_dmc_piolib_type_def.h"
+#include "ring_index.h"
+#include "brimo.h"
+
+#include "RngStream.h" // http://arxiv.org/abs/1403.7645
+
+#define ADCBITS  (16l)
+#define INLSIZE  (1l<<ADCBITS)
+#define RINGSIZE (27664l)
+#define MAXRSTREAMS (26100l)
+
+
+
+/*
+ * parcontent : structure containing the read parameter file
+ */
+
+ __AUTO_GEN_STRUCT__
+	
+#endif
