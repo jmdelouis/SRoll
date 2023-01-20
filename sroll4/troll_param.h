@@ -49,7 +49,7 @@ typedef struct {
    */
   PIODOUBLE *CrossPol;
   PIOLONG n_CrossPol; /* ==number_of_CrossPol */
-
+  
   /* ---- List ADDPOL ---------------------------------------------
    *
    */
@@ -285,6 +285,7 @@ typedef struct {
    */  
   PIOSTRING projectionType;
 
+  
   /* ---- Parameter  beg_surv ---------------------------------------------
    *
    */  

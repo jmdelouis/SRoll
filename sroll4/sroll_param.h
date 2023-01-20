@@ -33,7 +33,7 @@
  */
  
 typedef struct {
-  
+
   /* ---- Parameter BeginRing ------------------------------------------
    * First ring to consider (included)
    */

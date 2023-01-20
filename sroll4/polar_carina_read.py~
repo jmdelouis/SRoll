@@ -1,0 +1,50 @@
+
+import healpy as hp
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+#im = hp.read_map("/export/home/tfoulquier/MAP/857_maps/temp_OUT2048_carina_polar_857GHz_full_0.fits")
+#im1 = hp.read_map("/export/home/tfoulquier/MAP/857_maps/temp_OUT2048_carina_polar_857GHz_full_1.fits")
+#im2 = hp.read_map("/export/home/tfoulquier/MAP/857_maps/temp_OUT2048_carina_polar_857GHz_full_2.fits")
+im = hp.read_map('/export/home/tfoulquier/MAP/857_maps/temp_OUT2048_rstep10_input_PDUST_857GHz_IQU_full_0.fits')
+im2 = hp.read_map('/export/home/tfoulquier/MAP/857_maps/temp_OUT2048_rstep10_input_PDUST_857GHz_IQU_full_1.fits')
+im3 = hp.read_map('/export/home/tfoulquier/MAP/857_maps/temp_OUT2048_rstep10_input_PDUST_857GHz_IQU_full_2.fits')
+im4 = hp.read_map('/export/home/tfoulquier/MAP/857_maps/temp_OUT2048_rstep10_input_PDUST_857GHz_IQU_full_COND.fits')
+#im3 = hp.read_map('/export/home/tfoulquier/MAP/857_maps/2048_carina_polar_857GHz_full.fits')
+#im4 = hp.read_map('/export/home/tfoulquier/MAP/857_maps/PDUST_carina_polar_857GHz.fits')
+
+im353ds1 = hp.read_map('/export/home1/tfoulquier/SRoll20_SkyMap_353ds1_full.fits')
+#im353ds2 = hp.read_map('/export/home1/tfoulquier/SRoll20_SkyMap_353ds2_full.fits')
+
+hp.mollview(im,cmap="jet",min = -1E13,max = 1E14,title ='result I') 
+hp.mollview(im2,cmap="jet",min = -1E13,max = 1E14,title ='result Q') 
+hp.mollview(im3,cmap="jet",min = -1E13,max = 1E14,title ='result U') 
+hp.mollview(im3,cmap="jet",min = -1E13,max = 1E14,title ='result COND')
+#hp.mollview(im3,cmap="jet",min = -10,max = 10,title ='I 857-input rstep = 10') 
+#hp.mollview(im4,cmap="jet",min = -1E13,max = 1E14,title ='I PDUST-input rstep = 10') 
+
+
+hp.mollview(im353ds1,cmap="jet",min = -0.01,max = 0.01,title ='im353ds1') 
+#hp.mollview(im353ds2,cmap="jet",min = -0.01,max = 0.01,title ='im353ds2') 
+
+
+
+mask = np.fromfile('/export/home1/jmdeloui/CARINA_MASK.float32.bin',dtype=np.float32)
+
+
+ph_gal=287.60158
+th_gal=-0.64452
+
+hp.gnomview(im,cmap='jet',rot=[ph_gal,th_gal],norm ='hist')
+#hp.gnomview(im1,cmap='jet',rot=[ph_gal,th_gal],min=-40,max=40)
+#hp.gnomview(im2,cmap='jet',rot=[ph_gal,th_gal],min=-40,max=40)
+
+hp.mollview(im,cmap='jet',title="Carina",norm='hist')
+
+
+#hp.gnomview(mask,cmap='jet',rot=[ph_gal,th_gal])
+#hp.mollview(mask,cmap='jet',title="Mask Carina")
+
+
+plt.show()

@@ -19,7 +19,7 @@ def main():
   BeginRing   = 240
   EndRing     = 26050
 
-  RSTEP       = 10
+  RSTEP       = 1
   
   CUTRG      = 1
   D_NOPOL    = 0

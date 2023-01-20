@@ -205,20 +205,20 @@ def main():
   bolo_map = ['CFOSAT','LS04','LS06','LS08','LS10']
   number_of_bolo_map = len(bolo_map)
 
-  MAP = ["/export/home/tfoulquier/MAP/temp_Nside%d_%s"%(Nside,i)  for i in bolo_map]
+  MAP = ["/export/home/tfoulquier/MAP/test_temp_Nside%d_%s"%(Nside,i)  for i in bolo_map]
   number_of_MAP = len(MAP)
 
-  Out_Offset = ["/export/home/tfoulquier/VEC/temp_Nside%d_%s_offset"%(Nside,i) for i in bolo]
+  Out_Offset = ["/export/home/tfoulquier/VEC/test_temp_Nside%d_%s_offset"%(Nside,i) for i in bolo]
   number_of_Out_Offset = len(Out_Offset)
 
 
-  Out_Offset_corr = ["/export/home/tfoulquier/VEC/temp_Nside%d_%s_offset_corr"%(Nside,i) for i in bolo]
+  Out_Offset_corr = ["/export/home/tfoulquier/VEC/test_temp_Nside%d_%s_offset_corr"%(Nside,i) for i in bolo]
   number_of_Out_Offset_corr = len(Out_Offset_corr)
 
-  Out_xi2 = ["/export/home/tfoulquier/VEC/temp_Nside%d_%s_xi2"%(Nside,i) for i in bolo]
+  Out_xi2 = ["/export/home/tfoulquier/VEC/test_temp_Nside%d_%s_xi2"%(Nside,i) for i in bolo]
   number_of_Out_xi2 = len(Out_xi2)
 
-  Out_xi2_corr = ["/export/home/tfoulquier/VEC/temp_Nside%d_%s_xi2_corr"%(Nside,i) for i in bolo]
+  Out_xi2_corr = ["/export/home/tfoulquier/VEC/test_temp_Nside%d_%s_xi2_corr"%(Nside,i) for i in bolo]
   number_of_Out_xi2_corr = len(Out_xi2_corr)
 
 

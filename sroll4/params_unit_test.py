@@ -53,7 +53,7 @@ def main():
   #UNSEEN = hp.UNSEEN
   
   number_of_SEED = 1
-  SEED= 1234
+  SEED= [1,2,3,4]
 
   number_of_ADDCO13= 0
 
@@ -69,7 +69,7 @@ def main():
 
   #PARAMETRES RELIE AU RESEAU DE NEURONE
 
-  DOCNN = [0,0,0,0,1,1,1,0,0,0,0,0,0]
+  DOCNN = [0,0,0,0,0,0,0]
   #DOCNN = [0,0,0,0,0,0,0,0,0,0,0,0,0]  
   number_of_DOCNN = len(DOCNN)
 
@@ -144,7 +144,7 @@ def main():
   #in_synchro_map_Q =
   #in_synchro_map_U =
 
-  projectionType = "Q,U" #"I"#"I,Q,U"
+  projectionType = "I" #"I"#"I,Q,U"
 
   in_template_map_I = ["/export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin" for i in range(0,nbolo)]
   number_of_in_template_map_I=len(in_template_map_I)

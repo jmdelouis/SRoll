@@ -54,7 +54,7 @@ def main():
   #UNSEEN = hp.UNSEEN
   
   number_of_SEED = 1
-  SEED= 1234
+  SEED= [1,2,3,4]
 
   number_of_ADDCO13= 0
 
@@ -149,7 +149,7 @@ def main():
   #in_synchro_map_Q =
   #in_synchro_map_U =
 
-  projectionType = "Q,U" # "cfosatmap" #"spline3" # "I"#"I,Q,U"
+  projectionType = "cfosatmap" #"spline3" # "I"#"I,Q,U"
 
   in_template_map_I = ["/export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin" for i in range(0,nbolo)]
   number_of_in_template_map_I=len(in_template_map_I)
@@ -167,7 +167,7 @@ def main():
   number_of_in_polar_fit_U = len(in_polar_fit_U)
 
   #Signal_noPS = ["/export/home/tfoulquier/data_sroll/MAP/%s_REP6_THEO_SIMU"%(i) for i in bolo]
-  #Signal_noPS = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_Signal"%(i) for i in bolo]
+  #Signal_noPS = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_Signal"%(i) for i in bolo]+
   Signal_noPS = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_SignalCorr"%(i) for i in bolo]
   number_of_Signal_noPS = len(Signal_noPS)
 

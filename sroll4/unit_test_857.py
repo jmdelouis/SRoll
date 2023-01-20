@@ -20,13 +20,12 @@ def main():
   NORM_GAIN = 1
   REMOVE_CAL = 1
 
-  ######## PARAMETRES A VERIFIER ##############
+
   delta_psi = 0.0
   D_NOPOL = 0
   KCMBIN = 0
   ADDDIP = 0
   TESTPOL = 1
-  ############################################
 
   CUTRG= 1
   DOMAXVRAIE = 1

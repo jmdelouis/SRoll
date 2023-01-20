@@ -838,20 +838,17 @@ double cond_thres(double * mat,double *res,int maxchannels){
   if (maxchannels>1) {
     invert(mat,res,maxchannels);
     if (isnan(res[0])) return(1E30);
-  
     cond=norm(mat,maxchannels)*norm(res,maxchannels);
-  }
-  else {
+  }else {
     res[0]=1/mat[0];
     cond=abs(res[0]);
     return(cond);
   }
   
   //return(cond);
-  if (cond<1000) {
     
-    cond2=norm(res,maxchannels);
-    
+  if (cond<1E10) {
+    cond2=norm(res,maxchannels); 
   }
   if (cond<=0.0) return(1E30);
   return(cond2);
@@ -1033,7 +1030,7 @@ long DODISTOR=0;
 
 
 // ---------------------------------------------------------------------------------------------------
-void init_channels(hpix * h,char * param_projection,double psi,double rgnorm,double eta){
+void init_channels(hpix * h,char * param_projection,double psi,double rgnorm,double eta,int idx_bolo){
   //Function that init the array h.channels according to the params param_projection (I,IQU,QU) 
     
   if(strcmp(param_projection,"I")==0){
@@ -1050,6 +1047,22 @@ void init_channels(hpix * h,char * param_projection,double psi,double rgnorm,dou
     h->channels[1] = sin(2*psi);
     h->channels[2] = cos(4*psi);
     h->channels[3] = sin(4*psi);      
+  }else if(strcmp(param_projection,"I857")==0){
+
+    float a[] =  {-0.618626,-1.17642,0.888016,-0.343286};
+    float b[] = {1.5558,-1.09535,1.91318,1.93294};
+    h->channels[0] = 1;
+    h->channels[1] = (a[idx_bolo]*cos(2*psi))-(b[idx_bolo]*sin(2*psi));
+    h->channels[2] = (a[idx_bolo]*sin(2*psi))+(b[idx_bolo]*cos(2*psi));
+
+    //fprintf(stderr,"a[%d] = %lf \n b[%d] = %lf",idx_bolo,a[idx_bolo],idx_bolo,b[idx_bolo]);
+
+
+    //h->channels[1] =eta*cos(2*psi); //sqrt((a[idx_bolo]*a[idx_bolo])+(b[idx_bolo]*b[idx_bolo]))*cos(2*psi);
+    //h->channels[2] = eta*sin(2*psi); //sqrt((a[idx_bolo]*a[idx_bolo])+(b[idx_bolo]*b[idx_bolo]))*sin(2*psi);
+  
+
+
   }else if(strcmp(param_projection,"spline2")==0){     
     calc_circ_spline(myspline,2*psi,h->channels);    
   }else if(strcmp(param_projection,"spline3")==0){     
@@ -5054,6 +5067,10 @@ int PIOWriteVECT(const char *path,void *value,int off,int size)
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+/////////                                 MAIN                                         ////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 int main(int argc,char *argv[])  {
 
 
@@ -5112,6 +5129,7 @@ int main(int argc,char *argv[])  {
 
   char * param_projection = Param->projectionType;
 
+  
   if (rank==0)   fprintf(stderr,"projection_type = %s \n",param_projection);   
 
   int nside128=128; // IF DONside=1 then all 128 maps are used in Nside
@@ -5177,7 +5195,7 @@ int main(int argc,char *argv[])  {
 
   // global number of bolometers
   nbolo = Param->n_Ptg_noPS;
-
+  
   assert( Param->n_OUT_NOPOL == Param->n_Out_MAP);
   assert( Param->n_Sub_HPR == Param->n_SUB_HPRCOEF);
 
@@ -5569,8 +5587,7 @@ int main(int argc,char *argv[])  {
 
   
   if (Param->TESTPOL==0) {
-    assert( (Param->n_Calibration == 5 * nbolo)
-            && "Error: simulations inside troll requires 5 calibration values per bolo for ADCNL residuals");
+    assert( (Param->n_Calibration == 5 * nbolo) && "Error: simulations inside troll requires 5 calibration values per bolo for ADCNL residuals");
     // prepare FFTW for adding noise from noise Fourier Transform
     in_fft  = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * nnoisesim);
     out_fft = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * nnoisesim);
@@ -5583,17 +5600,17 @@ int main(int argc,char *argv[])  {
   for (ib=0;ib<nbolo;ib++) {
     if (Param->n_in_template_map>0) {
       for (int nchan=0;nchan<MAXCHANNELS;nchan++) {
-	PIOLONG nsa  = noDMC_readObject_PIOFLOAT(Param->in_template_map[ib*MAXCHANNELS+nchan],0,12*Nside*Nside,
-						 skymodel[nchan]);
-	if (nsa<0) {
-	  fprintf(stderr, "Impossible to read in_template_map: %s %d\n",Param->in_template_map[ib],(int) nsa);
-	  exit ( -1);
-	}
+	      PIOLONG nsa  = noDMC_readObject_PIOFLOAT(Param->in_template_map[ib*MAXCHANNELS+nchan],0,12*Nside*Nside,
+	      skymodel[nchan]);  
+	      if (nsa<0) {
+	        fprintf(stderr, "Impossible to read in_template_map: %s %d\n",Param->in_template_map[ib],(int) nsa);
+	        exit ( -1);
+	      }
       }
     }
     else {
       for (int nchan=0;nchan<MAXCHANNELS;nchan++) {
-	memset(skymodel[nchan],0,12*Nside*Nside*sizeof(PIOFLOAT));
+	      memset(skymodel[nchan],0,12*Nside*Nside*sizeof(PIOFLOAT));
       }
     }
 
@@ -5628,8 +5645,9 @@ int main(int argc,char *argv[])  {
     if (badring == NULL) {
       fprintf(stderr, "**** ERROR **** Memory allocation error !!!!\n");
       fprintf(stderr, "** rank = %d  globalRankInfo.BeginRing[rank]="PIOLONG_FMT"  globalRankInfo.EndRing[rank]="PIOLONG_FMT"\n", rank, globalRankInfo.BeginRing[rank], globalRankInfo.EndRing[rank]);
-    }
+    } 
 
+    int bad_rings;
     int tperr = noDMC_readObject_PIOINT(Param->Badring[ib],globalBeginRing,ring_count,badring);
     if (tperr<0) {
       fprintf(stderr, "Impossible to read Badring[%ld]: %s %d\n",ib,Param->Badring[ib],tperr);
@@ -5640,13 +5658,20 @@ int main(int argc,char *argv[])  {
     // compute ring taking into account the badring
     {
       rg_max=0;
+      bad_rings = 0;
       for (i=0;i<ring_count;i++) {
-	ibadring[i]=rg_max;
-	if (badring[i]==0) {
-	  rg_max++;
-	}
+	      ibadring[i]=rg_max;
+	      if (badring[i]==0) {
+	        rg_max++;
+	      }else{
+          bad_rings++;
+        }
       }
     }
+    
+    if (rank==0) fprintf(stderr,"ring_count = %d\n",ring_count);
+    if (rank==0) fprintf(stderr,"bad_rings = %d\n",bad_rings);
+    
     if (rank==0) fprintf(stderr,"RG_MAX %ld\n",(long) rg_max);
     /*=========================================================================================
       Compute spline in Time:
@@ -5988,6 +6013,7 @@ int main(int argc,char *argv[])  {
           exit ( -1);
         }
         if (Param->flag_delta_psi == _PAR_TRUE) {
+          //fprintf(stderr,"[DEBUG] Param->delta_psi[ib] = %f \n",Param->delta_psi[ib]);
           float delta_psi_radians = Param->delta_psi[ib] * M_PI / 180.0;
           for (i=0; i<RINGSIZE; i++) {
             psi[i] += delta_psi_radians;
@@ -5996,7 +6022,6 @@ int main(int argc,char *argv[])  {
             if (psi[i] < -M_PI) psi[i] += 2*M_PI;
           }
         }
-
 	/*========================= ~ NORTH ECLIPTIC POLE COORDINATE (max hit count smoothed at 30 degree)
 	  th,ph=(1.0899100645823487, 1.6705050780074633)
 	  iarg=13523074
@@ -6184,10 +6209,7 @@ int main(int argc,char *argv[])  {
 	    //tp_hpix->sadu=(rg-globalBeginRing)/((float)((globalEndRing+1) - globalBeginRing));
 	    tp_hpix->sadu=((float) ibadring[rg-globalBeginRing])/rg_max;
 	    
-	    init_channels(tp_hpix,Param->projectionType,
-			  psi[i],
-			  (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
-			  eta[ib]);
+	    init_channels(tp_hpix,Param->projectionType,psi[i],(rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),eta[ib],ib);
 	    
 	    for (j=0;j<npixhpr;j++) tp_hpix->listofhpr[j]=theo[j][i];
 	    
@@ -6636,29 +6658,26 @@ int main(int argc,char *argv[])  {
     if (ndata>2) {
       hpix *htmp = loc_hpix[k];
       for (i0=0;i0<ndata;i0++) { 
-	for(int i = 0;i<MAXCHANNELS;i++){        
-	  for(int j = 0;j<MAXCHANNELS;j++){
-	    matrice[i+j*MAXCHANNELS] += htmp[i0].w *htmp[i0].channels[j]*htmp[i0].channels[i];
-	  }
-	} 
+	      for(int i = 0;i<MAXCHANNELS;i++){        
+	        for(int j = 0;j<MAXCHANNELS;j++){
+	          matrice[i+j*MAXCHANNELS] += htmp[i0].w *htmp[i0].channels[j]*htmp[i0].channels[i];
+	        }
+	      } 
       }     
       
       //test if matrice inversible 
       cond[k]=cond_thres(matrice,imatrice+MAXCHANNELS*MAXCHANNELS*k,MAXCHANNELS);
       
       if (cond[k] < Param->seuilcond) {
-	//if(rank == 0) fprintf(stderr,"cond = %lf\n",cond);
-	flgpix[k]=1;
-	for (i0=0;i0<ndata;i0++) {
-	  flg_rg[htmp[i0].ib][htmp[i0].rg-globalBeginRing]=1;
-	  //flg_rg2[htmp[i0].ib][htmp[i0].hrg-globalBeginRing*CUTRG]=1;
-	  //l_nmatpix++;
-	}
+	      flgpix[k]=1;
+	      for (i0=0;i0<ndata;i0++) {
+	        flg_rg[htmp[i0].ib][htmp[i0].rg-globalBeginRing]=1;
+	      }
       }else {
-	flgpix[k]=0;
-	// Print detail for pix that does not meet cond requirement
-	//fprintf(stderr,"[DBG COND] Pix#%ld is flagged out! II=%g IQ=%g IU=%g QQ=%g QU=%g UU=%g \n",k+begpix[rank], II, IQ, IU, QQ, QU, UU);
-	cond[k]=1E30;
+	      flgpix[k]=0;
+	      // Print detail for pix that does not meet cond requirement
+	      //fprintf(stderr,"[DBG COND] Pix#%ld is flagged out! II=%g IQ=%g IU=%g QQ=%g QU=%g UU=%g \n",k+begpix[rank], II, IQ, IU, QQ, QU, UU);
+	      cond[k]=1E30;
       }
     }else {
       //fprintf(stderr,"[DBG COND] Pix#%ld is flagged out! ndata<=2\n", k+begpix[rank]);
@@ -6958,11 +6977,12 @@ int main(int argc,char *argv[])  {
 #if 1
   if (Param->flag_ADU==_PAR_TRUE) {
     for (ib=0;ib<nbolo;ib++) {
+
       if (rank==0) {
         MPI_Status statu;
         int rrk;
         double *l_histo;
-	PIOSTRING saveg;
+	      PIOSTRING saveg;
 
         if (nadustep[ib]<32000) {
           l_histo = (double *) malloc((32000)*sizeof(double));
@@ -6970,6 +6990,7 @@ int main(int argc,char *argv[])  {
         else {
           l_histo = (double *) malloc((nadustep[ib])*sizeof(double));
         }
+
         for (rrk=1;rrk<mpi_size;rrk++) {
           if (DODISTOR!=0) {
             MPI_Recv(l_histo,sizeof(double)*nadustep[ib], MPI_BYTE, rrk,51, MPI_COMM_WORLD,&statu);
@@ -6989,44 +7010,46 @@ int main(int argc,char *argv[])  {
         if (DODISTOR!=0) {
           memset(xadu[ib],0,sizeof(double)*128);
 
-	  for (j=1;j<ADUSTEP;j++) {
-	    histo_adu[ib][j]+=histo_adu[ib][j-1];
-	  }
-	  for (j=0;j<ADUSTEP;j++) {
-	    histo_adu[ib][j]*=128./histo_adu[ib][ADUSTEP-1];
-	    if (histo_adu[ib][j]>=128.0) histo_adu[ib][j]=128.0; // cas pbs d'arrondi
-	  }
+          for (j=1;j<ADUSTEP;j++) {
+            histo_adu[ib][j]+=histo_adu[ib][j-1];
+          }
+          for (j=0;j<ADUSTEP;j++) {
+            histo_adu[ib][j]*=128./histo_adu[ib][ADUSTEP-1];
+            if (histo_adu[ib][j]>=128.0) histo_adu[ib][j]=128.0; // cas pbs d'arrondi
+          }
 
-	  double *nxadu=(double *) malloc(128*sizeof(double));
-	  memset(nxadu,0,128*sizeof(double));
-	  for (j=1;j<ADUSTEP;j++) {
-	    int xii=(int) histo_adu[ib][j];
-	    if (xii>=128) xii=127;
-	    xadu[ib][xii]+=j;
-	    nxadu[xii]+=1;
-	  }
-	  for (j=0;j<128;j++) {
-	    xadu[ib][j]/=nxadu[j];
-	  }
-	  free(nxadu);
+          double *nxadu=(double *) malloc(128*sizeof(double));
+          memset(nxadu,0,128*sizeof(double));      
+
+         for (j=1;j<ADUSTEP;j++) {
+            int xii=(int) histo_adu[ib][j];
+            if (xii>=128) xii=127;
+            xadu[ib][xii]+=j;
+            nxadu[xii]+=1;
+          }
+
+          for (j=0;j<128;j++) {
+            xadu[ib][j]/=nxadu[j];
+          }
+          free(nxadu);
 
           sprintf(saveg,"%s_HISTO_ADU",Param->Out_VEC[ib]);
-          fprintf(stderr,"Write HISTO_ADU  %lld\n",(long long) (PIOWriteVECT(saveg,histo_adu[ib],0,
-                                                                             sizeof(PIODOUBLE)*nadustep[ib])/sizeof(PIODOUBLE)));
+          fprintf(stderr,"Write HISTO_ADU  %lld\n",(long long) (PIOWriteVECT(saveg,histo_adu[ib],0,sizeof(PIODOUBLE)*nadustep[ib])/sizeof(PIODOUBLE)));
 
           sprintf(saveg,"%s_XADU",Param->Out_VEC[ib]);
-          fprintf(stderr,"Write XADU  %lld\n",(long long) (PIOWriteVECT(saveg,xadu[ib],0,
-                                                                        sizeof(PIODOUBLE)*(128))/sizeof(PIODOUBLE)));
+          fprintf(stderr,"Write XADU  %lld\n",(long long) (PIOWriteVECT(saveg,xadu[ib],0,sizeof(PIODOUBLE)*(128))/sizeof(PIODOUBLE)));
         }
         sprintf(saveg,"%s_HISTO_GAIN",Param->Out_VEC[ib]);
         for (i=0;i<32000;i++) if (histon_gi[i+ib*32000]>0) histo_gi[i+ib*32000]=
                                                              histo2_gi[i+ib*32000]
                                                              -histo_gi[i+ib*32000]*histo_gi[i+ib*32000]/histon_gi[i+ib*32000];
+
         fprintf(stderr,"Write HISTO_GAIN  %lld\n",(long long) (PIOWriteVECT(saveg,histo_gi+ib*32000,0,32000*sizeof(double))/sizeof(double)));
+
         for (i=1;i<32000;i++) histo_gi[i+ib*32000]+=histo_gi[i-1+ib*32000];
 
         double step=(histo_gi[31999+ib*32000]+1)/GAINSTEP;
-	tmpi=0;
+	      tmpi=0;
         memset(xgi+ib*GAINSTEP,0,sizeof(double)*GAINSTEP);
         memset(nxgi+ib*GAINSTEP,0,sizeof(double)*GAINSTEP);
         invgi[0+ib*32000]=0;
@@ -7779,4 +7802,5 @@ int main(int argc,char *argv[])  {
 
   exit (0);
  }
+
 

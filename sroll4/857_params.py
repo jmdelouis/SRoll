@@ -3,7 +3,7 @@
 # for smottet
 # on OCCIGEN
 # at Fri Oct 18 14:17:10 2019
-1
+
 # PARAMETERS
 
 #BeginRing   = 240
@@ -19,7 +19,7 @@ def main():
   BeginRing   = 240
   EndRing     = 26050
 
-  RSTEP       = 1000
+  RSTEP       = 100
   
   CUTRG      = 1
   D_NOPOL    = 0
@@ -119,8 +119,12 @@ def main():
   projectionType = "I"#"cfosatmap"#"Q,U" #"I"#"I,Q,U"
 
   in_template_map = ["/export/home1/jmdeloui/DATA4SROLL4/map_857_2018.float32.bin" for i in range(nbolo)]
+  # for Q  in_template_map += ["/export/home1/jmdeloui/DATA4SROLL4/null.float32.bin" for i in range(nbolo)]
+  # for U  in_template_map += ["/export/home1/jmdeloui/DATA4SROLL4/null.float32.bin" for i in range(nbolo)]
 
-  Signal_noPS = ['/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_splinefill_JAN20'%(i) for i in bolo]
+
+
+  Signal_noPS = ['/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_splinefill_JAN20'%(i) for i in bolo] #["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_PDUST"%(i) for i in bolo]  #
   #Signal_noPS = ["/export/home1/jmdeloui/DATA4SROLL4/%s_REP7_2"%(i) for i in bolo]
   #Calibration = [1.0/28.0,1.0/2.0,1.0/9.0,1.0/3.0]
   #NEP = [1.0,1.0,1.0,1.0]
@@ -161,7 +165,7 @@ def main():
 
   Out_MAP = ["/export/home/tfoulquier/MAP/857_maps/temp_OUT%d_%s"%(Nside,i)  for i in bolo_map]
 
-  Out_VEC = ["/home1/scratch/jmdeloui/VEC/857_vecs/temp_OUT%d_%s_offset"%(Nside,i) for i in bolo]
+  Out_VEC = ["/export/home/tfoulquier/MAP/857_vecs/temp_OUT%d_%s_offset"%(Nside,i) for i in bolo]
 
   params  =vars()
 

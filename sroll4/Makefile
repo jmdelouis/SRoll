@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 #CFLAGS := -g -O0 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections -fprofile-arcs -ftest-coverage
-CFLAGS :=  -O3 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections
+CFLAGS := -g -O3 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections
 
 CC := mpicc
 OPTIONAL_FLAGS := -Wl,--print-gc-sections -Wunused-result
@@ -29,11 +29,11 @@ CFITSIO_LIB  := $(CFITSIO_DIR)/libcfitsio.a
 
 
 # --- Python wrapper ---
-DIRPYTHONPATH := /home/theofoulquier/workspace/py_sroll/
-DIRPYTHONINC := /usr/include/python3.8
-DIRNUMPYINC := /home/theofoulquier/workspace/py_sroll/lib/python3.8/site-packages/numpy/core/include
-DIRPYTHONLIB := /usr/lib/python3.8/config-3.8-x86_64-linux-gnu/
-LIBPYTHONLIB := -lpython3.8
+DIRPYTHONPATH := /export/home/tfoulquier/workspace/test/py_sroll/
+DIRPYTHONINC := /export/home/tfoulquier/workspace/test/py_sroll/include/python3.6m
+DIRNUMPYINC := /export/home/tfoulquier/workspace/test/py_sroll/lib/python3.6/site-packages/numpy/core/include
+DIRPYTHONLIB := /export/home/tfoulquier/workspace/test/py_sroll/lib/python3.6/config-3.6m-x86_64-linux-gnu/
+LIBPYTHONLIB := -lpython3.6m
 OPTIONPYTHON := -DPYTHON3
 PYTHONCONF := `python-config --ldflags` `python-config --cflags`
 
