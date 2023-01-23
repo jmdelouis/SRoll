@@ -1,0 +1,961 @@
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/sroll-workspace/srollex/sroll4/troll_857
+troll.c: at Mon Jan  9 14:58:40 2023
+troll.c: with 64 MPI ranks
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=9
+
+
+troll_readParam() from file "sroll3_857_data.py"
+projection_type = I,Q,U 
+MAXCHANNELS = 3 
+USE 64 tensoflow rank
+Call python module in path
+.
+Call module : 
+LoadBalancing globalRangeRing      = 25811 
+LoadBalancing rings_per_rank       = 403 
+LoadBalancing balancing_correction = 19 
+  rank#0/64 (r2i1n0, 116.68GB) begin=240 end=643, (404 rings, 0e6 samples)
+  rank#1/64 (r2i1n1, 116.48GB) begin=644 end=1047, (404 rings, 0e6 samples)
+  rank#2/64 (r2i1n2, 120.66GB) begin=1048 end=1451, (404 rings, 0e6 samples)
+  rank#3/64 (r2i1n3, 120.41GB) begin=1452 end=1855, (404 rings, 0e6 samples)
+  rank#4/64 (r2i1n0, 116.68GB) begin=1856 end=2259, (404 rings, 0e6 samples)
+  rank#5/64 (r2i1n1, 116.48GB) begin=2260 end=2663, (404 rings, 0e6 samples)
+  rank#6/64 (r2i1n2, 120.66GB) begin=2664 end=3067, (404 rings, 0e6 samples)
+  rank#7/64 (r2i1n3, 120.41GB) begin=3068 end=3471, (404 rings, 0e6 samples)
+  rank#8/64 (r2i1n0, 116.68GB) begin=3472 end=3875, (404 rings, 0e6 samples)
+  rank#9/64 (r2i1n1, 116.48GB) begin=3876 end=4279, (404 rings, 0e6 samples)
+  rank#10/64 (r2i1n2, 120.66GB) begin=4280 end=4683, (404 rings, 0e6 samples)
+  rank#11/64 (r2i1n3, 120.41GB) begin=4684 end=5087, (404 rings, 0e6 samples)
+  rank#12/64 (r2i1n0, 116.68GB) begin=5088 end=5491, (404 rings, 0e6 samples)
+  rank#13/64 (r2i1n1, 116.48GB) begin=5492 end=5895, (404 rings, 0e6 samples)
+  rank#14/64 (r2i1n2, 120.66GB) begin=5896 end=6299, (404 rings, 0e6 samples)
+  rank#15/64 (r2i1n3, 120.41GB) begin=6300 end=6703, (404 rings, 0e6 samples)
+  rank#16/64 (r2i1n0, 116.68GB) begin=6704 end=7107, (404 rings, 0e6 samples)
+  rank#17/64 (r2i1n1, 116.48GB) begin=7108 end=7511, (404 rings, 0e6 samples)
+  rank#18/64 (r2i1n2, 120.66GB) begin=7512 end=7915, (404 rings, 0e6 samples)
+  rank#19/64 (r2i1n3, 120.41GB) begin=7916 end=8318, (403 rings, 0e6 samples)
+  rank#20/64 (r2i1n0, 116.68GB) begin=8319 end=8721, (403 rings, 0e6 samples)
+  rank#21/64 (r2i1n1, 116.48GB) begin=8722 end=9124, (403 rings, 0e6 samples)
+  rank#22/64 (r2i1n2, 120.66GB) begin=9125 end=9527, (403 rings, 0e6 samples)
+  rank#23/64 (r2i1n3, 120.41GB) begin=9528 end=9930, (403 rings, 0e6 samples)
+  rank#24/64 (r2i1n0, 116.68GB) begin=9931 end=10333, (403 rings, 0e6 samples)
+  rank#25/64 (r2i1n1, 116.48GB) begin=10334 end=10736, (403 rings, 0e6 samples)
+  rank#26/64 (r2i1n2, 120.66GB) begin=10737 end=11139, (403 rings, 0e6 samples)
+  rank#27/64 (r2i1n3, 120.41GB) begin=11140 end=11542, (403 rings, 0e6 samples)
+  rank#28/64 (r2i1n0, 116.68GB) begin=11543 end=11945, (403 rings, 0e6 samples)
+  rank#29/64 (r2i1n1, 116.48GB) begin=11946 end=12348, (403 rings, 0e6 samples)
+  rank#30/64 (r2i1n2, 120.66GB) begin=12349 end=12751, (403 rings, 0e6 samples)
+  rank#31/64 (r2i1n3, 120.41GB) begin=12752 end=13154, (403 rings, 0e6 samples)
+  rank#32/64 (r2i1n0, 116.68GB) begin=13155 end=13557, (403 rings, 0e6 samples)
+  rank#33/64 (r2i1n1, 116.48GB) begin=13558 end=13960, (403 rings, 0e6 samples)
+  rank#34/64 (r2i1n2, 120.66GB) begin=13961 end=14363, (403 rings, 0e6 samples)
+  rank#35/64 (r2i1n3, 120.41GB) begin=14364 end=14766, (403 rings, 0e6 samples)
+  rank#36/64 (r2i1n0, 116.68GB) begin=14767 end=15169, (403 rings, 0e6 samples)
+  rank#37/64 (r2i1n1, 116.48GB) begin=15170 end=15572, (403 rings, 0e6 samples)
+  rank#38/64 (r2i1n2, 120.66GB) begin=15573 end=15975, (403 rings, 0e6 samples)
+  rank#39/64 (r2i1n3, 120.41GB) begin=15976 end=16378, (403 rings, 0e6 samples)
+  rank#40/64 (r2i1n0, 116.68GB) begin=16379 end=16781, (403 rings, 0e6 samples)
+  rank#41/64 (r2i1n1, 116.48GB) begin=16782 end=17184, (403 rings, 0e6 samples)
+  rank#42/64 (r2i1n2, 120.66GB) begin=17185 end=17587, (403 rings, 0e6 samples)
+  rank#43/64 (r2i1n3, 120.41GB) begin=17588 end=17990, (403 rings, 0e6 samples)
+  rank#44/64 (r2i1n0, 116.68GB) begin=17991 end=18393, (403 rings, 0e6 samples)
+  rank#45/64 (r2i1n1, 116.48GB) begin=18394 end=18796, (403 rings, 0e6 samples)
+  rank#46/64 (r2i1n2, 120.66GB) begin=18797 end=19199, (403 rings, 0e6 samples)
+  rank#47/64 (r2i1n3, 120.41GB) begin=19200 end=19602, (403 rings, 0e6 samples)
+  rank#48/64 (r2i1n0, 116.68GB) begin=19603 end=20005, (403 rings, 0e6 samples)
+  rank#49/64 (r2i1n1, 116.48GB) begin=20006 end=20408, (403 rings, 0e6 samples)
+  rank#50/64 (r2i1n2, 120.66GB) begin=20409 end=20811, (403 rings, 0e6 samples)
+  rank#51/64 (r2i1n3, 120.41GB) begin=20812 end=21214, (403 rings, 0e6 samples)
+  rank#52/64 (r2i1n0, 116.68GB) begin=21215 end=21617, (403 rings, 0e6 samples)
+  rank#53/64 (r2i1n1, 116.48GB) begin=21618 end=22020, (403 rings, 0e6 samples)
+  rank#54/64 (r2i1n2, 120.66GB) begin=22021 end=22423, (403 rings, 0e6 samples)
+  rank#55/64 (r2i1n3, 120.41GB) begin=22424 end=22826, (403 rings, 0e6 samples)
+  rank#56/64 (r2i1n0, 116.68GB) begin=22827 end=23229, (403 rings, 0e6 samples)
+  rank#57/64 (r2i1n1, 116.48GB) begin=23230 end=23632, (403 rings, 0e6 samples)
+  rank#58/64 (r2i1n2, 120.66GB) begin=23633 end=24035, (403 rings, 0e6 samples)
+  rank#59/64 (r2i1n3, 120.41GB) begin=24036 end=24438, (403 rings, 0e6 samples)
+  rank#60/64 (r2i1n0, 116.68GB) begin=24439 end=24841, (403 rings, 0e6 samples)
+  rank#61/64 (r2i1n1, 116.48GB) begin=24842 end=25244, (403 rings, 0e6 samples)
+  rank#62/64 (r2i1n2, 120.66GB) begin=25245 end=25647, (403 rings, 0e6 samples)
+  rank#63/64 (r2i1n3, 120.41GB) begin=25648 end=26050, (403 rings, 0e6 samples)
+NEP_tab[0]=0.913495
+NEP_tab[1]=0.920263
+NEP_tab[2]=0.906529
+NEP_tab[3]=1.259713
+DODISTOR [0]: 16 16
+DODISTOR [1]: 16 16
+DODISTOR [2]: 16 16
+DODISTOR [3]: 16 16
+Avv GAIN is equal to 0 if ==1 : NORM_GAIN : 1
+SXI 0 2.29963
+RG_MAX 25586
+Com ring=240 Rank: 0[49360] MEM 1700.6[812.8]MB Nd=15582  0.994539 5.62506e-07 
+
+after troll detector (0/3): used VMEM 2249.9[PHYS 1398.8]MB
+SXI 1 2.26593
+RG_MAX 25405
+Com ring=240 Rank: 0[49360] MEM 2252.6[1401.8]MB Nd=15638  0.99449 5.89774e-07 
+
+after troll detector (1/3): used VMEM 2800.3[PHYS 1949.5]MB
+SXI 2 2.3351
+RG_MAX 25594
+Com ring=240 Rank: 0[49360] MEM 2803.6[1952.7]MB Nd=15663  0.994528 5.71222e-07 
+
+after troll detector (2/3): used VMEM 3396.9[PHYS 2546.0]MB
+SXI 3 1.20928
+RG_MAX 24531
+Com ring=240 Rank: 0[49360] MEM 3400.0[2549.2]MB Nd=15612  0.994487 5.81909e-07 
+
+after troll detector (3/3): used VMEM 3987.5[PHYS 3136.6]MB
+
+Free memory per node before pixel balancing, at Mon Jan  9 15:01:14 2023
+rank 16/63, node 16/63, r2i1n0: 78.6GB free
+rank 20/63, node 20/63, r2i1n0: 78.6GB free
+rank 40/63, node 40/63, r2i1n0: 78.6GB free
+rank 48/63, node 48/63, r2i1n0: 78.6GB free
+rank 52/63, node 52/63, r2i1n0: 78.6GB free
+rank 00/63, node 00/63, r2i1n0: 78.6GB free
+NPIX 6
+NMAP 1
+rank 04/63, node 04/63, r2i1n0: 78.6GB free
+rank 08/63, node 08/63, r2i1n0: 78.6GB free
+rank 12/63, node 12/63, r2i1n0: 78.6GB free
+rank 24/63, node 24/63, r2i1n0: 78.6GB free
+rank 28/63, node 28/63, r2i1n0: 78.6GB free
+rank 32/63, node 32/63, r2i1n0: 78.6GB free
+rank 36/63, node 36/63, r2i1n0: 78.6GB free
+rank 44/63, node 44/63, r2i1n0: 78.6GB free
+rank 56/63, node 56/63, r2i1n0: 78.6GB free
+rank 60/63, node 60/63, r2i1n0: 78.6GB free
+rank 45/63, node 45/63, r2i1n1: 79.0GB free
+rank 49/63, node 49/63, r2i1n1: 79.0GB free
+rank 10/63, node 10/63, r2i1n2: 82.6GB free
+rank 53/63, node 53/63, r2i1n1: 79.0GB free
+rank 03/63, node 03/63, r2i1n3: 82.6GB free
+rank 18/63, node 18/63, r2i1n2: 82.6GB free
+rank 01/63, node 01/63, r2i1n1: 79.0GB free
+rank 07/63, node 07/63, r2i1n3: 82.6GB free
+rank 38/63, node 38/63, r2i1n2: 82.6GB free
+rank 05/63, node 05/63, r2i1n1: 79.0GB free
+rank 11/63, node 11/63, r2i1n3: 82.6GB free
+rank 42/63, node 42/63, r2i1n2: 82.6GB free
+rank 09/63, node 09/63, r2i1n1: 79.0GB free
+rank 15/63, node 15/63, r2i1n3: 82.6GB free
+rank 50/63, node 50/63, r2i1n2: 82.6GB free
+rank 13/63, node 13/63, r2i1n1: 79.0GB free
+rank 19/63, node 19/63, r2i1n3: 82.6GB free
+rank 54/63, node 54/63, r2i1n2: 82.6GB free
+rank 17/63, node 17/63, r2i1n1: 79.0GB free
+rank 23/63, node 23/63, r2i1n3: 82.6GB free
+rank 02/63, node 02/63, r2i1n2: 82.6GB free
+rank 21/63, node 21/63, r2i1n1: 79.0GB free
+rank 27/63, node 27/63, r2i1n3: 82.6GB free
+rank 06/63, node 06/63, r2i1n2: 82.6GB free
+rank 25/63, node 25/63, r2i1n1: 79.0GB free
+rank 31/63, node 31/63, r2i1n3: 82.6GB free
+rank 14/63, node 14/63, r2i1n2: 82.6GB free
+rank 29/63, node 29/63, r2i1n1: 79.0GB free
+rank 35/63, node 35/63, r2i1n3: 82.6GB free
+rank 22/63, node 22/63, r2i1n2: 82.6GB free
+rank 33/63, node 33/63, r2i1n1: 79.0GB free
+rank 39/63, node 39/63, r2i1n3: 82.6GB free
+rank 26/63, node 26/63, r2i1n2: 82.6GB free
+rank 37/63, node 37/63, r2i1n1: 79.0GB free
+rank 43/63, node 43/63, r2i1n3: 82.6GB free
+rank 30/63, node 30/63, r2i1n2: 82.6GB free
+rank 41/63, node 41/63, r2i1n1: 79.0GB free
+rank 47/63, node 47/63, r2i1n3: 82.6GB free
+rank 34/63, node 34/63, r2i1n2: 82.6GB free
+rank 57/63, node 57/63, r2i1n1: 79.0GB free
+rank 51/63, node 51/63, r2i1n3: 82.6GB free
+rank 46/63, node 46/63, r2i1n2: 82.6GB free
+rank 61/63, node 61/63, r2i1n1: 79.0GB free
+rank 55/63, node 55/63, r2i1n3: 82.6GB free
+rank 58/63, node 58/63, r2i1n2: 82.6GB free
+rank 59/63, node 59/63, r2i1n3: 82.6GB free
+rank 62/63, node 62/63, r2i1n2: 82.6GB free
+rank 63/63, node 63/63, r2i1n3: 82.6GB free
+Mask 0
+Sort pixel to make it run faster
+regrid
+sort
+rebin pixel
+Rank: 0[49360] MEM 3276.5[2890.1]MB line=6463
+Rank: 0(r2i1n0, free=71.24GB) [1/2] used MEM virt:3285.5[phys:2890.1]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.68GB) [1/2] used MEM virt:3306.2[phys:2910.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.59GB) [1/2] used MEM virt:3307.0[phys:2911.7]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.54GB) [1/2] used MEM virt:3308.0[phys:2912.7]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.56GB) [1/2] used MEM virt:3308.0[phys:2912.7]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.58GB) [1/2] used MEM virt:3309.4[phys:2914.2]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.57GB) [1/2] used MEM virt:3309.4[phys:2914.2]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.54GB) [1/2] used MEM virt:3310.5[phys:2915.2]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.62GB) [1/2] used MEM virt:3310.5[phys:2915.2]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.56GB) [1/2] used MEM virt:3309.6[phys:2914.4]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.61GB) [1/2] used MEM virt:3311.4[phys:2916.1]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.58GB) [1/2] used MEM virt:3310.6[phys:2915.3]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.60GB) [1/2] used MEM virt:3312.2[phys:2916.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.53GB) [1/2] used MEM virt:3312.9[phys:2917.6]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.55GB) [1/2] used MEM virt:3313.6[phys:2918.3]MB line=6504 ntbs:32MB
+Rank: 0(r2i1n0, free=70.46GB) [1/2] used MEM virt:3313.6[phys:2918.3]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.39GB) [1/2] used MEM virt:3314.4[phys:2919.1]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.45GB) [1/2] used MEM virt:3314.4[phys:2919.1]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.41GB) [1/2] used MEM virt:3315.2[phys:2920.0]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.37GB) [1/2] used MEM virt:3315.2[phys:2920.0]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.36GB) [1/2] used MEM virt:3316.2[phys:2920.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.48GB) [1/2] used MEM virt:3316.2[phys:2920.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.48GB) [1/2] used MEM virt:3316.2[phys:2920.9]MB line=6504 ntbs:32MB
+Rank: 0(r2i1n0, free=70.53GB) [1/2] used MEM virt:3317.2[phys:2921.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.53GB) [1/2] used MEM virt:3317.2[phys:2921.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.49GB) [1/2] used MEM virt:3317.2[phys:2921.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.50GB) [1/2] used MEM virt:3317.2[phys:2921.9]MB line=6504 ntbs:32MB
+Rank: 0(r2i1n0, free=70.49GB) [1/2] used MEM virt:3318.2[phys:2922.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.47GB) [1/2] used MEM virt:3318.2[phys:2922.9]MB line=6504 ntbs:32MB
+Rank: 0(r2i1n0, free=70.41GB) [1/2] used MEM virt:3318.2[phys:2922.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.43GB) [1/2] used MEM virt:3318.2[phys:2922.9]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.38GB) [1/2] used MEM virt:3318.9[phys:2923.6]MB line=6504 ntbs:33MB
+Rank: 0(r2i1n0, free=70.21GB) [2/4] used MEM virt:3319.8[phys:2924.5]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=70.00GB) [2/4] used MEM virt:3321.7[phys:2926.4]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=70.03GB) [2/4] used MEM virt:3321.7[phys:2926.4]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=70.05GB) [2/4] used MEM virt:3322.4[phys:2927.1]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=69.94GB) [2/4] used MEM virt:3323.1[phys:2927.8]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=70.09GB) [2/4] used MEM virt:3324.2[phys:2928.9]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=70.18GB) [2/4] used MEM virt:3325.5[phys:2930.3]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=70.01GB) [2/4] used MEM virt:3325.2[phys:2930.0]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=70.02GB) [2/4] used MEM virt:3327.6[phys:2932.3]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=69.91GB) [2/4] used MEM virt:3327.6[phys:2932.3]MB line=6504 ntbs:66MB
+Rank: 0(r2i1n0, free=69.87GB) [2/4] used MEM virt:3329.4[phys:2934.1]MB line=6504 ntbs:66MB
+Rank: 0(r2i1n0, free=69.92GB) [2/4] used MEM virt:3330.6[phys:2935.3]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=69.87GB) [2/4] used MEM virt:3331.6[phys:2936.3]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=69.92GB) [2/4] used MEM virt:3333.3[phys:2938.0]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=69.84GB) [2/4] used MEM virt:3334.5[phys:2939.2]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=69.90GB) [2/4] used MEM virt:3335.1[phys:2939.8]MB line=6504 ntbs:65MB
+Rank: 0(r2i1n0, free=69.41GB) [4/8] used MEM virt:3336.7[phys:2941.5]MB line=6504 ntbs:132MB
+Rank: 0(r2i1n0, free=69.39GB) [4/8] used MEM virt:3340.7[phys:2945.5]MB line=6504 ntbs:132MB
+Rank: 0(r2i1n0, free=69.31GB) [4/8] used MEM virt:3342.4[phys:2947.2]MB line=6504 ntbs:133MB
+Rank: 0(r2i1n0, free=69.32GB) [4/8] used MEM virt:3346.3[phys:2951.1]MB line=6504 ntbs:133MB
+Rank: 0(r2i1n0, free=69.28GB) [4/8] used MEM virt:3349.2[phys:2954.0]MB line=6504 ntbs:133MB
+Rank: 0(r2i1n0, free=69.14GB) [4/8] used MEM virt:3351.6[phys:2956.3]MB line=6504 ntbs:133MB
+Rank: 0(r2i1n0, free=69.09GB) [4/8] used MEM virt:3354.3[phys:2959.1]MB line=6504 ntbs:132MB
+Rank: 0(r2i1n0, free=69.04GB) [4/8] used MEM virt:3355.9[phys:2960.7]MB line=6504 ntbs:133MB
+Rank: 0(r2i1n0, free=68.37GB) [8/16] used MEM virt:3357.1[phys:2961.9]MB line=6504 ntbs:261MB
+Rank: 0(r2i1n0, free=67.30GB) [8/16] used MEM virt:3470.3[phys:3075.0]MB line=6504 ntbs:262MB
+Rank: 0(r2i1n0, free=67.13GB) [8/16] used MEM virt:3509.3[phys:3114.1]MB line=6504 ntbs:262MB
+Rank: 0(r2i1n0, free=66.98GB) [8/16] used MEM virt:3530.7[phys:3135.5]MB line=6504 ntbs:262MB
+Rank: 0(r2i1n0, free=64.48GB) [16/32] used MEM virt:3545.9[phys:3150.7]MB line=6504 ntbs:522MB
+Rank: 0(r2i1n0, free=61.42GB) [16/32] used MEM virt:3889.9[phys:3494.7]MB line=6504 ntbs:520MB
+Rank: 0(r2i1n0, free=58.79GB) [32/64] used MEM virt:3896.0[phys:3500.8]MB line=6504 ntbs:1053MB
+Rank: 0[49360] MEM 3904.3[3518.1]MB line=6591
+
+Free memory per node before matrix computation, at Mon Jan  9 15:02:34 2023
+rank 00/63, node 00/63, r2i1n0: 68.1GB free
+rank 04/63, node 04/63, r2i1n0: 68.1GB free
+rank 08/63, node 08/63, r2i1n0: 68.1GB free
+rank 12/63, node 12/63, r2i1n0: 68.1GB free
+rank 16/63, node 16/63, r2i1n0: 68.1GB free
+rank 20/63, node 20/63, r2i1n0: 68.1GB free
+rank 09/63, node 09/63, r2i1n1: 67.9GB free
+rank 24/63, node 24/63, r2i1n0: 68.1GB free
+rank 17/63, node 17/63, r2i1n1: 67.9GB free
+rank 55/63, node 55/63, r2i1n3: 72.0GB free
+rank 28/63, node 28/63, r2i1n0: 68.1GB free
+rank 59/63, node 59/63, r2i1n3: 72.0GB free
+rank 32/63, node 32/63, r2i1n0: 68.1GB free
+rank 36/63, node 36/63, r2i1n0: 68.1GB free
+rank 40/63, node 40/63, r2i1n0: 68.1GB free
+rank 44/63, node 44/63, r2i1n0: 68.1GB free
+rank 48/63, node 48/63, r2i1n0: 68.1GB free
+rank 52/63, node 52/63, r2i1n0: 68.1GB free
+rank 56/63, node 56/63, r2i1n0: 68.1GB free
+Rank: 56[49374] MEM 2794.1[2407.9]MB line=6610
+rank 60/63, node 60/63, r2i1n0: 68.1GB free
+Rank: 32[49368] MEM 3377.1[2990.9]MB line=6610
+Rank: 36[49369] MEM 3357.5[2971.6]MB line=6610
+Rank: 40[49370] MEM 3314.2[2928.0]MB line=6610
+Rank: 44[49371] MEM 3310.8[2924.9]MB line=6610
+Rank: 48[49372] MEM 2987.8[2601.6]MB line=6610
+Rank: 52[49373] MEM 2974.7[2588.7]MB line=6610
+Rank: 60[49375] MEM 2888.9[2502.9]MB line=6610
+Rank: 56[49374] MEM 2794.1[2407.9]MB line=6628
+Rank: 60[49375] MEM 2888.9[2502.9]MB line=6628
+rank 02/63, node 02/63, r2i1n2: 72.2GB free
+rank 06/63, node 06/63, r2i1n2: 72.2GB free
+rank 10/63, node 10/63, r2i1n2: 72.2GB free
+rank 14/63, node 14/63, r2i1n2: 72.2GB free
+rank 18/63, node 18/63, r2i1n2: 72.2GB free
+rank 22/63, node 22/63, r2i1n2: 72.2GB free
+rank 26/63, node 26/63, r2i1n2: 72.2GB free
+rank 30/63, node 30/63, r2i1n2: 72.2GB free
+rank 34/63, node 34/63, r2i1n2: 72.2GB free
+Rank: 34[37423] MEM 3336.2[2950.0]MB line=6610
+rank 38/63, node 38/63, r2i1n2: 72.2GB free
+Rank: 38[37424] MEM 3328.6[2942.6]MB line=6610
+rank 42/63, node 42/63, r2i1n2: 72.2GB free
+Rank: 42[37425] MEM 3306.3[2920.1]MB line=6610
+rank 46/63, node 46/63, r2i1n2: 72.2GB free
+rank 50/63, node 50/63, r2i1n2: 72.2GB free
+Rank: 50[37427] MEM 2991.6[2605.3]MB line=6610
+rank 54/63, node 54/63, r2i1n2: 72.2GB free
+rank 58/63, node 58/63, r2i1n2: 72.2GB free
+rank 62/63, node 62/63, r2i1n2: 72.2GB free
+Rank: 62[37430] MEM 2812.2[2426.2]MB line=6610
+Rank: 46[37426] MEM 3312.9[2926.9]MB line=6610
+Rank: 58[37429] MEM 2809.3[2423.0]MB line=6610
+Rank: 54[37428] MEM 2974.9[2588.9]MB line=6610
+Rank: 62[37430] MEM 2812.2[2426.2]MB line=6628
+Rank: 58[37429] MEM 2809.3[2423.0]MB line=6628
+Rank: 34[37423] MEM 3336.2[2950.0]MB line=6628
+Rank: 32[49368] MEM 3377.1[2990.9]MB line=6628
+rank 21/63, node 21/63, r2i1n1: 67.9GB free
+rank 63/63, node 63/63, r2i1n3: 72.0GB free
+Rank: 63[824] MEM 2821.1[2435.1]MB line=6610
+Rank: 52[49373] MEM 2974.7[2588.7]MB line=6628
+Rank: 38[37424] MEM 3328.6[2942.6]MB line=6628
+rank 25/63, node 25/63, r2i1n1: 67.9GB free
+rank 03/63, node 03/63, r2i1n3: 72.0GB free
+Rank: 40[49370] MEM 3314.2[2928.0]MB line=6628
+Rank: 42[37425] MEM 3306.3[2920.1]MB line=6628
+Rank: 44[49371] MEM 3310.8[2924.9]MB line=6628
+Rank: 46[37426] MEM 3312.9[2926.9]MB line=6628
+Rank: 48[49372] MEM 2987.8[2601.6]MB line=6628
+Rank: 50[37427] MEM 2991.6[2605.3]MB line=6628
+rank 29/63, node 29/63, r2i1n1: 67.9GB free
+Rank: 36[49369] MEM 3357.5[2971.6]MB line=6628
+Rank: 54[37428] MEM 2974.9[2588.9]MB line=6628
+rank 33/63, node 33/63, r2i1n1: 67.9GB free
+Rank: 33[43839] MEM 3394.4[3008.1]MB line=6610
+Rank: 33[43839] MEM 3394.4[3008.1]MB line=6628
+rank 07/63, node 07/63, r2i1n3: 72.0GB free
+rank 11/63, node 11/63, r2i1n3: 72.0GB free
+rank 41/63, node 41/63, r2i1n1: 67.9GB free
+Rank: 41[43841] MEM 3314.3[2928.0]MB line=6610
+Rank: 41[43841] MEM 3314.3[2928.0]MB line=6628
+rank 45/63, node 45/63, r2i1n1: 67.9GB free
+Rank: 45[43842] MEM 3309.4[2923.4]MB line=6610
+Rank: 45[43842] MEM 3309.4[2923.4]MB line=6628
+rank 49/63, node 49/63, r2i1n1: 67.9GB free
+Rank: 49[43843] MEM 2993.4[2607.1]MB line=6610
+Rank: 49[43843] MEM 2993.4[2607.1]MB line=6628
+rank 15/63, node 15/63, r2i1n3: 72.0GB free
+rank 53/63, node 53/63, r2i1n1: 67.9GB free
+Rank: 53[43844] MEM 2971.8[2585.6]MB line=6610
+Rank: 53[43844] MEM 2971.8[2585.6]MB line=6628
+rank 19/63, node 19/63, r2i1n3: 72.0GB free
+rank 57/63, node 57/63, r2i1n1: 67.9GB free
+Rank: 57[43845] MEM 2791.3[2405.0]MB line=6610
+Rank: 57[43845] MEM 2791.3[2405.0]MB line=6628
+rank 61/63, node 61/63, r2i1n1: 67.9GB free
+Rank: 61[43846] MEM 2760.1[2373.8]MB line=6610
+Rank: 61[43846] MEM 2760.1[2373.8]MB line=6628
+rank 23/63, node 23/63, r2i1n3: 72.0GB free
+rank 27/63, node 27/63, r2i1n3: 72.0GB free
+rank 01/63, node 01/63, r2i1n1: 67.9GB free
+rank 05/63, node 05/63, r2i1n1: 67.9GB free
+rank 31/63, node 31/63, r2i1n3: 72.0GB free
+rank 35/63, node 35/63, r2i1n3: 72.0GB free
+Rank: 35[816] MEM 3321.1[2934.9]MB line=6610
+Rank: 35[816] MEM 3321.1[2934.9]MB line=6628
+rank 13/63, node 13/63, r2i1n1: 67.9GB free
+rank 37/63, node 37/63, r2i1n1: 67.9GB free
+Rank: 37[43840] MEM 3373.6[2987.6]MB line=6610
+Rank: 37[43840] MEM 3373.6[2987.6]MB line=6628
+rank 39/63, node 39/63, r2i1n3: 72.0GB free
+Rank: 39[817] MEM 3324.3[2938.2]MB line=6610
+Rank: 39[817] MEM 3324.3[2938.2]MB line=6628
+rank 43/63, node 43/63, r2i1n3: 72.0GB free
+Rank: 43[819] MEM 3306.1[2919.9]MB line=6610
+Rank: 43[819] MEM 3306.1[2919.9]MB line=6628
+rank 47/63, node 47/63, r2i1n3: 72.0GB free
+Rank: 47[820] MEM 3308.7[2922.6]MB line=6610
+Rank: 47[820] MEM 3308.7[2922.6]MB line=6628
+rank 51/63, node 51/63, r2i1n3: 72.0GB free
+Rank: 51[821] MEM 2987.5[2601.3]MB line=6610
+Rank: 51[821] MEM 2987.5[2601.3]MB line=6628
+Rank: 55[822] MEM 2976.8[2590.7]MB line=6610
+Rank: 55[822] MEM 2976.8[2590.7]MB line=6628
+Rank: 59[823] MEM 2844.0[2457.5]MB line=6610
+Rank: 59[823] MEM 2844.0[2457.5]MB line=6628
+Rank: 63[824] MEM 2821.1[2435.1]MB line=6628
+Rank: 6[37416] MEM 3892.2[3506.1]MB line=6610
+Rank: 18[37419] MEM 3872.5[3486.2]MB line=6610
+Rank: 19[811] MEM 3873.7[3487.4]MB line=6610
+Rank: 12[49363] MEM 3883.7[3497.7]MB line=6610
+Rank: 20[49365] MEM 3875.0[3489.0]MB line=6610
+Rank: 4[49361] MEM 3889.2[3503.0]MB line=6610
+Rank: 10[37417] MEM 3893.9[3507.6]MB line=6610
+Rank: 1[43830] MEM 3901.6[3515.3]MB line=6610
+Rank: 8[49362] MEM 3937.9[3551.7]MB line=6610
+Rank: 7[807] MEM 3893.1[3507.0]MB line=6610
+Rank: 2[37415] MEM 3888.8[3502.5]MB line=6610
+Rank: 9[43832] MEM 3944.8[3558.6]MB line=6610
+Rank: 31[815] MEM 3859.2[3473.1]MB line=6610
+Rank: 11[809] MEM 3891.4[3505.1]MB line=6610
+Rank: 5[43831] MEM 3893.0[3506.9]MB line=6610
+Rank: 26[37421] MEM 3871.6[3485.2]MB line=6610
+Rank: 30[37422] MEM 3861.0[3474.9]MB line=6610
+Rank: 29[43837] MEM 3870.4[3484.3]MB line=6610
+Rank: 13[43833] MEM 3886.4[3500.3]MB line=6610
+Rank: 27[814] MEM 3873.1[3486.8]MB line=6610
+Rank: 21[43835] MEM 3873.2[3487.2]MB line=6610
+Rank: 15[810] MEM 3882.4[3496.4]MB line=6610
+Rank: 25[43836] MEM 3870.5[3484.2]MB line=6610
+Rank: 16[49364] MEM 3873.2[3487.0]MB line=6610
+Rank: 17[43834] MEM 3872.1[3485.8]MB line=6610
+Rank: 22[37420] MEM 3874.6[3488.6]MB line=6610
+Rank: 23[813] MEM 3875.7[3489.7]MB line=6610
+Rank: 24[49366] MEM 3869.3[3483.1]MB line=6610
+Rank: 3[806] MEM 3888.3[3502.0]MB line=6610
+Rank: 14[37418] MEM 3885.1[3499.1]MB line=6610
+Rank: 28[49367] MEM 3867.6[3481.7]MB line=6610
+Rank: 0[49360] MEM 3904.3[3518.1]MB line=6610
+Rank: 6[37416] MEM 3892.2[3506.1]MB line=6628
+Rank: 18[37419] MEM 3872.5[3486.2]MB line=6628
+Rank: 19[811] MEM 3873.7[3487.4]MB line=6628
+Rank: 31[815] MEM 3859.2[3473.1]MB line=6628
+Rank: 20[49365] MEM 3875.0[3489.0]MB line=6628
+Rank: 26[37421] MEM 3871.6[3485.2]MB line=6628
+Rank: 12[49363] MEM 3883.7[3497.7]MB line=6628
+Rank: 27[814] MEM 3873.1[3486.8]MB line=6628
+Rank: 10[37417] MEM 3893.9[3507.6]MB line=6628
+Rank: 2[37415] MEM 3888.8[3502.5]MB line=6628
+Rank: 4[49361] MEM 3889.2[3503.0]MB line=6628
+Rank: 7[807] MEM 3893.1[3507.0]MB line=6628
+Rank: 1[43830] MEM 3901.6[3515.3]MB line=6628
+Rank: 30[37422] MEM 3861.0[3474.9]MB line=6628
+Rank: 21[43835] MEM 3873.2[3487.2]MB line=6628
+Rank: 13[43833] MEM 3886.4[3500.3]MB line=6628
+Rank: 29[43837] MEM 3870.4[3484.3]MB line=6628
+Rank: 16[49364] MEM 3873.2[3487.0]MB line=6628
+Rank: 17[43834] MEM 3872.1[3485.8]MB line=6628
+Rank: 15[810] MEM 3882.4[3496.4]MB line=6628
+Rank: 25[43836] MEM 3870.5[3484.2]MB line=6628
+Rank: 5[43831] MEM 3893.0[3506.9]MB line=6628
+Rank: 11[809] MEM 3891.4[3505.1]MB line=6628
+Rank: 23[813] MEM 3875.7[3489.7]MB line=6628
+Rank: 22[37420] MEM 3874.6[3488.6]MB line=6628
+Rank: 3[806] MEM 3888.3[3502.0]MB line=6628
+Rank: 24[49366] MEM 3869.3[3483.1]MB line=6628
+Rank: 14[37418] MEM 3885.1[3499.1]MB line=6628
+Rank: 28[49367] MEM 3867.6[3481.7]MB line=6628
+Rank: 0[49360] MEM 3904.3[3518.1]MB line=6628
+Rank: 8[49362] MEM 3937.9[3551.7]MB line=6628
+Rank: 9[43832] MEM 3944.8[3558.6]MB line=6628
+Rank: 31[815] MEM 3859.2[3473.1]MB line=6672
+Rank: 9[43832] MEM 3944.8[3558.6]MB line=6672
+Rank: 8[49362] MEM 3937.9[3551.7]MB line=6672
+Rank: 30[37422] MEM 3861.0[3474.9]MB line=6672
+Rank: 28[49367] MEM 3867.6[3481.7]MB line=6672
+Rank: 15[810] MEM 3882.4[3496.4]MB line=6672
+Rank: 12[49363] MEM 3883.7[3497.7]MB line=6672
+Rank: 29[43837] MEM 3870.4[3484.3]MB line=6672
+Rank: 24[49366] MEM 3869.3[3483.1]MB line=6672
+Rank: 16[49364] MEM 3873.2[3487.0]MB line=6672
+Rank: 20[49365] MEM 3875.0[3489.0]MB line=6672
+Rank: 27[814] MEM 3873.1[3486.8]MB line=6672
+Rank: 18[37419] MEM 3872.5[3486.2]MB line=6672
+Rank: 14[37418] MEM 3885.1[3499.1]MB line=6672
+Rank: 19[811] MEM 3873.7[3487.4]MB line=6672
+Rank: 13[43833] MEM 3886.4[3500.3]MB line=6672
+Rank: 10[37417] MEM 3893.9[3507.6]MB line=6672
+Rank: 26[37421] MEM 3871.6[3485.2]MB line=6672
+Rank: 11[809] MEM 3891.4[3505.1]MB line=6672
+Rank: 25[43836] MEM 3870.5[3484.2]MB line=6672
+Rank: 4[49361] MEM 3889.2[3503.0]MB line=6672
+Rank: 17[43834] MEM 3872.1[3485.8]MB line=6672
+Rank: 23[813] MEM 3875.7[3489.7]MB line=6672
+Rank: 2[37415] MEM 3888.8[3502.5]MB line=6672
+Rank: 3[806] MEM 3888.3[3502.0]MB line=6672
+Rank: 22[37420] MEM 3874.6[3488.6]MB line=6672
+Rank: 21[43835] MEM 3873.2[3487.2]MB line=6672
+Rank: 6[37416] MEM 3892.2[3506.1]MB line=6672
+Rank: 7[807] MEM 3893.1[3507.0]MB line=6672
+Rank: 0[49360] MEM 3904.3[3518.1]MB line=6672
+l_nmatpix[0] 779508 / 786432 
+Rank: 1[43830] MEM 3901.6[3515.3]MB line=6672
+Rank: 5[43831] MEM 3893.0[3506.9]MB line=6672
+Rank: 61[43846] MEM 2760.1[2373.8]MB line=6672
+Rank: 38[37424] MEM 3328.6[2942.6]MB line=6672
+Rank: 40[49370] MEM 3314.2[2928.0]MB line=6672
+Rank: 53[43844] MEM 2971.8[2585.6]MB line=6672
+Rank: 63[824] MEM 2821.1[2435.1]MB line=6672
+Rank: 37[43840] MEM 3373.6[2987.6]MB line=6672
+Rank: 45[43842] MEM 3309.4[2923.4]MB line=6672
+Rank: 52[49373] MEM 2974.7[2588.7]MB line=6672
+Rank: 54[37428] MEM 2974.9[2588.9]MB line=6672
+Rank: 60[49375] MEM 2888.9[2502.9]MB line=6672
+Rank: 56[49374] MEM 2794.1[2407.9]MB line=6672
+Rank: 55[822] MEM 2976.8[2590.7]MB line=6672
+Rank: 36[49369] MEM 3357.5[2971.6]MB line=6672
+Rank: 50[37427] MEM 2991.6[2605.3]MB line=6672
+Rank: 42[37425] MEM 3306.3[2920.1]MB line=6672
+Rank: 48[49372] MEM 2987.8[2601.6]MB line=6672
+Rank: 58[37429] MEM 2809.3[2423.0]MB line=6672
+Rank: 62[37430] MEM 2812.2[2426.2]MB line=6672
+Rank: 32[49368] MEM 3377.1[2990.9]MB line=6672
+Rank: 41[43841] MEM 3314.3[2928.0]MB line=6672
+Rank: 39[817] MEM 3324.3[2938.2]MB line=6672
+Rank: 57[43845] MEM 2791.3[2405.0]MB line=6672
+Rank: 51[821] MEM 2987.5[2601.3]MB line=6672
+Rank: 43[819] MEM 3306.1[2919.9]MB line=6672
+Rank: 49[43843] MEM 2993.4[2607.1]MB line=6672
+Rank: 47[820] MEM 3308.7[2922.6]MB line=6672
+Rank: 59[823] MEM 2844.0[2457.5]MB line=6672
+Rank: 46[37426] MEM 3312.9[2926.9]MB line=6672
+Rank: 44[49371] MEM 3310.8[2924.9]MB line=6672
+Rank: 34[37423] MEM 3336.2[2950.0]MB line=6672
+Rank: 35[816] MEM 3321.1[2934.9]MB line=6672
+Rank: 33[43839] MEM 3394.4[3008.1]MB line=6672
+Rank: 0[49360] MEM 3964.3[3577.9]MB line=6739
+RK0 SHOULD DETERMINE 786432 VALUES 0 12814 25535 38353 50640 
+GAIN DIP BOL (0/3): 1.050725
+GAIN DIP BOL (1/3): 1.026711
+GAIN DIP BOL (2/3): 1.041083
+GAIN DIP BOL (3/3): 1.013270
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+BEG-ED 0 49892324 0 - 786431 779508
+MAXSIZE 50700 50700
+NbGain 50640
+BEG 0 49892324 0 - 786431 779508
+Rank: 0[49360] MEM 3963.4[3577.3]MB line=7425
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 0/5 8 
+
+==============================
+GAIN 1 1 1 1 
+...
+GAIN 1 1 1 1 
+B2 -341335
+H2 400982
+Q2 0
+
+---------
+iter: 0/500 beta =      22.8024  alpha =  3.51673e-06  delta =   1.8897e+21      1.528623s
+iter: 10/500 beta =  2.49075e-08  alpha =   2.0236e-07  delta =  2.85119e+21      1.528535s
+iter: 20/500 beta =   5.7406e+07  alpha =      22.2702  delta =  1.10819e+19      1.528787s
+iter: 30/500 beta =  0.000562472  alpha =  1.47836e-07  delta =  8.44932e+17      1.532490s
+iter: 40/500 beta =      85.7983  alpha =    0.0509165  delta =  1.81815e+17      1.529104s
+iter: 50/500 beta =     0.163386  alpha =  1.71906e-07  delta =  7.98843e+16      1.529193s
+iter: 60/500 beta =  6.36362e+07  alpha =      14.9465  delta =  5.91631e+16      1.528426s
+iter: 70/500 beta =       221114  alpha =    0.0327149  delta =  2.88703e+16      1.529321s
+iter: 80/500 beta =  1.32061e+07  alpha =      11.0378  delta =  1.66522e+16      1.528555s
+iter: 90/500 beta =  8.05085e-07  alpha =  1.31689e-05  delta =  1.21164e+17      1.528859s
+iter: 100/500 beta =    0.0149948  alpha =  1.49971e-07  delta =   2.6781e+15      1.529052s
+iter: 110/500 beta =      52.5926  alpha =  7.91821e-06  delta =  1.27378e+15      1.528926s
+iter: 120/500 beta =  1.19876e-06  alpha =  1.48223e-07  delta =   9.6639e+15      1.528614s
+iter: 130/500 beta =  2.68828e+07  alpha =      5.55508  delta =  9.46472e+14      1.528809s
+iter: 140/500 beta =   1.8892e-08  alpha =  1.97192e-07  delta =   1.5247e+17      1.529255s
+iter: 150/500 beta =  9.24681e+06  alpha =      10.2501  delta =  7.27652e+13      1.528469s
+iter: 160/500 beta =      140.538  alpha =  2.09125e-05  delta =  9.26944e+12      1.528791s
+iter: 170/500 beta =  0.000148208  alpha =  2.23109e-05  delta =  1.90024e+14      1.528703s
+iter: 180/500 beta =  7.72997e-05  alpha =  1.47794e-07  delta =  3.96352e+12      1.531831s
+iter: 190/500 beta =      19.7943  alpha =  3.07278e-06  delta =  9.22311e+11      1.528584s
+iter: 200/500 beta =  2.38938e+06  alpha =     0.359333  delta =  7.72064e+11      1.528797s
+iter: 210/500 beta =   4.1691e+06  alpha =      1.51179  delta =  6.04268e+11      1.528740s
+iter: 220/500 beta =  7.52597e-05  alpha =  1.47771e-07  delta =  1.76725e+11      1.528421s
+iter: 230/500 beta =  2.93981e+07  alpha =      6.41549  delta =  4.07049e+10      1.529383s
+iter: 240/500 beta =  2.38143e-08  alpha =  1.70954e-07  delta =  1.41585e+12      1.528918s
+iter: 250/500 beta =       387095  alpha =    0.0572889  delta =  1.28351e+10      1.530041s
+iter: 260/500 beta =   1.2957e-07  alpha =  1.51445e-07  delta =  4.64022e+11      1.530032s
+iter: 270/500 beta =       360309  alpha =    0.0533136  delta =  6.99899e+09      1.529420s
+iter: 280/500 beta =  3.14076e-08  alpha =  1.60155e-07  delta =   1.4622e+11      1.529267s
+iter: 290/500 beta =  3.12597e+07  alpha =      14.5555  delta =  1.89236e+08      1.529905s
+iter: 300/500 beta =     0.429413  alpha =  2.11187e-07  delta =  5.00119e+07      1.529035s
+iter: 310/500 beta =  3.02327e-07  alpha =  1.85836e-06  delta =  6.50818e+09      1.529399s
+iter: 320/500 beta =     0.025293  alpha =  1.51458e-07  delta =  9.56439e+07      1.529156s
+iter: 330/500 beta =      82181.9  alpha =    0.0121441  delta =  7.85111e+07      1.529438s
+iter: 340/500 beta =      634.035  alpha =    0.0455128  delta =  4.03416e+07      1.531264s
+iter: 350/500 beta =  9.11825e-08  alpha =  1.54632e-07  delta =  2.38056e+09      1.528905s
+iter: 360/500 beta =     0.101059  alpha =  1.62644e-07  delta =  4.93396e+07      1.529974s
+iter: 370/500 beta =      46749.4  alpha =   0.00690729  delta =  5.08535e+07      1.528929s
+iter: 380/500 beta =      5416.04  alpha =     0.116916  delta =  7.39201e+07      1.529624s
+iter: 390/500 beta =  8.77887e-08  alpha =  7.71428e-07  delta =  4.89439e+11      1.529315s
+iter: 400/500 beta =   0.00843207  alpha =  1.48959e-07  delta =  3.59564e+09      1.529181s
+iter: 410/500 beta =      431.185  alpha =  6.38409e-05  delta =  1.25244e+10      1.528938s
+iter: 420/500 beta =  1.46735e+07  alpha =      2.53447  delta =  3.11417e+09      1.528996s
+iter: 430/500 beta =     0.494264  alpha =      0.00102  delta =  9.66231e+08      1.529340s
+iter: 440/500 beta =  3.76392e-07  alpha =  1.48937e-07  delta =  9.99953e+09      1.529126s
+iter: 450/500 beta =   0.00463504  alpha =  1.48544e-07  delta =  7.17752e+07      1.529347s
+iter: 460/500 beta =      412.043  alpha =  6.10297e-05  delta =  7.81623e+06      1.528923s
+iter: 470/500 beta =  1.54995e-07  alpha =  5.88741e-06  delta =  1.73734e+08      1.529320s
+iter: 480/500 beta =  1.31077e+07  alpha =      19.3057  delta =       328368      1.529308s
+iter: 490/500 beta =   0.00255093  alpha =  1.48127e-07  delta =       392499      1.530360s
+tot_time = 764.915
+GI XIGAIN 0.01381578172
+MEAN_OFF=[-14.6218,-6.74958,-29.8318,53.3579,]
+MEAN2_OFF=[0.162393,0.10108,0.271719,0.492737,]
+GAIN=[0.00973912,0.0145484,0.00891528,0.0148731,]
+TF=[1.16442,1.11862,1.16842,1.07189,]
+TF=[43.7668,8.59733,27.1877,-5.92807,]
+TF=[0.00122847,0.000430958,-2.16905e-05,-0.00156836,]
+TF=[0.000139138,-9.26407e-05,0.000280917,0.0002426,]
+TF=[0.000121029,0.000150169,-9.05325e-05,4.89282e-05,]
+TF=[9.52968e-06,0.000103578,-7.18389e-05,0.0001066,]
+TMAP=[-0.0049937,0.0228959,-0.0129308,-0.00497541,]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 1/5 8 
+
+==============================
+GAIN 0.990261 1.00159 0.992243 1.0217 
+...
+GAIN 0.984341 1.00349 0.987757 1.0238 
+B2 -355970
+H2 400982
+Q2 -342223
+
+---------
+iter: 0/500 beta =      22.4358  alpha =  3.46256e-06  delta =  6.56535e+18      1.562791s
+iter: 10/500 beta =  7.19366e-08  alpha =   6.1517e-07  delta =  6.54211e+18      1.561104s
+iter: 20/500 beta =     0.111787  alpha =  1.64281e-07  delta =  1.96214e+16      1.560956s
+iter: 30/500 beta =  9.57866e+06  alpha =      1.47428  delta =  4.19461e+15      1.561814s
+iter: 40/500 beta =   0.00788822  alpha =  0.000170683  delta =  1.09567e+15      1.562150s
+iter: 50/500 beta =  4.31589e-05  alpha =  1.47789e-07  delta =   1.5164e+14      1.560895s
+iter: 60/500 beta =       179.63  alpha =  2.66908e-05  delta =  8.24362e+13      1.561005s
+iter: 70/500 beta =       335992  alpha =    0.0497148  delta =  8.39131e+13      1.561807s
+iter: 80/500 beta =  1.14009e+06  alpha =     0.169687  delta =  7.38644e+13      1.561318s
+iter: 90/500 beta =      46838.8  alpha =   0.00692477  delta =  4.10467e+13      1.560562s
+iter: 100/500 beta =      5.06609  alpha =  8.97401e-07  delta =  2.55131e+13      1.560928s
+iter: 110/500 beta =    0.0030916  alpha =  1.48517e-07  delta =  8.22488e+12      1.561428s
+iter: 120/500 beta =      2280.59  alpha =   0.00431149  delta =   4.9249e+12      1.560369s
+iter: 130/500 beta =  8.51807e-05  alpha =  1.48424e-07  delta =  1.12937e+12      1.560283s
+iter: 140/500 beta =      49503.5  alpha =   0.00734912  delta =   1.2548e+12      1.560400s
+iter: 150/500 beta =  3.36497e-05  alpha =  3.50537e-07  delta =  4.34553e+14      1.562143s
+iter: 160/500 beta =     0.113756  alpha =  1.65373e-07  delta =  7.41874e+11      1.560838s
+iter: 170/500 beta =       151461  alpha =    0.0228514  delta =  5.28253e+11      1.560926s
+iter: 180/500 beta =  6.68469e-06  alpha =  1.54262e-07  delta =  9.57275e+12      1.561488s
+iter: 190/500 beta =      4.82703  alpha =  8.65242e-07  delta =  5.45708e+10      1.562222s
+iter: 200/500 beta =      48237.1  alpha =    0.0134905  delta =  3.30076e+10      1.561285s
+iter: 210/500 beta =  2.29277e-05  alpha =  1.48361e-07  delta =  3.12126e+10      1.561240s
+iter: 220/500 beta =       106672  alpha =    0.0158347  delta =  1.71734e+10      1.562526s
+iter: 230/500 beta =  5.07977e-06  alpha =  1.67791e-07  delta =  9.64892e+11      1.561563s
+iter: 240/500 beta =      34.5777  alpha =  5.27648e-06  delta =  4.10144e+09      1.559673s
+iter: 250/500 beta =     0.072763  alpha =  2.17704e-05  delta =  2.08419e+10      1.560799s
+iter: 260/500 beta =     0.461193  alpha =  2.16681e-07  delta =  2.27557e+09      1.561307s
+iter: 270/500 beta =      8946.29  alpha =     0.007399  delta =  2.27101e+09      1.560571s
+iter: 280/500 beta =  6.45357e-05  alpha =  1.48374e-07  delta =  1.22939e+09      1.561740s
+iter: 290/500 beta =       126386  alpha =    0.0187729  delta =  5.67164e+08      1.560332s
+iter: 300/500 beta =  5.99978e-06  alpha =  1.81936e-07  delta =  4.03487e+10      1.560877s
+iter: 310/500 beta =      55.0811  alpha =  8.31626e-06  delta =  9.52376e+07      1.560931s
+iter: 320/500 beta =    0.0725679  alpha =  2.23192e-05  delta =  5.73372e+08      1.561413s
+iter: 330/500 beta =     0.613306  alpha =  2.39216e-07  delta =   8.2471e+07      1.562106s
+iter: 340/500 beta =      335.812  alpha =   0.00157218  delta =  7.31624e+07      1.560700s
+iter: 350/500 beta =     0.026381  alpha =  1.52068e-07  delta =  1.26141e+07      1.561351s
+iter: 360/500 beta =      3.22634  alpha =  0.000202209  delta =   8.4349e+06      1.561559s
+iter: 370/500 beta =      2.52942  alpha =  5.22829e-07  delta =       297937      1.561674s
+iter: 380/500 beta =   0.00295127  alpha =  6.23941e-06  delta =  5.20821e+06      1.561908s
+iter: 390/500 beta =      190.142  alpha =  2.83075e-05  delta =      32034.1      1.560848s
+iter: 400/500 beta =  1.40228e-06  alpha =  1.48975e-07  delta =       279632      1.560778s
+iter: 410/500 beta =       473945  alpha =    0.0985606  delta =      29569.1      1.560905s
+iter: 420/500 beta =    0.0023501  alpha =  1.48519e-07  delta =      44112.2      1.561485s
+iter: 430/500 beta =      13971.4  alpha =    0.0119863  delta =      49352.3      1.560395s
+iter: 440/500 beta =    0.0239951  alpha =  1.51691e-07  delta =      37507.6      1.560361s
+iter: 450/500 beta =      7.37208  alpha =  0.000316434  delta =      62947.8      1.561939s
+iter: 460/500 beta =      2.70789  alpha =  5.49212e-07  delta =      37445.1      1.565298s
+iter: 470/500 beta =  8.53247e-05  alpha =   1.0435e-06  delta =  8.98444e+06      1.562490s
+iter: 480/500 beta =      855.252  alpha =  0.000126834  delta =      30071.8      1.561267s
+iter: 490/500 beta =  1.60012e-06  alpha =  1.55934e-07  delta =   3.6198e+06      1.560103s
+tot_time = 780.695
+GI XIGAIN 0.000473637629
+MEAN_OFF=[-16.1401,-6.82263,-30.9446,56.1779,]
+MEAN2_OFF=[0.171951,0.101518,0.281025,0.518227,]
+GAIN=[-0.000217713,-0.000475019,-0.000293701,-0.000495691,]
+TF=[1.15215,1.12357,1.15883,1.08874,]
+TF=[43.9968,8.77963,27.3147,-6.34535,]
+TF=[0.00128142,0.000456864,9.8833e-06,-0.00160242,]
+TF=[0.000136031,-9.33225e-05,0.000278937,0.000240489,]
+TF=[0.000125747,0.000150774,-8.56875e-05,4.71493e-05,]
+TF=[9.19817e-06,0.000103491,-7.00229e-05,0.000108546,]
+TMAP=[-0.00494657,0.0227774,-0.0128024,-0.00497463,]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 2/5 8 
+
+==============================
+GAIN 0.990479 1.00118 0.992377 1.02106 
+...
+GAIN 0.984938 1.00305 0.988121 1.02318 
+B2 -355585
+H2 400982
+Q2 -355957
+
+---------
+iter: 0/500 beta =      23.9747  alpha =  3.68993e-06  delta =  5.23557e+15      1.528711s
+iter: 10/500 beta =      96.8369  alpha =     0.060155  delta =  5.39502e+13      1.526730s
+iter: 20/500 beta =   0.00154677  alpha =  1.48002e-07  delta =  1.39742e+13      1.527513s
+iter: 30/500 beta =      423.168  alpha =  6.26811e-05  delta =  9.02663e+12      1.527496s
+iter: 40/500 beta =       906243  alpha =      3.78273  delta =  1.33293e+12      1.527846s
+iter: 50/500 beta =   2.2193e-05  alpha =  1.47781e-07  delta =   4.8665e+11      1.527320s
+iter: 60/500 beta =  8.17605e+06  alpha =       1.2397  delta =  3.75602e+11      1.527892s
+iter: 70/500 beta =  4.26552e-05  alpha =  1.47766e-07  delta =   3.7611e+11      1.528032s
+iter: 80/500 beta =    0.0191336  alpha =    0.0028573  delta =   2.3445e+11      1.527108s
+iter: 90/500 beta =  0.000340215  alpha =  1.47766e-07  delta =  5.75275e+10      1.527353s
+iter: 100/500 beta =       1266.2  alpha =  0.000187232  delta =  3.08898e+10      1.527890s
+iter: 110/500 beta =   6.2512e-06  alpha =  1.29091e-06  delta =  2.30126e+12      1.527695s
+iter: 120/500 beta =   0.00532857  alpha =  3.49847e-05  delta =  4.78805e+10      1.527534s
+iter: 130/500 beta =      299.597  alpha =   0.00519071  delta =  4.67163e+09      1.528034s
+iter: 140/500 beta =  2.08614e+06  alpha =     0.313585  delta =  2.16856e+09      1.527102s
+iter: 150/500 beta =       519.36  alpha =  7.68181e-05  delta =  1.19417e+09      1.527529s
+iter: 160/500 beta =     0.890543  alpha =  2.79141e-07  delta =  2.06367e+08      1.527096s
+iter: 170/500 beta =    0.0013525  alpha =  1.47817e-07  delta =  7.58048e+07      1.527361s
+iter: 180/500 beta =  5.96062e-07  alpha =  1.49464e-07  delta =  1.10612e+09      1.527340s
+iter: 190/500 beta =     0.120758  alpha =  0.000116129  delta =  8.73108e+07      1.528555s
+iter: 200/500 beta =       207969  alpha =     0.185123  delta =  1.27895e+07      1.527605s
+iter: 210/500 beta =  1.79829e+06  alpha =     0.269033  delta =  8.71376e+06      1.527269s
+iter: 220/500 beta =      1244.91  alpha =  0.000183931  delta =  5.47399e+06      1.526922s
+iter: 230/500 beta =     0.281173  alpha =  1.89131e-07  delta =  4.77637e+06      1.527018s
+iter: 240/500 beta =   0.00056858  alpha =  1.47725e-07  delta =  3.52903e+06      1.527728s
+iter: 250/500 beta =  4.84285e-07  alpha =  1.48726e-07  delta =  1.10091e+07      1.527167s
+iter: 260/500 beta =   0.00263893  alpha =  1.73922e-05  delta =  3.00003e+06      1.527215s
+iter: 270/500 beta =      11425.3  alpha =    0.0357274  delta =      58360.8      1.526858s
+iter: 280/500 beta =       188260  alpha =     0.027805  delta =      9992.51      1.527073s
+iter: 290/500 beta =     0.159277  alpha =  1.71063e-07  delta =      4616.35      1.526976s
+iter: 300/500 beta =  7.87086e-07  alpha =  1.49577e-07  delta =       212733      1.526935s
+iter: 310/500 beta =     0.446454  alpha =  0.000166954  delta =      20573.6      1.528812s
+iter: 320/500 beta =  1.09801e+06  alpha =     0.163399  delta =      1011.41      1.636359s
+iter: 330/500 beta =      5.13807  alpha =  9.05802e-07  delta =      168.879      1.526877s
+iter: 340/500 beta =  2.87865e-05  alpha =  1.47585e-07  delta =      60.0921      1.527372s
+iter: 350/500 beta =    0.0111002  alpha =  2.67281e-05  delta =      1911.19      1.526929s
+iter: 360/500 beta =  1.93991e+06  alpha =     0.296864  delta =      183.548      1.527784s
+iter: 370/500 beta =      84.0762  alpha =  1.25547e-05  delta =      102.806      1.528546s
+iter: 380/500 beta =  4.69211e-05  alpha =  1.47578e-07  delta =      37.4619      1.530485s
+iter: 390/500 beta =   0.00126921  alpha =  8.95589e-06  delta =      594.028      1.533645s
+iter: 400/500 beta =  1.35301e+06  alpha =     0.280123  delta =      26.6891      1.528424s
+iter: 410/500 beta =      147.136  alpha =  2.18594e-05  delta =      27.3583      1.528799s
+iter: 420/500 beta =  0.000115446  alpha =  1.47574e-07  delta =      24.2661      1.527202s
+iter: 430/500 beta =  0.000145585  alpha =  2.89899e-06  delta =      2772.12      1.526688s
+iter: 440/500 beta =  1.87116e+06  alpha =     0.315408  delta =      94.3926      1.526945s
+iter: 450/500 beta =      13.9665  alpha =  2.20841e-06  delta =      809.239      1.527166s
+iter: 460/500 beta =   4.9543e-05  alpha =  1.47589e-07  delta =      6643.18      1.527001s
+iter: 470/500 beta =    0.0158073  alpha =  2.59633e-05  delta =       303631      1.526926s
+iter: 480/500 beta =       424575  alpha =    0.0627586  delta =      4256.62      1.527092s
+iter: 490/500 beta =     0.375654  alpha =  2.02983e-07  delta =      692.703      1.527338s
+tot_time = 763.941
+GI XIGAIN 1.776427494e-05
+MEAN_OFF=[-16.0834,-6.8436,-30.9077,56.1021,]
+MEAN2_OFF=[0.171587,0.101598,0.280717,0.517546,]
+GAIN=[9.01635e-06,2.19245e-05,1.59734e-05,2.28999e-05,]
+TF=[1.15256,1.12306,1.15908,1.08823,]
+TF=[43.9894,8.77435,27.3098,-6.33308,]
+TF=[0.00127965,0.000456022,8.96115e-06,-0.00160147,]
+TF=[0.000136145,-9.32231e-05,0.000278987,0.000240557,]
+TF=[0.00012558,0.000150741,-8.58422e-05,4.71885e-05,]
+TF=[9.21332e-06,0.000103457,-7.0084e-05,0.000108484,]
+TMAP=[-0.00499044,0.0228665,-0.0128696,-0.00500644,]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 3/5 8 
+
+==============================
+GAIN 0.99047 1.0012 0.992372 1.02108 
+...
+GAIN 0.984908 1.00307 0.988105 1.02319 
+B2 -355591
+H2 400982
+Q2 -355582
+
+---------
+iter: 0/500 beta =      62.1943  alpha =  9.33675e-06  delta =  3.86313e+12      1.527384s
+iter: 10/500 beta =  5.78894e+06  alpha =     0.883857  delta =   1.0476e+11      1.526531s
+iter: 20/500 beta =      4.50014  alpha =   0.00273918  delta =  3.16081e+10      1.527151s
+iter: 30/500 beta =  1.20663e-07  alpha =   1.5155e-07  delta =   3.3598e+11      1.527176s
+iter: 40/500 beta =        68638  alpha =      2.54893  delta =    2.808e+09      1.535770s
+iter: 50/500 beta =     0.679351  alpha =  2.48164e-07  delta =  7.81297e+08      1.526790s
+iter: 60/500 beta =    3.943e+07  alpha =      7.16154  delta =  9.05674e+08      1.527484s
+iter: 70/500 beta =  9.97067e-07  alpha =  2.57343e-06  delta =  5.78935e+10      1.526749s
+iter: 80/500 beta =   0.00116604  alpha =  1.47943e-07  delta =  4.46708e+08      1.527828s
+iter: 90/500 beta =      3488.97  alpha =  0.000515729  delta =  1.41935e+08      1.526468s
+iter: 100/500 beta =      175.452  alpha =    0.0549428  delta =  7.11763e+07      1.527371s
+iter: 110/500 beta =  9.01889e-05  alpha =  1.47778e-07  delta =  4.40857e+07      1.526399s
+iter: 120/500 beta =  2.13195e+06  alpha =     0.318206  delta =  1.46545e+07      1.527934s
+iter: 130/500 beta =       132.21  alpha =   0.00703415  delta =  1.42919e+07      1.526577s
+iter: 140/500 beta =   1.9606e+06  alpha =     0.304122  delta =  5.07817e+06      1.526864s
+iter: 150/500 beta =      2718.97  alpha =  0.000402265  delta =  3.01232e+06      1.527667s
+iter: 160/500 beta =     0.240055  alpha =   1.8335e-07  delta =       597375      1.526740s
+iter: 170/500 beta =  1.22028e-05  alpha =   1.4793e-07  delta =       239185      1.526489s
+iter: 180/500 beta =  2.66055e-07  alpha =  1.55849e-07  delta =  6.97735e+06      1.525706s
+iter: 190/500 beta =  1.70457e-05  alpha =  1.66825e-06  delta =   8.8241e+06      1.527161s
+iter: 200/500 beta =      9.25172  alpha =   0.00111511  delta =        32907      1.528251s
+iter: 210/500 beta =      62696.7  alpha =     0.123147  delta =      18580.5      1.526890s
+iter: 220/500 beta =  6.23189e+06  alpha =     0.993876  delta =      11879.4      1.527010s
+iter: 230/500 beta =      32352.2  alpha =   0.00478422  delta =      8744.18      1.527142s
+iter: 240/500 beta =      3479.28  alpha =   0.00051445  delta =      4774.99      1.526716s
+iter: 250/500 beta =   0.00012778  alpha =  4.72702e-05  delta =      5547.11      1.526634s
+iter: 260/500 beta =   0.00184194  alpha =  1.48057e-07  delta =      401.021      1.526557s
+iter: 270/500 beta =      18.5695  alpha =  2.89213e-06  delta =      500.317      1.527121s
+iter: 280/500 beta =       233046  alpha =    0.0344674  delta =      574.385      1.526270s
+iter: 290/500 beta =  3.93267e+06  alpha =      2.07739  delta =      295.155      1.526821s
+iter: 300/500 beta =      3.32504  alpha =   0.00179266  delta =      57.7399      1.526922s
+iter: 310/500 beta =  3.95653e-08  alpha =  1.71875e-07  delta =      1291.76      1.527512s
+iter: 320/500 beta =    0.0807235  alpha =  1.59697e-07  delta =     0.628277      1.527101s
+iter: 330/500 beta =      461.681  alpha =  6.83769e-05  delta =     0.375144      1.526152s
+iter: 340/500 beta =  2.25325e+07  alpha =      4.47529  delta =     0.507366      1.529621s
+iter: 350/500 beta =  2.35502e-08  alpha =  1.75619e-07  delta =      369.025      1.626151s
+iter: 360/500 beta =      625.919  alpha =  9.26322e-05  delta =     0.543188      1.528224s
+iter: 370/500 beta =  1.92217e-05  alpha =  3.57531e-05  delta =      1.94092      1.526998s
+iter: 380/500 beta =  7.34799e-05  alpha =  1.47801e-07  delta =     0.444136      1.526919s
+iter: 390/500 beta =      1.27564  alpha =  3.36289e-07  delta =      0.61328      1.527122s
+iter: 400/500 beta =      48997.8  alpha =   0.00724238  delta =      1.45965      1.526767s
+iter: 410/500 beta =  1.65677e+07  alpha =       3.9933  delta =      1.64916      1.527018s
+iter: 420/500 beta =    0.0133919  alpha =   0.00015356  delta =       34.269      1.526873s
+iter: 430/500 beta =  2.02646e-07  alpha =   1.5105e-07  delta =      5880.81      1.526714s
+iter: 440/500 beta =   0.00497391  alpha =  1.48514e-07  delta =      105.724      1.526792s
+iter: 450/500 beta =      422.292  alpha =   6.2554e-05  delta =      32.8695      1.526355s
+iter: 460/500 beta =  2.42009e+06  alpha =     0.361376  delta =      2.42601      1.526362s
+iter: 470/500 beta =        204.5  alpha =    0.0186411  delta =     0.442153      1.526532s
+iter: 480/500 beta =  2.98727e-06  alpha =  2.19934e-06  delta =      137.218      1.526368s
+iter: 490/500 beta =  2.31263e-06  alpha =  1.47978e-07  delta =      3.57617      1.526937s
+tot_time = 763.761
+GI XIGAIN 8.573029673e-07
+MEAN_OFF=[-16.0856,-6.84211,-30.9088,56.1038,]
+MEAN2_OFF=[0.1716,0.101592,0.280725,0.517561,]
+GAIN=[7.50895e-08,-5.81628e-07,-3.45852e-07,-6.19127e-07,]
+TF=[1.15254,1.12308,1.15907,1.08824,]
+TF=[43.9893,8.77445,27.3099,-6.33339,]
+TF=[0.0012797,0.000456045,8.99835e-06,-0.00160149,]
+TF=[0.000136141,-9.32289e-05,0.000278985,0.000240554,]
+TF=[0.000125585,0.000150741,-8.58362e-05,4.71877e-05,]
+TF=[9.2128e-06,0.000103459,-7.00816e-05,0.000108486,]
+TMAP=[-0.00499048,0.0228667,-0.0128697,-0.00500648,]
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 4/5 8 
+
+==============================
+GAIN 0.990469 1.00119 0.992371 1.02107 
+...
+GAIN 0.984909 1.00307 0.988105 1.02319 
+B2 -355591
+H2 400982
+Q2 -355592
+
+---------
+iter: 0/500 beta =       668.84  alpha =   9.8967e-05  delta =  7.49254e+09      1.523288s
+iter: 10/500 beta =  2.52214e+07  alpha =      4.39347  delta =  2.14297e+08      1.523271s
+iter: 20/500 beta =     0.022595  alpha =  0.000103786  delta =   1.3955e+08      1.523375s
+iter: 30/500 beta =  1.37404e-06  alpha =  7.93836e-07  delta =  4.16583e+09      1.523983s
+iter: 40/500 beta =  2.51985e-07  alpha =   3.6586e-07  delta =  1.90476e+09      1.523217s
+iter: 50/500 beta =  1.98146e-07  alpha =  1.51413e-07  delta =  8.75767e+07      1.586860s
+iter: 60/500 beta =  3.31182e-07  alpha =  1.49401e-07  delta =  4.23786e+07      1.523163s
+iter: 70/500 beta =  2.74436e-07  alpha =   1.4955e-07  delta =  3.43086e+07      1.524104s
+iter: 80/500 beta =  2.00003e-07  alpha =  1.55792e-07  delta =  9.24155e+07      1.523661s
+iter: 90/500 beta =  6.08409e-08  alpha =  1.71358e-07  delta =  1.42203e+08      1.523208s
+iter: 100/500 beta =  4.13184e-07  alpha =  1.81343e-07  delta =  4.68045e+07      1.527097s
+iter: 110/500 beta =      8181.06  alpha =    0.0135444  delta =       146386      1.524130s
+iter: 120/500 beta =      3203.49  alpha =  0.000473033  delta =      95466.6      1.523983s
+iter: 130/500 beta =    0.0665731  alpha =  1.57405e-07  delta =      34515.8      1.522726s
+iter: 140/500 beta =   8.7221e-06  alpha =  1.47674e-07  delta =      57431.5      1.525889s
+iter: 150/500 beta =  7.05305e-05  alpha =  1.47675e-07  delta =      12546.8      1.523275s
+iter: 160/500 beta =  4.16981e-07  alpha =  1.50684e-07  delta =       255976      1.523471s
+iter: 170/500 beta =    2.067e-05  alpha =  2.28162e-06  delta =       318121      1.523659s
+iter: 180/500 beta =  6.95206e-06  alpha =  1.86583e-06  delta =      66684.6      1.522734s
+iter: 190/500 beta =  1.50842e-07  alpha =  5.21835e-07  delta =      84482.7      1.523840s
+iter: 200/500 beta =  1.46621e-05  alpha =  1.47734e-07  delta =      221.416      1.524065s
+iter: 210/500 beta =    0.0156739  alpha =  1.50013e-07  delta =      58.9649      1.523016s
+iter: 220/500 beta =      12.7483  alpha =  2.03082e-06  delta =      39.6454      1.523713s
+iter: 230/500 beta =          993  alpha =  0.000146802  delta =      27.0827      1.524534s
+iter: 240/500 beta =      4280.93  alpha =  0.000632391  delta =      17.0863      1.522955s
+iter: 250/500 beta =      306.452  alpha =    4.539e-05  delta =      6.30109      1.523027s
+iter: 260/500 beta =    0.0185776  alpha =  1.50281e-07  delta =      2.63744      1.523670s
+iter: 270/500 beta =  1.26134e-06  alpha =  3.10433e-07  delta =      426.315      1.522674s
+iter: 280/500 beta =      8877.69  alpha =    0.0266681  delta =      1.44108      1.523191s
+iter: 290/500 beta =       120718  alpha =      0.01783  delta =      2.35482      1.551195s
+iter: 300/500 beta =      663.292  alpha =  9.80792e-05  delta =      1.94333      1.523652s
+iter: 310/500 beta =      4.32416  alpha =  7.86099e-07  delta =     0.923338      1.526438s
+iter: 320/500 beta =      0.18037  alpha =  1.74333e-07  delta =     0.667151      1.523366s
+iter: 330/500 beta =      2.94141  alpha =  5.82045e-07  delta =      1.06211      1.525451s
+iter: 340/500 beta =      161.853  alpha =  2.40529e-05  delta =      2.42568      1.523459s
+iter: 350/500 beta =      2338.19  alpha =   0.00034549  delta =      16.1901      1.524796s
+iter: 360/500 beta =      19591.6  alpha =   0.00289356  delta =      55.5746      1.522948s
+iter: 370/500 beta =      19005.9  alpha =   0.00280725  delta =      66.4147      1.528089s
+iter: 380/500 beta =       125315  alpha =    0.0185147  delta =      18.5948      1.525689s
+iter: 390/500 beta =      64117.8  alpha =    0.0094718  delta =      14.7405      1.526932s
+iter: 400/500 beta =       127160  alpha =    0.0187828  delta =      24.0617      1.525645s
+iter: 410/500 beta =      3738.24  alpha =  0.000552117  delta =      50.7745      1.526548s
+iter: 420/500 beta =      21.4144  alpha =   3.3094e-06  delta =      89.8326      1.526502s
+iter: 430/500 beta =    0.0537739  alpha =  1.55553e-07  delta =      23.8452      1.526131s
+iter: 440/500 beta =  2.89349e-06  alpha =  1.47746e-07  delta =      171.277      1.525678s
+iter: 450/500 beta =  0.000678572  alpha =  8.26516e-06  delta =      1714.52      1.526592s
+iter: 460/500 beta =      12503.8  alpha =    0.0351721  delta =      6.66851      1.526026s
+iter: 470/500 beta =       204591  alpha =    0.0302268  delta =     0.668136      1.525750s
+iter: 480/500 beta =      3.99702  alpha =  7.37595e-07  delta =    0.0536508      1.527520s
+iter: 490/500 beta =  0.000257019  alpha =  1.47648e-07  delta =   0.00564416      1.525820s
+tot_time = 762.342
+GI XIGAIN 3.586809511e-07
+MEAN_OFF=[-16.0855,-6.84218,-30.9087,56.1037,]
+MEAN2_OFF=[0.1716,0.101592,0.280725,0.517561,]
+GAIN=[3.62492e-07,3.93773e-07,3.85868e-07,3.94678e-07,]
+TF=[1.15254,1.12308,1.15907,1.08824,]
+TF=[43.9893,8.77445,27.3099,-6.33337,]
+TF=[0.0012797,0.000456044,8.99755e-06,-0.00160149,]
+TF=[0.000136141,-9.32286e-05,0.000278985,0.000240554,]
+TF=[0.000125585,0.000150741,-8.58364e-05,4.71877e-05,]
+TF=[9.21282e-06,0.000103459,-7.00816e-05,0.000108486,]
+TMAP=[-0.00499047,0.0228666,-0.0128697,-0.00500647,]
+Write OFF  206488
+Write OFF  206488
+Write OFF  206488
+Write OFF  206488
+Save X2 NO CUTRG
+Write MAT  480
+AVVGAIN: 0.000000
+Rank: 0[49360] MEM 3963.4[3577.3]MB line=7626
+Rank: 0[49360] MEM 4005.4[3577.3]MB line=7660
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_full_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_full_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_full_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_full_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm1_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm1_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm1_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm1_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm2_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm2_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm2_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_hm2_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s1_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s1_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s1_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s1_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s2_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s2_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s2_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s2_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s3_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s3_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s3_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s3_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s4_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s4_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s4_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s4_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s5_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s5_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s5_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep2_857GHz_GRAD_IQU_s5_COND.fits
+
+troll.c: --------------------------
+troll.c: Finished successfully at Mon Jan  9 16:07:38 2023
+troll.c: --------------------------

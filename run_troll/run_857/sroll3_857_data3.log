@@ -1,0 +1,690 @@
+troll.c: --------------------------
+troll.c: --------------------------
+troll.c: Starting /home1/datahome/tfoulqui/sroll-workspace/srollex/sroll4/troll_857
+troll.c: at Thu Jan  5 16:15:10 2023
+troll.c: with 64 MPI ranks
+troll.c: --------------------------
+
+starting troll with MAXSIMU=1, MAXTHEOHPR=9
+
+
+troll_readParam() from file "sroll3_857_data.py"
+projection_type = I,Q,U 
+MAXCHANNELS = 3 
+USE 64 tensoflow rank
+Call python module in path
+.
+Call module : 
+LoadBalancing globalRangeRing      = 25811 
+LoadBalancing rings_per_rank       = 403 
+LoadBalancing balancing_correction = 19 
+  rank#0/64 (r1i2n18, 119.45GB) begin=240 end=643, (404 rings, 0e6 samples)
+  rank#1/64 (r1i2n21, 119.58GB) begin=644 end=1047, (404 rings, 0e6 samples)
+  rank#2/64 (r1i2n24, 119.07GB) begin=1048 end=1451, (404 rings, 0e6 samples)
+  rank#3/64 (r1i2n25, 117.93GB) begin=1452 end=1855, (404 rings, 0e6 samples)
+  rank#4/64 (r1i2n18, 119.45GB) begin=1856 end=2259, (404 rings, 0e6 samples)
+  rank#5/64 (r1i2n21, 119.58GB) begin=2260 end=2663, (404 rings, 0e6 samples)
+  rank#6/64 (r1i2n24, 119.07GB) begin=2664 end=3067, (404 rings, 0e6 samples)
+  rank#7/64 (r1i2n25, 117.93GB) begin=3068 end=3471, (404 rings, 0e6 samples)
+  rank#8/64 (r1i2n18, 119.45GB) begin=3472 end=3875, (404 rings, 0e6 samples)
+  rank#9/64 (r1i2n21, 119.58GB) begin=3876 end=4279, (404 rings, 0e6 samples)
+  rank#10/64 (r1i2n24, 119.07GB) begin=4280 end=4683, (404 rings, 0e6 samples)
+  rank#11/64 (r1i2n25, 117.93GB) begin=4684 end=5087, (404 rings, 0e6 samples)
+  rank#12/64 (r1i2n18, 119.45GB) begin=5088 end=5491, (404 rings, 0e6 samples)
+  rank#13/64 (r1i2n21, 119.58GB) begin=5492 end=5895, (404 rings, 0e6 samples)
+  rank#14/64 (r1i2n24, 119.07GB) begin=5896 end=6299, (404 rings, 0e6 samples)
+  rank#15/64 (r1i2n25, 117.93GB) begin=6300 end=6703, (404 rings, 0e6 samples)
+  rank#16/64 (r1i2n18, 119.45GB) begin=6704 end=7107, (404 rings, 0e6 samples)
+  rank#17/64 (r1i2n21, 119.58GB) begin=7108 end=7511, (404 rings, 0e6 samples)
+  rank#18/64 (r1i2n24, 119.07GB) begin=7512 end=7915, (404 rings, 0e6 samples)
+  rank#19/64 (r1i2n25, 117.93GB) begin=7916 end=8318, (403 rings, 0e6 samples)
+  rank#20/64 (r1i2n18, 119.45GB) begin=8319 end=8721, (403 rings, 0e6 samples)
+  rank#21/64 (r1i2n21, 119.58GB) begin=8722 end=9124, (403 rings, 0e6 samples)
+  rank#22/64 (r1i2n24, 119.07GB) begin=9125 end=9527, (403 rings, 0e6 samples)
+  rank#23/64 (r1i2n25, 117.93GB) begin=9528 end=9930, (403 rings, 0e6 samples)
+  rank#24/64 (r1i2n18, 119.45GB) begin=9931 end=10333, (403 rings, 0e6 samples)
+  rank#25/64 (r1i2n21, 119.58GB) begin=10334 end=10736, (403 rings, 0e6 samples)
+  rank#26/64 (r1i2n24, 119.07GB) begin=10737 end=11139, (403 rings, 0e6 samples)
+  rank#27/64 (r1i2n25, 117.93GB) begin=11140 end=11542, (403 rings, 0e6 samples)
+  rank#28/64 (r1i2n18, 119.45GB) begin=11543 end=11945, (403 rings, 0e6 samples)
+  rank#29/64 (r1i2n21, 119.58GB) begin=11946 end=12348, (403 rings, 0e6 samples)
+  rank#30/64 (r1i2n24, 119.07GB) begin=12349 end=12751, (403 rings, 0e6 samples)
+  rank#31/64 (r1i2n25, 117.93GB) begin=12752 end=13154, (403 rings, 0e6 samples)
+  rank#32/64 (r1i2n18, 119.45GB) begin=13155 end=13557, (403 rings, 0e6 samples)
+  rank#33/64 (r1i2n21, 119.58GB) begin=13558 end=13960, (403 rings, 0e6 samples)
+  rank#34/64 (r1i2n24, 119.07GB) begin=13961 end=14363, (403 rings, 0e6 samples)
+  rank#35/64 (r1i2n25, 117.93GB) begin=14364 end=14766, (403 rings, 0e6 samples)
+  rank#36/64 (r1i2n18, 119.45GB) begin=14767 end=15169, (403 rings, 0e6 samples)
+  rank#37/64 (r1i2n21, 119.58GB) begin=15170 end=15572, (403 rings, 0e6 samples)
+  rank#38/64 (r1i2n24, 119.07GB) begin=15573 end=15975, (403 rings, 0e6 samples)
+  rank#39/64 (r1i2n25, 117.93GB) begin=15976 end=16378, (403 rings, 0e6 samples)
+  rank#40/64 (r1i2n18, 119.45GB) begin=16379 end=16781, (403 rings, 0e6 samples)
+  rank#41/64 (r1i2n21, 119.58GB) begin=16782 end=17184, (403 rings, 0e6 samples)
+  rank#42/64 (r1i2n24, 119.07GB) begin=17185 end=17587, (403 rings, 0e6 samples)
+  rank#43/64 (r1i2n25, 117.93GB) begin=17588 end=17990, (403 rings, 0e6 samples)
+  rank#44/64 (r1i2n18, 119.45GB) begin=17991 end=18393, (403 rings, 0e6 samples)
+  rank#45/64 (r1i2n21, 119.58GB) begin=18394 end=18796, (403 rings, 0e6 samples)
+  rank#46/64 (r1i2n24, 119.07GB) begin=18797 end=19199, (403 rings, 0e6 samples)
+  rank#47/64 (r1i2n25, 117.93GB) begin=19200 end=19602, (403 rings, 0e6 samples)
+  rank#48/64 (r1i2n18, 119.45GB) begin=19603 end=20005, (403 rings, 0e6 samples)
+  rank#49/64 (r1i2n21, 119.58GB) begin=20006 end=20408, (403 rings, 0e6 samples)
+  rank#50/64 (r1i2n24, 119.07GB) begin=20409 end=20811, (403 rings, 0e6 samples)
+  rank#51/64 (r1i2n25, 117.93GB) begin=20812 end=21214, (403 rings, 0e6 samples)
+  rank#52/64 (r1i2n18, 119.45GB) begin=21215 end=21617, (403 rings, 0e6 samples)
+  rank#53/64 (r1i2n21, 119.58GB) begin=21618 end=22020, (403 rings, 0e6 samples)
+  rank#54/64 (r1i2n24, 119.07GB) begin=22021 end=22423, (403 rings, 0e6 samples)
+  rank#55/64 (r1i2n25, 117.93GB) begin=22424 end=22826, (403 rings, 0e6 samples)
+  rank#56/64 (r1i2n18, 119.45GB) begin=22827 end=23229, (403 rings, 0e6 samples)
+  rank#57/64 (r1i2n21, 119.58GB) begin=23230 end=23632, (403 rings, 0e6 samples)
+  rank#58/64 (r1i2n24, 119.07GB) begin=23633 end=24035, (403 rings, 0e6 samples)
+  rank#59/64 (r1i2n25, 117.93GB) begin=24036 end=24438, (403 rings, 0e6 samples)
+  rank#60/64 (r1i2n18, 119.45GB) begin=24439 end=24841, (403 rings, 0e6 samples)
+  rank#61/64 (r1i2n21, 119.58GB) begin=24842 end=25244, (403 rings, 0e6 samples)
+  rank#62/64 (r1i2n24, 119.07GB) begin=25245 end=25647, (403 rings, 0e6 samples)
+  rank#63/64 (r1i2n25, 117.93GB) begin=25648 end=26050, (403 rings, 0e6 samples)
+NEP_tab[0]=0.913495
+NEP_tab[1]=0.920263
+NEP_tab[2]=0.906529
+NEP_tab[3]=1.259713
+DODISTOR [0]: 16 16
+DODISTOR [1]: 16 16
+DODISTOR [2]: 16 16
+DODISTOR [3]: 16 16
+Avv GAIN is equal to 0 if ==1 : NORM_GAIN : 1
+SXI 0 2.29963
+RG_MAX 25586
+Com ring=240 Rank: 0[22598] MEM 1700.3[812.4]MB Nd=15582  0.994539 5.62506e-07 
+
+after troll detector (0/3): used VMEM 1920.1[PHYS 1068.7]MB
+SXI 1 2.26593
+RG_MAX 25405
+Com ring=240 Rank: 0[22598] MEM 1922.8[1071.7]MB Nd=15638  0.99449 5.89774e-07 
+
+after troll detector (1/3): used VMEM 2142.9[PHYS 1292.0]MB
+SXI 2 2.3351
+RG_MAX 25594
+Com ring=240 Rank: 0[22598] MEM 2146.3[1295.1]MB Nd=15663  0.994528 5.71222e-07 
+
+after troll detector (2/3): used VMEM 2398.8[PHYS 1547.7]MB
+SXI 3 1.20928
+RG_MAX 24531
+Com ring=240 Rank: 0[22598] MEM 2401.8[1550.6]MB Nd=15612  0.994487 5.81909e-07 
+
+after troll detector (3/3): used VMEM 2631.4[PHYS 1780.3]MB
+
+Free memory per node before pixel balancing, at Thu Jan  5 16:16:02 2023
+rank 04/63, node 04/63, r1i2n18: 102.9GB free
+rank 20/63, node 20/63, r1i2n18: 102.9GB free
+rank 32/63, node 32/63, r1i2n18: 102.9GB free
+rank 00/63, node 00/63, r1i2n18: 102.9GB free
+rank 02/63, node 02/63, r1i2n24: 102.5GB free
+rank 08/63, node 08/63, r1i2n18: 102.9GB free
+rank 06/63, node 06/63, r1i2n24: 102.5GB free
+rank 12/63, node 12/63, r1i2n18: 102.9GB free
+rank 01/63, node 01/63, r1i2n21: 103.3GB free
+rank 03/63, node 03/63, r1i2n25: 101.5GB free
+rank 10/63, node 10/63, r1i2n24: 102.5GB free
+rank 16/63, node 16/63, r1i2n18: 102.9GB free
+rank 05/63, node 05/63, r1i2n21: 103.3GB free
+rank 07/63, node 07/63, r1i2n25: 101.5GB free
+rank 14/63, node 14/63, r1i2n24: 102.5GB free
+rank 24/63, node 24/63, r1i2n18: 102.9GB free
+rank 09/63, node 09/63, r1i2n21: 103.3GB free
+rank 11/63, node 11/63, r1i2n25: 101.5GB free
+rank 28/63, node 28/63, r1i2n18: 102.9GB free
+rank 13/63, node 13/63, r1i2n21: 103.3GB free
+rank 15/63, node 15/63, r1i2n25: 101.5GB free
+rank 36/63, node 36/63, r1i2n18: 102.9GB free
+rank 40/63, node 40/63, r1i2n18: 102.9GB free
+rank 18/63, node 18/63, r1i2n24: 102.5GB free
+rank 44/63, node 44/63, r1i2n18: 102.9GB free
+rank 17/63, node 17/63, r1i2n21: 103.3GB free
+rank 19/63, node 19/63, r1i2n25: 101.5GB free
+rank 22/63, node 22/63, r1i2n24: 102.5GB free
+rank 48/63, node 48/63, r1i2n18: 102.9GB free
+rank 21/63, node 21/63, r1i2n21: 103.3GB free
+rank 23/63, node 23/63, r1i2n25: 101.5GB free
+rank 26/63, node 26/63, r1i2n24: 102.5GB free
+rank 52/63, node 52/63, r1i2n18: 102.9GB free
+rank 25/63, node 25/63, r1i2n21: 103.3GB free
+rank 27/63, node 27/63, r1i2n25: 101.5GB free
+rank 30/63, node 30/63, r1i2n24: 102.5GB free
+rank 56/63, node 56/63, r1i2n18: 102.9GB free
+rank 29/63, node 29/63, r1i2n21: 103.3GB free
+rank 31/63, node 31/63, r1i2n25: 101.5GB free
+rank 60/63, node 60/63, r1i2n18: 102.9GB free
+rank 38/63, node 38/63, r1i2n24: 102.5GB free
+NPIX 3
+NMAP 1
+rank 33/63, node 33/63, r1i2n21: 103.3GB free
+rank 35/63, node 35/63, r1i2n25: 101.5GB free
+rank 42/63, node 42/63, r1i2n24: 102.5GB free
+rank 37/63, node 37/63, r1i2n21: 103.3GB free
+rank 39/63, node 39/63, r1i2n25: 101.5GB free
+rank 46/63, node 46/63, r1i2n24: 102.5GB free
+rank 41/63, node 41/63, r1i2n21: 103.3GB free
+rank 43/63, node 43/63, r1i2n25: 101.5GB free
+rank 50/63, node 50/63, r1i2n24: 102.5GB free
+rank 45/63, node 45/63, r1i2n21: 103.3GB free
+rank 47/63, node 47/63, r1i2n25: 101.5GB free
+rank 49/63, node 49/63, r1i2n21: 103.3GB free
+rank 51/63, node 51/63, r1i2n25: 101.5GB free
+rank 54/63, node 54/63, r1i2n24: 102.5GB free
+rank 53/63, node 53/63, r1i2n21: 103.3GB free
+rank 55/63, node 55/63, r1i2n25: 101.5GB free
+rank 58/63, node 58/63, r1i2n24: 102.5GB free
+rank 57/63, node 57/63, r1i2n21: 103.3GB free
+rank 59/63, node 59/63, r1i2n25: 101.5GB free
+rank 62/63, node 62/63, r1i2n24: 102.5GB free
+rank 61/63, node 61/63, r1i2n21: 103.3GB free
+rank 63/63, node 63/63, r1i2n25: 101.5GB free
+rank 34/63, node 34/63, r1i2n24: 102.5GB free
+Mask 0
+Sort pixel to make it run faster
+regrid
+sort
+rebin pixel
+Rank: 0[22598] MEM 1920.4[1534.0]MB line=6463
+Rank: 0(r1i2n18, free=95.61GB) [1/2] used MEM virt:1929.4[phys:1534.0]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.25GB) [1/2] used MEM virt:1954.7[phys:1558.9]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.10GB) [1/2] used MEM virt:1954.7[phys:1559.1]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.06GB) [1/2] used MEM virt:1968.0[phys:1572.4]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.05GB) [1/2] used MEM virt:1968.0[phys:1572.6]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.01GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.02GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.01GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.00GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=95.00GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.98GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.98GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.98GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.98GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.95GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.97GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.94GB) [1/2] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:13MB
+Rank: 0(r1i2n18, free=94.94GB) [2/4] used MEM virt:1968.0[phys:1572.7]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.80GB) [2/4] used MEM virt:1981.6[phys:1585.6]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.78GB) [2/4] used MEM virt:1981.6[phys:1585.8]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.66GB) [2/4] used MEM virt:2024.9[phys:1603.6]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.57GB) [2/4] used MEM virt:2024.9[phys:1603.7]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.54GB) [2/4] used MEM virt:2024.9[phys:1603.9]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.54GB) [2/4] used MEM virt:2024.9[phys:1603.9]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.54GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.52GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.50GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.52GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.46GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.46GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.46GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.44GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.33GB) [2/4] used MEM virt:2024.9[phys:1604.0]MB line=6504 ntbs:26MB
+Rank: 0(r1i2n18, free=94.21GB) [4/8] used MEM virt:2051.9[phys:1630.0]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=94.20GB) [4/8] used MEM virt:2051.9[phys:1656.4]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=94.00GB) [4/8] used MEM virt:2051.9[phys:1656.6]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=94.03GB) [4/8] used MEM virt:2051.9[phys:1656.6]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=94.04GB) [4/8] used MEM virt:2051.9[phys:1656.6]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=93.94GB) [4/8] used MEM virt:2051.9[phys:1656.6]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=93.90GB) [4/8] used MEM virt:2051.9[phys:1656.6]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=93.98GB) [4/8] used MEM virt:2051.9[phys:1656.6]MB line=6504 ntbs:53MB
+Rank: 0(r1i2n18, free=93.56GB) [8/16] used MEM virt:1989.4[phys:1594.2]MB line=6504 ntbs:104MB
+Rank: 0(r1i2n18, free=93.36GB) [8/16] used MEM virt:2027.1[phys:1631.9]MB line=6504 ntbs:104MB
+Rank: 0(r1i2n18, free=93.35GB) [8/16] used MEM virt:2045.7[phys:1650.4]MB line=6504 ntbs:104MB
+Rank: 0(r1i2n18, free=93.37GB) [8/16] used MEM virt:2045.7[phys:1650.5]MB line=6504 ntbs:104MB
+Rank: 0(r1i2n18, free=92.44GB) [16/32] used MEM virt:2045.7[phys:1650.5]MB line=6504 ntbs:209MB
+Rank: 0(r1i2n18, free=92.44GB) [16/32] used MEM virt:2171.1[phys:1775.9]MB line=6504 ntbs:208MB
+Rank: 0(r1i2n18, free=91.37GB) [32/64] used MEM virt:2186.1[phys:1790.9]MB line=6504 ntbs:421MB
+Rank: 0[22598] MEM 1825.4[1439.2]MB line=6591
+
+Free memory per node before matrix computation, at Thu Jan  5 16:16:42 2023
+rank 04/63, node 04/63, r1i2n18: 99.4GB free
+rank 08/63, node 08/63, r1i2n18: 99.4GB free
+rank 12/63, node 12/63, r1i2n18: 99.4GB free
+rank 16/63, node 16/63, r1i2n18: 99.4GB free
+rank 20/63, node 20/63, r1i2n18: 99.4GB free
+rank 24/63, node 24/63, r1i2n18: 99.4GB free
+rank 28/63, node 28/63, r1i2n18: 99.4GB free
+rank 17/63, node 17/63, r1i2n21: 99.6GB free
+rank 32/63, node 32/63, r1i2n18: 99.4GB free
+rank 21/63, node 21/63, r1i2n21: 99.6GB free
+rank 07/63, node 07/63, r1i2n25: 97.9GB free
+rank 06/63, node 06/63, r1i2n24: 99.1GB free
+rank 36/63, node 36/63, r1i2n18: 99.4GB free
+rank 33/63, node 33/63, r1i2n21: 99.6GB free
+rank 11/63, node 11/63, r1i2n25: 97.9GB free
+rank 10/63, node 10/63, r1i2n24: 99.1GB free
+rank 40/63, node 40/63, r1i2n18: 99.4GB free
+rank 53/63, node 53/63, r1i2n21: 99.6GB free
+Rank: 53[43247] MEM 1478.5[1092.4]MB line=6610
+rank 15/63, node 15/63, r1i2n25: 97.9GB free
+rank 14/63, node 14/63, r1i2n24: 99.1GB free
+rank 44/63, node 44/63, r1i2n18: 99.4GB free
+rank 23/63, node 23/63, r1i2n25: 97.9GB free
+rank 18/63, node 18/63, r1i2n24: 99.1GB free
+rank 48/63, node 48/63, r1i2n18: 99.4GB free
+rank 52/63, node 52/63, r1i2n18: 99.4GB free
+rank 61/63, node 61/63, r1i2n21: 99.6GB free
+Rank: 61[43249] MEM 1362.5[976.3]MB line=6610
+rank 56/63, node 56/63, r1i2n18: 99.4GB free
+rank 60/63, node 60/63, r1i2n18: 99.4GB free
+rank 00/63, node 00/63, r1i2n18: 99.4GB free
+Rank: 32[22606] MEM 1627.8[1241.6]MB line=6610
+rank 01/63, node 01/63, r1i2n21: 99.6GB free
+rank 31/63, node 31/63, r1i2n25: 97.9GB free
+Rank: 36[22607] MEM 1613.3[1227.3]MB line=6610
+rank 05/63, node 05/63, r1i2n21: 99.6GB free
+rank 35/63, node 35/63, r1i2n25: 97.9GB free
+Rank: 35[9981] MEM 1620.2[1233.8]MB line=6610
+rank 22/63, node 22/63, r1i2n24: 99.1GB free
+Rank: 40[22608] MEM 1600.0[1213.7]MB line=6610
+rank 09/63, node 09/63, r1i2n21: 99.6GB free
+rank 39/63, node 39/63, r1i2n25: 97.9GB free
+Rank: 39[9982] MEM 1623.5[1237.3]MB line=6610
+rank 26/63, node 26/63, r1i2n24: 99.1GB free
+Rank: 44[22609] MEM 1598.4[1212.4]MB line=6610
+rank 13/63, node 13/63, r1i2n21: 99.6GB free
+rank 51/63, node 51/63, r1i2n25: 97.9GB free
+Rank: 51[9985] MEM 1479.5[1093.1]MB line=6610
+rank 34/63, node 34/63, r1i2n24: 99.1GB free
+Rank: 34[56096] MEM 1611.2[1224.7]MB line=6610
+Rank: 48[22610] MEM 1483.1[1096.9]MB line=6610
+rank 25/63, node 25/63, r1i2n21: 99.6GB free
+rank 42/63, node 42/63, r1i2n24: 99.1GB free
+Rank: 42[56098] MEM 1612.5[1226.1]MB line=6610
+Rank: 52[22611] MEM 1485.4[1099.4]MB line=6610
+rank 29/63, node 29/63, r1i2n21: 99.6GB free
+Rank: 56[22612] MEM 1433.6[1047.3]MB line=6610
+rank 55/63, node 55/63, r1i2n25: 97.9GB free
+Rank: 55[9986] MEM 1489.5[1103.3]MB line=6610
+Rank: 60[22613] MEM 1442.5[1056.4]MB line=6610
+rank 59/63, node 59/63, r1i2n25: 97.9GB free
+Rank: 59[9987] MEM 1429.5[1043.1]MB line=6610
+Rank: 59[9987] MEM 1429.5[1043.1]MB line=6628
+Rank: 48[22610] MEM 1483.1[1096.9]MB line=6628
+rank 63/63, node 63/63, r1i2n25: 97.9GB free
+Rank: 63[9988] MEM 1387.4[1001.0]MB line=6610
+Rank: 63[9988] MEM 1387.4[1001.0]MB line=6628
+rank 46/63, node 46/63, r1i2n24: 99.1GB free
+Rank: 46[56099] MEM 1610.9[1224.7]MB line=6610
+Rank: 56[22612] MEM 1433.6[1047.3]MB line=6628
+Rank: 33[43242] MEM 1617.9[1231.5]MB line=6610
+rank 50/63, node 50/63, r1i2n24: 99.1GB free
+Rank: 50[56100] MEM 1473.5[1087.1]MB line=6610
+Rank: 50[56100] MEM 1473.5[1087.1]MB line=6628
+Rank: 52[22611] MEM 1485.4[1099.4]MB line=6628
+rank 37/63, node 37/63, r1i2n21: 99.6GB free
+Rank: 37[43243] MEM 1609.0[1222.8]MB line=6610
+rank 54/63, node 54/63, r1i2n24: 99.1GB free
+Rank: 54[56101] MEM 1464.7[1078.5]MB line=6610
+Rank: 60[22613] MEM 1442.5[1056.4]MB line=6628
+rank 41/63, node 41/63, r1i2n21: 99.6GB free
+Rank: 41[43244] MEM 1604.8[1218.3]MB line=6610
+rank 03/63, node 03/63, r1i2n25: 97.9GB free
+rank 58/63, node 58/63, r1i2n24: 99.1GB free
+Rank: 58[56102] MEM 1417.6[1031.2]MB line=6610
+Rank: 58[56102] MEM 1417.6[1031.2]MB line=6628
+rank 45/63, node 45/63, r1i2n21: 99.6GB free
+Rank: 45[43245] MEM 1613.6[1227.4]MB line=6610
+rank 19/63, node 19/63, r1i2n25: 97.9GB free
+rank 27/63, node 27/63, r1i2n25: 97.9GB free
+rank 43/63, node 43/63, r1i2n25: 97.9GB free
+Rank: 43[9983] MEM 1607.2[1220.8]MB line=6610
+rank 62/63, node 62/63, r1i2n24: 99.1GB free
+Rank: 62[56103] MEM 1414.1[1027.9]MB line=6610
+Rank: 62[56103] MEM 1414.1[1027.9]MB line=6628
+rank 49/63, node 49/63, r1i2n21: 99.6GB free
+Rank: 49[43246] MEM 1489.4[1103.0]MB line=6610
+Rank: 49[43246] MEM 1489.4[1103.0]MB line=6628
+rank 57/63, node 57/63, r1i2n21: 99.6GB free
+Rank: 57[43248] MEM 1417.4[1031.0]MB line=6610
+Rank: 57[43248] MEM 1417.4[1031.0]MB line=6628
+rank 47/63, node 47/63, r1i2n25: 97.9GB free
+Rank: 47[9984] MEM 1591.6[1205.4]MB line=6610
+rank 02/63, node 02/63, r1i2n24: 99.1GB free
+Rank: 61[43249] MEM 1362.5[976.3]MB line=6628
+Rank: 51[9985] MEM 1479.5[1093.1]MB line=6628
+rank 30/63, node 30/63, r1i2n24: 99.1GB free
+rank 38/63, node 38/63, r1i2n24: 99.1GB free
+Rank: 38[56097] MEM 1626.4[1240.2]MB line=6610
+Rank: 32[22606] MEM 1627.8[1241.6]MB line=6628
+Rank: 34[56096] MEM 1611.2[1224.7]MB line=6628
+Rank: 33[43242] MEM 1617.9[1231.5]MB line=6628
+Rank: 35[9981] MEM 1620.2[1233.8]MB line=6628
+Rank: 40[22608] MEM 1600.0[1213.7]MB line=6628
+Rank: 44[22609] MEM 1598.4[1212.4]MB line=6628
+Rank: 36[22607] MEM 1613.3[1227.3]MB line=6628
+Rank: 55[9986] MEM 1489.5[1103.3]MB line=6628
+Rank: 43[9983] MEM 1607.2[1220.8]MB line=6628
+Rank: 47[9984] MEM 1591.6[1205.4]MB line=6628
+Rank: 53[43247] MEM 1478.5[1092.4]MB line=6628
+Rank: 54[56101] MEM 1464.7[1078.5]MB line=6628
+Rank: 41[43244] MEM 1604.8[1218.3]MB line=6628
+Rank: 45[43245] MEM 1613.6[1227.4]MB line=6628
+Rank: 42[56098] MEM 1612.5[1226.1]MB line=6628
+Rank: 46[56099] MEM 1610.9[1224.7]MB line=6628
+Rank: 37[43243] MEM 1609.0[1222.8]MB line=6628
+Rank: 38[56097] MEM 1626.4[1240.2]MB line=6628
+Rank: 39[9982] MEM 1623.5[1237.3]MB line=6628
+Rank: 30[56095] MEM 1787.5[1401.3]MB line=6610
+Rank: 22[56093] MEM 1822.4[1436.2]MB line=6610
+Rank: 23[9978] MEM 1804.0[1417.6]MB line=6610
+Rank: 31[9980] MEM 1804.7[1418.5]MB line=6610
+Rank: 17[43238] MEM 1813.8[1427.4]MB line=6610
+Rank: 16[22602] MEM 1813.0[1426.7]MB line=6610
+Rank: 25[43240] MEM 1820.9[1434.4]MB line=6610
+Rank: 9[43236] MEM 1827.7[1441.3]MB line=6610
+Rank: 2[56088] MEM 1839.3[1452.8]MB line=6610
+Rank: 11[9975] MEM 1842.1[1455.7]MB line=6610
+Rank: 10[56090] MEM 1840.7[1454.3]MB line=6610
+Rank: 4[22599] MEM 1842.9[1456.8]MB line=6610
+Rank: 3[9973] MEM 1837.6[1451.2]MB line=6610
+Rank: 6[56089] MEM 1801.2[1415.0]MB line=6610
+Rank: 26[56094] MEM 1821.8[1435.3]MB line=6610
+Rank: 27[9979] MEM 1823.3[1436.9]MB line=6610
+Rank: 1[43234] MEM 1851.1[1464.7]MB line=6610
+Rank: 24[22604] MEM 1820.1[1433.9]MB line=6610
+Rank: 18[56092] MEM 1801.8[1415.3]MB line=6610
+Rank: 28[22605] MEM 1813.4[1427.4]MB line=6610
+Rank: 29[43241] MEM 1809.7[1423.5]MB line=6610
+Rank: 20[22603] MEM 1804.4[1418.4]MB line=6610
+Rank: 21[43239] MEM 1821.2[1435.0]MB line=6610
+Rank: 7[9974] MEM 1833.3[1447.1]MB line=6610
+Rank: 8[22600] MEM 1836.3[1450.0]MB line=6610
+Rank: 19[9977] MEM 1817.5[1431.1]MB line=6610
+Rank: 5[43235] MEM 1827.1[1440.8]MB line=6610
+Rank: 15[9976] MEM 1842.0[1455.8]MB line=6610
+Rank: 14[56091] MEM 1842.7[1456.6]MB line=6610
+Rank: 12[22601] MEM 1829.2[1443.2]MB line=6610
+Rank: 13[43237] MEM 1841.7[1455.5]MB line=6610
+Rank: 0[22598] MEM 1825.4[1439.2]MB line=6610
+Rank: 22[56093] MEM 1822.4[1436.2]MB line=6628
+Rank: 30[56095] MEM 1787.5[1401.3]MB line=6628
+Rank: 23[9978] MEM 1804.0[1417.6]MB line=6628
+Rank: 31[9980] MEM 1804.7[1418.5]MB line=6628
+Rank: 17[43238] MEM 1813.8[1427.4]MB line=6628
+Rank: 16[22602] MEM 1813.0[1426.7]MB line=6628
+Rank: 25[43240] MEM 1820.9[1434.4]MB line=6628
+Rank: 10[56090] MEM 1840.7[1454.3]MB line=6628
+Rank: 9[43236] MEM 1827.7[1441.3]MB line=6628
+Rank: 2[56088] MEM 1839.3[1452.8]MB line=6628
+Rank: 11[9975] MEM 1842.1[1455.7]MB line=6628
+Rank: 4[22599] MEM 1842.9[1456.8]MB line=6628
+Rank: 3[9973] MEM 1837.6[1451.2]MB line=6628
+Rank: 6[56089] MEM 1801.2[1415.0]MB line=6628
+Rank: 26[56094] MEM 1821.8[1435.3]MB line=6628
+Rank: 1[43234] MEM 1851.1[1464.7]MB line=6628
+Rank: 27[9979] MEM 1823.3[1436.9]MB line=6628
+Rank: 24[22604] MEM 1820.1[1433.9]MB line=6628
+Rank: 18[56092] MEM 1801.8[1415.3]MB line=6628
+Rank: 28[22605] MEM 1813.4[1427.4]MB line=6628
+Rank: 20[22603] MEM 1804.4[1418.4]MB line=6628
+Rank: 8[22600] MEM 1836.3[1450.0]MB line=6628
+Rank: 29[43241] MEM 1809.7[1423.5]MB line=6628
+Rank: 19[9977] MEM 1817.5[1431.1]MB line=6628
+Rank: 21[43239] MEM 1821.2[1435.0]MB line=6628
+Rank: 7[9974] MEM 1833.3[1447.1]MB line=6628
+Rank: 15[9976] MEM 1842.0[1455.8]MB line=6628
+Rank: 5[43235] MEM 1827.1[1440.8]MB line=6628
+Rank: 14[56091] MEM 1842.7[1456.6]MB line=6628
+Rank: 12[22601] MEM 1829.2[1443.2]MB line=6628
+Rank: 13[43237] MEM 1841.7[1455.5]MB line=6628
+Rank: 0[22598] MEM 1825.4[1439.2]MB line=6628
+Rank: 30[56095] MEM 1787.5[1401.3]MB line=6672
+Rank: 28[22605] MEM 1813.4[1427.4]MB line=6672
+Rank: 24[22604] MEM 1820.1[1433.9]MB line=6672
+Rank: 31[9980] MEM 1804.7[1418.5]MB line=6672
+Rank: 8[22600] MEM 1836.3[1450.0]MB line=6672
+Rank: 16[22602] MEM 1813.0[1426.7]MB line=6672
+Rank: 27[9979] MEM 1823.3[1436.9]MB line=6672
+Rank: 29[43241] MEM 1809.7[1423.5]MB line=6672
+Rank: 20[22603] MEM 1804.4[1418.4]MB line=6672
+Rank: 25[43240] MEM 1820.9[1434.4]MB line=6672
+Rank: 23[9978] MEM 1804.0[1417.6]MB line=6672
+Rank: 19[9977] MEM 1817.5[1431.1]MB line=6672
+Rank: 12[22601] MEM 1829.2[1443.2]MB line=6672
+Rank: 22[56093] MEM 1822.4[1436.2]MB line=6672
+Rank: 18[56092] MEM 1801.8[1415.3]MB line=6672
+Rank: 17[43238] MEM 1813.8[1427.4]MB line=6672
+Rank: 15[9976] MEM 1842.0[1455.8]MB line=6672
+Rank: 9[43236] MEM 1827.7[1441.3]MB line=6672
+Rank: 21[43239] MEM 1821.2[1435.0]MB line=6672
+Rank: 11[9975] MEM 1842.1[1455.7]MB line=6672
+Rank: 4[22599] MEM 1842.9[1456.8]MB line=6672
+Rank: 14[56091] MEM 1842.7[1456.6]MB line=6672
+Rank: 26[56094] MEM 1821.8[1435.3]MB line=6672
+Rank: 13[43237] MEM 1841.7[1455.5]MB line=6672
+Rank: 10[56090] MEM 1840.7[1454.3]MB line=6672
+Rank: 0[22598] MEM 1825.4[1439.2]MB line=6672
+Rank: 3[9973] MEM 1837.6[1451.2]MB line=6672
+l_nmatpix[0] 50953 / 786432 
+Rank: 7[9974] MEM 1833.3[1447.1]MB line=6672
+Rank: 2[56088] MEM 1839.3[1452.8]MB line=6672
+Rank: 5[43235] MEM 1827.1[1440.8]MB line=6672
+Rank: 1[43234] MEM 1851.1[1464.7]MB line=6672
+Rank: 6[56089] MEM 1801.2[1415.0]MB line=6672
+Rank: 41[43244] MEM 1604.8[1218.3]MB line=6672
+Rank: 61[43249] MEM 1362.5[976.3]MB line=6672
+Rank: 60[22613] MEM 1442.5[1056.4]MB line=6672
+Rank: 40[22608] MEM 1600.0[1213.7]MB line=6672
+Rank: 44[22609] MEM 1598.4[1212.4]MB line=6672
+Rank: 56[22612] MEM 1433.6[1047.3]MB line=6672
+Rank: 52[22611] MEM 1485.4[1099.4]MB line=6672
+Rank: 48[22610] MEM 1483.1[1096.9]MB line=6672
+Rank: 53[43247] MEM 1478.5[1092.4]MB line=6672
+Rank: 38[56097] MEM 1626.4[1240.2]MB line=6672
+Rank: 43[9983] MEM 1607.2[1220.8]MB line=6672
+Rank: 62[56103] MEM 1414.1[1027.9]MB line=6672
+Rank: 45[43245] MEM 1613.6[1227.4]MB line=6672
+Rank: 57[43248] MEM 1417.4[1031.0]MB line=6672
+Rank: 39[9982] MEM 1623.5[1237.3]MB line=6672
+Rank: 42[56098] MEM 1612.5[1226.1]MB line=6672
+Rank: 54[56101] MEM 1464.7[1078.5]MB line=6672
+Rank: 59[9987] MEM 1429.5[1043.1]MB line=6672
+Rank: 47[9984] MEM 1591.6[1205.4]MB line=6672
+Rank: 63[9988] MEM 1387.4[1001.0]MB line=6672
+Rank: 46[56099] MEM 1610.9[1224.7]MB line=6672
+Rank: 49[43246] MEM 1489.4[1103.0]MB line=6672
+Rank: 55[9986] MEM 1489.5[1103.3]MB line=6672
+Rank: 58[56102] MEM 1417.6[1031.2]MB line=6672
+Rank: 32[22606] MEM 1627.8[1241.6]MB line=6672
+Rank: 50[56100] MEM 1473.5[1087.1]MB line=6672
+Rank: 51[9985] MEM 1479.5[1093.1]MB line=6672
+Rank: 34[56096] MEM 1611.2[1224.7]MB line=6672
+Rank: 35[9981] MEM 1620.2[1233.8]MB line=6672
+Rank: 33[43242] MEM 1617.9[1231.5]MB line=6672
+Rank: 37[43243] MEM 1609.0[1222.8]MB line=6672
+Rank: 36[22607] MEM 1613.3[1227.3]MB line=6672
+Rank: 0[22598] MEM 1879.4[1486.1]MB line=6739
+RK0 SHOULD DETERMINE 786432 VALUES 0 5134 10233 15371 20295 
+GAIN DIP BOL (0/3): 1.061661
+GAIN DIP BOL (1/3): 1.040922
+GAIN DIP BOL (2/3): 1.054778
+GAIN DIP BOL (3/3): 1.017397
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+Write HISTO_ADU  32000
+Write XADU  128
+Write HISTO_GAIN  32000
+Write INV_GI  32000
+Write XGI  8
+BEG-ED 0 3250984 0 - 786431 50953
+MAXSIZE 20343 20343
+NbGain 20295
+BEG 0 3250984 0 - 786431 50953
+Rank: 0[22598] MEM 1879.4[1486.2]MB line=7425
+==============================
+
+minimize_gain_nopol(): ITERATION NOPOL 0/1 8 
+
+==============================
+GAIN 1 1 1 1 
+...
+GAIN 1 1 1 1 
+B2 1004.53
+H2 36396.2
+Q2 0
+
+---------
+iter: 0/500 beta =      35.5896  alpha =  2.92163e-07  delta =  4.89626e+16      0.051562s
+iter: 10/500 beta =       246.51  alpha =  0.000567324  delta =  5.78994e+15      0.051234s
+iter: 20/500 beta =      21140.5  alpha =  0.000168871  delta =  3.04443e+15      0.051304s
+iter: 30/500 beta =  0.000251797  alpha =  7.98952e-09  delta =  1.18667e+15      0.051196s
+iter: 40/500 beta =  2.34656e-05  alpha =   4.0611e-08  delta =  2.18663e+18      0.051262s
+iter: 50/500 beta =     0.026226  alpha =  8.20862e-09  delta =  7.03711e+13      0.051443s
+iter: 60/500 beta =      9.28633  alpha =  0.000105484  delta =  3.18761e+14      0.051263s
+iter: 70/500 beta =      94.1421  alpha =    7.609e-07  delta =  1.63397e+13      0.051208s
+iter: 80/500 beta =      55257.7  alpha =    0.0016819  delta =  2.14437e+13      0.051307s
+iter: 90/500 beta =       15.188  alpha =  1.29669e-07  delta =  9.16077e+12      0.051259s
+iter: 100/500 beta =    0.0111837  alpha =  5.27703e-06  delta =  3.00327e+14      0.051274s
+iter: 110/500 beta =      3.84479  alpha =  3.88955e-08  delta =   2.7839e+12      0.051241s
+iter: 120/500 beta =       578202  alpha =   0.00462772  delta =  3.02008e+12      0.051496s
+iter: 130/500 beta =   0.00618369  alpha =  2.37978e-07  delta =  5.74245e+15      0.051254s
+iter: 140/500 beta =  2.31391e-05  alpha =   7.9558e-09  delta =  2.28425e+12      0.051252s
+iter: 150/500 beta =     0.525892  alpha =  1.20783e-08  delta =   9.9242e+11      0.051271s
+iter: 160/500 beta =      1.75052  alpha =   2.1766e-08  delta =  6.52429e+11      0.051220s
+iter: 170/500 beta =      88190.9  alpha =   0.00070162  delta =  7.44019e+11      0.051233s
+iter: 180/500 beta =   7.0271e-07  alpha =  8.01024e-09  delta =  1.62185e+14      0.051314s
+iter: 190/500 beta =     0.395544  alpha =  1.12228e-08  delta =  6.96227e+11      0.051637s
+iter: 200/500 beta =  3.70768e-07  alpha =  8.02989e-09  delta =  3.08048e+14      0.051216s
+iter: 210/500 beta =      98713.7  alpha =  0.000789637  delta =  3.49118e+11      0.051344s
+iter: 220/500 beta =       176965  alpha =   0.00156323  delta =  2.29853e+11      0.051252s
+iter: 230/500 beta =   5.2332e-07  alpha =  7.97953e-09  delta =  3.12463e+13      0.051282s
+iter: 240/500 beta =      83.3031  alpha =  6.75635e-07  delta =  2.06315e+11      0.051257s
+iter: 250/500 beta =       535399  alpha =    0.0042759  delta =  1.61527e+11      0.051264s
+iter: 260/500 beta =  1.00585e-05  alpha =  2.21156e-08  delta =  3.69725e+15      0.051451s
+iter: 270/500 beta =   4.4423e-05  alpha =  7.96034e-09  delta =   3.0731e+11      0.051201s
+iter: 280/500 beta =      1760.68  alpha =  1.40157e-05  delta =  1.49625e+11      0.051407s
+iter: 290/500 beta =      32908.7  alpha =  0.000699155  delta =  3.23476e+11      0.051229s
+iter: 300/500 beta =  2.13548e-06  alpha =  7.97433e-09  delta =  2.79874e+13      0.051424s
+iter: 310/500 beta =   0.00510259  alpha =  8.04399e-09  delta =  8.01243e+10      0.051259s
+iter: 320/500 beta =      6283.04  alpha =    5.006e-05  delta =  6.54577e+10      0.051226s
+iter: 330/500 beta =       3997.3  alpha =  3.17132e-05  delta =  5.30264e+10      0.051493s
+iter: 340/500 beta =      3721.68  alpha =  2.95151e-05  delta =  3.99838e+10      0.051311s
+iter: 350/500 beta =      38.4749  alpha =  3.12692e-07  delta =  3.02949e+10      0.051277s
+iter: 360/500 beta =      5.85807  alpha =  5.44309e-08  delta =  3.21739e+10      0.051197s
+iter: 370/500 beta =      50.5481  alpha =   4.0998e-07  delta =  2.46262e+10      0.051452s
+iter: 380/500 beta =      82201.3  alpha =  0.000654012  delta =  2.86219e+10      0.051296s
+iter: 390/500 beta =       205503  alpha =   0.00169088  delta =  3.08874e+10      0.051222s
+iter: 400/500 beta =      16035.2  alpha =  0.000482412  delta =  6.84331e+10      0.051222s
+iter: 410/500 beta =       49.425  alpha =  1.99038e-05  delta =  1.79845e+12      0.051214s
+iter: 420/500 beta =      2.53649  alpha =   4.6483e-06  delta =  6.34296e+12      0.051286s
+iter: 430/500 beta =  9.89807e-05  alpha =  1.68538e-08  delta =  7.08471e+14      0.051187s
+iter: 440/500 beta =   0.00554227  alpha =  1.30521e-07  delta =  1.73482e+14      0.051288s
+iter: 450/500 beta =      5.57752  alpha =  4.46985e-06  delta =  3.05298e+12      0.051213s
+iter: 460/500 beta =      23.6513  alpha =  9.17551e-06  delta =  1.97449e+12      0.051269s
+iter: 470/500 beta =      5199.65  alpha =  0.000182342  delta =  8.01756e+10      0.051292s
+iter: 480/500 beta =      1334.49  alpha =  8.81028e-05  delta =  1.03374e+11      0.051235s
+iter: 490/500 beta =      816.379  alpha =  8.17839e-05  delta =   1.9069e+11      0.051240s
+tot_time = 25.6677
+GI XIGAIN 0.02979251522
+MEAN_OFF=[-13.7629,-9.5358,-28.7985,54.2747,]
+MEAN2_OFF=[0.246749,0.194674,0.415247,0.791184,]
+GAIN=[0.000684195,0.000229368,0.00491367,0.0270241,]
+TF=[0.00339036,-0.0537505,0.00778439,0.0266156,]
+TF=[0.0150655,-0.0595627,0.00244434,0.00644247,]
+TF=[1.56533,1.10307,1.50186,1.04696,]
+TMAP=[0.0852717,-0.0740634,0.0198767,0.0160471,]
+Write OFF  206488
+Write OFF  206488
+Write OFF  206488
+Write OFF  206488
+Save X2 NO CUTRG
+Write MAT  384
+AVVGAIN: -0.003983
+Rank: 0[22598] MEM 1879.4[1486.2]MB line=7626
+Rank: 0[22598] MEM 1926.6[1486.2]MB line=7660
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_COND.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm1_COND.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_hm2_COND.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s1_COND.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s2_COND.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s3_COND.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s4_COND.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_0.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_0.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_1.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_1.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_2.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_2.fits
+removed existing MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_COND.fits
+WRITE MAP: /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_s5_COND.fits
+
+troll.c: --------------------------
+troll.c: Finished successfully at Thu Jan  5 16:17:49 2023
+troll.c: --------------------------

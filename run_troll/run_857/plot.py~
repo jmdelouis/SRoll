@@ -1,0 +1,45 @@
+import healpy as hp
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+
+nfile = sys.argv[1]
+print(nfile)
+valmin = sys.argv[2]
+valmax = sys.argv[3]
+name = nfile.split("/")
+name = name[len(name)-1]
+
+ph_gal=287.60158
+th_gal=-0.64452
+
+ph_gal_1=184.557
+th_gal_1=-5
+
+im = hp.read_map(nfile)
+#im2 = hp.ud_grade(im,256)
+
+#hp.mollview(im,cmap='jet',norm='hist',title =name )
+
+#hp.gnomview(im,cmap='jet',rot=[ph_gal,th_gal],min = valmin,max = valmax,title ='Carina')
+#hp.gnomview(im,cmap='jet',rot=[ph_gal_1,th_gal_1],min = valmin,max = valmax,title ='Crab')
+
+#plt.show()
+
+#------------------------------------------------------------------------------------------------
+# anfast cross_spectre 
+im353 = hp.read_map('SRoll20_SkyMap_353psb_full.fits',1)
+
+th,ph = hp.pix2ang(int(np.sqrt(im.shape[0]//12)),np.arange(im.shape[0]))
+Mask = abs(np.pi/2-th)<60.0/180*np.pi
+
+
+## cl [6;3*nside]
+cl = hp.anafast(Mask*im353,map2 = im)
+
+plt.plot(cl,alpha = 0.5,label = '0°')
+
+#cl = hp.anafast(Mask*im,map2 = im)
+
+## saved map path :
+# result  rstep2_857GHz_GRAD_ODUST /home1/datawork/tfoulqui/map_run_857/NsideGV2048_test_rstep1_857GHz_GRAD_PDUST_ODUST_IQU_full_0.fits

@@ -1,0 +1,8 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/var/spool/PBS/mom_priv/jobs/3739918.datarmor0.SC: line 11: module: command not found
+DATARMOR computing node detected
+
+Init path OK
+python
+
