@@ -54,4 +54,5 @@ maps. A map Sp is created from clean data using projection matrix as follow :
 
 where:  
  :math:`M_{p}` is the measured signal in a pixel;
+ 
  :math:`(A^T_{p}A_{p})^{-1} A^T_{p}\big{)}` is the projection matrix;
