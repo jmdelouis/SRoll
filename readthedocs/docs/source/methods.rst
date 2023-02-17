@@ -19,6 +19,7 @@ This process can continue until the desired resolution is achieved.
 .. image:: /images/healpix.jpg
   :height: 200
   :align: center
+  :margin-bottom: 10px
 
 
 See documentation for `Healpy <https://healpy.readthedocs.io/en/latest/>`_
@@ -31,8 +32,8 @@ SRoll fits systematic effects, noise in 1/f and calibration using differences be
 
 .. image:: /images/scns.png
   :height: 400
-  :alt: Alternative text
-
+  :width: 600
+  :align: center
 
 During the mission, the satellite observed the same area of the sky several times with a time shift of one rotation. In the case of the CMB observation the signal observed between a time t and t1(+1 rotation) does not change or changes very little, so the hypothesis is 
 that the differences between theses observations are instrumental  or foreground effects . We then extract these offsets by calculating the difference between observation at t and t1.
