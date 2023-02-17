@@ -22,7 +22,9 @@ This process can continue until the desired resolution is achieved.
  
 
 text
+
 |
+
 text
 
 
