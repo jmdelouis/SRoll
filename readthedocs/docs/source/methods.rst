@@ -27,7 +27,6 @@ SRoll fits systematic effects, noise in 1/f and calibration using differences be
 .. image:: /images/scns.png
   :width: 600
   :height: 400
-  :align:center
   :alt: Alternative text
 
 
