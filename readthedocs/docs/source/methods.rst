@@ -19,7 +19,10 @@ This process can continue until the desired resolution is achieved.
 .. image:: /images/healpix.jpg
   :height: 200
   :align: center
+  
+.. |br| raw:: html
 
+    <br />
 
 
 
