@@ -48,8 +48,6 @@ Step[3] :  Clean data and create maps
 Clean the data using fitted parameters and projects the signal to create cleaned
 maps. A map Sp is created from clean data using projection matrix as follow :
 
+.. math::
 
-.. latex::
-  \begin{equation}
-    x<\pi
-  \end{equation}
+   \frac{ \sum_{t=0}^{N}f(t,k) }{N}
