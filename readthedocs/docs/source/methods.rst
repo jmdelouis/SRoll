@@ -18,7 +18,7 @@ This process can continue until the desired resolution is achieved.
 
 .. image:: /images/healpix.jpg
   :height: 200
-  :alt: Alternative text
+  :align: center
 
 
 See documentation for `Healpy <https://healpy.readthedocs.io/en/latest/>`_
