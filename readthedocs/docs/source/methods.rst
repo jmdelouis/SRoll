@@ -17,7 +17,7 @@ Each of these base pixels can be subdivided into four child pixels, and subseque
 This process can continue until the desired resolution is achieved.
 
 .. image:: /images/healpix.jpg
-  :height: 200
+  :height: 100
   :align: center
  
 
@@ -34,8 +34,8 @@ Step[2] : Calcul differences in the same HEALPIX pixel
 SRoll fits systematic effects, noise in 1/f and calibration using differences between mesures in the same healpix pixel.( see figure below). Some of the systematics effects are also remove by using pre-calulated templates.
 
 .. image:: /images/scns.png
-  :height: 200
-  :width: 400
+  :height: 300
+  :width: 500
   :align: center
   
 |
