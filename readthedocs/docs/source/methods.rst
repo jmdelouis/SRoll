@@ -50,4 +50,4 @@ maps. A map Sp is created from clean data using projection matrix as follow :
 
 .. math::
 
-   \frac{ \sum_{t=0}^{N}f(t,k) }{N}
+    S_{p} & = & \big{(}(A^T_{p}A_{p})^{-1} A^T_{p}\big{)}M_{p} \nonumber
