@@ -19,9 +19,9 @@ This process can continue until the desired resolution is achieved.
 .. image:: /images/healpix.jpg
   :height: 200
   :align: center
-  
-.. |br| raw:: html
+ 
 
+.. |br| raw:: html
     <br />
 
 
@@ -46,8 +46,9 @@ Step[3] :  Clean data and create maps
 --------------------------------------
 Clean the data using fitted parameters and projects the signal to create cleaned
 maps. A map Sp is created from clean data using projection matrix as follow :
-.. latex::
 
+
+.. latex::
   \begin{equation}
     x<\pi
   \end{equation}
