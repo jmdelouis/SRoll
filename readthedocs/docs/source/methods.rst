@@ -16,6 +16,11 @@ In the HEALPix standard the pixelization of the sphere begins by dividing the sp
 Each of these base pixels can be subdivided into four child pixels, and subsequently, each child pixel can be subdivided into four pixels of a lower hierarchy level. 
 This process can continue until the desired resolution is achieved.
 
+.. image:: /images/healpix.png
+  :height: 200
+  :alt: Alternative text
+
+
 See documentation for `Healpy <https://healpy.readthedocs.io/en/latest/>`_
 
 
