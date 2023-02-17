@@ -19,7 +19,7 @@ This process can continue until the desired resolution is achieved.
 .. image:: /images/healpix.jpg
   :height: 200
   :align: center
-  :margin-bottom: 10px
+  :margin: 10px
 
 
 See documentation for `Healpy <https://healpy.readthedocs.io/en/latest/>`_
