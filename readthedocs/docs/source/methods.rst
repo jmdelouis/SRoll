@@ -63,20 +63,21 @@ SRoll generic data model
 
 .. math::
 
-g_{d}M_{d,r,p,t} &=& A_{d,r,p,t} \cdot S_{p,t} + \sum_{h=1}^{n_{\mathrm{sys}}}\gamma_{d,h} T_{d,r,p,t,h} + 
-\sum_{f=1}^{n_{\mathrm{comp}}} L_{d,f} C_{p,t,f}\nonumber \\
- & & + O_{d,r} + g_{d}N_{d,r,p,t},
+g_{d}M_{d,r,p,t} = A_{d,r,p,t} \cdot S_{p,t} + \sum_{h=1}^{n_{\mathrm{sys}}}\gamma_{d,h} T_{d,r,p,t,h} + 
+\sum_{f=1}^{n_{\mathrm{comp}}} L_{d,f} C_{p,t,f} + O_{d,r} + g_{d}N_{d,r,p,t},
 
 where:
 
-.. math::
-
-\item $M_{d,r,p,t}$ is the measured detector total signal of a detector chain $d$, during the stationary period $r$, inside the pixel $p$ at the date $t$;
-\item $g_{d}$ is the calibrated response of a detector chain $d$;
+ :math:` $M_{d,r,p,t}$` is the measured detector total signal of a detector chain $d$, during the stationary period $r$, inside the pixel $p$ at the date $t$;
+ :math:`$g_{d}$` is the calibrated response of a detector chain $d$;
 \item $A_{d,r,p}$  is the pointing vector giving the observed pixel for a given detector in a given ring (e.g. $\left[1,\rho_d\cos(2\phi_{d,r,p}),\rho_d\sin(2\phi_{d,r,p})\right]$ for Planck polarized map; $\rho_b$ is the ground-measured polarization efficiency;$\phi_{d,r,p}$ is the ground-measured detector polarization angle for detector $d$ with respect to the north-south axis;);
+
 \item $S_{p,t}$ is the sky signal in pixel $p$ after subtraction of the orbital dipole assumed to be known with an amplitude invariant in time (e.g  $\left[I_p, Q_p, U_p\right]$ for Planck polarized map where $I_p$, $Q_p$, and $U_p$ represent the common sky maps seen by all detectors).;
+
 \item $T_{d,r,p,t,h}$ is the spatiau temporal template of an instrumental systematic effect. This template can be gicen to sroll or synthetised through generative neural network using an internal loop.
+
 \item $\gamma_{b,h}$ is the amplitude of this systematic effect;
+
 \item $C_{p,t,f}$ are the foreground component spatiau temporel templates which can be given in input or synthetise within an internal loop using generative neural network;
 \item $L_{d,f}$ is the detector efficient for the $f$ foreground;
 \item $O_{d,r}$ is the offset per pointing period $r$ used to model the $1/f$ noise, and we set $\sum_{b=1}^{n_{\mathrm{bolo}}} \sum_{r=1}^{n_{\mathrm{ring}}}O_{b,i}=0$, since the SRoll algorithme is based on differences and can not extract information on the monopole;
