@@ -25,7 +25,6 @@ Step[2] : Calcul differences in the same HEALPIX pixel
 SRoll fits systematic effects, noise in 1/f and calibration using differences between mesures in the same healpix pixel.( see figure below). Some of the systematics effects are also remove by using pre-calulated templates.
 
 .. image:: /images/scns.png
-  :width: 600
   :height: 400
   :alt: Alternative text
 
