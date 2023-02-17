@@ -21,11 +21,8 @@ This process can continue until the desired resolution is achieved.
   :align: center
  
 
-text
-
 |
 
-text
 
 
 See documentation for `Healpy <https://healpy.readthedocs.io/en/latest/>`_
