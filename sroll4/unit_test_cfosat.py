@@ -106,8 +106,8 @@ def main():
   
 
   
-  ADU = ["/export/home/tfoulquier/data_sroll/MAP/%s_REP6_adutot"%(i) for i in old_bolo]
-  
+  ADU = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_phase"%(i) for i in bolo]
+
   Badring = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_discarded_rings"%(i) for i in bolo]
 
   #DipOrb_noPS = ["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_diporb_quat"%(i) for i in old_bolo]
