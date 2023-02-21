@@ -17,7 +17,7 @@ Each of these base pixels can be subdivided into four child pixels, and subseque
 This process can continue until the desired resolution is achieved.
 
 .. image:: /images/healpix.jpg
-  :height: 150
+  :height: 200
   :align: center
  
 
