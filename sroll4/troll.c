@@ -3918,6 +3918,226 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
 } 
 
+//### FOSCAT #### //
+// --------------------------------------------------------------------------------------------------
+void buildmap(double * map,double **signal,int begpix,int endpix){
+ 
+  MPI_Status statu;
+  int rank;
+  int size;
+  int mpi_size;
+  int rank_size;
+  MPI_Comm_rank(MPI_COMM_WORLD,&rank_size);
+  rank=rank_size;
+  MPI_Comm_size(MPI_COMM_WORLD,&size);
+  mpi_size=size;
+
+  int getbeginfo=0;
+  int *allbeg;
+  int *allend;
+  int *all_realpix;
+  float *all_map;
+  int maxsize=0;
+
+  int map_size = Nside*Nside*12;
+ 
+
+  // Convert array from double to float for smaller file to be written
+  float *value = (float *)malloc(sizeof(float)*(endpix-begpix+1));
+  for (int i = 0; i < (endpix-begpix+1); ++i) {
+    value[i] = (float)signal[0][i];
+  }
+
+
+  if (getbeginfo==0) {
+    getbeginfo=1;
+    int i,rrk;
+    if (rank==0) {
+      allbeg = (int *) malloc(sizeof(int)*mpi_size);
+      allend = (int *) malloc(sizeof(int)*mpi_size);
+    }
+    MPI_Gather(&begpix,sizeof(int),MPI_BYTE,allbeg,sizeof(int),MPI_BYTE,0,MPI_COMM_WORLD);
+    MPI_Gather(&endpix,sizeof(int),MPI_BYTE,allend,sizeof(int),MPI_BYTE,0,MPI_COMM_WORLD);
+
+    if (rank==0) {
+      for (rrk=0;rrk<mpi_size;rrk++) {
+	      if (maxsize<allend[rrk]-allbeg[rrk]+1) maxsize=allend[rrk]-allbeg[rrk]+1;
+      }
+      all_realpix = (int *) malloc(sizeof(int)*mpi_size*maxsize);
+      all_map = (float *) malloc(sizeof(float)*mpi_size*maxsize);
+    }
+
+    MPI_Bcast(&maxsize,sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
+
+    int *l_idx =(int *)malloc(sizeof(int)*maxsize);
+    for (i=begpix;i<=endpix;i++) l_idx[i-begpix]=realpix[i-begpix];
+
+    MPI_Gather(l_idx,sizeof(int)*maxsize,MPI_BYTE,all_realpix,sizeof(int)*maxsize,MPI_BYTE,0,MPI_COMM_WORLD);
+
+    free(l_idx);
+  }
+  float *l_map =(float *)malloc(sizeof(float)*maxsize);
+  for (int k=begpix;k<=endpix;k++) l_map[k-begpix]=value[k-begpix];
+  MPI_Gather(l_map,sizeof(float)*maxsize,MPI_BYTE,all_map,sizeof(float)*maxsize,MPI_BYTE,0,MPI_COMM_WORLD);
+  free(l_map);
+
+
+  if (rank==0) {
+    int i,rrk;
+    for (rrk=0;rrk<mpi_size;rrk++) {
+      int l_beg,l_end;
+      l_beg=allbeg[rrk];
+      l_end=allend[rrk];
+      for (i=l_beg;i<=l_end;i++) map[all_realpix[i-l_beg+rrk*maxsize]]=all_map[i-l_beg+rrk*maxsize];
+    }
+  }
+
+}
+// --------------------------------------------------------------------------------------------------
+void run_foscat(double *x3,double *gain,int nside,int begpix,int endpix){
+
+  MPI_Status statu;
+  int rank;
+  int size;
+  int mpi_size;
+  int rank_size;
+  MPI_Comm_rank(MPI_COMM_WORLD,&rank_size);
+  rank=rank_size;
+  MPI_Comm_size(MPI_COMM_WORLD,&size);
+  mpi_size=size;
+
+
+  int getbeginfo=0;
+  int *allbeg;
+  int *allend;
+  int *all_realpix;
+  float *all_map;
+  int maxsize=0;
+  
+  PIOLONG GAINSTEP2 = GAINSTEP;
+
+  MPI_Barrier(MPI_COMM_WORLD); //Synchronization MPI process
+
+
+  double ** signal = (double **) malloc(sizeof(double*)*MAXCHANNELS);
+  for (int i = 0;i<MAXCHANNELS;i++){
+    signal[i]=(double *) malloc(sizeof(double)*nnbpix);
+  }
+  
+
+  // Init matrice and vecteur
+  double *matrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
+  double *Imatrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double));
+  double *vector = malloc(MAXCHANNELS*sizeof(double));
+  
+  for (int k=0;k<nnbpix;k++) {
+	
+    for(int i =0;i<MAXCHANNELS;i++){
+      signal[i][k]=UNSEENPIX;  // ie hp.UNSEEN
+    }
+    
+    long ndata = loc_nhpix[k];
+    hpix *htmp = loc_hpix[k];
+
+	    
+    //buildmap
+     
+    memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
+    memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
+    memset(vector,0,MAXCHANNELS*sizeof(double));
+	    
+    for (int l1=0;l1<ndata;l1++) {
+    
+      long ri1=htmp[l1].rg-globalBeginRing;
+	     
+	      if (flg_rg[htmp[l1].ib][ri1]!=0) {
+	        long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
+	        //calcul signal corriger
+	        double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
+	        double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+	        double sig_corr2 = sig_corr;
+	        sig_corr-=x3[iri1];
+	        
+	        if (REMOVE_CAL==1) {
+	          sig_corr-=htmp[l1].hpr_cal;
+	          sig_corr2-=htmp[l1].hpr_cal;
+	        }
+	        
+	        for(int m =0;m<npixhpr;m++){
+	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
+	        }
+	        for(int m =0;m<npixmap;m++){
+	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
+	        }
+	        sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
+	        //calcul matrix & vector
+	        for(int i = 0;i<MAXCHANNELS;i++){  
+	          vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
+	        }
+	        for(int i = 0;i<MAXCHANNELS;i++){        
+	          for(int j = 0;j<MAXCHANNELS;j++){
+	            matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
+	          }
+	        } 
+	      }
+      }
+	             
+	     cond[k]=cond_thres(matrix,Imatrix,MAXCHANNELS);  
+
+	     if (cond[k] < Param->seuilcond) {	               
+	       invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
+	       for(int i = 0;i<MAXCHANNELS;i++){
+	         signal[i][k]= vector[i];
+	       }
+	     }
+	  }
+
+  
+  // -------------  synch mpi rank and concat map -----
+  int map_size = Nside*Nside*12;
+  //fprintf(stderr,"[DEBUG] rank = %d begpix %d edpix %d // %d %d\n",rank,begpix,endpix,begpix+nnbpix-1,map_size);
+  
+  double *map = (double *) malloc(sizeof(double)*(map_size));
+  memset(map,UNSEENPIX,map_size*sizeof(double));
+
+  buildmap(map,signal,begpix,endpix);
+  
+  MPI_Barrier(MPI_COMM_WORLD);
+ 
+ //Convert the array to a Python list
+  // for debug only send I ie map[0]
+  if(rank == 0){
+    PyObject* py_list = PyList_New(map_size);
+    for (int k = 0; k < map_size; k++) {
+      PyObject* py_double = PyFloat_FromDouble(map[k]);
+      PyList_SET_ITEM(py_list,k, py_double);
+    }
+   
+    //PyObject* model_path = PyUnicode_FromString("/export/home1/tfoulquier/out_maps/test_rstep2_353psb_nside64_I.fits");
+
+    PyObject* py_nside = Py_BuildValue("i",nside);
+    PyObject* py_rank = Py_BuildValue("i",rank);
+
+      
+    // Call the function in the Python script that will receive the array
+    PyObject* func = MyPythonBackend.run_foscat;
+    PyObject* result = PyObject_CallObject(func, Py_BuildValue("(OOO)", py_list,py_nside,py_rank));
+
+    // Clean up
+    Py_DECREF(py_list);
+    Py_DECREF(func);
+    Py_DECREF(result);
+    Py_DECREF(py_nside);
+    Py_DECREF(py_rank);
+   }
+
+}
+
+// -------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 double avv_poleff=-1;
 PyObject *cnn_coef=NULL;
 PyObject *py_signal;
