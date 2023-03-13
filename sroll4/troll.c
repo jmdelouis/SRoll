@@ -153,6 +153,7 @@ typedef struct {
   PyObject * getflb;
   PyObject * pltvec;
   PyObject * plthisto;
+  PyObject * run_foscat;
 } WrapPython;
 
 int python_rank;
