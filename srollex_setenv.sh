@@ -39,13 +39,7 @@ fi
 HOST=$( hostname )
 
 case "${HOST}" in    
-  DESKTOP-3SPCB02*)
- 	echo " DESKTOP-3SPCB02 detected " 
-	export SROLLHOST=DESKTOP-3SPCB02
-	 
-	export PYTHONPATH=/home/theofoulquier/workspace/py_sroll/ 
-	export LD_LIBRARY_PATH=/home/theofoulquier/workspace/py_sroll/:$LD_LIBRARY_PATH 
- ;;
+
   *)
     echo "WARNING (setenv.sh): unknown host '${HOST}'! (Nothing done)"
     return 1
