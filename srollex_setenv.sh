@@ -39,13 +39,6 @@ fi
 HOST=$( hostname )
 
 case "${HOST}" in    
-  br146-050*)
- 	echo " br146-050 detected " 
-	export SROLLHOST=br146-050
-	 
-	export PYTHONPATH=/export/home/tfoulquier/workspace/test/py_sroll/ 
-	export LD_LIBRARY_PATH=/export/home/tfoulquier/workspace/test/py_sroll/:$LD_LIBRARY_PATH 
- ;;
   DESKTOP-3SPCB02*)
  	echo " DESKTOP-3SPCB02 detected " 
 	export SROLLHOST=DESKTOP-3SPCB02
