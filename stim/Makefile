@@ -108,13 +108,13 @@ $(PAR_LOADER_TAG_PREFIX)parLoader.c: $(PAR_LOADER_INPUT_HEADER_DEF)
 libstim.so: $(STIMOBJ)
 	$(CC) -shared -o $@ $^  $(CFITSIO_LIB) 
 
-#stimexe: stimexe.c libstim.so $(NO_DMC_LIB_LIB_FILE)
+stimexe: stimexe.c libstim.so $(NO_DMC_LIB_LIB_FILE)
 	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) 
 
-#bin2map: bin2map.c $(NO_DMC_LIB_LIB_FILE)
+bin2map: bin2map.c $(NO_DMC_LIB_LIB_FILE)
 	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) `$(PYTHONCONF) --cflag
 
-#bin2polmap: bin2polmap.c $(NO_DMC_LIB_LIB_FILE)
+bin2polmap: bin2polmap.c $(NO_DMC_LIB_LIB_FILE)
 	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) `$(PYTHONCONF) --cflags` -lpython3.8 `$(PYTHONCONF) --ldflags`
 
 clean:
