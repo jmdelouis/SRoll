@@ -22,8 +22,7 @@ FFTW_LIB := $(FFTW_BASE_DIR)/$(FFTWDIR)/.libs/libfftw3.a
 FFTW_OMPLIB := $(FFTW_BASE_DIR)/$(FFTWDIR)/threads/.libs/libfftw3_omp.a -lm
 
 
-# -- Test debug path python datarmor --
-ifeq ("$(SROLLHOST)","DATAR2MOR")
+
 DIRPYTHONPATH := /home1/datahome/jmdeloui/conda-env/healpy
 DIRPYTHONINC := /home1/datahome/jmdeloui/conda-env/healpy/include/python3.8
 DIRNUMPYINC  := /home1/datahome/jmdeloui/conda-env/healpy/lib/python3.8/site-packages/numpy/core/include
@@ -31,28 +30,6 @@ DIRPYTHONLIB := $(DIRPYTHONPATH)/lib
 LIBPYTHONLIB := python3.8
 PYTHONCONF   := $(DIRPYTHONPATH)/bin/python3.8-config
 OPTIONPYTHON := -DPYTHON3
-endif
-
-# -- Test debug path python datarmor --
-ifeq ("$(SROLLHOST)","DATA2RMOR")
-DIRPYTHONPATH := /home1/datahome/jmdeloui/conda-env/healpy
-DIRPYTHONINC := /home1/datahome/jmdeloui/conda-env/healpy/include/python3.8
-DIRNUMPYINC  := /home1/datahome/jmdeloui/conda-env/healpy/lib/python3.8/site-packages/numpy/core/include
-DIRPYTHONLIB := $(DIRPYTHONPATH)/lib
-LIBPYTHONLIB := python3.8
-PYTHONCONF := `python3.8-config --cflags`
-OPTIONPYTHON := -DPYTHON3
-endif
-# -- Test debug path python datarmor --
-ifeq ("$(SROLLHOST)","DATARMOR")
-DIRPYTHONPATH := /home1/datahome/jmdeloui/conda-env/tfgpu
-DIRPYTHONINC := $(DIRPYTHONPATH)/include/python3.6m
-DIRNUMPYINC  := $(DIRPYTHONPATH)/lib/python3.6m/site-packages/numpy/core/include
-DIRPYTHONLIB := $(DIRPYTHONPATH)/lib
-LIBPYTHONLIB := python3.6m
-OPTIONPYTHON := -DPYTHON3
-PYTHONCONF := `python3.6m-config --cflags`
-endif
 
 # --- CFITSIO package ---
 CFITSIO_ROOT := $(SROLLDIR)/cfitsio
