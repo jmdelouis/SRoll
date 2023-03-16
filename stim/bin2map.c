@@ -71,7 +71,7 @@ int n_surveys = 5;
 void usage( char *msg) {
 
   if (mpi_rank == 0) {
-    fprintf( stderr, msg);
+    fprintf( stderr,"%s", msg);
     fprintf( stderr, "\n\n");
     fprintf( stderr, "bin2map: just bin (flat average per pixel) a signal TOI or HPR in a nside=2048 map using RD12 pointing and flagging\n");
     fprintf( stderr, "         you must provide one input (TOI or HPR) and one output (HPR or MAP)\n");
