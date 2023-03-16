@@ -31,6 +31,8 @@ LIBPYTHONLIB := python3.8
 PYTHONCONF   := $(DIRPYTHONPATH)/bin/python3.8-config
 OPTIONPYTHON := -DPYTHON3
 
+PYTHONLIB := `python-config --cflags` `python-config --ldflags` 
+
 # --- CFITSIO package ---
 CFITSIO_ROOT := $(SROLLDIR)/cfitsio
 CFITSIO_TAR  := $(CFITSIO_ROOT)/cfitsio3410.tar.gz
@@ -79,7 +81,7 @@ mkfile_path := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 
 
-all: always_check #stimexe bin2map bin2polmap
+all: always_check stimexe bin2map bin2polmap
 
 fftw: $(FFTW_OMPLIB)
 
@@ -102,20 +104,18 @@ $(PAR_LOADER_TAG_PREFIX)parLoader.c: $(PAR_LOADER_INPUT_HEADER_DEF)
 	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX)" 
 
 %.o: %.c $(PAR_LOADER_TAG_PREFIX)parLoader.c always_check
-	$(CC) $(STIMINCLUDES) -c -o $@ $< $(CFLAGS) -fpic
-
+	$(CC) $(STIMINCLUDES) -c -o $@ $< $(CFLAGS) -fpic $(PYTHONLIB)
 
 libstim.so: $(STIMOBJ)
 	$(CC) -shared -o $@ $^  $(CFITSIO_LIB) 
 
 stimexe: stimexe.c libstim.so $(NO_DMC_LIB_LIB_FILE)
-	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) 
+	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) $(PYTHONLIB)
 
 bin2map: bin2map.c $(NO_DMC_LIB_LIB_FILE)
-	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) `$(PYTHONCONF) --cflag
+	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) $(PYTHONLIB)
 
 bin2polmap: bin2polmap.c $(NO_DMC_LIB_LIB_FILE)
-	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) `$(PYTHONCONF) --cflags` -lpython3.8 `$(PYTHONCONF) --ldflags`
-
+	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) $(PYTHONLIB)
 clean:
 	$(RM) *.o *.so stimexe bin2map bin2polmap "$(PAR_LOADER_TAG_PREFIX)parLoader.c" "$(PAR_LOADER_TAG_PREFIX)parLoader.h"
