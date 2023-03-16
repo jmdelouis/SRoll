@@ -100,8 +100,8 @@ $(CFITSIO_LIB) :
 always_check: fftw cfitsio $(PAR_LOADER_TAG_PREFIX)parLoader.c
 	$(MAKE) -C $(NO_DMC_LIB_BASE_DIR)
 
-#$(PAR_LOADER_TAG_PREFIX)parLoader.c: $(PAR_LOADER_INPUT_HEADER_DEF)
-#	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX)" 
+$(PAR_LOADER_TAG_PREFIX)parLoader.c: $(PAR_LOADER_INPUT_HEADER_DEF)
+	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX)" 
 
 %.o: %.c $(PAR_LOADER_TAG_PREFIX)parLoader.c always_check
 	$(CC) $(STIMINCLUDES) -c -o $@ $< $(CFLAGS) -fpic $(PYTHONLIB)
