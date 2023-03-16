@@ -691,7 +691,7 @@ int main( int argc, char *argv[]) {
 void usage( char *msg) {
 
   if (mpi_rank == 0) {
-    fprintf( stderr, msg);
+    fprintf( stderr,"%s", msg);
     fprintf( stderr, "\n\n");
     fprintf( stderr, "bin2polmap: multi-bolometer projection of HPR to MAP\n");
     fprintf( stderr, "usage: bin2polmap --detset=<detset> --hprname=<hprname> --mapname=<mapname> [--survey=<survey>] [--subdiphpr] [--beginring=<beginring>] [--endring=<endring>]\n");
