@@ -107,7 +107,7 @@ $(PAR_LOADER_TAG_PREFIX)parLoader.c: $(PAR_LOADER_INPUT_HEADER_DEF)
 	$(CC) $(STIMINCLUDES) -c -o $@ $< $(CFLAGS) -fpic $(PYTHONLIB)
 
 libstim.so: $(STIMOBJ)
-	$(CC) -shared -o $@ $^  $(CFITSIO_LIB) 
+	$(CC) -shared -o $@ $^  $(CFITSIO_LIB) $(PYTHONLIB)
 
 stimexe: stimexe.c libstim.so $(NO_DMC_LIB_LIB_FILE)
 	$(CC) $(CFLAGS) $(STIMINCLUDES) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_LIB_DIR):$(mkfile_path) -o $@ $< -lno_dmc -lstim $(FFTW_LIB) $(FFTW_OMPLIB) $(PYTHONLIB)
