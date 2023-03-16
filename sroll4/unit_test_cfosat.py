@@ -140,13 +140,12 @@ def main():
 
   ####################################### OUTPUTS  ##################################################################
   bolo_map = ['CFOSAT','LS04_10','LS06_08']
-  MAP = ["/export/home/tfoulquier/MAP/CFOSAT_%s%s"%(OMAP,i) for i in bolo_map]
-  Out_VEC = ["/export/home/tfoulquier/VEC/CFOSAT_%s%s_offset"%(OMAP,i) for i in bolo]
-  Out_Offset = ["/export/home/tfoulquier/VEC/CFOSAT_%s%s_offset"%(OMAP,i) for i in bolo]
-  Out_Offset_corr = ["/export/home/tfoulquier/VEC/CFOSAT_%s%s_offset_corr"%(OMAP,i) for i in bolo]
-  Out_xi2 = ["/export/home/tfoulquier/VEC/CFOSAT_%s%s_xi2"%(OMAP,i) for i in bolo]
-  Out_xi2_corr = ["/export/home/tfoulquier/VEC/CFOSAT_%s%s_xi2_corr"%(OMAP,i) for i in bolo]
-
+  MAP = 
+  Out_VEC = 
+  Out_Offset = 
+  Out_Offset_corr = 
+  Out_xi2 = 
+  Out_xi2_corr = 
 
   params = vars()
 
