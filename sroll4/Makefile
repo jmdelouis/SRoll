@@ -189,10 +189,10 @@ clean:
 #	$(MAKE) -C $(STIM_BASE_DIR) clean
 
 cleanAll: clean
-#	$(MAKE) -C $(FFTW_BASE_DIR)/$(FFTWDIR) clean
+	$(MAKE) -C $(FFTW_BASE_DIR)/$(FFTWDIR) clean
 	$(MAKE) -C $(CFITSIO_DIR) clean
 	$(MAKE) -C $(NO_DMC_LIB_BASE_DIR) clean
-#	$(MAKE) -C $(PAR_LOADER_BASE_DIR) clean
-#	$(MAKE) -C $(STIM_BASE_DIR) clean
+	$(MAKE) -C $(PAR_LOADER_BASE_DIR) clean
+	$(MAKE) -C $(STIM_BASE_DIR) clean
 	$(RM)   -rf $(FFTW_BASE_DIR)/$(FFTWDIR)
 	$(RM)   -rf $(LSDIR)
