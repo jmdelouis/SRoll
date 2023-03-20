@@ -118,7 +118,7 @@ def main():
   Ptg_noPS = ["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_ptg"%(i) for i in bolo]
   
   nspline=16
-  Theo_noPS = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_%d_S%d"%(i,nspline,j) for j in range(nspline) for i in bolo]
+  #Theo_noPS = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_%d_S%d"%(i,nspline,j) for j in range(nspline) for i in bolo]
   
   #do_mean = 0 #if = 1 do moyennne des bolometre =0 dans projgrad2 dans troll.c // tableau taille nbolo
   val_mean = [0.0 for i in range(4)]
@@ -129,22 +129,33 @@ def main():
   # mean of H0
   for j in range(4):
     do_mean=do_mean+[int((i%4)==j) for i in range(4*nspline)]   
-  
-  fsl = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_Signal"%(i) for i in bolo]
+
+
+
+  Theo_MAP = ['/export/home1/jmdeloui/DATA4SROLL4/NEW_cleaned_12CO.float32.bin',
+              '/export/home1/jmdeloui/DATA4SROLL4/FREE_FREE_mod.float32.bin',
+              '/export/home1/jmdeloui/DATA4SROLL4/Dust_New_I']
+
+  # remove for polar
+  Theo_HPR = ["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_PDUST"%(i) for i in bolo]
+  Theo_HPR = Theo_HPR + ["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_ODUST"%(i) for i in bolo]
+  Theo_HPR = Theo_HPR +["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_GRAD"%(i) for i in bolo]
+
   phase = ["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_phregul"%(i) for i in bolo]
-  rgcnn = ["/export/home/tfoulquier/data_sroll/reduced_MAP/reduced_NULL_rgadutot.int32.bin"for i in range(0,nbolo)]
+  rgcnn = ["/export/home1/jmdeloui/DATA4SROLL4/%s_REP6_rgadutot.int32.bin"%(i) for i in bolo]
+
 
 
 
   ####################################### OUTPUTS  ##################################################################
   bolo_map = ['857GHz','857-1','857-2','857-3','857-4']
 
-  MAP = 
-  Out_VEC = 
-  Out_Offset = 
-  Out_Offset_corr = 
-  Out_xi2 = 
-  Out_xi2_corr = 
+  MAP = ["/export/home/tfoulquier/workspace/SROLL/MAP/857_maps/%s%s"%(OMAP,i) for i in bolo_map]
+  Out_VEC = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s%s"%(OMAP,i) for i in bolo]
+  Out_Offset = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s%s"%(OMAP,i) for i in bolo]
+  Out_Offset_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s%s"%(OMAP,i) for i in bolo]
+  Out_xi2 = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s%s"%(OMAP,i) for i in bolo]
+  Out_xi2_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s%s"%(OMAP,i) for i in bolo]
 
 
   params = vars()
