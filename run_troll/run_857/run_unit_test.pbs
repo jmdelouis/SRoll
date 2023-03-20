@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -q mpi
+#PBS -l select=4:ncpus=28:mem=115g
+#PBS -l walltime=30:00:00
+#PBS -N run857_sroll
+#PBS -e error_run857_sroll.log
+#PBS -o out_run857_sroll.log
+#PBS -m n
+
+cd /home1/datahome/tfoulqui/sroll-workspace/srollex/
+module purge
+source srollex_setenv.sh
+cd sroll4
+module load impi/5.1.3.258
+echo 'python'
+echo $PYTHONPATH
+
+
+mpirun -np 8 ./troll_857 unit_test_857.py  &> /home1/datahome/tfoulqui/sroll-workspace/srollex/run_troll/run_857/unit_test_sroll4_857_data3.log
+
