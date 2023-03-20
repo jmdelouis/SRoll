@@ -59,7 +59,7 @@ PAR_LOADER_INPUT_HEADER_HPRCLEAN_DEF := $(shell pwd)/hprclean_param.h
 PAR_LOADER_TAG_PREFIX_HPRCLEAN := hprclean_
 
 # --- STIM package ---
-STIM_LIB_NAME := stim
+STIM_LIB_NAME := m #stim
 STIM_BASE_DIR := ../stim
 STIM_DIR_INCLUDE := $(STIM_BASE_DIR)
 STIM_LIB_DIR := $(STIM_BASE_DIR)
@@ -92,7 +92,7 @@ print-%  : ; @echo $* = $($*)
 # For now the relevant modules are: no_dmc_lib and stim.
 alwaysCheckModules: fftw cfitsio sroll_parLoader.c
 	$(MAKE) -C $(NO_DMC_LIB_BASE_DIR)
-	$(MAKE) -C $(STIM_BASE_DIR)
+	#$(MAKE) -C $(STIM_BASE_DIR)
 
 fftw: $(FFTW_OMPLIB)
 
