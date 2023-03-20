@@ -81,7 +81,8 @@ mkfile_path := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 
 
-all: always_check stimexe bin2map bin2polmap
+all: always_check 
+#stimexe bin2map bin2polmap
 
 fftw: $(FFTW_OMPLIB)
 
