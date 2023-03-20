@@ -92,7 +92,7 @@ print-%  : ; @echo $* = $($*)
 # For now the relevant modules are: no_dmc_lib and stim.
 alwaysCheckModules: fftw cfitsio sroll_parLoader.c
 	$(MAKE) -C $(NO_DMC_LIB_BASE_DIR)
-	#$(MAKE) -C $(STIM_BASE_DIR)
+	$(MAKE) -C $(STIM_BASE_DIR)
 
 fftw: $(FFTW_OMPLIB)
 
