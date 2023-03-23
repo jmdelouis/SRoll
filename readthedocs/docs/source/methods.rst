@@ -6,7 +6,7 @@ SRoll methods
 
 Step[1]:  Reorganize data - Create Healpix Rings
 ------------------------
-From fits data, Time Ordered Information, the algorithm create pixelized data called healpix rings (HPR) using HEALPIX library.
+From Time Ordered Information, the algorithm create pixelized data called healpix rings (HPR) using HEALPIX library.
 
 
 HEALPIX(Hierarchical Equal Area isoLatitude Pixelization)
@@ -39,6 +39,7 @@ SRoll fits systematic effects, noise in 1/f and calibration using differences be
   :align: center
   
 |
+Algorithm is based on the redundancy of different observations of the signal in pixel made by the same detector at different times, or by different detectors in the same pointing period, to determine the response of each bolometer.
 
 During the mission, the satellite observed the same area of the sky several times with a time shift of one rotation. In the case of the CMB observation the signal observed between a time t and t1(+1 rotation) does not change or changes very little, so the hypothesis is 
 that the differences between theses observations are instrumental  or foreground effects . We then extract these offsets by calculating the difference between observation at t and t1.
