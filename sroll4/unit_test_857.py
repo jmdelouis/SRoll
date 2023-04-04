@@ -151,11 +151,11 @@ def main():
   bolo_map = ['857GHz','857-1','857-2','857-3','857-4']
 
   MAP = 
-  Out_VEC =
+  Out_VEC = 
   Out_Offset = 
   Out_Offset_corr = 
   Out_xi2 = 
-  Out_xi2_corr =
+  Out_xi2_corr = 
 
 
   params = vars()
