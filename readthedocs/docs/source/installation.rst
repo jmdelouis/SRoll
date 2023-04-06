@@ -6,6 +6,7 @@ Installation
 
 .. _installation:
 
+
 SRoll installation package
 ------------------------
 
@@ -28,6 +29,12 @@ environement for SRoll algorithm.
     Type "help", "copyright", "credits" or "license" for more information.
     $>>> from sroll_package import set_env
     $>>> set_env.install()
+    
+ or :
+
+.. code-block:: console    
+
+    python -c "from sroll_package import set_env; set_env.install()"
 
 
 This will clone the SRoll git repository to your current path to folder 'srollex', set python
