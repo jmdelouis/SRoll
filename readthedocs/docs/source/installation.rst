@@ -31,7 +31,7 @@ environement for SRoll algorithm.
     $>>> set_env.install()
 
 
-or :
+or just run :
 
 .. code-block:: console    
 
