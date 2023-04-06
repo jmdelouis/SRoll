@@ -29,8 +29,9 @@ environement for SRoll algorithm.
     Type "help", "copyright", "credits" or "license" for more information.
     $>>> from sroll_package import set_env
     $>>> set_env.install()
-    
- or :
+
+
+or :
 
 .. code-block:: console    
 
