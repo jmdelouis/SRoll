@@ -59,3 +59,7 @@ where:
  :math:`(A^T_{p}A_{p})^{-1} A^T_{p}\big{)}` is the projection matrix;
  
  
+ 
+ 
+CNN and FOscat : 
+-----------------
