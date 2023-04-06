@@ -103,3 +103,12 @@ Once the environment is set up compile sroll using :
  
 The compilation of SRoll will generates 3 executables troll_857 troll_cfosat and troll_14tf.
 
+
+Warning and possible errors :
+----------------------------
+
+- path error when update srollex_setenv
+- python path problem 
+- pip not found 
+
+
