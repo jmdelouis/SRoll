@@ -139,12 +139,12 @@ def main():
   ####################################### OUTPUTS  ##################################################################
   bolo_map = ['857GHz']
 
-  Out_MAP = ["/export/home/tfoulquier/workspace/SROLL/MAP/857_maps/%s_%s"%(Nside,i) for i in bolo_map]
-  Out_VEC = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s_%s"%(Nside,i) for i in bolo]
-  Out_Offset = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s_%s"%(Nside,i) for i in bolo]
-  Out_Offset_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s_%s"%(Nside,i) for i in bolo]
-  Out_xi2 = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s%s"%(Nside,i) for i in bolo]
-  Out_xi2_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/%s_%s"%(Nside,i) for i in bolo]
+  Out_MAP = 
+  Out_VEC = 
+  Out_Offset = 
+  Out_Offset_corr = 
+  Out_xi2 = 
+  Out_xi2_corr = 
 
 
   params = vars()
