@@ -121,11 +121,11 @@ def main():
   # ####################################### OUTPUTS  ############################################
   bolo_map = ['CFOSAT']  
 
-  Out_MAP = ["/export/home/tfoulquier/workspace/SROLL/MAP/cfosat_maps/%s%s"%(Nside,i) for i in bolo_map]
-  Out_VEC = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/%s%s"%(Nside,i) for i in bolo]
-  Out_Offset = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/%s%s"%(Nside,i) for i in bolo]
-  Out_xi2 = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/%s%s"%(Nside,i) for i in bolo]
-  Out_xi2_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/%s%s"%(Nside,i) for i in bolo]
+  Out_MAP = 
+  Out_VEC = 
+  Out_Offset = 
+  Out_xi2 = 
+  Out_xi2_corr = 
 
   params = vars()
 
