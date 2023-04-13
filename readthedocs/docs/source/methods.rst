@@ -32,10 +32,10 @@ Step[2] : Calcul differences in the same HEALPIX pixel
 ------------------------------------------------------
 
 SRoll fits systematic effects, noise in 1/f and calibration using differences between mesures in the same healpix pixel. 
-The Sroll method is based on the fact that we have several observations of the signal. During the course of the mission there will be several observations for a single healpix pixel, the aim is to minimise the differences between several observations of a single pixel.
+The Sroll method is based on the fact that there is multiples observations of the signal. During the course of the mission there will be several observations for a single healpix pixel, the aim is to minimise the differences between theses observations.
 
 Below is an example of a SRoll map showing only the rings passing through the carina area (in red on the map). 
-There are several rings passing through the same healpix pixel, so several observations (here schematized by Px_scan1,Px_scan2).
+There are several rings passing through the same healpix pixel, so several observations for the same pixel (here schematized by Px_scan1,Px_scan2).
 
 .. image:: /images/cross_rings_carina.png
   :height: 300
