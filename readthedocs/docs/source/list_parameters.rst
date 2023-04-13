@@ -11,7 +11,6 @@ List of parameters
    
    * - NAME
      - DESCRITPION
-     - TYPE
    * - bolo
      - List of detectors name
    * - nbolo
