@@ -117,7 +117,7 @@ List of parameters
    * - Mask
      -  Binary map that is used to indicate which pixels or regions of a spherical map are considered valid or usable. ( Example 
    * - projectionType
-     - Projection use for the output map : example for cosmology 'I,Q,U' for intensity and polarized map and for oceanography 'spline3' to project signal in 0,6à,180 degrees.
+     - Projection use for the output map : example for cosmology 'I,Q,U' for intensity and polarized map and for oceanography 'spline3' to project signal in 0,6,180degrees.
    * - in_template_map
      -
    * - Signal_noPS
@@ -131,7 +131,7 @@ List of parameters
    * - Hit_noPS
      -
    * - Ptg_noPS
-     -  Pointing
+     - Pointing
    * - Theo_HPR
      - 
    * - Theo_MAP
@@ -146,5 +146,3 @@ List of parameters
      - Path to save maps ouput
    * - Out_VEC
      - Path to save vectors ouput
-     
-
