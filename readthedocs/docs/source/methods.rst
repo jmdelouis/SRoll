@@ -43,7 +43,7 @@ There are several rings passing through the same healpix pixel, so several obser
   :align: center
   
 
-The algorithm is based on the redundancy of different observations of the signal in pixel made by the same detector at different times, or by different detectors in the same pointing period, to determine the response of each bolometer. 
+The algorithm is based on the redundancy of the observations of the signal in pixel made by the same detector at different times, or by different detectors in the same pointing period, to determine the response of each bolometer. 
 It use conjugate gradient method to minimize differences between pixels (example below scan1_px,scan2_px) and some of the systematics effects are also remove by using pre-calulated templates.
 
 .. image:: /images/carina_pix_calc.png
