@@ -77,6 +77,7 @@ Before compilation the sroll python environement need to be activate, you can ei
 It will need cython numpy healpy to be install, run :
 
 .. code-block::
+
    python -m pip install cython numpy healpy
 
 
