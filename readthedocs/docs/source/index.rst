@@ -40,7 +40,7 @@ High-Frequency Instrument maps”. In: Astronomy &amp Astrophysics 651(July 2021
 
 .. note::
 
-   This project is funded by and CNES (national center for space studies) R&T.
+   This project is funded by a CNES (National Center for Space Studies) R&T.
 
 Contents
 --------
