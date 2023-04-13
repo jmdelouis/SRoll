@@ -31,7 +31,8 @@ See documentation for `Healpy <https://healpy.readthedocs.io/en/latest/>`_
 Step[2] : Calcul differences in the same HEALPIX pixel
 ------------------------------------------------------
 
-SRoll fits systematic effects, noise in 1/f and calibration using differences between mesures in the same healpix pixel.( see figure below). Some of the systematics effects are also remove by using pre-calulated templates.
+SRoll fits systematic effects, noise in 1/f and calibration using differences between mesures in the same healpix pixel. 
+Hereafter an example of SRoll cosmological map showing only the rings that pass trough the carina aera.
 
 .. image:: /images/cross_rings_carina.png
   :height: 300
@@ -39,14 +40,17 @@ SRoll fits systematic effects, noise in 1/f and calibration using differences be
   :align: center
   
 
-Algorithm is based on the redundancy of different observations of the signal in pixel made by the same detector at different times, or by different detectors in the same pointing period, to determine the response of each bolometer.
-
+The algorithm is based on the redundancy of different observations of the signal in pixel made by the same detector at different times, or by different detectors in the same pointing period, to determine the response of each bolometer.
+It use conjugate gradient method to minimize differences between pixels (example below scan1_px,scan2_px) and some of the systematics effects are also remove by using pre-calulated templates.
 
 .. image:: /images/carina_pix_calc.png
   :height: 300
   :width: 500
   :align: center
   
+
+
+
 
 
 
