@@ -14,22 +14,16 @@ In case of using a job scheduler (example for PBS) :
    $> cd path_to_sroll/srollex/run_troll/
    $> cd /run_N/
    $> qsub run_unit_test.pbs
-
+    
 Otherwise it can be start using mpirun :
 
 .. code-block:: bash
 
     $> cd path_to_sroll/srollex/sroll4/
-    $> mpirun -np X ./troll_14tf unit_test_N.py
+    $> mpirun -np X ./troll_N unit_test_N.py
 
 With X the number of process to run ( for unit test 4 if enough) and N the version of sroll you want to run : 857 or cfosat.
 
-
-The output of Sroll unit test will write log in :
-
-.. code-block:: bash
-
-     path_to_sroll/SrollEx/run_troll/unit_test/sroll4_output_unit_test.log
 
 
 SRoll parameters 
@@ -79,7 +73,7 @@ with PBS scheduler :
 
 .. code-block:: bash
 
-    $> cd path_to_sroll/srollex/sroll/
+    $> cd path_to_sroll/srollex/sroll4/
     $> mpirun - np X ./troll_Y parameters_file.py
 
 With X the number of process needed and Y the version of sroll to run (857,cfosat,14tf)
