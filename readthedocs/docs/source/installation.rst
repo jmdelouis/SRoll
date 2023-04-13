@@ -26,12 +26,11 @@ environement for SRoll algorithm.
     python -c "from sroll_package import set_env; set_env.install()"
 
 
-
 ###  described set_env lib#####
-
 
 This will clone the SRoll git repository to your current path to folder 'srollex',create folver for Sroll outpu ( VEC and MAP), set python
 paths, update the srollex_setenv.sh script, update Makefile and create a python virtual environement named 'py_sroll'.
+
 
 Set environement
 --------------
@@ -74,12 +73,18 @@ Before compilation the sroll python environement need to be activate, you can ei
 .. code-block:: bash
    
    source sroll_dir/py_sroll/bin/activate
-  
+
+It will need cython numpy healpy to be install, run :
+
+.. code-block::
+   python -m pip install cython numpy healpy
+
+
 Then set your enviromnent for sroll with :
 
 .. code-block:: bash
    
-   source sroll_dir/srollex_setenv.sh
+   source sroll_dir/srollex/srollex_setenv.sh
  
 Once the environment is set up compile sroll using :
 
