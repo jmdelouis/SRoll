@@ -49,5 +49,4 @@ Contents
 
    installation
    get_started
-   list_parameters
    methods
