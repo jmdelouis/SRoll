@@ -23,18 +23,6 @@ environement for SRoll algorithm.
 
 .. code-block:: console
 
-    $> python
-    Python 3.6.9 (default, Nov  7 2019, 10:44:02) 
-    [GCC 8.3.0] on linux
-    Type "help", "copyright", "credits" or "license" for more information.
-    $>>> from sroll_package import set_env
-    $>>> set_env.install()
-
-
-or just run :
-
-.. code-block:: console    
-
     python -c "from sroll_package import set_env; set_env.install()"
 
 
@@ -42,7 +30,7 @@ or just run :
 ###  described set_env lib#####
 
 
-This will clone the SRoll git repository to your current path to folder 'srollex', set python
+This will clone the SRoll git repository to your current path to folder 'srollex',create folver for Sroll outpu ( VEC and MAP), set python
 paths, update the srollex_setenv.sh script, update Makefile and create a python virtual environement named 'py_sroll'.
 
 Set environement
