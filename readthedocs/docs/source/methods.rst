@@ -35,7 +35,7 @@ SRoll fits systematic effects, noise in 1/f and calibration using differences be
 
 .. image:: /images/cross_rings_carina.png
   :height: 300
-  :width: 500
+  :width: 600
   :align: center
   
 
