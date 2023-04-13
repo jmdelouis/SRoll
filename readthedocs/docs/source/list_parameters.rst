@@ -4,25 +4,6 @@
 List of parameters
 ==================
 
-.. raw:: html
-
-   <table>
-     <tr>
-       <td style="white-space: nowrap;">Ligne 1, Colonne 1</td>
-       <td style="white-space: nowrap;">Ligne 1, Colonne 2</td>
-     </tr>
-     <tr>
-       <td style="white-space: nowrap;">Ligne 2, Colonne 1</td>
-       <td style="white-space: nowrap;">Ligne 2, Colonne 2</td>
-     </tr>
-     <tr>
-       <td style="white-space: nowrap;">Ligne 3, Colonne 1</td>
-       <td style="white-space: nowrap;">Ligne 3, Colonne 2</td>
-     </tr>
-   </table>
-
-
-
 .. list-table:: SRoll parameters
    :widths: 50 50
    
@@ -134,7 +115,7 @@ List of parameters
    * - Mask
      -  Binary map that is used to indicate which pixels or regions of a spherical map are considered valid or usable. ( Example 
    * - projectionType
-     - Projection use for the output map : example for cosmology 'I,Q,U' for intensity and polarized map and for oceanography 'spline3' to project signal in 0,6,180degrees.
+     - Projection use for the output map : example for cosmology 'I,Q,U' for intensity and polarized map and for oceanography 'spline3' to project signal in 0,6,180 degrees.
    * - in_template_map
      -
    * - Signal_noPS
