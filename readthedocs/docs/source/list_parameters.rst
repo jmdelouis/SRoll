@@ -78,24 +78,10 @@ List of parameters
      - Path for CNN
    * - CNN_START
      - Define at wich iteration start to use CNN
-   * - CNN_XSIZE
-     -
-   * - CNN_YSIZE
-     -
-   * - CNN_RESIDU
-     -
-   * - CNN_WEIGHTS
-     -
-   * - N_IN_ITT
-     -
-   * - INST_CNN
-     -
-   * - MAP_CNN
-     -
    * - Calibration
      - 
    * - NEP
-     -
+     - White noise for each detectors
    * - CrossPol
      - Table of Polarization efficiency [%] for each detectors
    * - Monop
@@ -103,13 +89,13 @@ List of parameters
    * - OUT_NOPOL
      -
    * - bolomask
-     -
+     - Mask that define which bolometer to use.
    * - beg_surv
-     - Define 
+     - Array that define the start ring for each survey
    * - end_surv
-     -
+     - Array that define the end ring for each survey
    * - name_surv
-     -
+     - Array that define the name of each survey
    * - MAPRINGS
      - 
    * - Mask
