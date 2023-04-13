@@ -6,8 +6,8 @@ List of parameters
 
 
 .. list-table:: SRoll parameters
-   :widths: 5 3
-   :header-rows: 1
+   :widths: 50 50
+   
    
    * - NAME
      - DESCRITPION
