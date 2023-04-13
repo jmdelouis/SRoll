@@ -1,4 +1,4 @@
-SRoll methods
+SRoll method
 =====
 
 .. _methods:
@@ -75,6 +75,3 @@ where:
   :width: 700
   :align: center
   
- 
-CNN and FOscat : 
------------------
