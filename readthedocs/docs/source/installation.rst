@@ -6,7 +6,7 @@ Installation
 
 .. _installation:
 
-You can download the sroll installation file [here](install_sroll.sh) 
+You can download the sroll installation file [here](../install.sh) 
 Then run  
 
 in the folder where you want to install Sroll.
