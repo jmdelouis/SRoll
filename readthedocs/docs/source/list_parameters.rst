@@ -4,6 +4,24 @@
 List of parameters
 ==================
 
+.. raw:: html
+
+   <table>
+     <tr>
+       <td style="white-space: nowrap;">Ligne 1, Colonne 1</td>
+       <td style="white-space: nowrap;">Ligne 1, Colonne 2</td>
+     </tr>
+     <tr>
+       <td style="white-space: nowrap;">Ligne 2, Colonne 1</td>
+       <td style="white-space: nowrap;">Ligne 2, Colonne 2</td>
+     </tr>
+     <tr>
+       <td style="white-space: nowrap;">Ligne 3, Colonne 1</td>
+       <td style="white-space: nowrap;">Ligne 3, Colonne 2</td>
+     </tr>
+   </table>
+
+
 
 .. list-table:: SRoll parameters
    :widths: 50 50
