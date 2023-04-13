@@ -14,207 +14,137 @@ List of parameters
      - TYPE
    * - bolo
      - List of detectors name
-     - <class 'list'>
-   * - bolo2
-     -
-     - <class 'list'>
    * - nbolo
      - Size of the list 'bolo'
-     - <class 'int'>
    * - BeginRing
      - First ring to consider (included)
-     - <class 'int'>
    * - EndRing
      - Last ring to consider (included)
-     - <class 'int'>
    * - RSTEP
      - Ring step. If set to 1, all the input rings are processed by sroll,if set to 10, 1 ring out of 10 is used, and so on. Useful to quick check some parameter             combinations, as run time is significantly reduced.Use RSTEP=1 for actual productions.
-     - <class 'int'>
+   * - Nside
+     - Indice of pixelization of the sphere healpix
    * - D_NOPOL
      -
-     - <class 'int'>
    * - NORM_GAIN
-     -
-     - <class 'int'>
+     - Flag for normalise the gain 
    * - REMOVE_CAL
-     -
-     - <class 'int'>
+     - Flag for remove calibration
    * - ADDDIP
-     -
-     - <class 'int'>
+     - Flag for add the dipole 
    * - KCMBIN
      -
-     - <class 'int'>
-   * - SAVEINTMAP
-     -
-     - <class 'int'>
    * - TESTPOL
      - If set to 0, activates the sroll simulation code (without stim),where colored noise and ADCNL residuals are added to the input signal HPR.If set to 4, only the ADCNL residuals part is added (?). Other values allowed in the code are: 3 (commented), 7 (?). Ignored (forced to -1) if stim_paramfiles is set.
-     - <class 'int'>
    * - XI2STOP
-     -
-     - <class 'float'>
+     - Threshold for the XI2 calcul
    * - seuilcond
      - Threshold used for cond matrix
-     - <class 'float'>
    * - NITT
      - Number of iterations
-     - <class 'int'>
    * - FITANGLE
      -
-     - <class 'int'>
    * - FITPOLEFF
      -
-     - <class 'int'>
    * - saveCOV
      -
-     - <class 'int'>
    * - saveCO
      -
-     - <class 'int'>
    * - delta_psi
      -  Angle in degrees to add to all bolometers psi pointing ({dbpath}/{pixname}_REP6_ptg_TUPLE_2) to simulate an entire focal plane rotation.Omit or set to 0.0 for default/legacy behavior (no focal plane rotation)
-     - <class 'float'>
    * - verbose
      -
-     - <class 'int'>
    * - TEMPLATE_NSIDE
-     -
-     - <class 'int'>
+     - Indice of pixelisation for the template
    * - BUILDTF
      -
-     - <class 'int'>
    * - SEED
-     -
-     - <class 'list'>
+     - 
    * - GAINSTEP
      - Number of gain values to fit over the whole mission.
        If set to 1, only one gain value will be fitted, thus no variable gains.
        RD12 values are GAINSTEP=128 for 100GHz to 217GHz and GAINSTEP=32 for 353GHz to 857GHz.
-     - <class 'int'>
    * - NADU
-     -
-     - <class 'list'>
+     - 
    * - NADUSTEP
-     -
-     - <class 'list'>
+     - Number of setp used in fit_adu ( function no longer use in sroll4)
    * - DOCNN
-     -
-     - <class 'list'>
+     - Bolean list of size NITT, run the CNN or not at each iteration
    * - val_mean
      -
-     - <class 'list'>
    * - w_mean
-     -
-     - <class 'list'>
+     - 
    * - do_mean
-     -
-     - <class 'list'>
+     - 
    * - CALLCNN
-     -
-     - <class 'str'>
+     - Path for CNN
    * - CNN_START
-     -
-     - <class 'int'>
+     - Define at wich iteration start to use CNN
    * - CNN_XSIZE
      -
-     - <class 'int'>
    * - CNN_YSIZE
      -
-     - <class 'int'>
    * - CNN_RESIDU
      -
-     - <class 'float'>
    * - CNN_WEIGHTS
      -
-     - <class 'str'>
    * - N_IN_ITT
      -
-     - <class 'int'>
    * - INST_CNN
      -
-     - <class 'str'>
    * - MAP_CNN
      -
-     - <class 'str'>
    * - Calibration
-     -
-     - <class 'list'>
+     - 
    * - NEP
      -
-     - <class 'list'>
    * - CrossPol
      - Table of Polarization efficiency [%] for each detectors
-     - <class 'list'>
    * - Monop
      -
-     - <class 'list'>
    * - OUT_NOPOL
      -
-     - <class 'list'>
    * - bolomask
      -
-     - <class 'list'>
    * - beg_surv
-     -
-     - <class 'list'>
+     - Define 
    * - end_surv
      -
-     - <class 'list'>
    * - name_surv
      -
-     - <class 'list'>
    * - MAPRINGS
-     -
-     - <class 'list'>
+     - 
    * - Mask
-     -
-     - <class 'str'>
+     -  Binary map that is used to indicate which pixels or regions of a spherical map are considered valid or usable. ( Example 
    * - projectionType
-     -
-     - <class 'str'>
+     - Projection use for the output map : example for cosmology 'I,Q,U' for intensity and polarized map and for oceanography 'spline3' to project signal in 0,6à,180 degrees.
    * - in_template_map
      -
-     - <class 'list'>
    * - Signal_noPS
-     -
-     - <class 'list'>
+     - Input signal 
    * - ADU
      -
-     - <class 'list'>
    * - Badring
-     -
-     - <class 'list'>
+     - List of flagged rings that wont be process
    * - HPR_Calib
-     - List of HPRs containing the total dipole component that will be subtracted,not fitted, from Signal_noPS.
-     - <class 'list'>
+     - List of HPRs containing the component that will be subtracted,not fitted, from Signal_noPS.
    * - Hit_noPS
      -
-     - <class 'list'>
    * - Ptg_noPS
-     -
-     - <class 'list'>
+     -  Pointing
    * - Theo_HPR
-     -
-     - <class 'list'>
+     - 
    * - Theo_MAP
-     -
-     - <class 'list'>
+     - 
    * - phase
      - Input phase of the HPR to be projected to maps. Used for advance denoising
-     - <class 'list'>
    * - rgcnn
      -
-     - <class 'list'>
    * - bolo_map
-     -
-     - <class 'list'>
+     - List of name for the output (len(bolo_map) == len(MAPRING))
    * - Out_MAP
-     -
-     - <class 'list'>
+     - Path to save maps ouput
    * - Out_VEC
-     -
-     - <class 'list'>
-   * - Nside
-     -
-     - <class 'int'>
+     - Path to save vectors ouput
+     
+
