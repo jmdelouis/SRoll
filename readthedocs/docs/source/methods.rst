@@ -32,7 +32,10 @@ Step[2] : Calcul differences in the same HEALPIX pixel
 ------------------------------------------------------
 
 SRoll fits systematic effects, noise in 1/f and calibration using differences between mesures in the same healpix pixel. 
-Hereafter an example of SRoll cosmological map showing only the rings that pass trough the carina aera.
+The Sroll method is based on the fact that we have several observations of the signal. During the course of the mission there will be several observations for a single healpix pixel, the aim is to minimise the differences between several observations of a single pixel.
+
+Below is an example of a SRoll map showing only the rings passing through the carina area (in red on the map). 
+There are several rings passing through the same healpix pixel, so several observations (here schematized by Px_scan1,Px_scan2).
 
 .. image:: /images/cross_rings_carina.png
   :height: 300
@@ -40,7 +43,7 @@ Hereafter an example of SRoll cosmological map showing only the rings that pass 
   :align: center
   
 
-The algorithm is based on the redundancy of different observations of the signal in pixel made by the same detector at different times, or by different detectors in the same pointing period, to determine the response of each bolometer.
+The algorithm is based on the redundancy of different observations of the signal in pixel made by the same detector at different times, or by different detectors in the same pointing period, to determine the response of each bolometer. 
 It use conjugate gradient method to minimize differences between pixels (example below scan1_px,scan2_px) and some of the systematics effects are also remove by using pre-calulated templates.
 
 .. image:: /images/carina_pix_calc.png
@@ -48,14 +51,6 @@ It use conjugate gradient method to minimize differences between pixels (example
   :width: 500
   :align: center
   
-
-
-
-
-
-
-During the mission, the satellite observed the same area of the sky several times with a time shift of one rotation. In the case of the CMB observation the signal observed between a time t and t1(+1 rotation) does not change or changes very little, so the hypothesis is 
-that the differences between theses observations are instrumental  or foreground effects . We then extract these offsets by calculating the difference between observation at t and t1.
 
 Step[3] :  Clean data and create maps
 --------------------------------------
