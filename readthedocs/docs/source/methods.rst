@@ -67,11 +67,11 @@ where:
  :math:`(A^T_{p}A_{p})^{-1} A^T_{p}\big{)}` is the projection matrix;
  
  
- The desired projection is define in parameters and define the output maps of SRoll. Hereafter an example of Sroll output project in Intensity and polarized (I,Q,U)
+ The desired projection is define in parameters and define the output maps of SRoll. Hereafter an example of Sroll output project in Intensity and polarized (I,Q,U) :
  
 
 .. image:: /images/IQUmaps.png
-  :height: 300
+  :height: 400
   :width: 700
   :align: center
   
