@@ -72,6 +72,6 @@ where:
 
 .. image:: /images/IQUmaps.png
   :height: 300
-  :width: 400
+  :width: 650
   :align: center
   
