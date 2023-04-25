@@ -2,7 +2,7 @@ Installation
 =====
 
 .. warning::
-   SRoll need to be install with a python version <= 3.6
+   SRoll need to be install with a python version == 3.6.0
 
 .. _installation:
 
@@ -50,7 +50,7 @@ Then you need to set sroll environement by modifyng the file 'srollex_setenv.sh'
     export SROLLHOST=clustername
 
     #load modules  for compilation
-    module load intel-cmkl-18/18.0.1.163  impi/5.1.3.258 gcc/6.3.0
+    module load intel-cmkl-18/18.0.1.163  impi/5.1.3.258 gcc/6.2.0
     
     #activate python env
     source ../py_sroll/bin/activate
