@@ -39,7 +39,7 @@ Then you need to set sroll environement by modifyng the file 'srollex_setenv.sh'
 
 .. code-block:: console
 
-   module load intel-cmkl-18/18.0.1.163  impi/5.1.3.258 gcc/7.3.0   
+   module load intel-cmkl-18/18.0.1.163  impi/5.1.3.258 gcc/7.2.0   
  
  
 * You can also modify the hostname and global variables if needed, hereafter an example of the code needed : 
