@@ -24,7 +24,7 @@ def main():
 
   XI2STOP = 1.0
   seuilcond = 100
-  NITT = 5
+  NITT = 2
 
   verbose = 0
   TEMPLATE_NSIDE = 128
@@ -49,6 +49,12 @@ def main():
   INST_CNN = '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
   MAP_CNN =  '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
   ############################################################################################################ 
+  # --------------------------------------------------------- #  
+  ## Foscat params 
+  do_foscat = [0,0] # len(NITT) flag for run foscat 
+  do_templates = [1,2,0,0,0,0,0,0,0] # define at wich templates to apply foscat correct : have to be len of theo_HPR
+  # --------------------------------------------------------- #
+
 
   Calibration = [1,1,1,1]  
   CrossPol = [0,0,0,0]
@@ -121,11 +127,11 @@ def main():
   # ####################################### OUTPUTS  ############################################
   bolo_map = ['CFOSAT']  
 
-  Out_MAP = 
-  Out_VEC = 
-  Out_Offset = 
-  Out_xi2 = 
-  Out_xi2_corr = 
+  Out_MAP = ["/export/home/tfoulquier/workspace/SROLL/MAP/cfosat_maps/Nside%s_%s"%(Nside,i) for i in bolo_map]
+  Out_VEC = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
+  Out_Offset = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
+  Out_xi2 = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
+  Out_xi2_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/cfosat_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
 
   params = vars()
 

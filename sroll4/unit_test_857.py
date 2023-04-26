@@ -55,7 +55,12 @@ def main():
   INST_CNN = '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
   MAP_CNN =  '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
   ############################################################################################################ 
-  
+  # --------------------------------------------------------- #  
+  ## Foscat params 
+  do_foscat = [0,0] # len(NITT) flag for run foscat 
+  do_templates = [1,2,0,0,0,0,0,0,0] # define at wich templates to apply foscat correct : have to be len of theo_HPR
+
+  # --------------------------------------------------------- #
   Calibration = [1.0,1.0,1.0,1.0]  
   CrossPol = [0.0,0.0,0.0,0.0]
   NEP = [1.0,1.0, 1.0,1.0]

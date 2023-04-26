@@ -35,7 +35,7 @@ def main():
   TESTPOL    = 1
   XI2STOP    = 1.0
   seuilcond  = 1E-3
-  NITT       = 5
+  NITT       = 2
   FITANGLE   = 0
   FITPOLEFF  = 0
   saveCOV    = 0
@@ -82,6 +82,12 @@ def main():
   #Path for netcdf
   INST_CNN = '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
   MAP_CNN =  '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
+
+  # --------------------------------------------------------- #  
+  ## Foscat params 
+  do_foscat = [0,0] # len(NITT) flag for run foscat 
+  do_templates = [1,2,0,0,0,0,0,0,0] # define at wich templates to apply foscat correct : have to be len of theo_HPR
+  # --------------------------------------------------------- #
 
   Calibration = [3.30076826046e-16,3.55811287601e-16,3.18681631353e-16,2.219187708e-16]
   NEP = [2.17663807827e-16,2.36372259024e-16, 2.08546999122e-16,2.01804359351e-16]

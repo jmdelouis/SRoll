@@ -55,7 +55,12 @@ def main():
   INST_CNN = '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
   MAP_CNN =  '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
   ############################################################################################################ 
-  
+  # --------------------------------------------------------- #  
+  ## Foscat params 
+  do_foscat = [0,0] # len(NITT) flag for run foscat 
+  do_templates = [1,2,0,0,0,0,0,0,0] # define at wich templates to apply foscat correct : have to be len of theo_HPR
+  # --------------------------------------------------------- #
+
   Calibration = [1.0,1.0,1.0,1.0]  
   CrossPol = [0.0,0.0,0.0,0.0]
   NEP = [1.0,1.0, 1.0,1.0]
@@ -126,12 +131,12 @@ def main():
   ####################################### OUTPUTS  ##################################################################
   bolo_map = ['857GHz','857-1','857-2','857-3','857-4']
 
-  Out_MAP = 
-  Out_VEC = 
-  Out_Offset = 
-  Out_Offset_corr = 
-  Out_xi2 = 
-  Out_xi2_corr = 
+  Out_MAP = ["/export/home/tfoulquier/workspace/SROLL/MAP/857_maps/Nside%s_%s"%(Nside,i) for i in bolo_map]
+  Out_VEC = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
+  Out_Offset = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
+  Out_Offset_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
+  Out_xi2 = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
+  Out_xi2_corr = ["/export/home/tfoulquier/workspace/SROLL/VEC/857_vecs/Nside%s_%s"%(Nside,i) for i in bolo]
 
 
 
