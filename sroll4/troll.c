@@ -5553,7 +5553,7 @@ int main(int argc,char *argv[])  {
     }
     
     if (python_rank==0) {
-      InitPython(&MyPythonBackend,Param->CALLCNN,rank);
+      InitPython(&MyPythonBackend,Param->CALLFOSCAT,rank);
     }
     
   }
