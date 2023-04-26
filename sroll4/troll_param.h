@@ -235,6 +235,17 @@ typedef struct {
    *
    */
   PIOINT Nside;
+  /* ---- Parameter do_foscat ----------------------------------------------
+   *
+   */
+  PIOINT * do_foscat;
+  PIOLONG n_do_foscat;
+  /* ---- Parameter do_templates ----------------------------------------------
+   *
+   */
+  PIOINT * do_templates;
+  PIOLONG n_do_templates;
+  
 
   /* ---- Parameter XI2STOP --------------------------------------------
    *
