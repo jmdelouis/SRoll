@@ -558,7 +558,11 @@ int isPowerOfTwo (unsigned int x)
   return ((x != 0) && ((x & (~x + 1)) == x));
 }
 // --------------------------------------------------------------------------------
+
+#if !defined(RINGSIZE)
 #define RINGSIZE (27664l)
+#endif
+
 void GetProcMem(long *vmem,long *phymem)
 {
     FILE *fp;
@@ -616,7 +620,7 @@ float GetLoadAvg()
 #define TESPT {}
 #endif
 
-#define UNSEENPIX (-1.6375000E+30)
+#define UNSEENPIX ((double) (-1.6375000E+30))
 
 #define DONSIDE
 #ifdef DONSIDE
@@ -3659,7 +3663,10 @@ void minimize_gain_tf(double *ix2,double *gaingi){
           else val_tmp=(htmp[l1].sig*g1-htmp[l1].Sub_HPR-htmp[l1].freefree-htmp[l1].corr_nl-htmp[l1].corr_cnn);         
           */
 
-          val_tmp =htmp[l1].sig*g1- htmp[l1].Sub_HPR-htmp[l1].hpr_cal-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+          val_tmp =htmp[l1].sig*g1- htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+	  if (REMOVE_CAL==1) {
+	    val_tmp -=  htmp[l1].hpr_cal;
+	  }
 	  
           for(int l =0;l<MAXCHANNELS;l++){           
             SI[l]+= htmp[l1].w * htmp[l1].channels[l]*val_tmp;
@@ -3884,7 +3891,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
         if(rank ==0) fprintf(stderr,"\n==> End delta = %lg time = %3lfs\n",delta,tot_time);
         //for(int i =0;i<nmatres;i++) res[i] = new_x[i];
-        
+
         memcpy(ix2,new_x,sizeof(double)*(nmatres));
         MPI_Bcast(ix2, sizeof(double)*(nmatres), MPI_BYTE, 0, MPI_COMM_WORLD);
         
@@ -5465,8 +5472,10 @@ int main(int argc,char *argv[])  {
     MAXCHANNELS = MAXCHAN;
   }
 
+  GAINSTEP = Param->GAINSTEP;
 
   if (rank==0) fprintf(stderr,"MAXCHANNELS = %d \n",MAXCHANNELS);
+  if (rank==0) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
   
   /*-------------------------------------------------------------------------*/
   /*   SAVE PARAMETER FILE                                                   */
@@ -5551,10 +5560,13 @@ int main(int argc,char *argv[])  {
       MPI_Comm_rank(tensorflow_comm, &tensorflow_rank ); 
       MPI_Comm_size(tensorflow_comm, &mpi_tensorflow_size );
     }
-    
+
+    /*
+      TO DEBUG
     if (python_rank==0) {
       InitPython(&MyPythonBackend,Param->CALLFOSCAT,rank);
     }
+    */
     
   }
 
@@ -6091,11 +6103,16 @@ int main(int argc,char *argv[])  {
 
         hprtab_cal = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE);
         assert( (hprtab_cal != NULL) && "Not enough memory to allocate total dipole HPR array");
-        tperr = noDMC_readObject_PIOFLOAT(Param->HPR_Calib[ib],rg*RINGSIZE,RINGSIZE,hprtab_cal);
-        if (tperr<0) {
-          fprintf(stderr, "Impossible to read HPR_Calib[%ld]: %s %d\n",ib,Param->HPR_Calib[ib],tperr);
-          exit ( -1);
-        }
+	if (GAINSTEP>0) {
+	  tperr = noDMC_readObject_PIOFLOAT(Param->HPR_Calib[ib],rg*RINGSIZE,RINGSIZE,hprtab_cal);
+	  if (tperr<0) {
+	    fprintf(stderr, "Impossible to read HPR_Calib[%ld]: %s %d\n",ib,Param->HPR_Calib[ib],tperr);
+	    exit ( -1);
+	  }
+	}
+	else {
+	  memset(hprtab_cal,0,sizeof(PIOFLOAT)*RINGSIZE);
+	}
 
         if (Param->KCMBIN == 1) {
           // input HPR are in KCMB, convert them to watts
@@ -7114,7 +7131,6 @@ int main(int argc,char *argv[])  {
   double *histo2_gi = (double *) malloc(32000*sizeof(double)*nbolo);
   double *histon_gi = (double *) malloc(32000*sizeof(double)*nbolo);
   int *invgi       = (int *)    malloc(32000*sizeof(int)*nbolo);
-  GAINSTEP = Param->GAINSTEP;
   //GAINSTEP = nadu3;
   double *xgi      = (double *) malloc(GAINSTEP*sizeof(double)*nbolo);
   double *nxgi     = (double *) malloc(GAINSTEP*sizeof(double)*nbolo);
@@ -7396,7 +7412,12 @@ int main(int argc,char *argv[])  {
       hpix *htmp = loc_hpix[k];
       int l1;
       for (l1=0;l1<ndata;l1++) {
-        htmp[l1].gi=invgi[htmp[l1].gi+32000*htmp[l1].ib];
+	if (GAINSTEP>0) {
+	  htmp[l1].gi=invgi[htmp[l1].gi+32000*htmp[l1].ib];
+	}
+	else {
+	  htmp[l1].gi=0;
+	}
       }
     }
   }
@@ -7721,10 +7742,20 @@ int main(int argc,char *argv[])  {
     MPI_Barrier(MPI_COMM_WORLD);
     // Exchange dip against sig in the XI2
 
-    double *gain = (double *) malloc(sizeof(double)*nbolo*GAINSTEP);
+    double *gain;
+    if (GAINSTEP==0) {
+      gain = (double *) malloc(sizeof(double)*nbolo);
 
-    for (i=0;i<nbolo;i++) {
-      for (j=0;j<GAINSTEP;j++) gain[i*GAINSTEP+j]=1; //+3E-3*i+1E-3*cos(j/4.);
+      for (i=0;i<nbolo;i++) {
+	gain[i]=1; //+3E-3*i+1E-3*cos(j/4.);
+      }
+    }
+    else {
+      gain = (double *) malloc(sizeof(double)*nbolo*GAINSTEP);
+
+      for (i=0;i<nbolo;i++) {
+	for (j=0;j<GAINSTEP;j++) gain[i*GAINSTEP+j]=1; //+3E-3*i+1E-3*cos(j/4.);
+      }
     }
 
     memset(x2,0,(newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap))*sizeof(double));
@@ -7755,18 +7786,20 @@ int main(int argc,char *argv[])  {
      
       minimize_gain_tf(x3,gain);
      
-     
       resxi=0;
-      for (i=0;i<nbolo;i++){
-	      for (j=0;j<GAINSTEP;j++) {
-	        resxi+=x3[newnr[nbolo]+i*GAINSTEP+j]*x3[newnr[nbolo]+i*GAINSTEP+j];
-	      }
+      if (GAINSTEP>0) {
+	for (i=0;i<nbolo;i++){
+	  for (j=0;j<GAINSTEP;j++) {
+	    resxi+=x3[newnr[nbolo]+i*GAINSTEP+j]*x3[newnr[nbolo]+i*GAINSTEP+j];
+	  }
+	}
+	resxi/=(nbolo*GAINSTEP);
       }
-      resxi/=(nbolo*GAINSTEP);
 
-      
-      if(Param->do_foscat[itt] == 1){
-        foscat(x3,gain,Nside,begpix[rank],edpix[rank],Param->do_templates);
+      if (Param->n_do_foscat>0) {
+	if(Param->do_foscat[itt] == 1){
+	  foscat(x3,gain,Nside,begpix[rank],edpix[rank],Param->do_templates);
+	}
       }
       MPI_Barrier(MPI_COMM_WORLD);
 
@@ -7818,43 +7851,47 @@ int main(int argc,char *argv[])  {
       }
 #endif
 
-      for (i=0;i<nbolo;i++){
-	      for (j=0;j<GAINSTEP;j++) {
-	        if (itt<Param->NITT-1) gain[i*GAINSTEP+j]-=x3[newnr[nbolo]+i*GAINSTEP+j];
-	      }
+      if (GAINSTEP>0) {
+	for (i=0;i<nbolo;i++){
+	  for (j=0;j<GAINSTEP;j++) {
+	    if (itt<Param->NITT-1) gain[i*GAINSTEP+j]-=x3[newnr[nbolo]+i*GAINSTEP+j];
+	  }
+	}
       }
 
       if (rank==0) {
         fprintf(stderr,"GI XIGAIN %.10lg\n",sqrt(resxi));
-	      fprintf(stderr,"MEAN_OFF=[");
-	      for (i=0;i<nbolo;i++) {
-	        double  osum=0;
-	        for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll];
-	        fprintf(stderr,"%lg,",osum/(newnr[i+1]-newnr[i]));
-	      }
-	      fprintf(stderr,"]\n");
-	      fprintf(stderr,"MEAN2_OFF=[");
-	      for (i=0;i<nbolo;i++) {
-	        double  osum=0;
-	        for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll]*x3[ll];
-	        fprintf(stderr,"%lg,",sqrt(osum)/(newnr[i+1]-newnr[i]));
-	      }
-	      fprintf(stderr,"]\n");
-	      for (i=newnr[nbolo];i<nbolo+newnr[nbolo];i++) {
-	        if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"GAIN=[");
-	        fprintf(stderr,"%lg,",x3[i]);
-	        if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
-	      }	
-	      for (i=GAINSTEP*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr)*nbolo+newnr[nbolo];i++) {
-	        if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"TF=[");
-	        fprintf(stderr,"%lg,",x3[i]);
-	        if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
-	      }	
-	      for (i=(GAINSTEP+npixhpr)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i++) {
-	        if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"TMAP=[");
-	        fprintf(stderr,"%lg,",x3[i]);
-	        if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
-	      }	
+	fprintf(stderr,"MEAN_OFF=[");
+	for (i=0;i<nbolo;i++) {
+	  double  osum=0;
+	  for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll];
+	  fprintf(stderr,"%lg,",osum/(newnr[i+1]-newnr[i]));
+	}
+	fprintf(stderr,"]\n");
+	fprintf(stderr,"MEAN2_OFF=[");
+	for (i=0;i<nbolo;i++) {
+	  double  osum=0;
+	  for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll]*x3[ll];
+	  fprintf(stderr,"%lg,",sqrt(osum)/(newnr[i+1]-newnr[i]));
+	}
+	fprintf(stderr,"]\n");
+	if (GAINSTEP>0) {
+	  for (i=newnr[nbolo];i<nbolo+newnr[nbolo];i++) {
+	    if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"GAIN=[");
+	    fprintf(stderr,"%lg,",x3[i]);
+	    if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
+	  }
+	}
+	for (i=GAINSTEP*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr)*nbolo+newnr[nbolo];i++) {
+	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"TF=[");
+	  fprintf(stderr,"%lg,",x3[i]);
+	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
+	}	
+	for (i=(GAINSTEP+npixhpr)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i++) {
+	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"TMAP=[");
+	  fprintf(stderr,"%lg,",x3[i]);
+	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
+	}	
       }
       itt++;
       MPI_Barrier(MPI_COMM_WORLD);
@@ -8024,8 +8061,8 @@ int main(int argc,char *argv[])  {
 	        sig_corr-=x3[iri1];
 	        
 	        if (REMOVE_CAL==1) {
-	        sig_corr-=htmp[l1].hpr_cal;
-	        sig_corr2-=htmp[l1].hpr_cal;
+		  sig_corr-=htmp[l1].hpr_cal;
+		  sig_corr2-=htmp[l1].hpr_cal;
 	        }
 	        
 	        for(int m =0;m<npixhpr;m++){
