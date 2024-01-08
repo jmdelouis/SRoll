@@ -39,7 +39,20 @@ fi
 HOST=$( hostname )
 
 case "${HOST}" in    
-
+  br146-050*)
+ 	echo " br146-050 detected " 
+	export SROLLHOST=br146-050
+	 
+	export PYTHONPATH=/export/home/jmdeloui/SROLL/py_sroll/ 
+	export LD_LIBRARY_PATH=/export/home/jmdeloui/SROLL/py_sroll/:$LD_LIBRARY_PATH 
+ ;;   
+  garoupe*)
+ 	echo " garoupe detected " 
+	export SROLLHOST=garoupe
+	 
+	export PYTHONPATH=/export/home/jmdeloui/SROLL/py_sroll/ 
+	export LD_LIBRARY_PATH=/export/home/jmdeloui/SROLL/py_sroll/:$LD_LIBRARY_PATH 
+ ;;
   *)
     echo "WARNING (setenv.sh): unknown host '${HOST}'! (Nothing done)"
     return 1
