@@ -4957,6 +4957,7 @@ int copy_int_array(PyObject *pArray, PIOINT *array) {
   
   if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
     fprintf(stderr, "L'objet n'est ni une liste ni un tuple\n");
+    exit(0);
     return -1;
   }
 
@@ -4978,6 +4979,7 @@ int copy_float_array(PyObject *pArray, PIOFLOAT *array) {
   
   if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
     fprintf(stderr, "L'objet n'est ni une liste ni un tuple\n");
+    exit(0);
     return -1;
   }
 
