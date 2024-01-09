@@ -45,6 +45,10 @@ def main():
 	RSTEP = 	#mandatory parameter
 	GAINSTEP = 	#mandatory parameter
 	Nside = 	#mandatory parameter
+	do_foscat = []
+	number_of_do_foscat = 	#mandatory parameter
+	do_templates = []
+	number_of_do_templates = 	#mandatory parameter
 	XI2STOP = 	#mandatory parameter
 	AVGDUST = 	#mandatory parameter
 	NITT = 	#mandatory parameter
@@ -84,6 +88,7 @@ def main():
 	number_of_Sub_HPR = 
 	Theo_HPR = []
 	number_of_Theo_HPR = 
+	SparseFunc = 
 	Theo_MAP = []
 	number_of_Theo_MAP = 
 	ADU = []

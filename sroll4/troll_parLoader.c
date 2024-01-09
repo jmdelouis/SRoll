@@ -305,6 +305,8 @@ paramDef troll_paramDef_list[] = {
   {"RSTEP", false, true, false},
   {"GAINSTEP", false, true, false},
   {"Nside", false, true, false},
+  {"do_foscat", true, true, false},
+  {"do_templates", true, true, false},
   {"XI2STOP", false, true, false},
   {"AVGDUST", false, true, false},
   {"NITT", false, true, false},
@@ -329,6 +331,7 @@ paramDef troll_paramDef_list[] = {
   {"invgi", true, false, false},
   {"Sub_HPR", true, false, false},
   {"Theo_HPR", true, false, false},
+  {"SparseFunc", false, false, false},
   {"Theo_MAP", true, false, false},
   {"ADU", true, false, false},
   {"Theo_CO", false, false, false},
@@ -367,7 +370,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 94;
+int troll_paramDef_list_size = 97;
 
 
 
@@ -736,6 +739,40 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       return 1;
     }
   }
+  else if (strcmp(name, "do_foscat") == 0) {
+    param->n_do_foscat = list_size;
+    param->do_foscat = malloc(list_size * sizeof(PIOINT));
+    if (param->do_foscat == NULL) {
+      perror("Error");
+      return 1;
+    }
+    int i;
+    for (i = 0; i < list_size; i++) {
+      errno = 0;
+      param->do_foscat[i] = myRead_PIOINT(value[i]);
+      if (errno != 0) {
+        fprintf(stderr, "ERROR: 'do_foscat': Unable to convert value '%s' to target type %s\n", value[i], "PIOINT");
+        return 1;
+      }
+    }
+  }
+  else if (strcmp(name, "do_templates") == 0) {
+    param->n_do_templates = list_size;
+    param->do_templates = malloc(list_size * sizeof(PIOINT));
+    if (param->do_templates == NULL) {
+      perror("Error");
+      return 1;
+    }
+    int i;
+    for (i = 0; i < list_size; i++) {
+      errno = 0;
+      param->do_templates[i] = myRead_PIOINT(value[i]);
+      if (errno != 0) {
+        fprintf(stderr, "ERROR: 'do_templates': Unable to convert value '%s' to target type %s\n", value[i], "PIOINT");
+        return 1;
+      }
+    }
+  }
   else if (strcmp(name, "XI2STOP") == 0) {
     errno = 0;
     param->XI2STOP = myRead_PIODOUBLE(*value);
@@ -1024,6 +1061,10 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     for (i = 0; i < list_size; i++) {
       strcpy(param->Theo_HPR[i], value[i]);
     }
+  }
+  else if (strcmp(name, "SparseFunc") == 0) {
+    param->flag_SparseFunc = _PAR_TRUE;
+    strcpy(param->SparseFunc, *value);
   }
   else if (strcmp(name, "Theo_MAP") == 0) {
     param->flag_Theo_MAP = _PAR_TRUE;
@@ -1423,8 +1464,15 @@ int troll_readParam(troll_parContent *param, char *filename) {
               PyObject * pyValue =getItemParam(pyParams,troll_paramDef_list[i].name,currentListIndex);  
               if(pyValue != NULL){
                 //PIOSTRING * value = PyUnicode_AsUTF8(PyObject_Str(pyValue));
-		            strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
-                // Store the list value
+		//strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+       
+                #if PY_MAJOR_VERSION >= 3
+		strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+		#else
+		strncpy(value,PyString_AsString(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+		#endif
+		
+		// Store the list value
                 strcpy(currentListValues[currentListIndex], value); // -1 since array is 0 indexed!
                 currentListIndex++;		            
               }else{

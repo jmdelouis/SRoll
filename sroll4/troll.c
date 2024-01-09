@@ -499,8 +499,6 @@ void InitPython(WrapPython *mywrap, char *myfunct, int rank)
   mywrap->Dict = EXECPYTHON(PyModule_GetDict(mywrap->Module));
   mywrap->run_foscat = CALLPYTHON(mywrap->Dict, "run");
 
-      
-
 #if 0
 #ifdef PYTHON3
   mywrap->ModuleString = PyUnicode_FromString(thepath);
@@ -1002,8 +1000,10 @@ double solvemap(double *x,double *y,double *z,
 #ifndef MAXTHEOHPR
 #define MAXTHEOHPR (10)
 #endif
-#ifndef MAXTHEOMAP
-#define MAXTHEOMAP (3)
+#ifndef MAXTHEOSHPR
+#define MAXTHEOSHPR (1)
+#endif
+#ifndef MAXTHEOMAP#define MAXTHEOMAP (3)
 #endif
 #ifndef MAXCHAN
 #define MAXCHAN (16)
@@ -1013,6 +1013,9 @@ typedef struct {
   PIOFLOAT sig;
   PIOFLOAT listp[MAXSIMU];
   PIOFLOAT listofhpr[MAXTHEOHPR];
+  PIOINT   nShpr;
+  PIOFLOAT listofShpr[MAXTHEOSHPR];
+  PIOINT   listofShpr_idx[MAXTHEOSHPR];
   PIOFLOAT listofmap[MAXTHEOMAP];
   PIOINT ipix;
   PIOINT rg;
@@ -1953,6 +1956,7 @@ PIOLONG nadu=0;
 
 
 PIOBYTE **flg_rg;
+long npixShpr;
 long npixhpr;
 long npixmap;
 long ittt,itbogo;
@@ -2147,6 +2151,7 @@ void fit_adu_nl_opt(double *x3,double *gain,double *outtemp,double *nouttemp){
           long ir =rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
           //calcul signal corriger 
           double sig_corr = htmp[l1].m-x3[ir];
+	  
           for(int m =0;m<npixhpr;m++){
               sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];   
           }
@@ -2154,8 +2159,12 @@ void fit_adu_nl_opt(double *x3,double *gain,double *outtemp,double *nouttemp){
 	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 	  
           for(int m =0;m<npixmap;m++){
-              sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];   
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];   
           }
+
+	  for(int m =0;m<htmp[l1].nShpr;m++){
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+	  }
           
           //calcul matrix & vector
           for(int i = 0;i<MAXCHANNELS;i++){        
@@ -2471,6 +2480,9 @@ void fit_adu_nl_opt(double *x3,double *gain,double *outtemp,double *nouttemp){
                 for(int m =0;m<npixmap;m++){
                     sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];   
                 }
+		for(int m =0;m<htmp[l1].nShpr;m++){
+		  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+		}
 		sig_corr-x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 
 
@@ -2541,6 +2553,9 @@ void fit_adu_nl_opt(double *x3,double *gain,double *outtemp,double *nouttemp){
               for(int m =0;m<npixmap;m++){
                 sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];   
               }
+	      for(int m =0;m<htmp[l1].nShpr;m++){
+		sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+	      }
 
 
 
@@ -2724,544 +2739,6 @@ void fit_adu_nl_opt(double *x3,double *gain,double *outtemp,double *nouttemp){
 
 #endif
  
-/// ---------------------------------------------------------------------------------------------------
-/// ---------------------------------------------------------------------------------------------------
-//=========================================================================
-// TO BE OPTIMIZED IN MEMORY TO AVOID CRASH WHEN nbolo>8
-//=========================================================================
-
-void fit_adu_nl(double *x3,double *gain,double *outtemp,double *nouttemp)
-{
- #if 0
-  int rank,i,k,j,l,rrk;
-  int size;
-  MPI_Status statu;
-  int mpi_size;
-  int rank_size;
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank_size);
-  rank=rank_size;
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
-  mpi_size=size;
-
-  double *lgain=(double *) malloc(sizeof(double)*nbolo);
-  for (i=0;i<nbolo;i++) {
-    double gtmp=0;
-    for (k=0;k<GAINSTEP;k++) gtmp+=gain[k+i*GAINSTEP];
-    lgain[i]=gtmp/((double) GAINSTEP);
-  }
-  double **vec = (double **) malloc(sizeof(double *)*nbolo);
-  for (i=0;i<nbolo;i++) {
-    vec[i]= (double *) malloc(sizeof(double)*((nadufit[i]+1)+newnr[i+1]-newnr[i]));
-    memset(vec[i],0,sizeof(double)*((nadufit[i]+1)+newnr[i+1]-newnr[i]));
-  }
-
-  double *v1 = (double *) malloc(sizeof(double)*(newnr[nbolo]));
-  memset(v1,0,sizeof(double)*(newnr[nbolo]));
-
-  double **mat1 = (double **) malloc(sizeof(double *)*nbolo);
-  for (i=0;i<nbolo;i++) {
-    mat1[i] = (double *) malloc(sizeof(double)*((nadufit[i]+1)*(nadufit[i]+1)));
-    memset(mat1[i],0,sizeof(double)*((nadufit[i]+1)*(nadufit[i]+1)));
-  }
-
-  double **mat2 = (double **) malloc(sizeof(double *)*(nbolo));
-  for (i=0;i<nbolo;i++) mat2[i]=(double *) malloc(sizeof(double)*((newnr[i+1]-newnr[i])*(nadufit[i]+1)));
-  for (i=0;i<nbolo;i++) memset(mat2[i],0,sizeof(double)*((newnr[i+1]-newnr[i])*(nadufit[i]+1)));
-
-  for (k=0;k<nnbpix;k++) {
-    if (flgpix[k]>0) {
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-
-      double SII=0;
-      double SIQ=0;
-      double SIU=0;
-      double SQQ=0;
-      double SUU=0;
-      double SQU=0;
-
-      double SI=0;
-      double SQ=0;
-      double SU=0;
-
-      int l1,m;
-
-      for (l1=0;l1<ndata;l1++) {
-        long ri1=htmp[l1].rg-globalBeginRing;
-        long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-        if (flg_rg[htmp[l1].ib][ri1]!=0) {
-
-          double CO1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].co
-                                            -dpsisi[htmp[l1].ib]*htmp[l1].si);
-          double SI1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].si
-                                            +dpsisi[htmp[l1].ib]*htmp[l1].co);
-
-          double gg2=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-
-          double sig_corr = htmp[l1].sig*gg2-htmp[l1].Sub_HPR;
-	  
-	  if (REMOVE_CAL==1) sig_corr-=htmp[l1].hpr_cal;
-
-	  sig_corr-=htmp[l1].corr_nl+htmp[l1].corr_cnn;
-
-          sig_corr-=x3[iri1];
-
-          // ATTENTION GAINSTEP EST FORCE A 1
-          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib]*htmp[l1].model;
-
-          if (nmatco!=0) {
-            sig_corr -=htmp[l1].comap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+htmp[l1].ib];
-          }
-          if (nmatdust!=0) {
-            sig_corr -=htmp[l1].dustmap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+htmp[l1].ib];
-          }
-          if (nfreefree!=0) {
-            sig_corr -=htmp[l1].freefree*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+nmatdust+htmp[l1].ib];
-          }
-          for (m=0;m<npixhpr;m++)  {
-            sig_corr -= htmp[l1].listofhpr[m]*x3[newnr[nbolo]+nbolo*(GAINSTEP)+m*nbolo+htmp[l1].ib];
-          }
-          SI +=htmp[l1].w*sig_corr;
-          SQ +=htmp[l1].w*CO1*sig_corr;
-          SU +=htmp[l1].w*SI1*sig_corr;
-
-          SII +=htmp[l1].w;
-          SIQ +=htmp[l1].w*CO1;
-          SIU +=htmp[l1].w*SI1;
-          SQQ +=htmp[l1].w*CO1*CO1;
-          SQU +=htmp[l1].w*CO1*SI1;
-          SUU +=htmp[l1].w*SI1*SI1;
-        }
-      }
-
-      if (Param->OUT_NOPOL[0]%2==0) {
-        double cond=cond_3_3_thres(SII,SIQ,SIU,
-                                   SIQ,SQQ,SQU,
-                                   SIU,SQU,SUU);
-
-        if (cond<Param->seuilcond) {
-          solvemap(&SI,&SQ,&SU,SII,SIQ,SIU,SQQ,SQU,SUU);
-
-          for (l1=0;l1<ndata;l1++) {
-            long ri1=htmp[l1].rg-globalBeginRing;
-            long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-            if (flg_rg[htmp[l1].ib][ri1]!=0) {
-              double CO1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].co
-                                                -dpsisi[htmp[l1].ib]*htmp[l1].si);
-              double SI1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].si
-                                                +dpsisi[htmp[l1].ib]*htmp[l1].co);
-
-              long iii,jjj;
-              double gg2=lgain[htmp[l1].ib];
-
-              double sig_corr = (htmp[l1].sig*gg2-htmp[l1].Sub_HPR);
-	      if (REMOVE_CAL==1) sig_corr-=htmp[l1].hpr_cal;
-
-              sig_corr-=x3[iri1];
-
-              // ATTENTION GAINSTEP EST FORCE A 1
-              sig_corr-=x3[newnr[nbolo]+htmp[l1].ib]*htmp[l1].model;
-
-              if (nmatco!=0) {
-                sig_corr -=htmp[l1].comap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+htmp[l1].ib];
-              }
-              if (nmatdust!=0) {
-                sig_corr -=htmp[l1].dustmap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+htmp[l1].ib];
-              }
-              if (nfreefree!=0) {
-                sig_corr -=htmp[l1].freefree*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+nmatdust+htmp[l1].ib];
-              }
-              for (m=0;m<npixhpr;m++)  {
-                sig_corr -= htmp[l1].listofhpr[m]*x3[newnr[nbolo]+nbolo*(GAINSTEP)+m*nbolo+htmp[l1].ib];
-              }
-
-              double residu=sig_corr-SI-CO1*SQ-SI1*SU;
-
-	      vec[htmp[l1].ib][nadufit[htmp[l1].ib]]+=residu*htmp[l1].adu/1000.*htmp[l1].w;
-	      if (ADURGSTEP[htmp[l1].ib]>2) {
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-		    int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		      vec[htmp[l1].ib][l_idx]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]
-			*rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-		  }
-		}
-	      }
-	      else {
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  vec[htmp[l1].ib][iii]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-		}
-	      }
-              vec[htmp[l1].ib][(nadufit[htmp[l1].ib]+1)+iri1-newnr[htmp[l1].ib]]+=residu*htmp[l1].w;
-              v1[iri1]+=htmp[l1].w;
-
-	      mat2[htmp[l1].ib][nadufit[htmp[l1].ib]+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]
-		+=htmp[l1].adu/1000.*htmp[l1].w;
-
-	      mat1[htmp[l1].ib][nadufit[htmp[l1].ib]+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]
-		+=htmp[l1].w*htmp[l1].adu/1000.*htmp[l1].adu/1000.;
-
-	      if (ADURGSTEP[htmp[l1].ib]>2) {
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-		    int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		    mat2[htmp[l1].ib][l_idx+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=
-		      htmp[l1].vspline[iii-htmp[l1].istart]*
-		      rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-
-		    mat1[htmp[l1].ib][l_idx+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-		      htmp[l1].vspline[iii-htmp[l1].istart]*
-		      rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000.*htmp[l1].w;
-		    mat1[htmp[l1].ib][nadufit[htmp[l1].ib]+l_idx*(nadufit[htmp[l1].ib]+1)]+=
-		      htmp[l1].vspline[iii-htmp[l1].istart]*
-		      rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000.*htmp[l1].w;
-
-		    int iii2,jjj2;
-		    for (iii2=htmp[l1].istart;iii2<=htmp[l1].iend;iii2++) {
-		      for (jjj2=rg_start[htmp[l1].ib][htmp[l1].rg];jjj2<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj2++) {
-			int l_idx2=jjj2+ADURGSTEP[htmp[l1].ib]*iii2;
-
-			mat1[htmp[l1].ib][l_idx+l_idx2*(nadufit[htmp[l1].ib]+1)]+=
-			  htmp[l1].vspline[iii-htmp[l1].istart]
-			  *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]
-			  *htmp[l1].vspline[iii2-htmp[l1].istart]
-			  *rg_vals[htmp[l1].ib][jjj2-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-		      }
-		    }
-		  }
-		}
-	      }
-	      else {
-
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  mat2[htmp[l1].ib][iii+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-
-		  mat1[htmp[l1].ib][iii+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-		    htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000.*htmp[l1].w;
-		  mat1[htmp[l1].ib][nadufit[htmp[l1].ib]+iii*(nadufit[htmp[l1].ib]+1)]+=
-		    htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000.*htmp[l1].w;
-
-		  for (jjj=htmp[l1].istart;jjj<=htmp[l1].iend;jjj++) {
-		    mat1[htmp[l1].ib][iii+jjj*(nadufit[htmp[l1].ib]+1)]+=
-		      htmp[l1].vspline[iii-htmp[l1].istart]
-		      *htmp[l1].vspline[jjj-htmp[l1].istart]*htmp[l1].w;
-		  }
-		}
-	      }
-	    }
-          }
-        }
-      } // END POL
-      else {
-        if (SII>0) {
-          SI/=SII;
-          for (l1=0;l1<ndata;l1++) {
-            long ri1=htmp[l1].rg-globalBeginRing;
-            long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-            if (flg_rg[htmp[l1].ib][ri1]!=0) {
-
-              long iii,jjj;
-              double gg2=lgain[htmp[l1].ib];
-
-              double sig_corr = (htmp[l1].sig*gg2-htmp[l1].Sub_HPR);
-              if (REMOVE_CAL==1) sig_corr-=htmp[l1].hpr_cal;
-
-              sig_corr-=x3[iri1];
-
-              // ATTENTION GAINSTEP EST FORCE A 1
-              sig_corr-=x3[newnr[nbolo]+htmp[l1].ib]*htmp[l1].model;
-
-              if (nmatco!=0) {
-                sig_corr -=htmp[l1].comap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+htmp[l1].ib];
-              }
-              if (nmatdust!=0) {
-                sig_corr -=htmp[l1].dustmap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+htmp[l1].ib];
-              }
-              if (nfreefree!=0) {
-                sig_corr -=htmp[l1].freefree*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+nmatdust+htmp[l1].ib];
-              }
-              for (m=0;m<npixhpr;m++)  {
-                sig_corr -= htmp[l1].listofhpr[m]*x3[newnr[nbolo]+nbolo*(GAINSTEP)+m*nbolo+htmp[l1].ib];
-              }
-
-              double residu=sig_corr-SI;
-
-	      vec[htmp[l1].ib][nadufit[htmp[l1].ib]]+=residu*htmp[l1].adu/1000.*htmp[l1].w;
-	      if (ADURGSTEP[htmp[l1].ib]>2) {
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-		    int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		      vec[htmp[l1].ib][l_idx]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]
-			*rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-		  }
-}
-	      }
-	      else {
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  vec[htmp[l1].ib][iii]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-		}
-	      }
-              vec[htmp[l1].ib][iri1-newnr[htmp[l1].ib]]+=residu*htmp[l1].w;
-              v1[iri1]+=htmp[l1].w;
-
-	      mat2[htmp[l1].ib][nadufit[htmp[l1].ib]+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=htmp[l1].adu/1000.*htmp[l1].w;
-	      mat1[htmp[l1].ib][nadufit[htmp[l1].ib]+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]
-		+=htmp[l1].w*htmp[l1].adu/1000.*htmp[l1].adu/1000.;
-
-	      if (ADURGSTEP[htmp[l1].ib]>2) {
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-		    int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		      mat2[htmp[l1].ib][l_idx+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=
-			htmp[l1].vspline[iii-htmp[l1].istart]*
-			rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-
-		      mat1[htmp[l1].ib][l_idx+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-			htmp[l1].vspline[iii-htmp[l1].istart]*
-			rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000*htmp[l1].w;
-		      mat1[htmp[l1].ib][nadufit[htmp[l1].ib]+l_idx*(nadufit[htmp[l1].ib]+1)]+=
-			htmp[l1].vspline[iii-htmp[l1].istart]*
-			rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000.*htmp[l1].w;
-
-		      int iii2,jjj2;
-		      for (iii2=htmp[l1].istart;iii2<=htmp[l1].iend;iii2++) {
-			for (jjj2=rg_start[htmp[l1].ib][htmp[l1].rg];jjj2<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj2++) {
-			  int l_idx2=jjj2+ADURGSTEP[htmp[l1].ib]*iii2;
-
-			    mat1[htmp[l1].ib][l_idx+l_idx2*(nadufit[htmp[l1].ib]+1)]+=
-			      htmp[l1].vspline[iii-htmp[l1].istart]
-			      *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]
-			      *htmp[l1].vspline[iii2-htmp[l1].istart]
-			      *rg_vals[htmp[l1].ib][jjj2-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-			  }
-			}
-		    }
-		}
-	      }
-	      else {
-		for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		  mat2[htmp[l1].ib][iii+rgord[htmp[l1].ib][ri1]*nadufit[htmp[l1].ib]]
-		    +=htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-		  mat1[htmp[l1].ib][iii+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-		    htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000*htmp[l1].w;
-		  mat1[htmp[l1].ib][nadufit[htmp[l1].ib]+iii*(nadufit[htmp[l1].ib]+1)]+=
-		    htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000*htmp[l1].w;
-
-		  for (jjj=htmp[l1].istart;jjj<=htmp[l1].iend;jjj++) {
-		    mat1[htmp[l1].ib][iii+jjj*(nadufit[htmp[l1].ib]+1)]+=
-		      htmp[l1].vspline[iii-htmp[l1].istart]
-		      *htmp[l1].vspline[jjj-htmp[l1].istart]*htmp[l1].w;
-		  }
-		}
-	      }
-	    }
-          }
-        }
-      }
-    }
-  }
-
-
-#ifdef OPTIMPI
-  {
-    for (i=0;i<nbolo;i++) {
-      double *lb = (double *) malloc(sizeof(double)*((nadufit[i]+1)+newnr[i+1]-newnr[i]));
-      MPI_Reduce(vec[i],lb,((nadufit[i]+1)+newnr[i+1]-newnr[i]),MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-
-      memcpy(vec[i],lb,sizeof(double)*((nadufit[i]+1)+newnr[i+1]-newnr[i]));
-      free(lb);
-    }
-    double *lb = (double *) malloc(sizeof(double)*(newnr[nbolo]));
-    MPI_Reduce(v1,lb,(newnr[nbolo]),MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-
-    memcpy(v1,lb,sizeof(double)*(newnr[nbolo]));
-    free(lb);
-  }
-#else
-
-  if (rank==0) {
-    for (i=0;i<nbolo;i++) {
-      double *lb = (double *) malloc(sizeof(double)*((nadufit[i]+1)+newnr[i+1]-newnr[i]));
-
-      for (rrk=1;rrk<mpi_size;rrk++) {
-	MPI_Recv(lb,sizeof(double)*((nadufit[i]+1)+newnr[i+1]-newnr[i]), MPI_BYTE, rrk,1031, MPI_COMM_WORLD,&statu);
-	for (l=0;l<(nadufit[i]+1)+newnr[i+1]-newnr[i];l++) vec[i][l]+=lb[l];
-      }
-      free(lb);
-    }
-    double *lb = (double *) malloc(sizeof(double)*((newnr[nbolo])));
-    for (rrk=1;rrk<mpi_size;rrk++) {
-      MPI_Recv(lb,sizeof(double)*(newnr[nbolo]), MPI_BYTE, rrk,1032, MPI_COMM_WORLD,&statu);
-      for (l=0;l<newnr[nbolo];l++) v1[l]+=lb[l];
-    }
-    free(lb);
-  }
-  else {
-    for (i=0;i<nbolo;i++) {
-      MPI_Send(vec[i],sizeof(double)*((nadufit[i]+1)+newnr[i+1]-newnr[i]), MPI_BYTE, 0, 1031, MPI_COMM_WORLD);
-    }
-    MPI_Send(v1,sizeof(double)*(newnr[nbolo]), MPI_BYTE, 0, 1032, MPI_COMM_WORLD);
-  }
-#endif
-  if (rank==0) {
-    for (i=0;i<nbolo;i++) {
-      double *lb = (double *) malloc(sizeof(double)*((nadufit[i]+1)*(nadufit[i]+1)));
-      for (rrk=1;rrk<mpi_size;rrk++) {
-	MPI_Recv(lb,sizeof(double)*((nadufit[i]+1)*(nadufit[i]+1)), MPI_BYTE, rrk,1031, MPI_COMM_WORLD,&statu);
-	for (l=0;l<(nadufit[i]+1)*(nadufit[i]+1);l++) mat1[i][l]+=lb[l];
-      }
-      free(lb);
-    }
-  }
-  else {
-    for (i=0;i<nbolo;i++) {
-      MPI_Send(mat1[i],sizeof(double)*((nadufit[i]+1)*(nadufit[i]+1)), MPI_BYTE, 0, 1031, MPI_COMM_WORLD);
-    }
-  }
-
-  for (i=0;i<nbolo;i++) {
-    if (rank==0) {
-      double *lb = (double *) malloc(sizeof(double)*((newnr[i+1]-newnr[i])*(nadufit[i]+1)));
-      for (rrk=1;rrk<mpi_size;rrk++) {
-        MPI_Recv(lb,sizeof(double)*((newnr[i+1]-newnr[i])*(nadufit[i]+1)), MPI_BYTE, rrk,1031, MPI_COMM_WORLD,&statu);
-        for (l=0;l<((newnr[i+1]-newnr[i])*(nadufit[i]+1));l++) mat2[i][l]+=lb[l];
-      }
-      free(lb);
-    }
-    else {
-      MPI_Send(mat2[i],sizeof(double)*((newnr[i+1]-newnr[i])*(nadufit[i]+1)), MPI_BYTE, 0, 1031, MPI_COMM_WORLD);
-    }
-  }
-
-/*==============================================================================
-  AND NOW INVERT THE MATRIX
-  ==============================================================================*/
-  if (rank==0) {
-    for (i=0;i<nbolo;i++) {
-
-      for (j=newnr[i];j<newnr[i];j++) {
-        for (k=0;k<nadufit[i]+1;k++) {
-          vec[i][k]-=mat2[i][k+(j-newnr[i])*(nadufit[i]+1)]*vec[i][(nadufit[i]+1)+j]/v1[j];
-        }
-      }
-
-      for (j=newnr[i];j<newnr[i];j++) {
-        for (k=0;k<(nadufit[i]+1);k++) {
-          for (l=0;l<(nadufit[i]+1);l++) {
-            mat1[i][k+l*(nadufit[i]+1)]-=mat2[i][k+(j-newnr[i])*(nadufit[i]+1)]
-	      *mat2[i][l+(j-newnr[i])*(nadufit[i]+1)]/v1[j];
-          }
-        }
-      }
-#if 0
-      char path[512];
-      sprintf(path,"mat1_%d",i);
-      fp=fopen(path,"w");
-      fwrite(mat1[i],(nadufit[i]+1)*(nadufit[i]+1)*sizeof(double),1,fp);
-      fclose(fp);
-
-      sprintf(path,"vec_%d",i);
-      fp=fopen(path,"w");
-      fwrite(vec[i],(nadufit[i]+1)*sizeof(double),1,fp);
-      fclose(fp);
-      fprintf(stderr,"WRITE MATRIX %d\n",i);
-#endif
-
-#ifdef ADDNADUFITP1
-      for (k=0;k<nadufit[i];k++) {
-	for (j=0;j<nadufit[i];j++) mat1[i][j+k*nadufit[i]]=mat1[i][j+k*(nadufit[i]+1)];
-      }
-
-      lusol(mat1[i],vec[i],(nadufit[i]/*+1*/));
-#else
-      lusol(mat1[i],vec[i],(nadufit[i]+1));
-#endif
-
-#ifdef TESTFITADU
-      PIOSTRING saveg;
-      sprintf(saveg,"%s_OUTNL",Param->Out_VEC[i]);
-      fprintf(stderr,"Write OUTNL  %lld\n",(long long) (PIOWriteVECT(saveg,vec[i],0,sizeof(PIODOUBLE)*(nadufit[i]+1)))/sizeof(double));
-#endif
-
-#if 0
-      sprintf(path,"vecr_%d",i);
-      fp=fopen(path,"w");
-      fwrite(vec[i],(nadufit[i]+1)*sizeof(double),1,fp);
-      fclose(fp);
-#endif
-    }
-  }
-  /// MODIF
-  for (i=0;i<nbolo;i++) MPI_Bcast(vec[i],sizeof(double)*(nadufit[i]+1),MPI_BYTE, 0, MPI_COMM_WORLD);
-
-  memset(outtemp,0,sizeof(double)*320*320*nbolo);
-  memset(nouttemp,0,sizeof(double)*320*320*nbolo);
-
-  for (k=0;k<nnbpix;k++) {
-    long ndata = loc_nhpix[k];
-    hpix *htmp = loc_hpix[k];
-    int l1;
-
-    for (l1=0;l1<ndata;l1++) {
-      long ri1=htmp[l1].rg-globalBeginRing;
-      if (flg_rg[htmp[l1].ib][ri1]!=0) {
-	long iii,jjj;
-
-#if 1
-#ifdef ADDNADUFITP1
-	htmp[l1].corr_nl=0
-#else
-	htmp[l1].corr_nl=vec[htmp[l1].ib][nadufit[htmp[l1].ib]]*htmp[l1].adu/1000.;
-#endif
-
-	if (ADURGSTEP[htmp[l1].ib]>2) {
-	  for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-	    for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-              int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		htmp[l1].corr_nl+=htmp[l1].vspline[iii-htmp[l1].istart]
-		  *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*vec[htmp[l1].ib][l_idx];
-	    }
-	  }
-	}
-	else {
-	  for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-	    htmp[l1].corr_nl+=htmp[l1].vspline[iii-htmp[l1].istart]*vec[htmp[l1].ib][iii];
-	  }
-	}
-#endif
-	outtemp[htmp[l1].adu/100+320*(htmp[l1].rg/100)+320*320*htmp[l1].ib]+=htmp[l1].corr_nl;
-	nouttemp[htmp[l1].adu/100+320*(htmp[l1].rg/100)+320*320*htmp[l1].ib]+=1;
-      }
-    }
-  }
-
-  if (rank==0) {
-    double *lb = (double *) malloc(sizeof(double)*320*320*nbolo);
-    for (rrk=1;rrk<mpi_size;rrk++) {
-      MPI_Recv(lb,sizeof(double)*320*320*nbolo, MPI_BYTE, rrk,1031, MPI_COMM_WORLD,&statu);
-      for (l=0;l<320*320*nbolo;l++) outtemp[l]+=lb[l];
-      MPI_Recv(lb,sizeof(double)*320*320*nbolo, MPI_BYTE, rrk,1032, MPI_COMM_WORLD,&statu);
-      for (l=0;l<320*320*nbolo;l++) nouttemp[l]+=lb[l];
-    }
-    free(lb);
-    for (l=0;l<320*320*nbolo;l++) if (nouttemp[l]>0) outtemp[l]/=nouttemp[l];
-  }
-  else {
-    MPI_Send(outtemp,sizeof(double)*320*320*nbolo, MPI_BYTE, 0, 1031, MPI_COMM_WORLD);
-    MPI_Send(nouttemp,sizeof(double)*320*320*nbolo, MPI_BYTE, 0, 1032, MPI_COMM_WORLD);
-  }
-
-  free(lgain);
-  free(v1);
-
-  for (i=0;i<nbolo;i++) free(mat2[i]);
-  free(mat2);
-  for (i=0;i<nbolo;i++) free(mat1[i]);
-  free(mat1);
-  for (i=0;i<nbolo;i++) free(vec[i]);
-  free(vec);
- #endif
- }
 // -------------------------------------------------------------------------------------------------------------
 void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
 
@@ -3307,7 +2784,11 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
           }     
           for(int m=0;m<npixmap;m++){
             b2[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]+=htmp[l1].listofmap[m]*tmp;
-          }     
+          }
+          for(int m=0;m<htmp[l1].nShpr;m++){
+            b2[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]+=htmp[l1].listofShpr[m]*tmp;
+          }
+	  
 
           if(GAINSTEP2 != 0){
             b2[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]+= tmp * htmp[l1].model;
@@ -3332,6 +2813,11 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
             hit2[irt]+= htmp[l1].w*htmp[l1].listofmap[m]*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
           }
+          for(int m = 0;m<htmp[l1].nShpr;m++){
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap);
+            hit2[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
+          }
+	  
           if(GAINSTEP2 != 0) hit2[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]+=htmp[l1].w*htmp[l1].model*htmp[l1].model;
         }
       }
@@ -3396,6 +2882,11 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];            
           }
+	  
+          for(int m = 0;m<htmp[l1].nShpr;m++){
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2);
+            val+= x[irt]*htmp[l1].listofShpr[m];            
+          }
           
           if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 
@@ -3423,6 +2914,10 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];  
+          }   
+          for(int m = 0;m<htmp[l1].nShpr;m++){
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2);
+            val+= x[irt]*htmp[l1].listofShpr[m];  
           }
           if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 
@@ -3454,6 +2949,10 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];
           }
+          for(int m = 0;m<htmp[l1].nShpr;m++){
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2);
+            val+= x[irt]*htmp[l1].listofShpr[m];
+          }
           if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2 ]*htmp[l1].model;
           
           //Calcul Rij_bis
@@ -3475,6 +2974,9 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           for(int m=0;m<npixmap;m++){           
             q2[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]+= htmp[l1].listofmap[m]*tmp;          
           }
+          for(int m=0;m<htmp[l1].nShpr;m++){           
+            q2[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]+= htmp[l1].listofShpr[m]*tmp;          
+          }
 
           if(GAINSTEP2 != 0){ 
             q2[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2] +=htmp[l1].model*tmp;            
@@ -3492,8 +2994,8 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
     
     for(int n = 0;n<Param->n_val_mean;n++){
       double sum2 = 0.0;
-      for(int b = 0;b<nbolo*npixhpr;b++){
-	sum2+=(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]-Param->val_mean[n])*Param->do_mean[b+n*(nbolo*npixhpr)];
+      for(int b = 0;b<nbolo*(npixhpr);b++){
+	  sum2+=(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]-Param->val_mean[n])*Param->do_mean[b+n*(nbolo*npixhpr)];
       }
       for(int b = 0;b<nbolo*npixhpr;b++){
 	q2[newnr[nbolo]+b+(GAINSTEP2)*nbolo]+= sum2*Param->w_mean[n]*Param->do_mean[b+n*(nbolo*npixhpr)];
@@ -3508,6 +3010,17 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
         
 	for(int b = 0;b<nbolo;b++){
           q2[newnr[nbolo]+b+(m+npixhpr+GAINSTEP2)*nbolo]+= sum2*msum;
+        }
+    }
+    // NORMLISATION IS MANDATORY FOR MAP TEMPLATE
+    for(int m =0;m<npixShpr;m++){
+        double sum2 = 0.0;
+	for(int b = 0;b<nbolo;b++){
+          sum2+=x[newnr[nbolo]+b+(m+npixhpr+npixmap+GAINSTEP2)*nbolo];
+        }
+        
+	for(int b = 0;b<nbolo;b++){
+          q2[newnr[nbolo]+b+(m+npixhpr+npixmap+GAINSTEP2)*nbolo]+= sum2*msum;
         }
     }
     
@@ -3592,7 +3105,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
   GAINSTEP2=GAINSTEP;
 
-  nmatres=newnr[nbolo]+nbolo*(npixhpr+npixmap+GAINSTEP2);
+  nmatres=newnr[nbolo]+nbolo*(npixhpr+npixmap+npixShpr+GAINSTEP2);
 
   MPI_Bcast(&nmatres, sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
 
@@ -4090,6 +3603,10 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
 	        for(int m =0;m<npixmap;m++){
 	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
 	        }
+	        for(int m =0;m<htmp[l1].nShpr;m++){
+	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
+	        }
+		
 	        sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
 	        //calcul matrix & vector
 	        for(int i = 0;i<MAXCHANNELS;i++){  
@@ -4494,6 +4011,9 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	  for(int m =0;m<npixmap;m++){
 	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m]
 	  }
+	  for(int m =0;m<htmp[l1].nShpr;m++){
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m]
+	  }
 	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 	  
 	  //calcul matrix & vector
@@ -4514,6 +4034,10 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	  double sig_corr = htmp[l1].m-x3[iri1]+htmp[l1].corr_cnn;  
 	     
 	  double temp=0;
+	  for(int m =0;m<htmp[l1].nShpr;m++){
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
+	  }
+	  
 	  for(int m =0;m<npixhpr;m++){
 	    if (DOCNN[m]==0) {
 	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m]
@@ -5367,6 +4891,172 @@ int PIOWriteVECT(const char *path,void *value,int off,int size)
 }
 
 
+/* ---------------------------------------------------------------------------------*/
+PyObject * init_PyFunction(char* path,char *funcname){
+    /* Load python parameters form file gived in parameters path */    
+
+    // init variables
+    PyObject *pName, *pModule, *pDict, *pFunc;
+    PyObject * params;
+
+
+    // Initialize the Python Interpreter
+    Py_Initialize();
+
+    strip_ext(path);
+    
+    //add current path to python
+    PyRun_SimpleString("import sys");
+    PyRun_SimpleString("import os");
+    PyRun_SimpleString("sys.path.append(os.getcwd())");
+
+    // Build the name object
+    pName = PyUnicode_FromString(path);
+    
+    // Load the module object
+    pModule = PyImport_Import(pName);
+
+    if ((pModule = PyImport_Import(pName)) == NULL) {
+      fprintf(stderr,"Error: PyImport_Import\n");
+      exit(0);
+    }
+ 
+    // pDict is a borrowed reference 
+    pDict = PyModule_GetDict(pModule);
+
+    // pFunc is also a borrowed reference 
+    pFunc = PyDict_GetItemString(pDict, funcname);
+
+    if (!PyCallable_Check(pFunc)){
+        PyErr_Print();
+        exit(0);
+    }
+    
+    return pFunc;
+}
+      
+/* ---------------------------------------------------------------------------------*/
+long exec_PyFunction(PyObject *pFunc){
+  PyObject * result;
+  PyObject *pArgs;
+    if (PyCallable_Check(pFunc)){
+      pArgs = PyTuple_Pack(1, PyUnicode_FromString("nom_du_fichier"));
+      result=PyObject_CallObject(pFunc,pArgs);
+        
+    } else {
+        PyErr_Print();
+        exit(0);
+    }
+  
+    Py_DECREF(pArgs);
+
+    return PyLong_AsLong(result);
+}
+// Fonction pour copier les données d'un tableau Python d'entiers à un tableau C
+int copy_int_array(PyObject *pArray, PIOINT *array) {
+  
+  if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
+    fprintf(stderr, "L'objet n'est ni une liste ni un tuple\n");
+    return -1;
+  }
+
+  Py_ssize_t n = PyList_Check(pArray) ? PyList_Size(pArray) : PyTuple_Size(pArray);
+
+  for (Py_ssize_t i = 0; i < n; i++) {
+    PyObject *item = PyList_Check(pArray) ? PyList_GetItem(pArray, i) : PyTuple_GetItem(pArray, i);
+    if (!PyLong_Check(item)) {
+      fprintf(stderr, "L'élément n'est pas un entier\n");
+      return -1;
+    }
+    array[i] = (PIOINT) PyLong_AsLong(item);
+  }
+
+  return (int) n;
+}
+// Fonction pour copier les données d'un tableau Python d'entiers à un tableau C
+int copy_float_array(PyObject *pArray, PIOFLOAT *array) {
+  
+  if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
+    fprintf(stderr, "L'objet n'est ni une liste ni un tuple\n");
+    return -1;
+  }
+
+  Py_ssize_t n = PyList_Check(pArray) ? PyList_Size(pArray) : PyTuple_Size(pArray);
+
+  for (Py_ssize_t i = 0; i < n; i++) {
+    PyObject *item = PyList_Check(pArray) ? PyList_GetItem(pArray, i) : PyTuple_GetItem(pArray, i);
+    if (!PyFloat_Check(item)) {
+      fprintf(stderr, "L'élément n'est pas un double\n");
+      free(array);
+      return NULL;
+    }
+    array[i] = (PIOFLOAT) PyFloat_AsDouble(item);
+  }
+
+  return (int) n;
+}
+
+int calc_sparse_hpr(PyObject *sparseFunc,
+		    long rg,
+		    long ib,
+		    long hpix,
+		    double val,
+		    PIOFLOAT *oval,
+		    PIOINT *oval_idx)
+{
+  PyObject * result;
+  PyObject *pArgs;
+  PyObject *pValue=NULL;
+  int n;
+
+  if (sparseFunc != NULL){
+    // Créer des arguments pour la fonction Python
+    // Création des arguments
+    PyObject *pArg1 = PyLong_FromLong((long)rg); // rg est un entier
+    PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
+    PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
+    PyObject *pArg4 = PyFloat_FromDouble((double)val); // val est un flottant
+
+    // Appel de la méthode 'eval'
+    PyObject *pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOO)", pArg1, pArg2, pArg3, pArg4);
+
+    // Traitement de la valeur de retour
+    if (pValue != NULL) {
+      // Assurer que pValue est un tuple
+      if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
+	// Extraire les deux tableaux du tuple
+	int n1=copy_int_array(PyTuple_GetItem(pValue, 0), oval_idx);
+	int n2=copy_float_array(PyTuple_GetItem(pValue, 1), oval);
+	if (n1!=n2) {
+	  fprintf(stderr, "Sparse function should provide an equal number of invex and value, here Sroll received %d %d\n",n1,n2);
+	}
+	n=n1;
+	Py_DECREF(pValue);
+      }
+      else {
+	PyErr_Print();
+	exit(0);
+      }
+    }
+
+    // Nettoyage des arguments
+    Py_DECREF(pArg1);
+    Py_DECREF(pArg2);
+    Py_DECREF(pArg3);
+    Py_DECREF(pArg4);
+    
+  } else {
+    PyErr_Print();
+    exit(0);
+  }
+  
+  return n;
+}
+
+/* ---------------------------------------------------------------------------------*/
+void ClosepFunc(PyObject *pFunc){
+  Py_XDECREF(pFunc);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 /////////                                 MAIN                                         ////////
@@ -5420,16 +5110,14 @@ int main(int argc,char *argv[])  {
   GetHostname( hostname);
 
   int res = troll_readParam(&par, argv[1] );
-  if (res != 0) {
+  if (res!=0) {
     fprintf(stderr, "Unable to parse the parameter file.\n");
-    exit(res);
+    exit(-1);
   }
 
   Param = &par;
-
-
+  
   char * param_projection = Param->projectionType;
-
   
   if (rank==0)   fprintf(stderr,"projection_type = %s \n",param_projection);   
 
@@ -5881,6 +5569,38 @@ int main(int argc,char *argv[])  {
     }
   }
 
+  PyObject *sparseFunc=NULL;
+  npixShpr=0;
+  if (Param->flag_SparseFunc==_PAR_TRUE) {
+    PyObject *pName = PyUnicode_FromString(argv[1]);
+    PyObject *pModule = PyImport_Import(pName);
+    Py_DECREF(pName);
+
+    if (pModule == NULL) {
+      PyErr_Print();
+      fprintf(stderr, "Échec du chargement du module\n");
+      return 1;
+    }
+
+    PyObject *pClass = PyObject_GetAttrString(pModule, Param->SparseFunc);
+    if (pClass == NULL || !PyCallable_Check(pClass)) {
+      PyErr_Print();
+      fprintf(stderr, "Échec de la récupération de la classe\n");
+      Py_XDECREF(pClass);
+      Py_DECREF(pModule);
+      return 1;
+    }
+    sparseFunc = PyObject_CallObject(pClass, NULL); // Passer NULL si le constructeur n'a pas d'arguments
+    Py_DECREF(pClass);
+
+    if (sparseFunc == NULL) {
+      PyErr_Print();
+      fprintf(stderr, "Échec de la création de l'instance de la classe\n");
+      Py_DECREF(pModule);
+      return 1;
+    }
+  }
+
   long nnoisesim = 1048576;
   fftw_complex  *in_fft = NULL;
   fftw_complex  *out_fft = NULL;
@@ -5951,13 +5671,16 @@ int main(int argc,char *argv[])  {
     if (badring == NULL) {
       fprintf(stderr, "**** ERROR **** Memory allocation error !!!!\n");
       fprintf(stderr, "** rank = %d  globalRankInfo.BeginRing[rank]="PIOLONG_FMT"  globalRankInfo.EndRing[rank]="PIOLONG_FMT"\n", rank, globalRankInfo.BeginRing[rank], globalRankInfo.EndRing[rank]);
-    } 
-
+    }
+    memset(badring,0,sizeof(PIOINT)*ring_count);
+    int tperr;
     int bad_rings;
-    int tperr = noDMC_readObject_PIOINT(Param->Badring[ib],globalBeginRing,ring_count,badring);
-    if (tperr<0) {
-      fprintf(stderr, "Impossible to read Badring[%ld]: %s %d\n",ib,Param->Badring[ib],tperr);
-      exit ( -1);
+    if (Param->n_Badring>0) {
+      tperr = noDMC_readObject_PIOINT(Param->Badring[ib],globalBeginRing,ring_count,badring);
+      if (tperr<0) {
+	fprintf(stderr, "Impossible to read Badring[%ld]: %s %d\n",ib,Param->Badring[ib],tperr);
+	exit ( -1);
+      }
     }
 
     ibadring=(PIOINT *) malloc(sizeof(PIOINT)*ring_count);
@@ -6487,6 +6210,9 @@ int main(int argc,char *argv[])  {
 	      l_hpix[ipix] = (hpix *) realloc(l_hpix[ipix],(l_nhpix[ipix]+1)*sizeof(hpix));
 	    }
 	    tp_hpix=l_hpix[ipix]+l_nhpix[ipix];
+
+	    memset(tp_hpix,0,sizeof(hpix));
+	    
 	    for (int iter = 0; iter < number_of_iterations; iter++) {
 	      tp_hpix->listp[iter]=(y[iter][i]-Param->Monop[ib])/Param->Calibration[ib];
 	    }
@@ -6524,8 +6250,16 @@ int main(int argc,char *argv[])  {
 	    
 	    for (j=0;j<npixhpr;j++) tp_hpix->listofhpr[j]=theo[j][i];
 
-
-
+	    if (sparseFunc!=NULL) {
+	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,rg,ib,ipix,psi[i],
+					       tp_hpix->listofShpr,
+					       tp_hpix->listofShpr_idx);
+	      for (j=0;j<tp_hpix->nShpr;j++) {
+		if (npixShpr<tp_hpix->listofShpr_idx[j]+1) {
+		  npixShpr=tp_hpix->listofShpr_idx[j]+1;
+		}
+	      }
+	    }
 	    
 	    for (j=0;j<npixmap;j++) {
 	      tp_hpix->listofmap[j]=0;
@@ -6648,7 +6382,14 @@ int main(int argc,char *argv[])  {
   
   PrintFreeMemOnNodes( rank, mpi_size, "before pixel balancing");
 
-  if (rank==0) fprintf(stderr,"NPIX %d\n",(int) npixhpr);
+  if (sparseFunc!=NULL) {
+    MPI_Bcast(&npixShpr,sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
+    
+    ClosepFunc(sparseFunc);
+  }
+
+  if (rank==0) fprintf(stderr,"NSHPR %d\n",(int) npixShpr);
+  if (rank==0) fprintf(stderr,"NHPR %d\n",(int) npixhpr);
   if (rank==0) fprintf(stderr,"NMAP %d\n",(int) npixmap);
   /*======================================================
     =
@@ -7613,12 +7354,12 @@ int main(int argc,char *argv[])  {
 
   // decoupe vecteur matrice par proc
 
-  long maxsizemat=newnr[nbolo]+nbolo*(GAINSTEPADU+npixhpr+1+npixmap);
-  if (GAINSTEP>GAINSTEPADU) maxsizemat=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap);
+  long maxsizemat=newnr[nbolo]+nbolo*(GAINSTEPADU+npixhpr+1+npixmap+npixShpr);
+  if (GAINSTEP>GAINSTEPADU) maxsizemat=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
   if (newnr2[nbolo]>maxsizemat&&CUTRG>(1)) {
     maxsizemat=newnr2[nbolo];
   }
-  if (rank==0) fprintf(stderr,"MAXSIZE %ld %ld\n",(long) maxsizemat,(long) newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap));
+  if (rank==0) fprintf(stderr,"MAXSIZE %ld %ld\n",(long) maxsizemat,(long) newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr));
   if (rank==0) fprintf(stderr,"NbGain %ld\n",newnr2[nbolo]);
 
 
@@ -7758,14 +7499,14 @@ int main(int argc,char *argv[])  {
       }
     }
 
-    memset(x2,0,(newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap))*sizeof(double));
+    memset(x2,0,(newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr))*sizeof(double));
 
     double *xoff= (double *) malloc(sizeof(double)*newnr2[nbolo]);
 
     gainoff=0;
 
-    if (GAINSTEP<GAINSTEPADU) nmatres=newnr[nbolo]+nbolo*(GAINSTEPADU+npixhpr+npixmap);
-    else nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap);
+    if (GAINSTEP<GAINSTEPADU) nmatres=newnr[nbolo]+nbolo*(GAINSTEPADU+npixhpr+npixmap+npixShpr);
+    else nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
 
     double *x3= (double *) malloc(sizeof(double)*(nmatres)); 
 
@@ -7892,6 +7633,11 @@ int main(int argc,char *argv[])  {
 	  fprintf(stderr,"%lg,",x3[i]);
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
 	}	
+	for (i=(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap+npixShpr)*nbolo+newnr[nbolo];i++) {
+	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"STF=[");
+	  fprintf(stderr,"%lg,",x3[i]);
+	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
+	}	
       }
       itt++;
       MPI_Barrier(MPI_COMM_WORLD);
@@ -7900,7 +7646,7 @@ int main(int argc,char *argv[])  {
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap);
+    nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
     if (rank==0) {
 
       PIOSTRING commm;
@@ -7948,7 +7694,7 @@ int main(int argc,char *argv[])  {
 
       //for (i=newnr[nbolo]+GAINSTEP*nbolo;i<nmatres;i++) fprintf(stderr,"X2 %d %lg\n",(int) i,x3[i]);
       fprintf(stderr,"Save X2 NO CUTRG\n");
-      fprintf(stderr,"Write MAT  %lld\n",(long long) PIOWriteVECT(saveg,x3+newnr[nbolo],0,(nbolo*(GAINSTEP+npixhpr+npixmap))*sizeof(PIODOUBLE)));
+      fprintf(stderr,"Write MAT  %lld\n",(long long) PIOWriteVECT(saveg,x3+newnr[nbolo],0,(nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr))*sizeof(PIODOUBLE)));
 
     }
 
@@ -8068,9 +7814,15 @@ int main(int argc,char *argv[])  {
 	        for(int m =0;m<npixhpr;m++){
 	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
 	        }
+		
 	        for(int m =0;m<npixmap;m++){
 	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
 	        }
+
+		for(int m =0;m<htmp[l1].nShpr;m++){
+		  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+		}
+		
 	        sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
 	        //calcul matrix & vector
 	        for(int i = 0;i<MAXCHANNELS;i++){  

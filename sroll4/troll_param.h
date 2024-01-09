@@ -391,6 +391,12 @@ typedef struct {
   PIOSTRING *Theo_HPR;
   PIOBYTE flag_Theo_HPR;  /* ==_PAR_TRUE if Theo_HPR is present */
   PIOLONG n_Theo_HPR; /* ==number_of_Theo_HPR */
+  
+  /* ---- Optional Input SparseFunc ---------------------------------
+   *
+   */
+  PIOSTRING SparseFunc;
+  PIOBYTE flag_SparseFunc;  /* ==_PAR_TRUE if SparseFunc is present */
 
   /* ---- Optional InputList Theo_MAP ---------------------------------
    *
