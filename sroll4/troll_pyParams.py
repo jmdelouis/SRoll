@@ -60,7 +60,6 @@ def main():
 	in_template_map = []
 	number_of_in_template_map = 
 	number_val = 	#mandatory parameter
-	projectionType = 	#mandatory parameter
 	beg_surv = []
 	number_of_beg_surv = 	#mandatory parameter
 	end_surv = []
@@ -74,6 +73,7 @@ def main():
 	w_mean = []
 	number_of_w_mean = 	#mandatory parameter
 	UNSEEN = 	#mandatory parameter
+	projection = 
 	NORM_GAIN = 	#mandatory parameter
 	REMOVE_CAL = 	#mandatory parameter
 	Signal_noPS = []

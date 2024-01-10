@@ -377,9 +377,9 @@ PyObject *__TAG__readParam(__TAG__parContent *param, char *filename) {
 		//strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
        
                 #if PY_MAJOR_VERSION >= 3
-		strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+		strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH-1);
 		#else
-		strncpy(value,PyString_AsString(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+		strncpy(value,PyString_AsString(PyObject_Str(pyValue)),MAX_LINE_LENGTH-1);
 		#endif
 		
 		// Store the list value

@@ -315,7 +315,6 @@ paramDef troll_paramDef_list[] = {
   {"NADUSTEP", true, true, false},
   {"in_template_map", true, false, false},
   {"number_val", false, true, false},
-  {"projectionType", false, true, false},
   {"beg_surv", true, true, false},
   {"end_surv", true, true, false},
   {"name_surv", true, true, false},
@@ -323,6 +322,7 @@ paramDef troll_paramDef_list[] = {
   {"val_mean", true, true, false},
   {"w_mean", true, true, false},
   {"UNSEEN", false, true, false},
+  {"projection", false, false, false},
   {"NORM_GAIN", false, true, false},
   {"REMOVE_CAL", false, true, false},
   {"Signal_noPS", true, false, false},
@@ -859,9 +859,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       return 1;
     }
   }
-  else if (strcmp(name, "projectionType") == 0) {
-    strcpy(param->projectionType, *value);
-  }
   else if (strcmp(name, "beg_surv") == 0) {
     param->n_beg_surv = list_size;
     param->beg_surv = malloc(list_size * sizeof(PIOLONG));
@@ -966,6 +963,10 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       fprintf(stderr, "ERROR: 'UNSEEN': Unable to convert value '%s' to target type %s\n", *value, "PIODOUBLE");
       return 1;
     }
+  }
+  else if (strcmp(name, "projection") == 0) {
+    param->flag_projection = _PAR_TRUE;
+    strcpy(param->projection, *value);
   }
   else if (strcmp(name, "NORM_GAIN") == 0) {
     errno = 0;
@@ -1457,9 +1458,9 @@ PyObject *troll_readParam(troll_parContent *param, char *filename) {
 		//strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
        
                 #if PY_MAJOR_VERSION >= 3
-		strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+		strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH-1);
 		#else
-		strncpy(value,PyString_AsString(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+		strncpy(value,PyString_AsString(PyObject_Str(pyValue)),MAX_LINE_LENGTH-1);
 		#endif
 		
 		// Store the list value

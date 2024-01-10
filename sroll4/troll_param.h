@@ -291,11 +291,7 @@ typedef struct {
    *
    */  
   PIOINT number_val;
-  /* ---- Parameter  projectionType ---------------------------------------------
-   *
-   */  
-  PIOSTRING projectionType;
-
+  
   
   /* ---- Parameter  beg_surv ---------------------------------------------
    *
@@ -337,6 +333,12 @@ typedef struct {
    *
    */  
     PIODOUBLE UNSEEN;
+
+  /* ---- Optional Parameter projection ---------------------------------------------
+   *
+   */  
+  PIOSTRING projection;
+  PIOBYTE flag_projection;  /* ==_PAR_TRUE if projection is present */
 
   /* ---- Optional Parameter NORM_GAIN ---------------------------------------------
    *

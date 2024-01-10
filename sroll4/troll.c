@@ -41,8 +41,9 @@
 #define PY_SSIZE_T_CLEAN
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <Python.h>
+#if 0
 #include <numpy/arrayobject.h>
-
+#endif
 
 #include "troll_param.h"
 
@@ -1003,7 +1004,8 @@ double solvemap(double *x,double *y,double *z,
 #ifndef MAXTHEOSHPR
 #define MAXTHEOSHPR (1)
 #endif
-#ifndef MAXTHEOMAP#define MAXTHEOMAP (3)
+#ifndef MAXTHEOMAP
+#define MAXTHEOMAP (3)
 #endif
 #ifndef MAXCHAN
 #define MAXCHAN (16)
@@ -1051,58 +1053,6 @@ long DODISTOR=0;
 #define _PIOMALLOC malloc
 #define _PIOFREE free
 
-
-
-// ---------------------------------------------------------------------------------------------------
-void init_channels(hpix * h,char * param_projection,double psi,double rgnorm,double eta,int idx_bolo){
-  //Function that init the array h.channels according to the params param_projection (I,IQU,QU) 
-    
-  if(strcmp(param_projection,"I")==0){
-     h->channels[0] = 1;
-  }else if(strcmp(param_projection,"I,Q,U")==0){
-    h->channels[0] = 1;
-    h->channels[1] = eta*cos(2*psi);
-    h->channels[2] = eta*sin(2*psi);
-  }else if(strcmp(param_projection,"Q,U")==0){
-    h->channels[0] = cos(2*psi);
-    h->channels[1] = sin(2*psi);
-  }else if(strcmp(param_projection,"cfosatmap")==0){
-    h->channels[0] = cos(2*psi);
-    h->channels[1] = sin(2*psi);
-    h->channels[2] = cos(4*psi);
-    h->channels[3] = sin(4*psi);      
-  }else if(strcmp(param_projection,"I857")==0){
-
-    float a[] =  {-0.618626,-1.17642,0.888016,-0.343286};
-    float b[] = {1.5558,-1.09535,1.91318,1.93294};
-    h->channels[0] = 1;
-    h->channels[1] = (a[idx_bolo]*cos(2*psi))-(b[idx_bolo]*sin(2*psi));
-    h->channels[2] = (a[idx_bolo]*sin(2*psi))+(b[idx_bolo]*cos(2*psi));
-
-    //fprintf(stderr,"a[%d] = %lf \n b[%d] = %lf",idx_bolo,a[idx_bolo],idx_bolo,b[idx_bolo]);
-
-
-    //h->channels[1] =eta*cos(2*psi); //sqrt((a[idx_bolo]*a[idx_bolo])+(b[idx_bolo]*b[idx_bolo]))*cos(2*psi);
-    //h->channels[2] = eta*sin(2*psi); //sqrt((a[idx_bolo]*a[idx_bolo])+(b[idx_bolo]*b[idx_bolo]))*sin(2*psi);
-  
-
-
-  }else if(strcmp(param_projection,"spline2")==0){     
-    calc_circ_spline(myspline,2*psi,h->channels);    
-  }else if(strcmp(param_projection,"spline3")==0){     
-    calc_circ_spline(myspline,2*psi,h->channels);    
-  }else if(strcmp(param_projection,"spline4")==0){
-    calc_circ_spline(myspline,2*psi,h->channels);  
-  }else if(strcmp(param_projection,"spline4x2")==0){
-    calc_circ_spline2D(myspline,2*psi,rgnorm,h->channels);  
-  }else if(strcmp(param_projection,"spline16")==0){     
-    calc_circ_spline(myspline,2*psi,h->channels);    
-  }else if(strcmp(param_projection,"spline3x2")==0){     
-    calc_circ_spline2D(myspline,2*psi,rgnorm,h->channels);    
-  }else if(strcmp(param_projection,"spline3x4")==0){     
-    calc_circ_spline2D(myspline,2*psi,rgnorm,h->channels);    
-  }
-}
 // ---------------------------------------------------------------------------------------------------
 double gcmat_mpi(double *mat,double *vec,int n,int nn,long begr,long edr)
 {
@@ -3452,11 +3402,11 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   MPI_Bcast(ix2, sizeof(double)*(nmatres), MPI_BYTE, 0, MPI_COMM_WORLD);
       
 
-} 
+}
+#if 0
 // --------------------------------------------------------------------------------------------------
 void buildmap(double * map,double *signal,int begpix,int endpix){
  
-  MPI_Status statu;
   int rank;
   int size;
   int mpi_size;
@@ -3471,10 +3421,6 @@ void buildmap(double * map,double *signal,int begpix,int endpix){
   int *allend;
   int *all_realpix;
   float *all_map;
-  int maxsize=0;
-
-  int map_size = Nside*Nside*12;
- 
 
   // Convert array from double to float for smaller file to be written
   float *value = (float *)malloc(sizeof(float)*(endpix-begpix+1));
@@ -3641,7 +3587,9 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
   double ** maps = (double **) malloc(sizeof(double*)*MAXCHANNELS);
   for (int i = 0;i<MAXCHANNELS;i++){
     maps[i]=(double *) malloc(sizeof(double)*map_size);
-    memset(maps[i],UNSEENPIX,map_size*sizeof(double));
+    for (int ii = 0;ii<map_size;ii++){
+      maps[i][ii]=UNSEENPIX;
+    }
   }
 
   for(int i =0;i<MAXCHANNELS;i++) buildmap(maps[i],signal[i],begpix,endpix);
@@ -3652,7 +3600,9 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
   double ** new_templates = (double **) malloc(sizeof(double*)*2);
   for (int i =0;i<2;i++){
     new_templates[i]=(double *) malloc(sizeof(double)*map_size);
-    memset(new_templates[i],UNSEENPIX,map_size*sizeof(double));
+    for (int ii = 0;ii<map_size;ii++){
+      new_templates[i][ii]=UNSEENPIX;
+    }
   }
 
   if(rank == 0){
@@ -3728,7 +3678,7 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
   free(new_templates);
   free(maps);
 }
-
+#endif
 // --------------------------------------------------------------------------------------------------
 
 
@@ -4819,7 +4769,7 @@ int PIOWriteMAP(const char *path, double *value_in_double,int beg,int end)
   for (int i = 0; i < (end-beg+1); ++i) {
     value[i] = (float)value_in_double[i];
   }
-  float *map;
+  float *map=NULL;
   if (rank==0)  {
     map=(float *)malloc(sizeof(float)*map_size);
   }
@@ -4875,7 +4825,8 @@ int PIOWriteMAP(const char *path, double *value_in_double,int beg,int end)
     }
     fprintf( stderr, "WRITE MAP: %s\n", fitspath);
     write_healpix_map( map, Nside, fitspath, 0, "G");
-    free(map);
+    if (map!=NULL)
+      free(map);
   }
 
   free(value);
@@ -4890,15 +4841,12 @@ int PIOWriteVECT(const char *path,void *value,int off,int size)
   return(err);
 }
 
-
 /* ---------------------------------------------------------------------------------*/
 PyObject * init_PyFunction(char* path,char *funcname){
     /* Load python parameters form file gived in parameters path */    
 
     // init variables
     PyObject *pName, *pModule, *pDict, *pFunc;
-    PyObject * params;
-
 
     // Initialize the Python Interpreter
     Py_Initialize();
@@ -4990,7 +4938,7 @@ int copy_float_array(PyObject *pArray, PIOFLOAT *array) {
     if (!PyFloat_Check(item)) {
       fprintf(stderr, "L'élément n'est pas un double\n");
       free(array);
-      return NULL;
+      return -1;
     }
     array[i] = (PIOFLOAT) PyFloat_AsDouble(item);
   }
@@ -4998,6 +4946,73 @@ int copy_float_array(PyObject *pArray, PIOFLOAT *array) {
   return (int) n;
 }
 
+int Get_NumberOfChannels(PyObject *projFunc)
+{
+  PyObject *pValue=NULL;
+  int n=0;
+  
+  if (projFunc != NULL){
+    pValue = PyObject_CallMethod(projFunc,"getnumber_of_channels",NULL);
+
+    // Traitement de la valeur de retour
+    if (pValue != NULL) {
+      // Assurer que pValue est un tuple
+      n=(int) PyLong_AsLong(pValue);
+      Py_DECREF(pValue);
+    }
+    else {
+      PyErr_Print();
+      exit(0);
+    }
+    
+  }
+  else {
+    PyErr_Print();
+    exit(0);
+  }
+  
+  return n;
+}
+
+void init_channels(hpix * h,PyObject *projFunc,double psi,double rgnorm,double eta,int idx_bolo)
+{
+  
+  PyObject *pValue=NULL;
+  
+  if (projFunc != NULL){
+    PyObject *pArg1 = PyFloat_FromDouble((double)psi); // val est un flottant
+    PyObject *pArg2 = PyFloat_FromDouble((double)rgnorm); // val est un flottant
+    PyObject *pArg3 = PyFloat_FromDouble((double)eta); // val est un flottant
+    PyObject *pArg4 = PyLong_FromLong((long)idx_bolo); // val est un flottant
+    
+    pValue = PyObject_CallMethod(projFunc, "eval", "(OOOO)", pArg1, pArg2, pArg3, pArg4);
+
+    // Traitement de la valeur de retour
+    if (pValue != NULL) {
+      int err=copy_float_array(pValue,h->channels);
+      if (err!=MAXCHANNELS) {
+	  fprintf(stderr, "Projection function does not provide the good number of channels: expected %d  get %d\n",MAXCHANNELS,err);
+      }
+      Py_DECREF(pValue);
+    }
+    else {
+      PyErr_Print();
+      exit(0);
+    }
+
+    // Nettoyage des arguments
+    Py_DECREF(pArg1);
+    Py_DECREF(pArg2);
+    Py_DECREF(pArg3);
+    Py_DECREF(pArg4);
+    
+  } else {
+    PyErr_Print();
+    exit(0);
+  }
+  
+}
+		    
 int calc_sparse_hpr(PyObject *sparseFunc,
 		    long rg,
 		    long ib,
@@ -5007,10 +5022,8 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 		    PIOFLOAT *oval,
 		    PIOINT *oval_idx)
 {
-  PyObject * result;
-  PyObject *pArgs;
   PyObject *pValue=NULL;
-  int n;
+  int n=-1;
 
   if (sparseFunc != NULL){
     // Créer des arguments pour la fonction Python
@@ -5022,7 +5035,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     PyObject *pArg5 = PyFloat_FromDouble((double)azi); // val est un flottant
 
     // Appel de la méthode 'eval'
-    PyObject *pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5);
+    pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
@@ -5122,52 +5135,63 @@ int main(int argc,char *argv[])  {
 
   Param = &par;
   
-  char * param_projection = Param->projectionType;
+  PyObject *projFunc=NULL;
+  if (Param->flag_projection==_PAR_TRUE) {
+    PyObject *pArgs = NULL;
+    PyObject *pClass = NULL;
+    PyObject *pName = PyUnicode_FromString(argv[1]);
+    PyObject *pModule = PyImport_Import(pName);
+    Py_DECREF(pName);
+
+    if (pModule == NULL) {
+      PyErr_Print();
+      fprintf(stderr, "Échec du chargement du module\n");
+      return 1;
+    }
+
+    pClass = PyObject_GetAttrString(pModule, Param->projection);
+    if (pClass == NULL || !PyCallable_Check(pClass)) {
+      PyErr_Print();
+      fprintf(stderr, "Échec de la récupération de la classe\n");
+      Py_XDECREF(pClass);
+      Py_DECREF(pModule);
+      return 1;
+    }
+    // Créer un tuple pour les arguments du constructeur
+    pArgs = PyTuple_New(1);
+    PyTuple_SetItem(pArgs, 0, pyParam);  // Le tuple prend la propriété de 'param'
+    projFunc = PyObject_CallObject(pClass,pArgs); 
+
+    if (projFunc == NULL) {
+      PyErr_Print();
+      fprintf(stderr, "Échec de la création de l'instance de la classe projection\n");
+      Py_DECREF(pModule);
+      return 1;
+    }
+  }
   
-  if (rank==0)   fprintf(stderr,"projection_type = %s \n",param_projection);   
+  if (projFunc==NULL) {
+    MAXCHANNELS = 1;
+  }
+  else {
+    MAXCHANNELS = Get_NumberOfChannels(projFunc);
+    
+    if (MAXCHANNELS>MAXCHAN) {
+      fprintf(stderr,"The number of channels from python class %s is %d. Troll has been compiled with MAXCHAN=%d\n",Param->projection,
+	      (int) MAXCHANNELS,(int) MAXCHAN);
+      exit(0);
+    }
+  }
+
+  if (rank==0)  fprintf(stderr,"Projection uses %d channels\n",MAXCHANNELS);
 
   int nside128=128; // IF DONside=1 then all 128 maps are used in Nside
   if (Param->flag_TEMPLATE_NSIDE) {
     nside128=Param->TEMPLATE_NSIDE;
   }
 
-  //if projectionType define maxchannels
-  if(strcmp(param_projection,"I")==0){
-    MAXCHANNELS = 1;
-  }else if(strcmp(param_projection,"Q,U")==0){
-     MAXCHANNELS = 2;    
-  }else if(strcmp(param_projection,"I,Q,U")==0){
-     MAXCHANNELS = 3;
-  }else if(strcmp(param_projection,"cfosatmap")==0){
-    MAXCHANNELS = 4;
-  }else if(strcmp(param_projection,"spline2")==0){
-    MAXCHANNELS = 2; 
-    myspline=circ_spline(2,3);
-  }else if(strcmp(param_projection,"spline3")==0){
-    MAXCHANNELS = 3;
-    myspline=circ_spline(3,3);
-  }else if(strcmp(param_projection,"spline3x2")==0){
-    MAXCHANNELS = 6;
-    myspline=circ_spline2D(3,2,3);
-  }else if(strcmp(param_projection,"spline3x4")==0){
-    MAXCHANNELS = 12;
-    myspline=circ_spline2D(3,4,3);
-  }else if(strcmp(param_projection,"spline4")==0){
-    MAXCHANNELS = 4;
-    myspline=circ_spline(4,3);
-  }else if(strcmp(param_projection,"spline4x2")==0){
-    MAXCHANNELS = 8;
-    myspline=circ_spline2D(4,2,3);
-  }else if(strcmp(param_projection,"spline16")==0){
-    MAXCHANNELS = 16;
-    myspline=circ_spline(16,3);
-  }else{
-    MAXCHANNELS = MAXCHAN;
-  }
-
   GAINSTEP = Param->GAINSTEP;
 
-  if (rank==0) fprintf(stderr,"MAXCHANNELS = %d \n",MAXCHANNELS);
   if (rank==0) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
   
   /*-------------------------------------------------------------------------*/
@@ -5569,7 +5593,7 @@ int main(int argc,char *argv[])  {
       exit ( -1);
     }
   }
-
+ 
   PyObject *sparseFunc=NULL;
   PyObject *pArgs = NULL;
   PyObject *pClass = NULL;
@@ -5589,7 +5613,7 @@ int main(int argc,char *argv[])  {
     pClass = PyObject_GetAttrString(pModule, Param->SparseFunc);
     if (pClass == NULL || !PyCallable_Check(pClass)) {
       PyErr_Print();
-      fprintf(stderr, "Échec de la récupération de la classe\n");
+      fprintf(stderr, "Échec de la récupération de la classe SparseFunc\n");
       Py_XDECREF(pClass);
       Py_DECREF(pModule);
       return 1;
@@ -6249,7 +6273,9 @@ int main(int argc,char *argv[])  {
 	    //tp_hpix->sadu=(rg-globalBeginRing)/((float)((globalEndRing+1) - globalBeginRing));
 	    tp_hpix->sadu=((float) ibadring[rg-globalBeginRing])/rg_max;
 	    
-	    init_channels(tp_hpix,Param->projectionType,psi[i],(rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),eta[ib],ib);
+	    init_channels(tp_hpix,projFunc,psi[i],
+			  (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
+			  eta[ib],ib);
 	    
 	    for (j=0;j<npixhpr;j++) tp_hpix->listofhpr[j]=theo[j][i];
 
@@ -7542,13 +7568,14 @@ int main(int argc,char *argv[])  {
 	}
 	resxi/=(nbolo*GAINSTEP);
       }
-
+#if 0
       if (Param->n_do_foscat>0) {
 	if(Param->do_foscat[itt] == 1){
 	  foscat(x3,gain,Nside,begpix[rank],edpix[rank],Param->do_templates);
 	}
       }
       MPI_Barrier(MPI_COMM_WORLD);
+#endif
 
 
 

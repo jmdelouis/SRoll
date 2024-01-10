@@ -23,6 +23,7 @@
 #endif
 // *** END INCLUDE GUARD ******************************************************
 
+void strip_ext(char *fname);
 
 // Below we automaticaly include the appropriate header defining parContent
 // structure
