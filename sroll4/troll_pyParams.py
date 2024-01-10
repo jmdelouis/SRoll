@@ -130,7 +130,6 @@ def main():
 	MAPRINGS = []
 	number_of_MAPRINGS = 
 	ADDDIP = 
-	KCMBIN = 
 	addHPR_name = []
 	number_of_addHPR_name = 
 	addHPR_factor = []

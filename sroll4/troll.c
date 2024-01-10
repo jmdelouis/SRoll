@@ -3,7 +3,7 @@
 #define _XOPEN_SOURCE 700
 #endif
   
-#define MAXOUTMAP (Nside)
+#define MAXOUTMAP (2048)
 
 #define CNN_NSIDE (32)
 
@@ -3085,7 +3085,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
   // Init 
   long i,k,l1;
-  int itermax = 500;//(NUMBEROFITER);
+  int itermax = NUMBEROFITER;
   double tol = 1E-20;
   PIOLONG GAINSTEP2;
   int rank;
@@ -3315,7 +3315,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   if (rank==0) {
     for (i=0; i < nmatres; i++){
       r2[i] = b2[i] - q2[i]; //r = b - Ax0 = Ax - Ax0  
-      d2[i] = r2[i]/hit2[i]; //d2 => p
+      if (hit2[i]>0) d2[i] = r2[i]/hit2[i]; //d2 => p
       //if (rank==0)  fprintf(stderr,"[DEBUG] i = %d q2[] %lf b2[] =%lf r2[] = %lf ,d2[] = %lf , hit2[] = %lf \n",i,q2[i],b2[i],r2[i],d2[i],hit2[i]);
 
     }
@@ -3375,7 +3375,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       
       for(int k = 0;k < nmatres;k++){
         alpha_tmp+= d2[k]*projX[k];
-        tmp += (r2[k]/hit2[k])*r2[k];
+        if (hit2[k]>0) tmp += (r2[k]/hit2[k])*r2[k];
       }
       //alpha = delta /alpha_tmp;
       alpha = tmp /alpha_tmp;
@@ -3417,8 +3417,10 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       tmp = 0.0;
       sum =0.0;
       for(int i =0;i<nmatres;i++){
-        tmp += (new_r[i]/hit2[i])*new_r[i];
-        sum += (r2[i]/hit2[i])*r2[i];        
+        if (hit2[i]>0) {
+	  tmp += (new_r[i]/hit2[i])*new_r[i];
+	  sum += (r2[i]/hit2[i])*r2[i];
+	}
       }
 
       beta =tmp/sum;
@@ -3428,15 +3430,13 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
       //calcul new_p
       for(int k =0;k<nmatres;k++){
-        new_p[k] = (new_r[k]/hit2[k])+beta*d2[k];
+        if (hit2[k]>0) new_p[k] = (new_r[k]/hit2[k])+beta*d2[k];
       }
 
       //mise a jour r,p,x
       memcpy(r2,new_r,sizeof(double)*(nmatres));
       memcpy(d2,new_p,sizeof(double)*(nmatres));
       memcpy(x_tab,new_x,sizeof(double)*(nmatres));
-
-
 
       gettimeofday(&tp2,NULL);
       time_exc = (double)(tp2.tv_sec-tp1.tv_sec)+(1E-6)*(tp2.tv_usec-tp1.tv_usec);
@@ -5002,7 +5002,8 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 		    long rg,
 		    long ib,
 		    long hpix,
-		    double val,
+		    double psi,
+		    double azi,
 		    PIOFLOAT *oval,
 		    PIOINT *oval_idx)
 {
@@ -5017,10 +5018,11 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     PyObject *pArg1 = PyLong_FromLong((long)rg); // rg est un entier
     PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
-    PyObject *pArg4 = PyFloat_FromDouble((double)val); // val est un flottant
+    PyObject *pArg4 = PyFloat_FromDouble((double)psi); // val est un flottant
+    PyObject *pArg5 = PyFloat_FromDouble((double)azi); // val est un flottant
 
     // Appel de la méthode 'eval'
-    PyObject *pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOO)", pArg1, pArg2, pArg3, pArg4);
+    PyObject *pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
@@ -5046,6 +5048,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     Py_DECREF(pArg2);
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
+    Py_DECREF(pArg5);
     
   } else {
     PyErr_Print();
@@ -5111,8 +5114,8 @@ int main(int argc,char *argv[])  {
   troll_parContent par;
   GetHostname( hostname);
 
-  int res = troll_readParam(&par, argv[1] );
-  if (res!=0) {
+  PyObject *pyParam = troll_readParam(&par, argv[1] );
+  if (pyParam==NULL) {
     fprintf(stderr, "Unable to parse the parameter file.\n");
     exit(-1);
   }
@@ -5192,10 +5195,6 @@ int main(int argc,char *argv[])  {
   assert( Param->n_OUT_NOPOL == Param->n_Out_MAP);
   assert( Param->n_Sub_HPR == Param->n_SUB_HPRCOEF);
 
-  
-  if (Param->flag_KCMBIN == 0) {
-    Param->KCMBIN = 0;
-  }
 
   // get CNN parameters if needed
   memset(DOCNN,0,MAXTHEOHPR*sizeof(int));
@@ -5572,6 +5571,9 @@ int main(int argc,char *argv[])  {
   }
 
   PyObject *sparseFunc=NULL;
+  PyObject *pArgs = NULL;
+  PyObject *pClass = NULL;
+  
   npixShpr=0;
   if (Param->flag_SparseFunc==_PAR_TRUE) {
     PyObject *pName = PyUnicode_FromString(argv[1]);
@@ -5584,7 +5586,7 @@ int main(int argc,char *argv[])  {
       return 1;
     }
 
-    PyObject *pClass = PyObject_GetAttrString(pModule, Param->SparseFunc);
+    pClass = PyObject_GetAttrString(pModule, Param->SparseFunc);
     if (pClass == NULL || !PyCallable_Check(pClass)) {
       PyErr_Print();
       fprintf(stderr, "Échec de la récupération de la classe\n");
@@ -5592,8 +5594,10 @@ int main(int argc,char *argv[])  {
       Py_DECREF(pModule);
       return 1;
     }
-    sparseFunc = PyObject_CallObject(pClass, NULL); // Passer NULL si le constructeur n'a pas d'arguments
-    Py_DECREF(pClass);
+    // Créer un tuple pour les arguments du constructeur
+    pArgs = PyTuple_New(1);
+    PyTuple_SetItem(pArgs, 0, pyParam);  // Le tuple prend la propriété de 'param'
+    sparseFunc = PyObject_CallObject(pClass,pArgs); 
 
     if (sparseFunc == NULL) {
       PyErr_Print();
@@ -5839,12 +5843,9 @@ int main(int argc,char *argv[])  {
 	  memset(hprtab_cal,0,sizeof(PIOFLOAT)*RINGSIZE);
 	}
 
-        if (Param->KCMBIN == 1) {
-          // input HPR are in KCMB, convert them to watts
-          for (i=0; i<RINGSIZE; i++) {
-            y[0][i] *= Param->Calibration[ib];
-          }
-        }
+	for (i=0; i<RINGSIZE; i++) {
+	  y[0][i] *= Param->Calibration[ib];
+	}
 
         if (Param->ADDDIP == 1) {
           // for projection only, signal must contain the total dipole, add it if it's not here
@@ -6253,7 +6254,7 @@ int main(int argc,char *argv[])  {
 	    for (j=0;j<npixhpr;j++) tp_hpix->listofhpr[j]=theo[j][i];
 
 	    if (sparseFunc!=NULL) {
-	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,rg,ib,ipix,psi[i],
+	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,rg,ib,ipix,psi[i],phase[i],
 					       tp_hpix->listofShpr,
 					       tp_hpix->listofShpr_idx);
 	      for (j=0;j<tp_hpix->nShpr;j++) {
@@ -6388,6 +6389,9 @@ int main(int argc,char *argv[])  {
     MPI_Bcast(&npixShpr,sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
     
     ClosepFunc(sparseFunc);
+    
+    Py_DECREF(pClass);
+    Py_DECREF(pArgs);
   }
 
   if (rank==0) fprintf(stderr,"NSHPR %d\n",(int) npixShpr);
@@ -7634,8 +7638,10 @@ int main(int argc,char *argv[])  {
 	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"TMAP=[");
 	  fprintf(stderr,"%lg,",x3[i]);
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
-	}	
-	for (i=(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap+npixShpr)*nbolo+newnr[nbolo];i++) {
+	}
+	int nbSTF=npixShpr;
+	if (nbSTF>10) nbSTF=200;
+	for (i=(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap+nbSTF)*nbolo+newnr[nbolo];i++) {
 	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"STF=[");
 	  fprintf(stderr,"%lg,",x3[i]);
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");

@@ -40,7 +40,7 @@ __INCLUDE_PARCONTENT_HEADER__
   @return non zero value in case of error.
 */
 
-int __TAG__readParam(__TAG__parContent *param, char *filename);
+PyObject *__TAG__readParam(__TAG__parContent *param, char *filename);
 
 
 #endif

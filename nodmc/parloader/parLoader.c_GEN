@@ -305,7 +305,7 @@ int __TAG__updateParam(__TAG__parContent *param, char *name, PIOSTRING *value, P
 }
 
 
-int __TAG__readParam(__TAG__parContent *param, char *filename) {
+PyObject *__TAG__readParam(__TAG__parContent *param, char *filename) {
   // Parse the parameter file: read each line and update info in structure
   // if we encounter an error stop the process or print a warning depending of the severity.
 
@@ -339,7 +339,7 @@ int __TAG__readParam(__TAG__parContent *param, char *filename) {
     PyErr_Print();
     perror("Error");
     exit(-1);
-    return 1;
+    return NULL;
   }
 
   // Init the internal structure allowing to know if a parameter has already appeared.
@@ -403,7 +403,7 @@ int __TAG__readParam(__TAG__parContent *param, char *filename) {
       }
     }
   }    
-  return 0;
+  return pyParams;
 }
 
 

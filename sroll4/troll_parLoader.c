@@ -362,7 +362,6 @@ paramDef troll_paramDef_list[] = {
   {"stim_paramfiles", true, false, false},
   {"MAPRINGS", true, false, false},
   {"ADDDIP", false, false, false},
-  {"KCMBIN", false, false, false},
   {"addHPR_name", true, false, false},
   {"addHPR_factor", true, false, false},
   {"addHPR_watts", true, false, false},
@@ -370,7 +369,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 97;
+int troll_paramDef_list_size = 96;
 
 
 
@@ -1300,15 +1299,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       return 1;
     }
   }
-  else if (strcmp(name, "KCMBIN") == 0) {
-    param->flag_KCMBIN = _PAR_TRUE;
-    errno = 0;
-    param->KCMBIN = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'KCMBIN': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
   else if (strcmp(name, "addHPR_name") == 0) {
     param->flag_addHPR_name = _PAR_TRUE;
     param->n_addHPR_name = list_size;
@@ -1395,7 +1385,7 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
 }
 
 
-int troll_readParam(troll_parContent *param, char *filename) {
+PyObject *troll_readParam(troll_parContent *param, char *filename) {
   // Parse the parameter file: read each line and update info in structure
   // if we encounter an error stop the process or print a warning depending of the severity.
 
@@ -1429,7 +1419,7 @@ int troll_readParam(troll_parContent *param, char *filename) {
     PyErr_Print();
     perror("Error");
     exit(-1);
-    return 1;
+    return NULL;
   }
 
   // Init the internal structure allowing to know if a parameter has already appeared.
@@ -1493,7 +1483,7 @@ int troll_readParam(troll_parContent *param, char *filename) {
       }
     }
   }    
-  return 0;
+  return pyParams;
 }
 
 

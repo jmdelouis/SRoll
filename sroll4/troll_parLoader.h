@@ -40,7 +40,7 @@
   @return non zero value in case of error.
 */
 
-int troll_readParam(troll_parContent *param, char *filename);
+PyObject *troll_readParam(troll_parContent *param, char *filename);
 
 
 #endif

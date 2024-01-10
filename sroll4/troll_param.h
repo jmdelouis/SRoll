@@ -594,13 +594,6 @@ typedef struct {
   PIOINT ADDDIP;
   PIOBYTE flag_ADDDIP;
 
-  /* ---- Optional Parameter KCMBIN ------------------------------------
-   * set to 1 if Signal_noPS input HPR is in KCMB instead of Watts
-   * when KCMBIN=1, Signal_noPs is first converted to Watts using the Calibration parameter
-   */
-  PIOINT KCMBIN;
-  PIOBYTE flag_KCMBIN;
-
   /* ---- Optional InputList addHPR_name -------------------------------
    * list of HPR object names of type PIOFLOAT to add to Signal_noPS input HPRs
    * must be a multiple of number of bolometers
