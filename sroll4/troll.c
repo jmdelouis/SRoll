@@ -7640,7 +7640,7 @@ int main(int argc,char *argv[])  {
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
 	}
 	int nbSTF=npixShpr;
-	if (nbSTF>10) nbSTF=200;
+	if (nbSTF>200) nbSTF=200;
 	for (i=(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap+nbSTF)*nbolo+newnr[nbolo];i++) {
 	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"STF=[");
 	  fprintf(stderr,"%lg,",x3[i]);
