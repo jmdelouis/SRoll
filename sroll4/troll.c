@@ -2,7 +2,8 @@
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 700
 #endif
-  
+
+// MAP NAME DEFINITION
 #define MAXOUTMAP (2048)
 
 #define CNN_NSIDE (32)
@@ -470,6 +471,7 @@ void InitPython(WrapPython *mywrap, char *myfunct, int rank)
   PyRun_SimpleString("sys.path.append(os.getcwd())");
 
   mywrap->sys = EXECPYTHON(PyImport_ImportModule("sys"));
+  
   mywrap->py_path = EXECPYTHON(PyObject_GetAttrString(mywrap->sys, "path"));
   
 #ifdef PYTHON3
@@ -497,6 +499,7 @@ void InitPython(WrapPython *mywrap, char *myfunct, int rank)
 
     
   mywrap->Module = EXECPYTHON(PyImport_Import(mywrap->ModuleString));
+  
   mywrap->Dict = EXECPYTHON(PyModule_GetDict(mywrap->Module));
   mywrap->run_foscat = CALLPYTHON(mywrap->Dict, "run");
 
@@ -1041,11 +1044,6 @@ typedef struct {
   double m;
   double R_ij;
   double alpha[MAXCHAN];
-#if 0
-  PIOFLOAT vspline[4];
-  int istart;
-  int iend;
-#endif
 } hpix;
 
 int MAXCHANNELS  = 0;
@@ -1934,6 +1932,9 @@ double *q2;
 double *r2;
 double *s2;
 double *hit2;
+double *hit_WW;
+double *hit_L1;
+double *hit_L2;
 PIOLONG docutrg;
 
 long nmatpix;
@@ -2749,30 +2750,97 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
       
   
       //Calcul hit2
+      // le but est de calculer la variance de chacun des paramètre dans chaque pixel.
+      // hit 2 est la somme des variances sur tous les pixels.
+      
       for(int l1=0;l1<ndata;l1++){
         long ri1=htmp[l1].rg-globalBeginRing;  
         if (flg_rg[htmp[l1].ib][ri1]!=0) {
           ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];      
-          hit2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+          hit_WW[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+          hit_L2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+          //hit_L1[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
 
           for(int m = 0;m<npixhpr;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-            hit2[irt]+= htmp[l1].w*htmp[l1].listofhpr[m]*htmp[l1].listofhpr[m]; // poids stat de chaque valeurs 
+            hit_L2[irt]+= htmp[l1].w*htmp[l1].listofhpr[m]*htmp[l1].listofhpr[m]; // poids stat de chaque valeurs 
+            hit_L1[irt]+= htmp[l1].w*htmp[l1].listofhpr[m]; // poids stat de chaque valeurs 
+            hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
           }
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
-            hit2[irt]+= htmp[l1].w*htmp[l1].listofmap[m]*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
+            hit_L2[irt]+= htmp[l1].w*htmp[l1].listofmap[m]*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
+            hit_L1[irt]+= htmp[l1].w*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
+            hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
           }
           for(int m = 0;m<htmp[l1].nShpr;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap);
-            hit2[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
+            hit_L2[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
+            hit_L1[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
+            hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
           }
 	  
-          if(GAINSTEP2 != 0) hit2[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]+=htmp[l1].w*htmp[l1].model*htmp[l1].model;
+          if(GAINSTEP2 != 0) {
+	    irt=newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2;
+	    hit_L2[irt]+=htmp[l1].w*htmp[l1].model*htmp[l1].model;
+	    hit_L1[irt]+=htmp[l1].w*htmp[l1].model;
+	    hit_WW[irt]+=htmp[l1].w;
+	  }
         }
       }
+      //Remise à 0 et calcul de hit2 si hit_WW est different de 0
+      //On considere que c'est plus rapide de remetre à 0 comme cela.
+      
+      for(int l1=0;l1<ndata;l1++){
+        long ri1=htmp[l1].rg-globalBeginRing;  
+        if (flg_rg[htmp[l1].ib][ri1]!=0) {
+          ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
+	  if (hit_WW[ir]>0&&hit_L2[ir]!=hit_L1[ir]) {
+	    hit2[ir] += hit_L2[ir] - hit_L1[ir]*hit_L1[ir]/hit_WW[ir];
+	  }
+          hit_WW[ir] =0; // poids stat de chaque valeurs 
+          hit_L1[ir] =0; // poids stat de chaque valeurs 
+          hit_L2[ir] =0; // poids stat de chaque valeurs 
 
-
+          for(int m = 0;m<npixhpr;m++){
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
+	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
+	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
+	    }
+            hit_L2[irt] = htmp[l1].w; // poids stat de chaque valeurs 
+            hit_L1[irt] = htmp[l1].w; // poids stat de chaque valeurs 
+            hit_WW[irt] = htmp[l1].w; // poids stat de chaque valeurs 
+          }
+          for(int m = 0;m<npixmap;m++){
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
+	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
+	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
+	    }
+            hit_L2[irt] = 0; // poids stat de chaque valeurs 
+            hit_L1[irt] = 0; // poids stat de chaque valeurs 
+            hit_WW[irt] = 0; // poids stat de chaque valeurs 
+          }
+          for(int m = 0;m<htmp[l1].nShpr;m++){
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap);
+	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
+	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
+	    }
+            hit_L2[irt] = 0; // poids stat de chaque valeurs 
+            hit_L1[irt] = 0; // poids stat de chaque valeurs 
+            hit_WW[irt] = 0; // poids stat de chaque valeurs 
+          }
+	  
+          if(GAINSTEP2 != 0) {
+	    irt=newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2;
+	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
+	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
+	    }
+	    hit_L2[irt] = 0;
+	    hit_L1[irt] = 0;
+	    hit_WW[irt] = 0;
+	  }
+        }
+      }
     }
   }
 }
@@ -3189,6 +3257,9 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   //Init b2 and q2 to 0
   memset(b2,0,sizeof(double)*(nmatres));
   memset(hit2,0,sizeof(double)*(nmatres));
+  memset(hit_WW,0,sizeof(double)*(nmatres));
+  memset(hit_L1,0,sizeof(double)*(nmatres));
+  memset(hit_L2,0,sizeof(double)*(nmatres));
   memset(q2,0,sizeof(double)*(nmatres));
 
 
@@ -3265,7 +3336,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   if (rank==0) {
     for (i=0; i < nmatres; i++){
       r2[i] = b2[i] - q2[i]; //r = b - Ax0 = Ax - Ax0  
-      if (hit2[i]>0) d2[i] = r2[i]/hit2[i]; //d2 => p
+      if (hit2[i]>1.0) d2[i] = r2[i]/hit2[i]; //d2 => p
       //if (rank==0)  fprintf(stderr,"[DEBUG] i = %d q2[] %lf b2[] =%lf r2[] = %lf ,d2[] = %lf , hit2[] = %lf \n",i,q2[i],b2[i],r2[i],d2[i],hit2[i]);
 
     }
@@ -3325,7 +3396,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       
       for(int k = 0;k < nmatres;k++){
         alpha_tmp+= d2[k]*projX[k];
-        if (hit2[k]>0) tmp += (r2[k]/hit2[k])*r2[k];
+        if (hit2[k]>1.0) tmp += (r2[k]/hit2[k])*r2[k];
       }
       //alpha = delta /alpha_tmp;
       alpha = tmp /alpha_tmp;
@@ -3367,7 +3438,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       tmp = 0.0;
       sum =0.0;
       for(int i =0;i<nmatres;i++){
-        if (hit2[i]>0) {
+        if (hit2[i]>1.0) {
 	  tmp += (new_r[i]/hit2[i])*new_r[i];
 	  sum += (r2[i]/hit2[i])*r2[i];
 	}
@@ -3380,7 +3451,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
       //calcul new_p
       for(int k =0;k<nmatres;k++){
-        if (hit2[k]>0) new_p[k] = (new_r[k]/hit2[k])+beta*d2[k];
+        if (hit2[k]>1.0) new_p[k] = (new_r[k]/hit2[k])+beta*d2[k];
       }
 
       //mise a jour r,p,x
@@ -4692,6 +4763,7 @@ void GetHostname( PIOSTRING hostname) {
   fscanf( f, "%s", hostname);
   fclose( f);
 }
+ 
 ////////////////////////////////////////////////////////////////////////////////
 // print free memory on each node
 
@@ -4974,18 +5046,19 @@ int Get_NumberOfChannels(PyObject *projFunc)
   return n;
 }
 
-void init_channels(hpix * h,PyObject *projFunc,double psi,double rgnorm,double eta,int idx_bolo)
+void init_channels(hpix * h,PyObject *projFunc,double psi,double phase,double rgnorm,double eta,int idx_bolo)
 {
   
   PyObject *pValue=NULL;
   
   if (projFunc != NULL){
     PyObject *pArg1 = PyFloat_FromDouble((double)psi); // val est un flottant
-    PyObject *pArg2 = PyFloat_FromDouble((double)rgnorm); // val est un flottant
-    PyObject *pArg3 = PyFloat_FromDouble((double)eta); // val est un flottant
-    PyObject *pArg4 = PyLong_FromLong((long)idx_bolo); // val est un flottant
+    PyObject *pArg2 = PyFloat_FromDouble((double)phase); // val est un flottant
+    PyObject *pArg3 = PyFloat_FromDouble((double)rgnorm); // val est un flottant
+    PyObject *pArg4 = PyFloat_FromDouble((double)eta); // val est un flottant
+    PyObject *pArg5 = PyLong_FromLong((long)idx_bolo); // val est un flottant
     
-    pValue = PyObject_CallMethod(projFunc, "eval", "(OOOO)", pArg1, pArg2, pArg3, pArg4);
+    pValue = PyObject_CallMethod(projFunc, "eval", "(OOOOO)", pArg1, pArg2,  pArg3, pArg4, pArg5);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
@@ -5005,6 +5078,7 @@ void init_channels(hpix * h,PyObject *projFunc,double psi,double rgnorm,double e
     Py_DECREF(pArg2);
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
+    Py_DECREF(pArg5);
     
   } else {
     PyErr_Print();
@@ -5018,7 +5092,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 		    long ib,
 		    long hpix,
 		    double psi,
-		    double azi,
+		    double phase,
 		    PIOFLOAT *oval,
 		    PIOINT *oval_idx)
 {
@@ -5032,9 +5106,9 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
     PyObject *pArg4 = PyFloat_FromDouble((double)psi); // val est un flottant
-    PyObject *pArg5 = PyFloat_FromDouble((double)azi); // val est un flottant
+    PyObject *pArg5 = PyFloat_FromDouble((double)phase); // val est un flottant
 
-    // Appel de la méthode 'eval'
+    // Appel de la méthode 'eval's
     pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5);
 
     // Traitement de la valeur de retour
@@ -5198,7 +5272,7 @@ int main(int argc,char *argv[])  {
   /*   SAVE PARAMETER FILE                                                   */
   /*-------------------------------------------------------------------------*/
   if (rank==0) {
-    char commandtest[Nside];
+    char commandtest[PIOSTRINGMAXLEN*64];
     sprintf(commandtest,"cp %s.py %s.py",argv[1],Param->Out_VEC[0]);
     int err=system(commandtest);
     if (err) {
@@ -6273,14 +6347,17 @@ int main(int argc,char *argv[])  {
 	    //tp_hpix->sadu=(rg-globalBeginRing)/((float)((globalEndRing+1) - globalBeginRing));
 	    tp_hpix->sadu=((float) ibadring[rg-globalBeginRing])/rg_max;
 	    
-	    init_channels(tp_hpix,projFunc,psi[i],
+	    init_channels(tp_hpix,projFunc,psi[i],phase[i],
 			  (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
 			  eta[ib],ib);
 	    
 	    for (j=0;j<npixhpr;j++) tp_hpix->listofhpr[j]=theo[j][i];
 
 	    if (sparseFunc!=NULL) {
-	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,rg,ib,ipix,psi[i],phase[i],
+	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,rg,ib,
+					       ipix,
+					       psi[i],
+					       phase[i],
 					       tp_hpix->listofShpr,
 					       tp_hpix->listofShpr_idx);
 	      for (j=0;j<tp_hpix->nShpr;j++) {
@@ -7068,7 +7145,7 @@ int main(int argc,char *argv[])  {
         MPI_Status statu;
         int rrk;
         double *l_histo;
-	      PIOSTRING saveg;
+	PIOSTRING saveg;
 
         if (nadustep[ib]<32000) {
           l_histo = (double *) malloc((32000)*sizeof(double));
@@ -7423,6 +7500,9 @@ int main(int argc,char *argv[])  {
     r2 =     (double *) malloc (maxsizemat*sizeof (double));
     s2 =     (double *) malloc (maxsizemat*sizeof (double));
     hit2 =   (double *) malloc (maxsizemat*sizeof (double));
+    hit_WW =   (double *) malloc (maxsizemat*sizeof (double));
+    hit_L2 =   (double *) malloc (maxsizemat*sizeof (double));
+    hit_L1 =   (double *) malloc (maxsizemat*sizeof (double));
 
 
     for (i=0;i<Param->n_Out_MAP;i++) strcpy(mapout[i],Param->Out_MAP[i]);
@@ -7495,6 +7575,9 @@ int main(int argc,char *argv[])  {
     memset(r2     ,0,maxsizemat*sizeof (double));
     memset(s2     ,0,maxsizemat*sizeof (double));
     memset(hit2   ,0,maxsizemat*sizeof (double));
+    memset(hit_WW   ,0,maxsizemat*sizeof (double));
+    memset(hit_L1   ,0,maxsizemat*sizeof (double));
+    memset(hit_L2   ,0,maxsizemat*sizeof (double));
   #if DORGG
     for (i=0;i<newnr[nbolo];i++) g[i]=1.;
   #else
@@ -7752,6 +7835,9 @@ int main(int argc,char *argv[])  {
       free(r2);
       free(s2);
       free(hit2);
+      free(hit_WW);
+      free(hit_L1);
+      free(hit_L2);
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -7775,6 +7861,12 @@ int main(int argc,char *argv[])  {
   for (i = 0;i<MAXCHANNELS;i++){
     map[i]=(double *) malloc(sizeof(double)*nnbpix);
   }
+  double ** rmap = (double **) malloc(sizeof(double*)*MAXCHANNELS);
+  for (i = 0;i<MAXCHANNELS;i++){
+    rmap[i]=(double *) malloc(sizeof(double)*nnbpix);
+  }
+  double * cmap = (double *) malloc(sizeof(double)*nnbpix);
+  
   double ** imap = (double **) malloc(sizeof(double*)*MAXCHANNELS);
   for (i = 0;i<MAXCHANNELS;i++){
     imap[i]=(double *) malloc(sizeof(double)*nnbpix);
@@ -7788,6 +7880,7 @@ int main(int argc,char *argv[])  {
   double *matrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
   double *Imatrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double));
   double *vector = malloc(MAXCHANNELS*sizeof(double));
+  double *rvector = malloc(MAXCHANNELS*sizeof(double));
   
   if (rank%64==0) {
     GetProcMem(&vmem,&phymem);
@@ -7805,112 +7898,195 @@ int main(int argc,char *argv[])  {
     int l1;
     for (k=0;k<nnbpix;k++) {
 	
-	    for(int i =0;i<MAXCHANNELS;i++){
-	      map[i][k]=UNSEENPIX;  // ie hp.UNSEEN
-	      imap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
+      for(int i =0;i<MAXCHANNELS;i++){
+	map[i][k]=UNSEENPIX;  // ie hp.UNSEEN
+	imap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
+	rmap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
+      }
+      cmap[k]=UNSEENPIX;  // ie hp.UNSEEN
+	
+      for(int i =0;i<MAXCHANNELS*MAXCHANNELS;i++){
+	matmap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
+      }
+	    
+      long ndata = loc_nhpix[k];
+      hpix *htmp = loc_hpix[k];
+      //fprintf(stderr,"%s %d\n",__FILE__,__LINE__);
+      
+      //buildmap
+      
+      memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
+      memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
+      memset(vector,0,MAXCHANNELS*sizeof(double));
+      memset(rvector,0,MAXCHANNELS*sizeof(double));
+      
+      for (l1=0;l1<ndata;l1++) {
+	// select only bolometers in detset
+	int use_bolo = 0;
+	
+	if (Param->bolomask[detset*nbolo+htmp[l1].ib]==1 && htmp[l1].rg>Param->beg_surv[isurv]&&htmp[l1].rg<=Param->end_surv[isurv]) {
+	  use_bolo=1;
+	}
+	
+	long ri1=htmp[l1].rg-globalBeginRing;
+	
+	if (flg_rg[htmp[l1].ib][ri1]!=0 && use_bolo==1) {
+	  long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
+	  //calcul signal corriger
+	  double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
+	  double rsig = htmp[l1].sig*g1;
+	  double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+	  double sig_corr2 = sig_corr;
+	  sig_corr-=x3[iri1];
+	  
+	  if (REMOVE_CAL==1) {
+	    sig_corr-=htmp[l1].hpr_cal;
+	    sig_corr2-=htmp[l1].hpr_cal;
+	  }
+	  
+	  for(int m =0;m<npixhpr;m++){
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
+	  }
+	  
+	  for(int m =0;m<npixmap;m++){
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
+	  }
+	  
+	  for(int m =0;m<htmp[l1].nShpr;m++){
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+	  }
+	  
+	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
+	  //calcul matrix & vector
+	  for(int i = 0;i<MAXCHANNELS;i++){  
+	    vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
+	  }
+	  for(int i = 0;i<MAXCHANNELS;i++){  
+	    rvector[i]+= htmp[l1].w *htmp[l1].channels[i]*rsig;
+	  }
+	  for(int i = 0;i<MAXCHANNELS;i++){        
+	    for(int j = 0;j<MAXCHANNELS;j++){
+	      matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
 	    }
-	    for(int i =0;i<MAXCHANNELS*MAXCHANNELS;i++){
-	      matmap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
-	    }
-	    
-	    long ndata = loc_nhpix[k];
-	    hpix *htmp = loc_hpix[k];
-	    //fprintf(stderr,"%s %d\n",__FILE__,__LINE__);
-	    
-	    //buildmap
-	     
-	    memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-	    memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-	    memset(vector,0,MAXCHANNELS*sizeof(double));
-	    
-	    for (l1=0;l1<ndata;l1++) {
-	      // select only bolometers in detset
-	      int use_bolo = 0;
-	      
-	      if (Param->bolomask[detset*nbolo+htmp[l1].ib]==1 && htmp[l1].rg>Param->beg_surv[isurv]&&htmp[l1].rg<=Param->end_surv[isurv]) {
-	        use_bolo=1;
-	      }
-	      
-	      long ri1=htmp[l1].rg-globalBeginRing;
-	     
-	      if (flg_rg[htmp[l1].ib][ri1]!=0 && use_bolo==1) {
-	        long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	        //calcul signal corriger
-	        double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-	        double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
-	        double sig_corr2 = sig_corr;
-	        sig_corr-=x3[iri1];
-	        
-	        if (REMOVE_CAL==1) {
-		  sig_corr-=htmp[l1].hpr_cal;
-		  sig_corr2-=htmp[l1].hpr_cal;
-	        }
-	        
-	        for(int m =0;m<npixhpr;m++){
-	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
-	        }
-		
-	        for(int m =0;m<npixmap;m++){
-	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
-	        }
-
-		for(int m =0;m<htmp[l1].nShpr;m++){
-		  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
-		}
-		
-	        sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
-	        //calcul matrix & vector
-	        for(int i = 0;i<MAXCHANNELS;i++){  
-	          vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
-	        }
-	        for(int i = 0;i<MAXCHANNELS;i++){        
-	          for(int j = 0;j<MAXCHANNELS;j++){
-	            matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
-	          }
-	        } 
-	      }
+	  } 
+	}
       }
 	             
-	     cond[k]=cond_thres(matrix,Imatrix,MAXCHANNELS);  
+      cond[k]=cond_thres(matrix,Imatrix,MAXCHANNELS);  
+      
+      if (cond[k] < Param->seuilcond) {	               
+	invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
+	for(int i = 0;i<MAXCHANNELS;i++){
+	  map[i][k]= vector[i];
+	}      
+	invertMatrix(Imatrix,rvector,MAXCHANNELS,rank);	       
+	for(int i = 0;i<MAXCHANNELS;i++){
+	  rmap[i][k]= rvector[i];
+	}
+	for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
+	  matmap[i][k]=Imatrix[i];
+	}
 
-	     if (cond[k] < Param->seuilcond) {	               
-	       invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
-	       for(int i = 0;i<MAXCHANNELS;i++){
-	         map[i][k]= vector[i];
-	       }
-	       for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
-	         matmap[i][k]=Imatrix[i];
-	       }
-	     }
-
+	/*================================================================================================
+	  COMPUTE CHI2 MAP 
+	  ================================================================================================*/
+	
+	double avv=0,navv=0,avv2=0;
+	
+	for (l1=0;l1<ndata;l1++) {
+	  // select only bolometers in detset
+	  int use_bolo = 0;
+	  
+	  if (Param->bolomask[detset*nbolo+htmp[l1].ib]==1 && htmp[l1].rg>Param->beg_surv[isurv]&&htmp[l1].rg<=Param->end_surv[isurv]) {
+	    use_bolo=1;
 	  }
+	  
+	  long ri1=htmp[l1].rg-globalBeginRing;
+	  
+	  if (flg_rg[htmp[l1].ib][ri1]!=0 && use_bolo==1) {
+	    long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
+	    //calcul signal corriger
+	    double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
+	    double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+	    double sig_corr2 = sig_corr;
+	    sig_corr-=x3[iri1];
+	    
+	    if (REMOVE_CAL==1) {
+	      sig_corr-=htmp[l1].hpr_cal;
+	      sig_corr2-=htmp[l1].hpr_cal;
+	    }
+	    
+	    for(int m =0;m<npixhpr;m++){
+	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
+	    }
+	    
+	    for(int m =0;m<npixmap;m++){
+	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
+	    }
+	    
+	    for(int m =0;m<htmp[l1].nShpr;m++){
+	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+	    }
+	    
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
+	    //calcul matrix & vector
+	    for(int i = 0;i<MAXCHANNELS;i++){  
+	      sig_corr-= htmp[l1].channels[i]*map[i][k];
+	    }
+	    avv=avv+htmp[l1].w *sig_corr;
+	    avv2=avv2+htmp[l1].w *sig_corr*sig_corr;
+	    navv=navv+htmp[l1].w;
+	  }
+	}
 
-   
+	cmap[k]=sqrt(avv2/navv-(avv/navv)*(avv/navv));
+      }
+    }
     
-   for(int i = 0;i<MAXCHANNELS;i++){
-     char TEST_OUTMAP[MAXOUTMAP];
-     sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
-     PIOWriteMAP(TEST_OUTMAP,map[i],begpix[rank],begpix[rank]+nnbpix-1);
-     MPI_Barrier(MPI_COMM_WORLD);
-   }
+    for(int i = 0;i<MAXCHANNELS;i++){
+      char TEST_OUTMAP[MAXOUTMAP];
+      sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
+      PIOWriteMAP(TEST_OUTMAP,map[i],begpix[rank],begpix[rank]+nnbpix-1);
+      MPI_Barrier(MPI_COMM_WORLD);
+    }
+   
+    for(int i = 0;i<MAXCHANNELS;i++){
+      char TEST_OUTMAP[MAXOUTMAP];
+      sprintf(TEST_OUTMAP,"%s_%s_%d_RAW", mapout[detset],mapname,i);
+      PIOWriteMAP(TEST_OUTMAP,rmap[i],begpix[rank],begpix[rank]+nnbpix-1);
+      MPI_Barrier(MPI_COMM_WORLD);
+    }
+   
+    {
+      char TEST_OUTMAP[MAXOUTMAP];
+      sprintf(TEST_OUTMAP,"%s_%s_STD", mapout[detset],mapname);
+      PIOWriteMAP(TEST_OUTMAP,cmap,begpix[rank],begpix[rank]+nnbpix-1);
+      MPI_Barrier(MPI_COMM_WORLD);
+    }
 #if 0
-       for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
-	 char TEST_OUTMAP[MAXOUTMAP];
-	 sprintf(TEST_OUTMAP,"%s_%s_MAT%d", mapout[detset],mapname,i);
-	 PIOWriteMAP(TEST_OUTMAP,matmap[i],begpix[rank],begpix[rank]+nnbpix-1);
-	 MPI_Barrier(MPI_COMM_WORLD);
-       }
+    for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
+      char TEST_OUTMAP[MAXOUTMAP];
+      sprintf(TEST_OUTMAP,"%s_%s_MAT%d", mapout[detset],mapname,i);
+      PIOWriteMAP(TEST_OUTMAP,matmap[i],begpix[rank],begpix[rank]+nnbpix-1);
+      MPI_Barrier(MPI_COMM_WORLD);
+    }
 #endif
-       {
-	     char TEST_OUTMAP[MAXOUTMAP];
-	     sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
-	     PIOWriteMAP(TEST_OUTMAP,cond,begpix[rank],begpix[rank]+nnbpix-1);
-	     MPI_Barrier(MPI_COMM_WORLD);
-       }
+    {
+      char TEST_OUTMAP[MAXOUTMAP];
+      sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
+      PIOWriteMAP(TEST_OUTMAP,cond,begpix[rank],begpix[rank]+nnbpix-1);
+      MPI_Barrier(MPI_COMM_WORLD);
+    }
     }
   }
 
+  for(int i = 0;i<MAXCHANNELS;i++){
+    free(map[i]);
+    free(rmap[i]);
+  }
+  free(cmap);
   free(map);
+  free(rmap);
 
   if (rank==0) {
     now = time( NULL);

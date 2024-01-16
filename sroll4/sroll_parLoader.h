@@ -23,6 +23,7 @@
 #endif
 // *** END INCLUDE GUARD ******************************************************
 
+void strip_ext(char *fname);
 
 // Below we automaticaly include the appropriate header defining parContent
 // structure
@@ -40,7 +41,7 @@
   @return non zero value in case of error.
 */
 
-int sroll_readParam(sroll_parContent *param, char *filename);
+PyObject *sroll_readParam(sroll_parContent *param, char *filename);
 
 
 #endif

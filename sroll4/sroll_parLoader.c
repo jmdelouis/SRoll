@@ -1160,7 +1160,7 @@ int sroll_updateParam(sroll_parContent *param, char *name, PIOSTRING *value, PIO
 }
 
 
-int sroll_readParam(sroll_parContent *param, char *filename) {
+PyObject *sroll_readParam(sroll_parContent *param, char *filename) {
   // Parse the parameter file: read each line and update info in structure
   // if we encounter an error stop the process or print a warning depending of the severity.
 
@@ -1194,7 +1194,7 @@ int sroll_readParam(sroll_parContent *param, char *filename) {
     PyErr_Print();
     perror("Error");
     exit(-1);
-    return 1;
+    return NULL;
   }
 
   // Init the internal structure allowing to know if a parameter has already appeared.
@@ -1229,8 +1229,15 @@ int sroll_readParam(sroll_parContent *param, char *filename) {
               PyObject * pyValue =getItemParam(pyParams,sroll_paramDef_list[i].name,currentListIndex);  
               if(pyValue != NULL){
                 //PIOSTRING * value = PyUnicode_AsUTF8(PyObject_Str(pyValue));
-		            strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
-                // Store the list value
+		//strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH);
+       
+                #if PY_MAJOR_VERSION >= 3
+		strncpy(value,PyUnicode_AsUTF8(PyObject_Str(pyValue)),MAX_LINE_LENGTH-1);
+		#else
+		strncpy(value,PyString_AsString(PyObject_Str(pyValue)),MAX_LINE_LENGTH-1);
+		#endif
+		
+		// Store the list value
                 strcpy(currentListValues[currentListIndex], value); // -1 since array is 0 indexed!
                 currentListIndex++;		            
               }else{
@@ -1251,7 +1258,7 @@ int sroll_readParam(sroll_parContent *param, char *filename) {
       }
     }
   }    
-  return 0;
+  return pyParams;
 }
 
 
