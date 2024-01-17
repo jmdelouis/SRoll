@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 #CFLAGS := -g -O0 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections -fprofile-arcs -ftest-coverage
-CFLAGS := -g -O3 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections 
+CFLAGS := -O3 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections 
 
 CC := mpicc
 OPTIONAL_FLAGS := -Wl,--print-gc-sections -Wunused-result
@@ -162,7 +162,7 @@ troll_857: troll.c $(OBJTROLL)
 
 #troll_857: alwaysCheckModules
 troll_cfosat: troll.c $(OBJTROLL)
-	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXTHEOHPR=1 -DMAXSIMU=1 -DMAXTHEOSHPR=16  -DMAXTHEOMAP=1 -DMAXCHAN=2 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 ${PYTHONCONF} $(PYTHONLIB) -lm -fno-finite-math-only
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXTHEOHPR=2 -DMAXSIMU=1 -DMAXTHEOSHPR=16  -DMAXTHEOMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 ${PYTHONCONF} $(PYTHONLIB) -lm -fno-finite-math-only
 #troll_20tf: alwaysCheckModules
 troll_20tf: troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS)  -DMAXTHEOHPR=20 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 ${PYTHONCONF} $(PYTHONLIB) -lm

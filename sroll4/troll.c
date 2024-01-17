@@ -24,7 +24,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <fftw3.h>
 #include <assert.h>
 #include <errno.h>
 #include <omp.h>
@@ -164,6 +163,7 @@ int tensorflow_rank;
 int mpi_tensorflow_size;
 MPI_Comm python_comm;
 MPI_Comm tensorflow_comm;
+int NB_EXTERNAL=0;
 
 int compar_int(const void *a, const void *b)
 {
@@ -1032,7 +1032,7 @@ typedef struct {
   PIOINT gi;
   PIOFLOAT hpr_cal;
   PIOFLOAT Sub_HPR;
-  PIOFLOAT phase;
+  PIOFLOAT External;
   PIOFLOAT w;
   PIOBYTE  surv;
   PIOBYTE  ib;
@@ -4072,7 +4072,7 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 	    
 	  int iring=rgcnn[htmp[l1].ib][htmp[l1].rg];
-	  int ipha=(int)(CNN_XSIZE*(htmp[l1].phase)/(2*M_PI));
+	  int ipha=(int)(CNN_XSIZE*(htmp[l1].External)/(2*M_PI));
 	  if (ipha==CNN_XSIZE) ipha=CNN_XSIZE-1;
 	  if (ipha<0||ipha>CNN_XSIZE-1) {
 	    fprintf(stderr,"CNN_XSIZE PBS %d\n",ipha);
@@ -4621,7 +4621,7 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	
 	int iring = rgcnn[htmp[l1].ib][htmp[l1].rg];
 	
-	int ipha=(int)(CNN_XSIZE*(htmp[l1].phase)/(2*M_PI));
+	int ipha=(int)(CNN_XSIZE*(htmp[l1].External)/(2*M_PI));
 	
 	if (ipha==CNN_XSIZE) ipha=CNN_XSIZE-1;
 
@@ -5046,19 +5046,24 @@ int Get_NumberOfChannels(PyObject *projFunc)
   return n;
 }
 
-void init_channels(hpix * h,PyObject *projFunc,double psi,double phase,double rgnorm,double eta,int idx_bolo)
+void init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo)
 {
   
   PyObject *pValue=NULL;
   
   if (projFunc != NULL){
     PyObject *pArg1 = PyFloat_FromDouble((double)psi); // val est un flottant
-    PyObject *pArg2 = PyFloat_FromDouble((double)phase); // val est un flottant
+    PyObject *pList = PyList_New(NB_EXTERNAL);
+    
+    for (int i = 0; i < NB_EXTERNAL; i++) {
+      PyList_SetItem(pList, i, PyFloat_FromDouble((double) External[i*RINGSIZE]));
+    }
+
     PyObject *pArg3 = PyFloat_FromDouble((double)rgnorm); // val est un flottant
-    PyObject *pArg4 = PyFloat_FromDouble((double)eta); // val est un flottant
+    PyObject *pArg4 = PyLong_FromLong((long) ipix); // val est un flottant
     PyObject *pArg5 = PyLong_FromLong((long)idx_bolo); // val est un flottant
     
-    pValue = PyObject_CallMethod(projFunc, "eval", "(OOOOO)", pArg1, pArg2,  pArg3, pArg4, pArg5);
+    pValue = PyObject_CallMethod(projFunc, "eval", "(OOOOO)", pArg1, pList,  pArg3, pArg4, pArg5);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
@@ -5075,7 +5080,7 @@ void init_channels(hpix * h,PyObject *projFunc,double psi,double phase,double rg
 
     // Nettoyage des arguments
     Py_DECREF(pArg1);
-    Py_DECREF(pArg2);
+    Py_DECREF(pList);
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
     Py_DECREF(pArg5);
@@ -5092,7 +5097,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 		    long ib,
 		    long hpix,
 		    double psi,
-		    double phase,
+		    PIOFLOAT *External,
 		    PIOFLOAT *oval,
 		    PIOINT *oval_idx)
 {
@@ -5106,10 +5111,14 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
     PyObject *pArg4 = PyFloat_FromDouble((double)psi); // val est un flottant
-    PyObject *pArg5 = PyFloat_FromDouble((double)phase); // val est un flottant
+    PyObject *pList = PyList_New(NB_EXTERNAL);
+    
+    for (int i = 0; i < NB_EXTERNAL; i++) {
+      PyList_SetItem(pList, i, PyFloat_FromDouble((double) External[i*RINGSIZE]));
+    }
 
     // Appel de la méthode 'eval's
-    pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5);
+    pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pList);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
@@ -5135,7 +5144,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     Py_DECREF(pArg2);
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
-    Py_DECREF(pArg5);
+    Py_DECREF(pList);
     
   } else {
     PyErr_Print();
@@ -5288,7 +5297,7 @@ int main(int argc,char *argv[])  {
   /*-------------------------------------------------------------------------*/
 
   // global number of bolometers
-  nbolo = Param->n_Ptg_noPS;
+  nbolo = Param->n_Ptg;
   
   assert( Param->n_OUT_NOPOL == Param->n_Out_MAP);
   assert( Param->n_Sub_HPR == Param->n_SUB_HPRCOEF);
@@ -5705,28 +5714,11 @@ int main(int argc,char *argv[])  {
     }
   }
 
-  long nnoisesim = 1048576;
-  fftw_complex  *in_fft = NULL;
-  fftw_complex  *out_fft = NULL;
-  fftw_plan     p1 = NULL, p2 = NULL;
-
-  if (Param->flag_stim_paramfiles == 1) {
-    // stim_paramfiles parameter overrides TESTPOL
-    Param->TESTPOL = -1;
-  }
-
-  
-  if (Param->TESTPOL==0) {
-    assert( (Param->n_Calibration == 5 * nbolo) && "Error: simulations inside troll requires 5 calibration values per bolo for ADCNL residuals");
-    // prepare FFTW for adding noise from noise Fourier Transform
-    in_fft  = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * nnoisesim);
-    out_fft = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * nnoisesim);
-    p1 = fftw_plan_dft_1d( nnoisesim, in_fft, out_fft, FFTW_FORWARD, FFTW_ESTIMATE );
-    p2 = fftw_plan_dft_1d( nnoisesim, in_fft, out_fft, FFTW_BACKWARD, FFTW_ESTIMATE );
-  }
-
   int number_of_iterations = 1;
 
+  NB_EXTERNAL=Param->n_External/nbolo;
+  if (NB_EXTERNAL==0) NB_EXTERNAL=1;
+  
   for (ib=0;ib<nbolo;ib++) {
     if (Param->n_in_template_map>0) {
       for (int nchan=0;nchan<MAXCHANNELS;nchan++) {
@@ -5742,20 +5734,6 @@ int main(int argc,char *argv[])  {
       for (int nchan=0;nchan<MAXCHANNELS;nchan++) {
 	      memset(skymodel[nchan],0,12*Nside*Nside*sizeof(PIOFLOAT));
       }
-    }
-
-    double *tfnoise=NULL;
-    if (Param->TESTPOL==0) {
-      tfnoise=(double *)malloc(sizeof(double)*nnoisesim);
-      int fp=open(Param->Signal_noPS[2*nbolo+ib],O_RDONLY,0664);
-      int err=read(fp,tfnoise,sizeof(double)*nnoisesim);
-      close(fp);
-      if (err<0) {
-        fprintf(stderr,"Do not succeed to read Signal_noPS[%ld]: %s %d %ld\n",2*nbolo+ib,Param->Signal_noPS[2*nbolo+ib],err,(long) nnoisesim);
-        exit(-1);
-      }
-      double reg=sqrt(1.21)/((double)nnoisesim); //Take into account effect of the correlation
-      for (i=0;i<nnoisesim;i++) tfnoise[i]*=reg;
     }
 
     eta[ib]=(1.-Param->CrossPol[ib])/(1.+Param->CrossPol[ib]);
@@ -5891,9 +5869,9 @@ int main(int argc,char *argv[])  {
         sprintf(Command,"ring=%lld",(long long)(rg));
         h = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE);
         assert( (h != NULL) && "Not enough memory to allocate hitcount HPR array");
-        tperr = noDMC_readObject_PIOFLOAT(Param->Hit_noPS[ib],rg*RINGSIZE,RINGSIZE,h);
+        tperr = noDMC_readObject_PIOFLOAT(Param->Hit[ib],rg*RINGSIZE,RINGSIZE,h);
         if (tperr<0) {
-          fprintf(stderr, "Impossible to read Hit_noPS[%ld]: %s %d\n",ib,Param->Hit_noPS[ib],tperr);          exit ( -1);
+          fprintf(stderr, "Impossible to read Hit[%ld]: %s %d\n",ib,Param->Hit[ib],tperr);          exit ( -1);
         }
 
         if (Param->flag_Sub_HPR == _PAR_TRUE) {
@@ -5911,9 +5889,9 @@ int main(int argc,char *argv[])  {
         if (Param->flag_stim_paramfiles == 0) {
           y[0] = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE);
           assert( (y[0] != NULL) && "Not enough memory to allocate signal HPR array");
-          tperr = noDMC_readObject_PIOFLOAT(Param->Signal_noPS[ib],rg*RINGSIZE,RINGSIZE,y[0]);
+          tperr = noDMC_readObject_PIOFLOAT(Param->Signal[ib],rg*RINGSIZE,RINGSIZE,y[0]);
           if (tperr<0) {
-            fprintf(stderr, "Impossible to read Signal_noPS[%ld]: %s %d\n",ib,Param->Signal_noPS[ib],tperr);
+            fprintf(stderr, "Impossible to read Signal[%ld]: %s %d\n",ib,Param->Signal[ib],tperr);
             exit ( -1);
           }
         } else {
@@ -5996,155 +5974,45 @@ int main(int argc,char *argv[])  {
           for (i=0;i<RINGSIZE;i++) ADU[i]=0;
         }
 
-        PIOFLOAT *phase;
-        if (Param->flag_phase==_PAR_TRUE) {
-          phase = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE);
-          tperr = noDMC_readObject_PIOFLOAT(Param->phase[ib],rg*RINGSIZE,RINGSIZE,phase);
-          if (tperr<0) {
-            fprintf(stderr, "Impossible to read phase[%ld]: %s %d %ld\n",ib,Param->phase[ib],tperr,(long) rg);
-            exit ( -1);
-          }
-	  // normalize the phase to make it usable by 2D neural network 
-	  if (Param->flag_PHASECNN==_PAR_TRUE) {
-	    float pmin=1E30;
-	    float pmax=-1E30;
-	    for (i=0;i<RINGSIZE;i++) {
-	      if (pmin>phase[i]&&h[i]>0) pmin=phase[i];
-	      if (pmax<phase[i]&&h[i]>0) pmax=phase[i];
-	    }
-	    if (pmax>pmin) {
-	      for (i=0;i<RINGSIZE;i++) {
-		if (h[i]>0) phase[i]=(phase[i]-pmin)/(pmax-pmin)*2*M_PI;
-	      }
-	    
-	      // normalize the dynamics
-	      if (Param->PHASECNN==1) {
-		float *hhisto=(float *) malloc(sizeof(float)*RINGSIZE);
-		memset(hhisto,0,sizeof(float)*RINGSIZE);
-		for (i=0;i<RINGSIZE;i++) {
-		  if (h[i]>0) hhisto[(int)((RINGSIZE-1)*phase[i]/(2*M_PI))]+=h[i];
-		}
-		for (i=1;i<RINGSIZE;i++) {
-		  hhisto[i]+=hhisto[i-1];
-		}
-		for (i=0;i<RINGSIZE;i++) {
-		  hhisto[i]=2*M_PI*hhisto[i]/hhisto[RINGSIZE-1];
-		}
-		for (i=0;i<RINGSIZE;i++) {
-		  if (h[i]>0) phase[i]=hhisto[(int)((RINGSIZE-1)*phase[i]/(2*M_PI))];
-		}
-
-		free(hhisto);
-	      }
-	    }
-	    else {
-	      for (i=0;i<RINGSIZE;i++) phase[i]=0;
+        PIOFLOAT *External;
+        if (Param->flag_External==_PAR_TRUE) {
+          External = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE*NB_EXTERNAL);
+	  for (i=0;i<NB_EXTERNAL;i++) {
+	    tperr = noDMC_readObject_PIOFLOAT(Param->External[ib+i*nbolo],rg*RINGSIZE,RINGSIZE,External+i*RINGSIZE);
+	    if (tperr<0) {
+	      fprintf(stderr, "Impossible to read External[%ld]: %s %d %ld\n",ib,Param->External[ib+i*nbolo],tperr,(long) rg);
+	      exit ( -1);
 	    }
 	  }
         }
         else {
-          phase = (PIOFLOAT *) _PIOMALLOC(sizeof(PIOFLOAT)*RINGSIZE);
-          for (i=0;i<RINGSIZE;i++) phase[i]=0;
-        }
-
-        //====================================================================================
-        //  E2E
-        //
-
-        if (Param->TESTPOL==0) {
-          // inline production of a colored noise TOI and projection in HPR
-          long ntoisample=(ENDRINGINDEX(rg)-BEGINRINGINDEX(rg)+1);
-          PIOINT *posnoise=(PIOINT *) malloc(sizeof(PIOINT)*ntoisample);
-          assert( (posnoise != NULL) && "Not enough memory to allocate HPR index TOI array");
-          tperr = noDMC_readObject_PIOINT(Param->Signal_noPS[nbolo+ib],BEGINRINGINDEX(rg),ntoisample,posnoise);
-
-          PIODOUBLE *tpin   = (PIODOUBLE *) in_fft;
-          PIODOUBLE *tpout  = (PIODOUBLE *) out_fft;
-          // build white noise TOI
-          for (j=0;j<nnoisesim;j++) {
-            tpin[2*j]=sqrt(-2*log( drand48()))*cos(2*M_PI*drand48());
-            tpin[2*j+1]=0;
-          }
-          fftw_execute(p1);
-
-          // convolve (multiply in frequency domain) white noise TOI with noise Fourier transform
-          for (j=0;j<nnoisesim;j++) {
-            tpin[2*j]=tpout[2*j]*tfnoise[j];
-            tpin[2*j+1]=tpout[2*j+1]*tfnoise[j];
-          }
-          fftw_execute(p2);
-
-          // projection of colored noise TOI into HPR
-          for (int iter = 0; iter < number_of_iterations; iter++) {
-            for (i=0;i<ntoisample;i++) {
-              if (posnoise[i]>=0&&posnoise[i]<RINGSIZE) {
-                if (h[posnoise[i]]>0) {
-                  y[iter][posnoise[i]]+=tpout[2*i]/h[posnoise[i]];
-                }
-              }
-            }
-          }
-          free(posnoise);
-
-          // ADC nonlinearity simulation
-          for (int iter = 0; iter < number_of_iterations; iter++) {
-            for (i=0;i<RINGSIZE;i++) {
-              double adux=ADU[i]*1E-3-Param->Calibration[nbolo+ib*4+1];
-              y[iter][i] /= Param->Calibration[nbolo+ib*4]+
-                            Param->Calibration[nbolo+ib*4+2]*
-                            (adux)*exp(-(adux)*(adux)*Param->Calibration[nbolo+ib*4+3]);
-            }
-          }
-
-#if 0
-          PIOSTRING thepath;
-          sprintf(thepath,"/redtruck/delouis/TROLL_OUT/test_%d",rank);
-          FILE *fp=fopen(thepath,"w");
-          fwrite(y,RINGSIZE*sizeof(PIOFLOAT),1,fp);
-          fclose(fp);
-          sprintf(thepath,"/redtruck/delouis/TROLL_OUT/testn_%d",rank);
-          fp=fopen(thepath,"w");
-          fwrite(tpout,nnoisesim*sizeof(PIODOUBLE),1,fp);
-          fclose(fp);
-          MPI_Barrier(MPI_COMM_WORLD);
-          exit(0);
-#endif
+          External = (PIOFLOAT *) _PIOMALLOC(sizeof(PIOFLOAT)*RINGSIZE);
+          for (i=0;i<RINGSIZE;i++) External[i]=0;
         }
 
         //
         //====================================================================================
-
-        if (Param->TESTPOL==4) {
-          for (int iter = 0; iter < number_of_iterations; iter++) {
-            for (i=0;i<RINGSIZE;i++) {
-              double adux=ADU[i]*1E-3-Param->Calibration[nbolo+ib*4+1];
-              y[iter][i] *= Param->Calibration[nbolo+ib*4]+
-                            Param->Calibration[nbolo+ib*4+2]*
-                            (adux)*exp(-(adux)*(adux)*Param->Calibration[nbolo+ib*4+3]);
-            }
-          }
-        }
 
         ph = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*RINGSIZE);
-        tperr = noDMC_readObject_PIODOUBLE(Param->Ptg_noPS[ib],rg*RINGSIZE,RINGSIZE,ph);
+        tperr = noDMC_readObject_PIODOUBLE(Param->Ptg[ib],rg*RINGSIZE,RINGSIZE,ph);
         if (tperr<0) {
-          fprintf( stderr, "Impossible to read Ptg_noPS[%ld]: %s %d\n", ib, Param->Ptg_noPS[ib], tperr);
+          fprintf( stderr, "Impossible to read Ptg[%ld]: %s %d\n", ib, Param->Ptg[ib], tperr);
           exit ( -1);
         }
 
-        sprintf( tpname,"%s_TUPLE_1",Param->Ptg_noPS[ib]);
+        sprintf( tpname,"%s_TUPLE_1",Param->Ptg[ib]);
         th = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*RINGSIZE);
         tperr = noDMC_readObject_PIODOUBLE(tpname,rg*RINGSIZE,RINGSIZE,th);
         if (tperr<0) {
-          fprintf(stderr, "Impossible to read Ptg_noPS[%ld]: %s %d\n", ib, tpname, tperr);
+          fprintf(stderr, "Impossible to read Ptg[%ld]: %s %d\n", ib, tpname, tperr);
           exit ( -1);
         }
 
-        sprintf(tpname,"%s_TUPLE_2",Param->Ptg_noPS[ib]);
+        sprintf(tpname,"%s_TUPLE_2",Param->Ptg[ib]);
         psi = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*RINGSIZE);
         tperr = noDMC_readObject_PIODOUBLE(tpname,rg*RINGSIZE,RINGSIZE,psi);
         if (tperr<0) {
-          fprintf(stderr, "Impossible to read Ptg_noPS[%ld]: %s %d\n", ib, tpname, tperr);
+          fprintf(stderr, "Impossible to read Ptg[%ld]: %s %d\n", ib, tpname, tperr);
           exit ( -1);
         }
         if (Param->flag_delta_psi == _PAR_TRUE) {
@@ -6163,7 +6031,7 @@ int main(int argc,char *argv[])  {
 	  vec=(-0.08825391070996505, 0.8821818245983525, 0.46256510416666663)
 	  lat,lon=(27.552753250600432, 95.712890625)
 	  
-	  Phase=0 is defined as the nearest point of the ring to this direction
+	  External=0 is defined as the nearest point of the ring to this direction
 	*/
 	
 #define EPOLEX (-0.08825391070996505)
@@ -6204,11 +6072,11 @@ int main(int argc,char *argv[])  {
 	  for (k=0;k<3;k++) tmp+=v0[k]*v0[k];
 	  for (k=0;k<3;k++) v0[k]/=sqrt(tmp);
 	  double navr=0,avr=0,avr2=0;
-	  //fprintf(stderr,"PHASE v0 %ld %lf %lf %lf\n",(long) rg,v0[0],v0[1],v0[2]);
-	  //fprintf(stderr,"PHASE v1 %ld %lf %lf %lf\n",(long) rg,v1[0],v1[1],v1[2]);
-	  //fprintf(stderr,"PHASE v2 %ld %lf %lf %lf\n",(long) rg,v2[0],v2[1],v2[2]);
+	  //fprintf(stderr,"EXTERNAL v0 %ld %lf %lf %lf\n",(long) rg,v0[0],v0[1],v0[2]);
+	  //fprintf(stderr,"EXTERNAL v1 %ld %lf %lf %lf\n",(long) rg,v1[0],v1[1],v1[2]);
+	  //fprintf(stderr,"EXTERNAL v2 %ld %lf %lf %lf\n",(long) rg,v2[0],v2[1],v2[2]);
 	  
-	  PIOFLOAT vphase0=1E30;
+	  PIOFLOAT vExternal0=1E30;
 	  PIOINT iph0=0;
 	  
 	  for (i=0;i<RINGSIZE;i++) if (h[i]>0) {
@@ -6216,8 +6084,8 @@ int main(int argc,char *argv[])  {
 	      ang2vec(th[i],ph[i],vec);
 	      double xx=vec[0]*v0[0]+vec[1]*v0[1]+vec[2]*v0[2];
 	      double yy=vec[0]*v1[0]+vec[1]*v1[1]+vec[2]*v1[2];
-	      if (Param->flag_phase!=_PAR_TRUE) {
-		phase[i]=atan2(yy,xx);
+	      if (Param->flag_External!=_PAR_TRUE) {
+		External[i]=atan2(yy,xx);
 	      }
 	      tmp=sqrt(xx*xx+yy*yy);
 	      navr+=1;
@@ -6226,19 +6094,19 @@ int main(int argc,char *argv[])  {
 	      tmp=(vec[0]-(EPOLEX))*(vec[0]-(EPOLEX))+
 		(vec[1]-(EPOLEY))*(vec[1]-(EPOLEY))+
 		(vec[2]-(EPOLEZ))*(vec[2]-(EPOLEZ));
-	      if (tmp<vphase0) {
-		vphase0=tmp;
+	      if (tmp<vExternal0) {
+		vExternal0=tmp;
 		iph0=i;
 	      } 
 	    }
 	    
-	  if (Param->flag_phase!=_PAR_TRUE) {
-	    for (i=0;i<RINGSIZE;i++) phase[i]=fmod(phase[i]+3*M_PI-phase[iph0],2*M_PI);
+	  if (Param->flag_External!=_PAR_TRUE) {
+	    for (i=0;i<RINGSIZE;i++) External[i]=fmod(External[i]+3*M_PI-External[iph0],2*M_PI);
 	    
-	    //if phase goes in the wrong direction invert the direction (warning 1-0~ 2M_Pi)
-	    if (phase[1]<phase[0]||phase[2]<phase[1]) {
+	    //if External goes in the wrong direction invert the direction (warning 1-0~ 2M_Pi)
+	    if (External[1]<External[0]||External[2]<External[1]) {
 	      // fmod to ensure [0,2*M_PI[ domain
-	      for (i=0;i<RINGSIZE;i++) phase[i]=fmod(4*M_PI-phase[i],2*M_PI);
+	      for (i=0;i<RINGSIZE;i++) External[i]=fmod(4*M_PI-External[i],2*M_PI);
 	    }
 	  }
 
@@ -6265,13 +6133,13 @@ int main(int argc,char *argv[])  {
 		  model+=skymodel[l][ipix];
 		  for (j=0;j<Param->BUILDTF;j++) {
 		    for (k=0;k<Param->BUILDTF;k++) {
-		      bmat[2*j   + (2*k)*Param->BUILDTF*2  ] += cos(phase[i]*(j+1))*cos(phase[i]*(k+1));
-		      bmat[2*j+1 + (2*k)*Param->BUILDTF*2  ] += sin(phase[i]*(j+1))*cos(phase[i]*(k+1));
-		      bmat[2*j   + (2*k+1)*Param->BUILDTF*2] += cos(phase[i]*(j+1))*sin(phase[i]*(k+1));
-		      bmat[2*j+1 + (2*k+1)*Param->BUILDTF*2] += sin(phase[i]*(j+1))*sin(phase[i]*(k+1));
+		      bmat[2*j   + (2*k)*Param->BUILDTF*2  ] += cos(External[i]*(j+1))*cos(External[i]*(k+1));
+		      bmat[2*j+1 + (2*k)*Param->BUILDTF*2  ] += sin(External[i]*(j+1))*cos(External[i]*(k+1));
+		      bmat[2*j   + (2*k+1)*Param->BUILDTF*2] += cos(External[i]*(j+1))*sin(External[i]*(k+1));
+		      bmat[2*j+1 + (2*k+1)*Param->BUILDTF*2] += sin(External[i]*(j+1))*sin(External[i]*(k+1));
 		    }
-		    bvec[2*j  ]+=model*cos(phase[i]*(j+1));
-		    bvec[2*j+1]+=model*sin(phase[i]*(j+1));
+		    bvec[2*j  ]+=model*cos(External[i]*(j+1));
+		    bvec[2*j+1]+=model*sin(External[i]*(j+1));
 		  }
 		}
 	      }
@@ -6282,8 +6150,8 @@ int main(int argc,char *argv[])  {
 	    for (i=0;i<RINGSIZE;i++) {
 	      if (h[i]>0) {
 		      for (j=0;j<Param->BUILDTF;j++) {
-		        theo[j*2][i]=bvec[2*j]*cos(phase[i]*(j+1))+bvec[2*j+1]*sin(phase[i]*(j+1));
-		        theo[j*2+1][i]=-bvec[2*j]*sin(phase[i]*(j+1))+bvec[2*j+1]*cos(phase[i]*(j+1));
+		        theo[j*2][i]=bvec[2*j]*cos(External[i]*(j+1))+bvec[2*j+1]*sin(External[i]*(j+1));
+		        theo[j*2+1][i]=-bvec[2*j]*sin(External[i]*(j+1))+bvec[2*j+1]*cos(External[i]*(j+1));
 		      }
 	      }
 	    }
@@ -6320,9 +6188,7 @@ int main(int argc,char *argv[])  {
 	    
 	    tp_hpix->sig=tp_hpix->listp[0];
 	    
-	    tp_hpix->phase=phase[i];
-	    
-	    phase[i]=fmod(phase[i]+rg*M_PI/30.,2*M_PI);
+	    tp_hpix->External=External[i];
 	    
 	    //double soldip=SOLDIPX*vecpix[0]+SOLDIPY*vecpix[1]+SOLDIPZ*vecpix[2];
 	    //tp_hpix->soldip = hprtab_cal[i];
@@ -6347,19 +6213,28 @@ int main(int argc,char *argv[])  {
 	    //tp_hpix->sadu=(rg-globalBeginRing)/((float)((globalEndRing+1) - globalBeginRing));
 	    tp_hpix->sadu=((float) ibadring[rg-globalBeginRing])/rg_max;
 	    
-	    init_channels(tp_hpix,projFunc,psi[i],phase[i],
+	    init_channels(tp_hpix,
+			  projFunc,
+			  psi[i],
+			  External+i,
 			  (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
-			  eta[ib],ib);
+			  ipix,
+			  ib);
 	    
 	    for (j=0;j<npixhpr;j++) tp_hpix->listofhpr[j]=theo[j][i];
 
 	    if (sparseFunc!=NULL) {
-	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,rg,ib,
+	      
+	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,
+					       rg,
+					       ib,
 					       ipix,
 					       psi[i],
-					       phase[i],
+					       External+i,
 					       tp_hpix->listofShpr,
 					       tp_hpix->listofShpr_idx);
+	      
+	      
 	      for (j=0;j<tp_hpix->nShpr;j++) {
 		if (npixShpr<tp_hpix->listofShpr_idx[j]+1) {
 		  npixShpr=tp_hpix->listofShpr_idx[j]+1;
@@ -6395,7 +6270,7 @@ int main(int argc,char *argv[])  {
 #define NBPH (4096)
 	    tp_hpix->gi = rg;
 	    //tp_hpix->ggi = 1.;
-	    tp_hpix->hrg = (phase[i]*NBPH)/(2*M_PI);
+	    tp_hpix->hrg = (External[i]*NBPH)/(2*M_PI);
 	    //tp_hpix->xrg = (double) (rg-240)/25000.;
 	    tp_hpix->ipix = ipix;
 	    l_nhpix[ipix]+=1;
@@ -6410,24 +6285,12 @@ int main(int argc,char *argv[])  {
 
           if ((rank==0) && (rg==globalRankInfo.BeginRing[rank]) ) {
             GetProcMem(&vmem,&phymem);
-            if (Param->TESTPOL==0) {
-              fprintf(stderr,"Com %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld %lg %lg [%lg,%lg,%lg,%lg]\n",
-		      Command, (long) rank, getpid(),
-		      (double) vmem/1024./1024.,
-		      (double) phymem/1024./1024.,
-		      (long) nrg_htmp,
-		      avr/navr,sqrt(avr2/navr-(avr/navr)*(avr/navr)),
-		      Param->Calibration[nbolo+ib*4],Param->Calibration[nbolo+ib*4+1],
-		      Param->Calibration[nbolo+ib*4+2],Param->Calibration[nbolo+ib*4+3]);
-            }
-            else {
-              fprintf(stderr,"Com %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld  %lg %lg \n",
-		      Command, (long) rank, getpid(),
-		      (double) vmem/1024./1024.,
-		      (double) phymem/1024./1024.,
-		      (long) nrg_htmp,
-		      avr/navr,sqrt(avr2/navr-(avr/navr)*(avr/navr)));
-            }
+	    fprintf(stderr,"Com %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld  %lg %lg \n",
+		    Command, (long) rank, getpid(),
+		    (double) vmem/1024./1024.,
+		    (double) phymem/1024./1024.,
+		    (long) nrg_htmp,
+		    avr/navr,sqrt(avr2/navr-(avr/navr)*(avr/navr)));
           }
         }
 
@@ -6438,7 +6301,7 @@ int main(int argc,char *argv[])  {
         free(Sub_HPR);
         free(hprtab_cal);
         for (i=0;i<npixhpr;i++) free(theo[i]);
-        free(phase);
+        free(External);
         free(th);
         free(ph);
         free(psi);
@@ -6446,9 +6309,6 @@ int main(int argc,char *argv[])  {
       } // if not badring
     } // end ring loop
 
-    if (Param->TESTPOL==0) {
-      free(tfnoise);
-    }
 
     if (Param->flag_stim_paramfiles == 1) {
       for (int iter = 0; iter < number_of_iterations; iter++) {
@@ -6463,11 +6323,6 @@ int main(int argc,char *argv[])  {
     }
 
   } // end bolometer loop
-
-  if (in_fft!=NULL) {
-    fftw_free(in_fft);
-    fftw_free(out_fft);
-  }
 
   if (addpol!=NULL) {
     free(addpol);
@@ -7055,10 +6910,10 @@ int main(int argc,char *argv[])  {
     int l_rank;
     for (l_rank=0;l_rank<mpi_size;l_rank++) {
       long nring=globalRankInfo.EndRing[l_rank]-globalRankInfo.BeginRing[l_rank]+1;
-      PIOLONG * histo_phase = (PIOLONG *) malloc(sizeof(PIOLONG)*NBPH*nbolo*nring);
-      PIOLONG * l_histo_phase = (PIOLONG *) malloc(sizeof(PIOLONG)*NBPH*nbolo*nring);
+      PIOLONG * histo_External = (PIOLONG *) malloc(sizeof(PIOLONG)*NBPH*nbolo*nring);
+      PIOLONG * l_histo_External = (PIOLONG *) malloc(sizeof(PIOLONG)*NBPH*nbolo*nring);
       int l1;
-      memset(histo_phase,0,sizeof(PIOLONG)*NBPH*nbolo*nring);
+      memset(histo_External,0,sizeof(PIOLONG)*NBPH*nbolo*nring);
       for (k=0;k<nnbpix;k++)  {
         if (flgpix[k]>0) {
           long ndata = loc_nhpix[k];
@@ -7067,7 +6922,7 @@ int main(int argc,char *argv[])  {
             long ri1=htmp[l1].rg-globalBeginRing;
             if (flg_rg[htmp[l1].ib][ri1]!=0) {
               if (htmp[l1].rg>=globalRankInfo.BeginRing[l_rank]&&htmp[l1].rg<=globalRankInfo.EndRing[l_rank]) {
-                histo_phase[htmp[l1].hrg+(htmp[l1].rg-globalRankInfo.BeginRing[l_rank]+htmp[l1].ib*nring)*NBPH]+=ndata-1;
+                histo_External[htmp[l1].hrg+(htmp[l1].rg-globalRankInfo.BeginRing[l_rank]+htmp[l1].ib*nring)*NBPH]+=ndata-1;
               }
             }
           }
@@ -7075,19 +6930,19 @@ int main(int argc,char *argv[])  {
       }
       if (rank==0) {
         for (rrk=1;rrk<mpi_size;rrk++) {
-          MPI_Recv(l_histo_phase,sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, rrk,351, MPI_COMM_WORLD,&statu);
-          for (l1=0;l1<NBPH*nbolo*nring;l1++) histo_phase[l1]+=l_histo_phase[l1];
+          MPI_Recv(l_histo_External,sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, rrk,351, MPI_COMM_WORLD,&statu);
+          for (l1=0;l1<NBPH*nbolo*nring;l1++) histo_External[l1]+=l_histo_External[l1];
         }
         for (ib=0;ib<nbolo;ib++) {
           for (j=0;j<nring;j++) {
-            for (l1=1;l1<NBPH;l1++) histo_phase[l1+(j+ib*nring)*NBPH]+=histo_phase[l1-1+(j+ib*nring)*NBPH];
-            if (histo_phase[NBPH-1+(j+ib*nring)*NBPH]==0) {
-              for (l1=0;l1<NBPH;l1++) histo_phase[l1+(j+ib*nring)*NBPH]=(l1*CUTRG)/NBPH;
+            for (l1=1;l1<NBPH;l1++) histo_External[l1+(j+ib*nring)*NBPH]+=histo_External[l1-1+(j+ib*nring)*NBPH];
+            if (histo_External[NBPH-1+(j+ib*nring)*NBPH]==0) {
+              for (l1=0;l1<NBPH;l1++) histo_External[l1+(j+ib*nring)*NBPH]=(l1*CUTRG)/NBPH;
             }
             else {
-	      for (l1=0;l1<NBPH;l1++) histo_phase[l1+(j+ib*nring)*NBPH]=(histo_phase[l1+(j+ib*nring)*NBPH]*CUTRG)/(1+histo_phase[NBPH-1+(j+ib*nring)*NBPH]);
+	      for (l1=0;l1<NBPH;l1++) histo_External[l1+(j+ib*nring)*NBPH]=(histo_External[l1+(j+ib*nring)*NBPH]*CUTRG)/(1+histo_External[NBPH-1+(j+ib*nring)*NBPH]);
             }
-            for (l1=0;l1<NBPH;l1++) if (histo_phase[l1+(j+ib*nring)*NBPH]>CUTRG-1) histo_phase[l1+(j+ib*nring)*NBPH]=CUTRG-1;
+            for (l1=0;l1<NBPH;l1++) if (histo_External[l1+(j+ib*nring)*NBPH]>CUTRG-1) histo_External[l1+(j+ib*nring)*NBPH]=CUTRG-1;
           }
         }
 
@@ -7095,10 +6950,10 @@ int main(int argc,char *argv[])  {
 
       }
       else {
-        MPI_Send(histo_phase, sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, 0, 351, MPI_COMM_WORLD);
+        MPI_Send(histo_External, sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, 0, 351, MPI_COMM_WORLD);
       }
 
-      MPI_Bcast(histo_phase, sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, 0, MPI_COMM_WORLD);
+      MPI_Bcast(histo_External, sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, 0, MPI_COMM_WORLD);
 
       for (k=0;k<nnbpix;k++)  {
         long ndata = loc_nhpix[k];
@@ -7108,13 +6963,13 @@ int main(int argc,char *argv[])  {
           long ri1=htmp[l1].rg-globalBeginRing;
           if (flg_rg[htmp[l1].ib][ri1]!=0) {
             if (htmp[l1].rg>=globalRankInfo.BeginRing[l_rank]&&htmp[l1].rg<=globalRankInfo.EndRing[l_rank]) {
-              htmp[l1].hrg=htmp[l1].rg*CUTRG+histo_phase[htmp[l1].hrg+(htmp[l1].rg-globalRankInfo.BeginRing[l_rank]+htmp[l1].ib*nring)*NBPH];
+              htmp[l1].hrg=htmp[l1].rg*CUTRG+histo_External[htmp[l1].hrg+(htmp[l1].rg-globalRankInfo.BeginRing[l_rank]+htmp[l1].ib*nring)*NBPH];
             }
           }
         }
       }
-      free(histo_phase);
-      free(l_histo_phase);
+      free(histo_External);
+      free(l_histo_External);
     }
   }
 
@@ -7548,20 +7403,6 @@ int main(int argc,char *argv[])  {
       =
       =*/
 
-    // ca plante
-    //if (Param->TESTPOL==-1) {
-    //  for (k=0;k<nnbpix;k++)  {
-    //    long ndata = loc_nhpix[k];
-    //    hpix *htmp = loc_hpix[k];
-    //    int l1;
-    //    for (l1=0;l1<ndata;l1++) {
-    //    htmp[l1].sig  = htmp[l1].hpr_cal+
-    //      Param->NEP[htmp[l1].ib]/Param->Calibration[htmp[l1].ib]
-    //      *sqrt(-2*log( drand48()))*cos(2*M_PI*drand48());
-    //    }
-    //  }
-    //}
-    // ca plante
     docutrg=nitbogo-1;
 
     ittt=1;

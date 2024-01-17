@@ -163,12 +163,6 @@ typedef struct {
    */
   PIOSTRING CNN_TMPID;
   PIOBYTE flag_CNN_TMPID;  /* ==_PAR_TRUE if CNN_TMPID is present */
-  
-  /* ---- Parameter PHASECNN -----------------------------------------
-   *
-   */
-  PIOINT PHASECNN;
-  PIOBYTE flag_PHASECNN;  /* ==_PAR_TRUE if PHASECNN is present */
     
 
   /* ---- Parameter CNN_RESIDU -----------------------------------------
@@ -206,15 +200,6 @@ typedef struct {
    */
   PIOINT TEMPLATE_NSIDE;
   PIOBYTE flag_TEMPLATE_NSIDE;  /* ==_PAR_TRUE if TEMPLATE_NSIDE is present */
-  
-  /* ---- Parameter TESTPOL --------------------------------------------
-   * if set to 0, activates the sroll simulation code (without stim),
-   * where colored noise and ADCNL residuals are added to the input signal HPR.
-   * If set to 4, only the ADCNL residuals part is added (?). Other values allowed
-   * in the code are: 3 (commented), 7 (?). Ignored (forced to -1) if stim_paramfiles is set.
-   * ** SHOULD BE SET TO 1 **
-   */
-  PIOINT TESTPOL;
 
   /* ---- Parameter RSTEP ----------------------------------------------
    * ring step. If set to 1, all the input rings are processed by sroll,
@@ -350,21 +335,21 @@ typedef struct {
    */
   PIOINT REMOVE_CAL;
 
-  /* ---- Optional InputList Signal_noPS -------------------------------
+  /* ---- Optional InputList Signal -------------------------------
    * Input signal HPR to be projected to maps.
-   * Signal_noPS units multiplied by Calibration must be KCMB.
+   * Signal units multiplied by Calibration must be KCMB.
    * unused if stim_paramfiles is given (input HPR will then be taken from stim ouptut)
    */
-  PIOSTRING *Signal_noPS;
-  PIOBYTE flag_Signal_noPS;  /* ==_PAR_TRUE if Signal_noPS is present */
-  PIOLONG n_Signal_noPS; /* ==number_of_Signal_noPS */
+  PIOSTRING *Signal;
+  PIOBYTE flag_Signal;  /* ==_PAR_TRUE if Signal is present */
+  PIOLONG n_Signal;     /* ==number_of_Signal */
 
-  /* ---- Optional InputList phase -------------------------------
-   * Input phase of the HPR to be projected to maps. Used for advance denoising
+  /* ---- Optional InputList External -------------------------------
+   * Input External information of the HPR to be projected to maps. Used for advance denoising
    */
-  PIOSTRING *phase;
-  PIOBYTE flag_phase;  /* ==_PAR_TRUE if phase is present */
-  PIOLONG n_phase; /* ==number_of_phase */
+  PIOSTRING *External;
+  PIOBYTE flag_External;  /* ==_PAR_TRUE if External is present */
+  PIOLONG n_External;     /* ==number_of_External */
 
   /* ---- Optional InputList rgcnn -------------------------------
    * Input phase of the HPR to be projected to maps. Used for advance denoising
@@ -378,7 +363,7 @@ typedef struct {
    */
   PIOSTRING *invgi;
   PIOBYTE flag_invgi;  /* ==_PAR_TRUE if invgi is present */
-  PIOLONG n_invgi; /* ==number_of_invgi */
+  PIOLONG n_invgi;     /* ==number_of_invgi */
 
   /* ---- Optional InputList Sub_HPR ---------------------------------------
    *
@@ -499,23 +484,23 @@ typedef struct {
   PIOSTRING Sim_Dust_U;
   PIOBYTE flag_Sim_Dust_U;  /* ==_PAR_TRUE if Sim_Dust_U is present */
 
-  /* ---- Optional InputList Ptg_noPS ----------------------------------
+  /* ---- Optional InputList Ptg ----------------------------------
    *
    */
-  PIOSTRING *Ptg_noPS;
-  PIOBYTE flag_Ptg_noPS;  /* ==_PAR_TRUE if Ptg_noPS is present */
-  PIOLONG n_Ptg_noPS; /* ==number_of_Ptg_noPS */
+  PIOSTRING *Ptg;
+  PIOBYTE flag_Ptg;  /* ==_PAR_TRUE if Ptg is present */
+  PIOLONG n_Ptg; /* ==number_of_Ptg */
 
-  /* ---- Optional InputList Hit_noPS ----------------------------------
+  /* ---- Optional InputList Hit ----------------------------------
    *
    */
-  PIOSTRING *Hit_noPS;
-  PIOBYTE flag_Hit_noPS;  /* ==_PAR_TRUE if Hit_noPS is present */
-  PIOLONG n_Hit_noPS; /* ==number_of_Hit_noPS */
+  PIOSTRING *Hit;
+  PIOBYTE flag_Hit;  /* ==_PAR_TRUE if Hit is present */
+  PIOLONG n_Hit; /* ==number_of_Hit */
 
   /* ---- Optional InputList HPR_Calib -------------------------------
    * list of HPRs containing the total dipole component that will be subtracted,
-   * not fitted, from Signal_noPS. Must be KCMB.
+   * not fitted, from Signal. Must be KCMB.
    */
   PIOSTRING *HPR_Calib;
   PIOBYTE flag_HPR_Calib;  /* ==_PAR_TRUE if HPR_Calib is present */
@@ -577,7 +562,7 @@ typedef struct {
 
 
   /* ---- Optional InputList stim_paramfiles -------------------------------
-   * Parameter files for TOI simulations, one per bolo, used if TESTPOL==0
+   * Parameter files for TOI simulations, one per bolo
    */
   PIOSTRING *stim_paramfiles;
   PIOBYTE flag_stim_paramfiles;  /* ==_PAR_TRUE if stim_paramfiles is present */
@@ -597,7 +582,7 @@ typedef struct {
   PIOBYTE flag_ADDDIP;
 
   /* ---- Optional InputList addHPR_name -------------------------------
-   * list of HPR object names of type PIOFLOAT to add to Signal_noPS input HPRs
+   * list of HPR object names of type PIOFLOAT to add to Signal input HPRs
    * must be a multiple of number of bolometers
    */
   PIOSTRING *addHPR_name;
@@ -608,7 +593,7 @@ typedef struct {
    * list of multiplicative factor for each addHPR_name
    * must have the same number of elements as addHPR_name
    * if only one value is given, it will be used for all addHPR_name objects
-   * default is 1.0 (simply add the addHPR_name to Signal_noPS)
+   * default is 1.0 (simply add the addHPR_name to Signal)
    */
   PIOFLOAT *addHPR_factor;
   PIOBYTE  flag_addHPR_factor;

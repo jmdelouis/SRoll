@@ -294,14 +294,12 @@ paramDef troll_paramDef_list[] = {
   {"CNN_START", false, false, false},
   {"CNN_LEARN_PARAM", false, false, false},
   {"CNN_TMPID", false, false, false},
-  {"PHASECNN", false, false, false},
   {"CNN_RESIDU", false, false, false},
   {"CNN_XSIZE", false, false, false},
   {"CNN_YSIZE", false, false, false},
   {"BUILDTF", false, false, false},
   {"CUTRG", false, true, false},
   {"TEMPLATE_NSIDE", false, false, false},
-  {"TESTPOL", false, true, false},
   {"RSTEP", false, true, false},
   {"GAINSTEP", false, true, false},
   {"Nside", false, true, false},
@@ -325,8 +323,8 @@ paramDef troll_paramDef_list[] = {
   {"projection", false, false, false},
   {"NORM_GAIN", false, true, false},
   {"REMOVE_CAL", false, true, false},
-  {"Signal_noPS", true, false, false},
-  {"phase", true, false, false},
+  {"Signal", true, false, false},
+  {"External", true, false, false},
   {"rgcnn", true, false, false},
   {"invgi", true, false, false},
   {"Sub_HPR", true, false, false},
@@ -348,8 +346,8 @@ paramDef troll_paramDef_list[] = {
   {"Theo_TDust_U", false, false, false},
   {"Sim_Dust_Q", false, false, false},
   {"Sim_Dust_U", false, false, false},
-  {"Ptg_noPS", true, false, false},
-  {"Hit_noPS", true, false, false},
+  {"Ptg", true, false, false},
+  {"Hit", true, false, false},
   {"HPR_Calib", true, false, false},
   {"Badring", true, false, false},
   {"VarGain", true, false, false},
@@ -369,7 +367,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 96;
+int troll_paramDef_list_size = 94;
 
 
 
@@ -644,15 +642,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->flag_CNN_TMPID = _PAR_TRUE;
     strcpy(param->CNN_TMPID, *value);
   }
-  else if (strcmp(name, "PHASECNN") == 0) {
-    param->flag_PHASECNN = _PAR_TRUE;
-    errno = 0;
-    param->PHASECNN = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'PHASECNN': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
   else if (strcmp(name, "CNN_RESIDU") == 0) {
     param->flag_CNN_RESIDU = _PAR_TRUE;
     errno = 0;
@@ -703,14 +692,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->TEMPLATE_NSIDE = myRead_PIOINT(*value);
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'TEMPLATE_NSIDE': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
-  else if (strcmp(name, "TESTPOL") == 0) {
-    errno = 0;
-    param->TESTPOL = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'TESTPOL': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
       return 1;
     }
   }
@@ -984,30 +965,30 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       return 1;
     }
   }
-  else if (strcmp(name, "Signal_noPS") == 0) {
-    param->flag_Signal_noPS = _PAR_TRUE;
-    param->n_Signal_noPS = list_size;
-    param->Signal_noPS = malloc(list_size * sizeof(PIOSTRING));
-    if (param->Signal_noPS == NULL) {
+  else if (strcmp(name, "Signal") == 0) {
+    param->flag_Signal = _PAR_TRUE;
+    param->n_Signal = list_size;
+    param->Signal = malloc(list_size * sizeof(PIOSTRING));
+    if (param->Signal == NULL) {
       perror("Error");
       return 1;
     }
     int i;
     for (i = 0; i < list_size; i++) {
-      strcpy(param->Signal_noPS[i], value[i]);
+      strcpy(param->Signal[i], value[i]);
     }
   }
-  else if (strcmp(name, "phase") == 0) {
-    param->flag_phase = _PAR_TRUE;
-    param->n_phase = list_size;
-    param->phase = malloc(list_size * sizeof(PIOSTRING));
-    if (param->phase == NULL) {
+  else if (strcmp(name, "External") == 0) {
+    param->flag_External = _PAR_TRUE;
+    param->n_External = list_size;
+    param->External = malloc(list_size * sizeof(PIOSTRING));
+    if (param->External == NULL) {
       perror("Error");
       return 1;
     }
     int i;
     for (i = 0; i < list_size; i++) {
-      strcpy(param->phase[i], value[i]);
+      strcpy(param->External[i], value[i]);
     }
   }
   else if (strcmp(name, "rgcnn") == 0) {
@@ -1148,30 +1129,30 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->flag_Sim_Dust_U = _PAR_TRUE;
     strcpy(param->Sim_Dust_U, *value);
   }
-  else if (strcmp(name, "Ptg_noPS") == 0) {
-    param->flag_Ptg_noPS = _PAR_TRUE;
-    param->n_Ptg_noPS = list_size;
-    param->Ptg_noPS = malloc(list_size * sizeof(PIOSTRING));
-    if (param->Ptg_noPS == NULL) {
+  else if (strcmp(name, "Ptg") == 0) {
+    param->flag_Ptg = _PAR_TRUE;
+    param->n_Ptg = list_size;
+    param->Ptg = malloc(list_size * sizeof(PIOSTRING));
+    if (param->Ptg == NULL) {
       perror("Error");
       return 1;
     }
     int i;
     for (i = 0; i < list_size; i++) {
-      strcpy(param->Ptg_noPS[i], value[i]);
+      strcpy(param->Ptg[i], value[i]);
     }
   }
-  else if (strcmp(name, "Hit_noPS") == 0) {
-    param->flag_Hit_noPS = _PAR_TRUE;
-    param->n_Hit_noPS = list_size;
-    param->Hit_noPS = malloc(list_size * sizeof(PIOSTRING));
-    if (param->Hit_noPS == NULL) {
+  else if (strcmp(name, "Hit") == 0) {
+    param->flag_Hit = _PAR_TRUE;
+    param->n_Hit = list_size;
+    param->Hit = malloc(list_size * sizeof(PIOSTRING));
+    if (param->Hit == NULL) {
       perror("Error");
       return 1;
     }
     int i;
     for (i = 0; i < list_size; i++) {
-      strcpy(param->Hit_noPS[i], value[i]);
+      strcpy(param->Hit[i], value[i]);
     }
   }
   else if (strcmp(name, "HPR_Calib") == 0) {
