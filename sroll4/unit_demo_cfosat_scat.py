@@ -44,15 +44,17 @@ class test:
   def __init__(self,params):
     self.valmin=0.488
     self.valmax=0.838
-    self.SeaMask=1.0-np.load('SeaMask.npy') # 1 if sea
-
-    self.nspline=8
     
-    SPLINE=np.loadtxt('SPLINE%d.txt'%(self.nspline))
+    self.nspline=8
+
+    try:
+      SPLINE=np.loadtxt('SPLINE%d.txt'%(self.nspline))
+    except:
+      print('Problem while reading SPLINE%d.txt'%(self.nspline))
 
     ref={}
     idx={}
-    
+
     for i in range(256):
       vv1=SPLINE[i,1:-1]
       lidx1=np.where(vv1>0.0)[0]
@@ -67,9 +69,7 @@ class test:
     
     a1=int(256*(inc-self.valmin)/(self.valmax-self.valmin))
     
-    return self.spline_idx[a1]+[self.nspline+k for k in range(4)],self.spline_ref[a1]+ \
-      [self.SeaMask[hidx]*np.fabs(externals[1]**2*np.cos(2*externals[0])),self.SeaMask[hidx]*np.fabs(externals[1]**2*np.sin(2*externals[0])),
-       self.SeaMask[hidx]*np.fabs(externals[2]**2*np.cos(2*externals[0])),self.SeaMask[hidx]*np.fabs(externals[2]**2*np.sin(2*externals[0]))]
+    return self.spline_idx[a1],self.spline_ref[a1]
   
 class proj:
   
@@ -104,7 +104,7 @@ def main():
   #  nombre de détecteurs (SWIM : 10 deg, 6 degres ...) ?
   nbolo = 1
   #bolo=['V1_2']
-  bolo=['V4_db_vv']
+  bolo=['V6_db_vv']
   inci_str=''
 
   # paramètre utilisé pour scat2healpix.py 
@@ -115,7 +115,7 @@ def main():
 
   # Nombre de ring à sélectionner, ici 100 ring
   BeginRing = 0
-  EndRing= 3
+  EndRing= 30
 
   # En prendre 1 ring  sur RSTEP : pour run 1, pour debug  plus de 1 
   RSTEP = 1
@@ -209,9 +209,7 @@ def main():
   #HPR_Calib = ["%s/SCAT_PRED4_LS10_CalibWW3"]
   #HPR_Calib = ['/home1/datawork/jmdeloui/SCAT_V2_ECMWF']
 
-  External = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]+ \
-    ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_U"%(i) for i in bolo]+ \
-    ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_V"%(i) for i in bolo]
+  External = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]
   
   # Nombre de fois qu'on est passé dans une cellule healpix pour chaque ring 
   Hit = ["%s/SCAT_%s_hit"%(dir_data,i) for i in bolo]
