@@ -89,7 +89,7 @@ print-%  : ; @echo $* = $($*)
 
 # This rule allow to ensure the proper (re)compilation of modules that sroll depend on.
 # For now the relevant modules are: no_dmc_lib and stim.
-alwaysCheckModules: fftw cfitsio sroll_parLoader.c troll_parLoader.c
+alwaysCheckModules: fftw cfitsio troll_parLoader.c
 	$(MAKE) -C $(NO_DMC_LIB_BASE_DIR)
 	$(MAKE) -C $(STIM_BASE_DIR)
 
@@ -123,9 +123,6 @@ $(LSDIR)/linux_gcc/bin/multimod:
 
 # Note that the generated parLoader source code depend on the parameter file header definition.
 # This rule will generate the 2 required files: "sroll_parLoader.c" and "sroll_parLoader.h"
-
-hprclean_parLoader.c: $(PAR_LOADER_INPUT_HEADER_HPRCLEAN_DEF)
-	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_HPRCLEAN_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX_HPRCLEAN)"
 
 troll_parLoader.c: $(PAR_LOADER_INPUT_HEADER_TROLL_DEF)
 	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_TROLL_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX_TROLL)"
