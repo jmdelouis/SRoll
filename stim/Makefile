@@ -12,6 +12,7 @@ CC := mpicc
 OPTIONAL_FLAGS := -lm
 endif
 
+SROLLDIR := ..
 # --- FFTW package ---
 FFTW_BASE_DIR := ../fftw
 FFTW_NAME := fftw-3.3.4

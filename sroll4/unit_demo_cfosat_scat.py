@@ -7,6 +7,7 @@ class test2D:
     self.valmax=0.838
 
     nspline=8
+    self.SeaMask=np.load('SeaMask.npy')
     
     SPLINE=np.loadtxt('SPLINE%d.txt'%(nspline))
     SPLINEC=np.loadtxt('SPLINE_CIRC_%d.txt'%(nspline))
@@ -30,21 +31,24 @@ class test2D:
     self.spline_ref=ref
   
   def eval(self,rg,ib,hidx,inc,externals):
+
+    ioff=int(self.SeaMask[hidx])
     
     a1=int(256*(inc-self.valmin)/(self.valmax-self.valmin))
     a2=int(256*(np.fmod(externals[0]+2*np.pi,2*np.pi)/(2*np.pi)))
     
-    return self.spline_idx[a1][a2],self.spline_ref[a1][a2]
+    return [k+64*ioff for k in self.spline_idx[a1][a2]],self.spline_ref[a1][a2]
   
 class test:
   
   def __init__(self,params):
     self.valmin=0.488
     self.valmax=0.838
+    self.SeaMask=1.0-np.load('SeaMask.npy') # 1 if sea
 
-    nspline=8
+    self.nspline=8
     
-    SPLINE=np.loadtxt('SPLINE%d.txt'%(nspline))
+    SPLINE=np.loadtxt('SPLINE%d.txt'%(self.nspline))
 
     ref={}
     idx={}
@@ -63,7 +67,9 @@ class test:
     
     a1=int(256*(inc-self.valmin)/(self.valmax-self.valmin))
     
-    return self.spline_idx[a1],self.spline_ref[a1]
+    return self.spline_idx[a1]+[self.nspline+k for k in range(4)],self.spline_ref[a1]+ \
+      [self.SeaMask[hidx]*np.fabs(externals[1]**2*np.cos(2*externals[0])),self.SeaMask[hidx]*np.fabs(externals[1]**2*np.sin(2*externals[0])),
+       self.SeaMask[hidx]*np.fabs(externals[2]**2*np.cos(2*externals[0])),self.SeaMask[hidx]*np.fabs(externals[2]**2*np.sin(2*externals[0]))]
   
 class proj:
   
@@ -82,15 +88,13 @@ class proj:
            id_bolo):
     
     return [1.0]
-  
-  
 
 def main():
   
   # DIR DATA
   dir_data = "/home1/datawork/mgallian/sroll_data/scat_hpr/"
   
-  SparseFunc = "test2D"
+  SparseFunc = "test"
   # Type de projection (voir class proj)
   projection = "proj"
   
@@ -111,7 +115,7 @@ def main():
 
   # Nombre de ring à sélectionner, ici 100 ring
   BeginRing = 0
-  EndRing= 70
+  EndRing= 30
 
   # En prendre 1 ring  sur RSTEP : pour run 1, pour debug  plus de 1 
   RSTEP = 1
@@ -121,6 +125,16 @@ def main():
   end_surv=[EndRing]
   name_surv=['Full']
 
+  # Pour chaque détecteur est ce qu'on rajoute une moyenne à nos fit
+  do_mean = []
+  
+  val_mean = [0.0 for i in range(2)] 
+  # poids dans la matrice 
+  w_mean = [1E8 for i in range(2)]
+  # normalize 
+  do_mean = [1 for k in range(8)]+[0 for k in range(12)]+[1 for k in range(4)]
+  
+  
   # Nombre de survey : On peut grouper plusieurs survey ou les prendre 1 par 1
   MAPRINGS = [1]
   
@@ -155,10 +169,6 @@ def main():
   BUILDTF = 0
   SEED= [1]
 
-  # Pour chaque détecteur est ce qu'on rajoute une moyenne à nos fit 
-  # val_mean = [0.0 for i in range(1)] # Si 16 spline --> in range(16)
-  # poids dans la matrice 
-  # w_mean = [1E8 for i in range(1)]
 
   # Calibration de départ des détecteurs (coeff + polarisation)
   Calibration = [1.0]  
@@ -199,7 +209,9 @@ def main():
   #HPR_Calib = ["%s/SCAT_PRED4_LS10_CalibWW3"]
   #HPR_Calib = ['/home1/datawork/jmdeloui/SCAT_V2_ECMWF']
 
-  External = ["%s/SCAT_%s_azi"%(dir_data,i) for i in bolo]
+  External = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]+ \
+    ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_U"%(i) for i in bolo]+ \
+    ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_V"%(i) for i in bolo]
   
   # Nombre de fois qu'on est passé dans une cellule healpix pour chaque ring 
   Hit = ["%s/SCAT_%s_hit"%(dir_data,i) for i in bolo]
@@ -270,8 +282,6 @@ def main():
   in_template_map_Q = ["/export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin"for i in range(0,nbolo)]
   in_template_map_U = ["/export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin"for i in range(0,nbolo)]
   # Pas utilisé
-  #do_mean = 0 #if = 1 do moyennne des bolometre =0 dans projgrad2 dans troll.c // tableau taille nbolo
-  do_mean  = []
 
   # Pas utilisé --> pour réseau neuronne 
   fsl = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_Signal"%(i) for i in bolo]

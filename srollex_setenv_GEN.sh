@@ -53,6 +53,20 @@ case "${HOST}" in
 	export PYTHONPATH=/export/home/jmdeloui/SROLL/py_sroll/ 
 	export LD_LIBRARY_PATH=/export/home/jmdeloui/SROLL/py_sroll/:$LD_LIBRARY_PATH 
  ;;
+  datarmor*)
+        echo " datarmor3 detected "
+        export SROLLHOST=datarmor3
+
+        export PYTHONPATH=/home1/datawork/jmdeloui/SROLL/py_sroll/
+        export LD_LIBRARY_PATH=/home1/datawork/jmdeloui/SROLL/py_sroll/:$LD_LIBRARY_PATH
+ ;;
+  r*)
+        echo " datarmor computing node detected "
+        export SROLLHOST=datarmor3
+
+        export PYTHONPATH=/home1/datawork/jmdeloui/SROLL/py_sroll/
+        export LD_LIBRARY_PATH=/home1/datawork/jmdeloui/SROLL/py_sroll/:$LD_LIBRARY_PATH
+ ;;
   *)
     echo "WARNING (setenv.sh): unknown host '${HOST}'! (Nothing done)"
     return 1

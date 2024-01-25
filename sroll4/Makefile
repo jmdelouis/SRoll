@@ -11,6 +11,7 @@ ARCHIVE_FILENAME := sroll_`date +"%Y-%m-%d"`.tgz
 
 BUILDDIR := .
 
+SROLLDIR := ..
 
 # --- FFTW package ---
 FFTW_BASE_DIR := $(SROLLDIR)/fftw
@@ -29,15 +30,14 @@ CFITSIO_LIB  := $(CFITSIO_DIR)/libcfitsio.a
 
 
 # --- Python wrapper ---
-DIRPYTHONPATH := /export/home/jmdeloui/SROLL/py_sroll/
-DIRPYTHONINC := /usr/include/python3.10
-DIRNUMPYINC := /export/home/jmdeloui/SROLL/py_sroll/lib/python3.6/site-packages/numpy/core/include
-DIRPYTHONLIB := /usr/lib/python3.10/config-3.10-x86_64-linux-gnu/
-LIBPYTHONLIB := -lpython3.10
+DIRPYTHONINC := $(shell python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
+DIRPYTHONLIB := $(shell python -c "from distutils.sysconfig import get_config_var;import sysconfig; print(get_config_var('LIBDIR')+' -Wl,-rpath,'+get_config_var('LIBDIR'))")
+LIBPYTHONLIB := $(shell python -c "import sysconfig; print('-lpython'+sysconfig.get_config_var('LDVERSION'))")
 OPTIONPYTHON := -DPYTHON3
-PYTHONCONF := `python-config --ldflags` `python-config --cflags`
+#PYTHONCONF := $(shell python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
 
 PYTHONLIB = -L${DIRPYTHONLIB} ${LIBPYTHONLIB} -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
+
 
 # --- NO_DMC_LIB package ---
 NO_DMC_LIB_NAME := no_dmc
@@ -75,7 +75,7 @@ _OBJHPRCLEAN := $(PAR_LOADER_TAG_PREFIX_HPRCLEAN)parLoader.o spline.o HPR_Cleane
 OBJHPRCLEAN := $(patsubst %,$(ODIR)/%,$(_OBJHPRCLEAN))
 
 #CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I$(DIRPYTHONINC) -I$(DIRNUMPYINC) -L$(DIRPYTHONLIB) -L$(NO_DMC_LIB_DIR) -I$(STIM_DIR_INCLUDE) -L$(STIM_LIB_DIR) -I../RngStreams -I.  $(PYTHONLIB) $(PYTHONCONF)
-CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I$(DIRPYTHONINC) -I$(DIRNUMPYINC) -L$(DIRPYTHONLIB) -L$(NO_DMC_LIB_DIR) -I$(STIM_DIR_INCLUDE) -I../RngStreams -I.  $(PYTHONLIB) $(PYTHONCONF)
+CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I$(DIRPYTHONINC) -L$(DIRPYTHONLIB) -L$(NO_DMC_LIB_DIR) -I$(STIM_DIR_INCLUDE) -I../RngStreams -I.  $(PYTHONLIB) $(PYTHONCONF)
 
 .PHONY: all clean dist fftw cfitsio levels cleanAll alwaysCheckModules
 
@@ -152,17 +152,13 @@ srollit: sroll.c $(OBJ)
 troll: troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 $(PYTHONLIB) -lm 
 
-#troll_14tf: alwaysCheckModules
-troll_14tf: troll.c $(OBJTROLL)
-	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS)  -DMAXTHEOHPR=14 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 ${PYTHONCONF} $(PYTHONLIB) -lm 
-
 #troll_857: alwaysCheckModules
 troll_857: troll.c $(OBJTROLL)
-	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DMAXTHEOHPR=7 -DMAXTHEOMAP=3 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -o $@ $< $(OBJTROLL)  $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 ${PYTHONCONF} $(PYTHONLIB) -lm 
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DMAXTHEOHPR=7 -DMAXTHEOMAP=3 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -o $@ $< $(OBJTROLL)  $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 $(PYTHONLIB) -lm 
 
 #troll_857: alwaysCheckModules
 troll_cfosat: troll.c $(OBJTROLL)
-	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXTHEOHPR=2 -DMAXSIMU=1 -DMAXTHEOSHPR=16  -DMAXTHEOMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 ${PYTHONCONF} $(PYTHONLIB) -lm -fno-finite-math-only
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXTHEOHPR=2 -DMAXSIMU=1 -DMAXTHEOSHPR=16  -DMAXTHEOMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
 #troll_20tf: alwaysCheckModules
 troll_20tf: troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS)  -DMAXTHEOHPR=20 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 ${PYTHONCONF} $(PYTHONLIB) -lm
