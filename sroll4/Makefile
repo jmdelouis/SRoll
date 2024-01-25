@@ -133,7 +133,19 @@ troll_parLoader.c: $(PAR_LOADER_INPUT_HEADER_TROLL_DEF)
 	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_TROLL_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX_TROLL)"
 
 %.o: %.c alwaysCheckModules
-	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic -lm
+	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic -lm 
+
+sroll: alwaysCheckModules
+sroll: sroll.c $(OBJ)
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJ) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB)  -l$(NO_DMC_LIB_NAME) $(PYTHONLIB) -lm  
+
+srollit: alwaysCheckModules
+srollit: sroll.c $(OBJ)
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DMAXSIMU=1 -DMAXTHEOHPR=1 -DMAXTHEOSHPR=9 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -o $@ $< $(OBJ) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(PYTHONLIB) -lm  
+
+#troll: alwaysCheckModules
+troll: troll.c $(OBJTROLL)
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 $(PYTHONLIB) -lm
 
 #troll_857: alwaysCheckModules
 troll_857: troll.c $(OBJTROLL)
