@@ -74,10 +74,6 @@ OBJTROLL := $(patsubst %,$(ODIR)/%,$(_OBJTROLL))
 _OBJHPRCLEAN := $(PAR_LOADER_TAG_PREFIX_HPRCLEAN)parLoader.o spline.o HPR_Cleaner.o
 OBJHPRCLEAN := $(patsubst %,$(ODIR)/%,$(_OBJHPRCLEAN))
 
-<<<<<<< HEAD
-#CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I$(DIRPYTHONINC) -I$(DIRNUMPYINC) -L$(DIRPYTHONLIB) -L$(NO_DMC_LIB_DIR) -I$(STIM_DIR_INCLUDE) -L$(STIM_LIB_DIR) -I../RngStreams -I.  $(PYTHONLIB) $(PYTHONCONF)
-=======
->>>>>>> e9d05bcc049f8a17d617d9a68b38014d6e836371
 CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I$(DIRPYTHONINC) -L$(DIRPYTHONLIB) -L$(NO_DMC_LIB_DIR) -I$(STIM_DIR_INCLUDE) -I../RngStreams -I.  $(PYTHONLIB) $(PYTHONCONF)
 
 .PHONY: all clean dist fftw cfitsio levels cleanAll alwaysCheckModules
@@ -137,12 +133,7 @@ troll_parLoader.c: $(PAR_LOADER_INPUT_HEADER_TROLL_DEF)
 	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_TROLL_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX_TROLL)"
 
 %.o: %.c alwaysCheckModules
-<<<<<<< HEAD
-	#$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -Werror -fpic -lm
 	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic -lm 
-#hprclean: alwaysCheckModules
-#hprclean: hprclean.c $(OBJHPRCLEAN)
-#	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR)  -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJ) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB)  -l$(NO_DMC_LIB_NAME) -lm
 
 sroll: alwaysCheckModules
 sroll: sroll.c $(OBJ)
@@ -154,10 +145,14 @@ srollit: sroll.c $(OBJ)
 
 #troll: alwaysCheckModules
 troll: troll.c $(OBJTROLL)
+<<<<<<< HEAD
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 $(PYTHONLIB) -lm 
 =======
 	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic -lm
 >>>>>>> e9d05bcc049f8a17d617d9a68b38014d6e836371
+=======
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 $(PYTHONLIB) -lm
+>>>>>>> 8022f7e4aa2fb508a778a2fa4935e63f173250af
 
 #troll_857: alwaysCheckModules
 troll_857: troll.c $(OBJTROLL)

@@ -14,7 +14,7 @@ MKDIR_P := mkdir -p
 dir_guard=@mkdir -p $(@D)
 
 NAME := no_dmc
-
+SROLLDIR := ../..
 BUILDDIR := Linux-x86_64
 DIR_LIB := $(BUILDDIR)
 DIR_TEST_SRC := test
