@@ -44,15 +44,25 @@ class test:
   def __init__(self,params):
     self.valmin=0.488
     self.valmax=0.838
+<<<<<<< HEAD
     self.SeaMask=1.0-np.load('SeaMask.npy') # 1 if sea
 
     self.nspline=8
     
     SPLINE=np.loadtxt('SPLINE%d.txt'%(self.nspline))
+=======
+    
+    self.nspline=8
+
+    try:
+      SPLINE=np.loadtxt('SPLINE%d.txt'%(self.nspline))
+    except:
+      print('Problem while reading SPLINE%d.txt'%(self.nspline))
+>>>>>>> e9d05bcc049f8a17d617d9a68b38014d6e836371
 
     ref={}
     idx={}
-    
+
     for i in range(256):
       vv1=SPLINE[i,1:-1]
       lidx1=np.where(vv1>0.0)[0]
@@ -104,7 +114,7 @@ def main():
   #  nombre de détecteurs (SWIM : 10 deg, 6 degres ...) ?
   nbolo = 1
   #bolo=['V1_2']
-  bolo=['V4_db_vv']
+  bolo=['V6_db_vv']
   inci_str=''
 
   # paramètre utilisé pour scat2healpix.py 
@@ -209,9 +219,13 @@ def main():
   #HPR_Calib = ["%s/SCAT_PRED4_LS10_CalibWW3"]
   #HPR_Calib = ['/home1/datawork/jmdeloui/SCAT_V2_ECMWF']
 
+<<<<<<< HEAD
   External = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]+ \
     ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_U"%(i) for i in bolo]+ \
     ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_V"%(i) for i in bolo]
+=======
+  External = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]
+>>>>>>> e9d05bcc049f8a17d617d9a68b38014d6e836371
   
   # Nombre de fois qu'on est passé dans une cellule healpix pour chaque ring 
   Hit = ["%s/SCAT_%s_hit"%(dir_data,i) for i in bolo]
