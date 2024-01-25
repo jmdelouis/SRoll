@@ -8,8 +8,6 @@
 
 #define CNN_NSIDE (32)
 
-#define USEDII
-//#define TESTFITADU
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,16 +54,8 @@
 
 PIOINT **rgordinv;
 
-#define MAXADUBOLO (100)
-long nadufit[MAXADUBOLO]; // 100 max number of bolometers
-
 float *tpparam=NULL; // parameters for neural network initialise to NULL at the beginning.
 int CNN_NB_PARAM=0;
-
-// TODO TEST TIME STEP IN ADU
-PIOLONG ADURGSTEP[MAXADUBOLO];
-PIOLONG nadustep[MAXADUBOLO];
-#define ADUSTEP (32000)
 
 PIOINT Nside;
 long NORM_GAIN=0;
@@ -77,14 +67,6 @@ int NORMFITPOL=0;
 
 int PIOWriteVECT(const char *path,void *value,int off,int size);
 double det(double *mat, int n);
-
-double rg_vals[MAXADUBOLO][4*32000];
-int rg_start[MAXADUBOLO][32000];
-int rg_end[MAXADUBOLO][32000];
-
-double *xspladu;
-BSpline *bspline[MAXADUBOLO]; // 100 max number of bolometers
-BSpline *bsplineTime[MAXADUBOLO];
 
 int *realpix;
 int *irealpix;
@@ -643,8 +625,6 @@ float GetLoadAvg()
 #define SOLDIPZ (0.0025066439)
 #define TINY 1.0e-303;
 
-int *invgi;
-
 void invertMatrix(double * mat,double *vec,int n,int rank);
 
 // --------------------------------------------------------------------------------
@@ -1025,8 +1005,6 @@ typedef struct {
   PIOINT ipix;
   PIOINT rg;
   PIOINT hrg;
-  PIOINT adu;
-  PIOFLOAT sadu;
   PIOFLOAT corr_nl;
   PIOFLOAT corr_cnn;
   PIOINT gi;
@@ -1662,7 +1640,7 @@ void dlinmin(double *p,double *xi,int n,double *fret,
 int gainoff=0;
 PIOLONG nbolo;
 PIOLONG GAINSTEP;
-PIOLONG GAINSTEPADU;
+
 // ------------------------------------------------------------------------
 void linmin(double *p, double *xi, int n, double *fret,
             double (*func)(double *))
@@ -1812,8 +1790,6 @@ void dfpmin(double *p,int n,double ftol,int *iter,double *fret,double (*func)(),
 
 double **rawcst;
 
-int nadudeg=1;
-
 // TODO TODO
 long nnbpix;
 hpix **loc_hpix;
@@ -1833,18 +1809,9 @@ double *QQ;
 double *UU;
 double *QU;
 #endif
-
-double *dthetai;
-double *dthetaq;
-double *dthetau;
-
-double *dii;
-double *dqq;
-double *duu;
-
-//double *ddegi;
-//double *ddegq;
-//double *ddegu;
+PIOBYTE *flgpix;
+PIOLONG globalBeginRing;
+PIOLONG globalEndRing;
 
 double *dcoi;
 double *dcoq;
@@ -1861,47 +1828,6 @@ double *ddustu;
 double *dpixi;
 double *dpixq;
 double *dpixu;
-
-double *daduspli;
-double *dadusplq;
-double *dadusplu;
-
-double *cdip;
-double *cco;
-double *ccfree;
-double *ctheta;
-double *cdust;
-double *cpix;
-double *dapix;
-double *ctmp;
-double *g;
-PIOBYTE *flgpix;
-PIODOUBLE *imatrice;
-PIODOUBLE *cond;
-
-troll_parContent* Param;
-
-PIOLONG globalBeginRing;
-PIOLONG globalEndRing;
-PIOLONG globalRangeRing;
-// This new struct allow to store the ring distribution (begin/end) among each rank
-typedef struct {
-  PIOLONG *BeginRing;
-  PIOLONG *EndRing;
-} rankInfo;
-
-rankInfo globalRankInfo;
-
-
-PIOINT **rgord;
-
-double *eta_dest;
-double *eta;
-double *dpsico;
-double *dpsisi;
-
-PIOLONG nadu=0;
-
 
 PIOBYTE **flg_rg;
 long npixShpr;
@@ -1948,9 +1874,24 @@ int DOTDUST;
 int MAXFREQ=0;
 PIOLONG CUTRG;
 PIOLONG *newnr2;
+PIODOUBLE *imatrice;
+PIOINT **rgord;
+troll_parContent *Param;
 PIOINT **rgord2;
 //int *the_stat_pix;
 double delta0;
+PIOLONG  globalRangeRing;
+double *eta;
+double *eta_dest;
+PIODOUBLE *cond;
+PIODOUBLE *g;
+
+typedef struct {
+  PIOLONG *BeginRing;
+  PIOLONG *EndRing;
+} rankInfo;
+
+rankInfo globalRankInfo;
 
 double **cache_xi2;
 double **cache_gain_xi2;
@@ -1958,738 +1899,10 @@ long n_cache_xi2=0;
 
 int NOMOREFITTED=0;
 
-double *mat1_adu=NULL;
-double *mat2_adu=NULL;
 #ifdef UPDATE_DIP
 #define UPDATE_DIP
 #endif
 
-// version of fit_adu_nl of r56 nadufit+1 is used instead of nadufit
-// this version checked manytimes, it works, and it is needed if GAINSTEP =! 1
-// the sliglt worst results  were caused by the activation of fit_adu_nl only after the 3rd iteration
-// VS after the first iteration in the old code aka r38
-/// ---------------------------------------------------------------------------------------------------
-//=========================================================================
-// OPTIMIZED IN MEMORY TO AVOID CRASH WHEN nbolo>8 : loop on bolometer
-//=========================================================================
-
-#if 0
-void fit_adu_nl_opt(double *x3,double *gain,double *outtemp,double *nouttemp){
-
-  int rank,i,k,j,l,rrk;
-  int size;
-  MPI_Status statu;
-  int mpi_size;
-  int rank_size;
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank_size);
-  rank=rank_size;
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
-  mpi_size=size;
-  int ib;
-
-  PIOLONG GAINSTEP2 = GAINSTEP;
-
-
-  double *lgain=(double *) malloc(sizeof(double)*nbolo);
-  for (i=0;i<nbolo;i++) {
-    double gtmp=0;
-    for (k=0;k<GAINSTEP;k++) gtmp+=gain[k+i*GAINSTEP];
-    lgain[i]=gtmp/((double) GAINSTEP);
-  }
-
-
-  double **ivec = (double **) malloc(sizeof(double *)*nbolo);
-  double *imat=NULL;
-  /*  
-  double *mapsi= (double *) malloc(sizeof(double)*nnbpix);
-  double *mapsq= (double *) malloc(sizeof(double)*nnbpix);
-  double *mapsu= (double *) malloc(sizeof(double)*nnbpix);
-  */
-
-  double ** map = (double *) malloc(sizeof(double*)*MAXCHANNELS);
-  
-
-  for (i = 0;i<MAXCHANNELS;i++){
-    map[i]=(double *) malloc(sizeof(double)*nnbpix);
-  }
-
-  int l1,m;
-  for (k=0;k<nnbpix;k++) {
-    mapsi[k]=UNSEENPIX;
-    if (flgpix[k]>0) {
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-
-      double SII=0;
-      double SIQ=0;
-      double SIU=0;
-      double SQQ=0;
-      double SUU=0;
-      double SQU=0;
-
-      double SI=0;
-      double SQ=0;
-      double SU=0;
-  
-       //plap
-      // Init matrice and vecteur
-      double matrix[MAXCHAN*MAXCHAN]; 
-      double Imatrix[MAXCHAN*MAXCHAN];  
-      double vector[MAXCHAN];
-      double *vect; 
-
-      
-      memset(vect,0,MAXCHANNELS*sizeof(double));
-      memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-      memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-      memset(vector,0,MAXCHANNELS*sizeof(double));
-
-
-
-      for (l1=0;l1<ndata;l1++) {
-	      long ri1=htmp[l1].rg-globalBeginRing;
-	      long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	      if (flg_rg[htmp[l1].ib][ri1]!=0) {
-
-          /*
-	        double CO1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].co
-					          -dpsisi[htmp[l1].ib]*htmp[l1].si);
-	        double SI1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].si
-					          +dpsisi[htmp[l1].ib]*htmp[l1].co);
-
-	        double gg2=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-
-	        double sig_corr = htmp[l1].sig*gg2-htmp[l1].Sub_HPR;
-	        if (NORM_GAIN==0) sig_corr-=htmp[l1].hpr_cal;
-	        else sig_corr-=htmp[l1].freefree;
-
-	        sig_corr-=htmp[l1].corr_nl+htmp[l1].corr_cnn;
-
-	        sig_corr-=x3[iri1];
-
-
-
-	        // ATTENTION GAINSTEP EST FORCE A 1
-	        sig_corr-=x3[newnr[nbolo]+htmp[l1].ib]*htmp[l1].model;
-            
-	        if (nmatco!=0) {
-	          sig_corr -=htmp[l1].comap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+htmp[l1].ib];
-	        }
-	        if (nmatdust!=0) {
-	          sig_corr -=htmp[l1].dustmap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+htmp[l1].ib];
-	        }
-	        if (nfreefree!=0) {
-	          sig_corr -=htmp[l1].freefree*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+nmatdust+htmp[l1].ib];
-	        }
-	        for (m=0;m<npixhpr;m++)  {
-	          sig_corr -= htmp[l1].listofhpr[m]*x3[newnr[nbolo]+nbolo*(GAINSTEP)+m*nbolo+htmp[l1].ib];
-	        }
-
-               
-	        SI +=htmp[l1].w*sig_corr;
-	        SQ +=htmp[l1].w*CO1*sig_corr;
-	        SU +=htmp[l1].w*SI1*sig_corr;
-
-	        SII +=htmp[l1].w;
-	        SIQ +=htmp[l1].w*CO1;
-	        SIU +=htmp[l1].w*SI1;
-	        SQQ +=htmp[l1].w*CO1*CO1;
-	        SQU +=htmp[l1].w*CO1*SI1;
-	        SUU +=htmp[l1].w*SI1*SI1;
-          */
-
-          
-          long ir =rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-          //calcul signal corriger 
-          double sig_corr = htmp[l1].m-x3[ir];
-	  
-          for(int m =0;m<npixhpr;m++){
-              sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];   
-          }
-	  
-	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
-	  
-          for(int m =0;m<npixmap;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];   
-          }
-
-	  for(int m =0;m<htmp[l1].nShpr;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
-	  }
-          
-          //calcul matrix & vector
-          for(int i = 0;i<MAXCHANNELS;i++){        
-            for(int j = 0;j<MAXCHANNELS;j++){
-              matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
-            }
-            vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
-          }  
-	      }
-      }
-    
-      //inverse Matrix            
-      memcpy(Imatrix,matrix,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-#ifdef CALCMATRIX
-      invertMatrix(Imatrix,vector,MAXCHANNELS);
-#else
-      invertMatrix(imatrice+k*MAXCHANNELS*MAXCHANNELS,vector,MAXCHANNELS,rank);
-#endif
-
-     for(int i = 0;i<MAXCHANNELS;i++){
-        map[i][k]= vector[i];
-      }
-
-
-      /*
-      if (Param->OUT_NOPOL[0]%2==0) {
-	      double cond=cond_3_3_thres(SII,SIQ,SIU,
-				         SIQ,SQQ,SQU,
-				         SIU,SQU,SUU);
-
-	      if (cond<Param->seuilcond) {
-	        solvemap(&SI,&SQ,&SU,SII,SIQ,SIU,SQQ,SQU,SUU);
-	        mapsi[k]=SI;
-	        mapsq[k]=SQ;
-	        mapsu[k]=SU;
-	      }
-      }else {
-	      if (SII>0) {
-	        mapsi[k]=SI/SII;
-	      }
-      }*/
-            
-      
-    }
-     
-  }
-    
-  // BUILD MATRIX ADU IF IT IS THE FIRST TIME
-  if (mat1_adu==NULL) {
-    mat1_adu=(double *)(1); // TO AVOID RECOMPUTING THIS MATRIX
-    for (ib=0;ib<nbolo;ib++) {
-      double *v1 = (double *) malloc(sizeof(double)*(newnr[nbolo]));
-      memset(v1,0,sizeof(double)*(newnr[nbolo]));
-      if (rank==0) fprintf(stderr,"BUILD ADU MATRIX BOLO %d\n",(int) ib);
-      double *mat1 = (double *) malloc(sizeof(double)*((nadufit[ib]+1)*(nadufit[ib]+1)));
-      memset(mat1,0,sizeof(double)*((nadufit[ib]+1)*(nadufit[ib]+1)));
-      double *mat2 =(double *) malloc(sizeof(double)*((newnr[ib+1]-newnr[ib])*(nadufit[ib]+1)));
-      memset(mat2,0,sizeof(double)*((newnr[ib+1]-newnr[ib])*(nadufit[ib]+1)));
-
-      for (k=0;k<nnbpix;k++) {
-	      if (mapsi[k]!=UNSEENPIX) {
-	        long ndata = loc_nhpix[k];
-	        hpix *htmp = loc_hpix[k];
-
-	        if (Param->OUT_NOPOL[0]%2==0) {
-	          for (l1=0;l1<ndata;l1++) {
-	            if (htmp[l1].ib==ib) {
-		      int iii,jjj;
-
-		      long ri1=htmp[l1].rg-globalBeginRing;
-		      long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-		      if (flg_rg[htmp[l1].ib][ri1]!=0) {
-
-		        v1[iri1]+=htmp[l1].w;
-
-		        mat2[nadufit[htmp[l1].ib]+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]
-		          +=htmp[l1].adu/1000.*htmp[l1].w;
-
-		        mat1[nadufit[htmp[l1].ib]+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]
-		          +=htmp[l1].w*htmp[l1].adu/1000.*htmp[l1].adu/1000.;
-
-		        if (ADURGSTEP[htmp[l1].ib]>2) {
-		          for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		            for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-			      int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-			      mat2[l_idx+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=
-			        htmp[l1].vspline[iii-htmp[l1].istart]*
-			        rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-
-			      mat1[l_idx+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-			        htmp[l1].vspline[iii-htmp[l1].istart]*
-			        rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000.*htmp[l1].w;
-			      mat1[nadufit[htmp[l1].ib]+l_idx*(nadufit[htmp[l1].ib]+1)]+=
-			        htmp[l1].vspline[iii-htmp[l1].istart]*
-			        rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000.*htmp[l1].w;
-
-			      int iii2,jjj2;
-			      for (iii2=htmp[l1].istart;iii2<=htmp[l1].iend;iii2++) {
-			        for (jjj2=rg_start[htmp[l1].ib][htmp[l1].rg];jjj2<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj2++) {
-			          int l_idx2=jjj2+ADURGSTEP[htmp[l1].ib]*iii2;
-
-			          mat1[l_idx+l_idx2*(nadufit[htmp[l1].ib]+1)]+=
-			            htmp[l1].vspline[iii-htmp[l1].istart]
-			            *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]
-			            *htmp[l1].vspline[iii2-htmp[l1].istart]
-			            *rg_vals[htmp[l1].ib][jjj2-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-			        }
-			      }
-		            }
-		          }
-		        }
-		        else {
-
-		          for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		            mat2[iii+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-
-		            mat1[iii+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-			      htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000.*htmp[l1].w;
-		            mat1[nadufit[htmp[l1].ib]+iii*(nadufit[htmp[l1].ib]+1)]+=
-			      htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000.*htmp[l1].w;
-
-		            for (jjj=htmp[l1].istart;jjj<=htmp[l1].iend;jjj++) {
-			            mat1[iii+jjj*(nadufit[htmp[l1].ib]+1)]+=
-			              htmp[l1].vspline[iii-htmp[l1].istart]
-			              *htmp[l1].vspline[jjj-htmp[l1].istart]*htmp[l1].w;
-		            }
-		          }
-		        }
-		      }
-	            }
-	          }
-	        }else {
-	          for (l1=0;l1<ndata;l1++) {
-	            if (htmp[l1].ib==ib) {
-		            long ri1=htmp[l1].rg-globalBeginRing;
-		            long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-                if (flg_rg[htmp[l1].ib][ri1]!=0) {
-
-		              long iii,jjj;
-
-		              v1[iri1]+=htmp[l1].w;
-
-		              mat2[nadufit[htmp[l1].ib]+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=htmp[l1].adu/1000.*htmp[l1].w;
-		              mat1[nadufit[htmp[l1].ib]+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]
-		                +=htmp[l1].w*htmp[l1].adu/1000.*htmp[l1].adu/1000.;
-
-		              if (ADURGSTEP[htmp[l1].ib]>2) {
-		                for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		                  for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-			                  int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-			                  mat2[l_idx+rgord[htmp[l1].ib][ri1]*(nadufit[htmp[l1].ib]+1)]+=
-			                    htmp[l1].vspline[iii-htmp[l1].istart]*
-			                    rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-
-			                  mat1[l_idx+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-			                    htmp[l1].vspline[iii-htmp[l1].istart]*
-			                    rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000*htmp[l1].w;
-			                  mat1[nadufit[htmp[l1].ib]+l_idx*(nadufit[htmp[l1].ib]+1)]+=
-			                    htmp[l1].vspline[iii-htmp[l1].istart]*
-			                    rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].adu/1000.*htmp[l1].w;
-
-			                  int iii2,jjj2;
-			                  for (iii2=htmp[l1].istart;iii2<=htmp[l1].iend;iii2++) {
-			                    for (jjj2=rg_start[htmp[l1].ib][htmp[l1].rg];jjj2<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj2++) {
-			                      int l_idx2=jjj2+ADURGSTEP[htmp[l1].ib]*iii2;
-
-			                      mat1[l_idx+l_idx2*(nadufit[htmp[l1].ib]+1)]+=
-			                        htmp[l1].vspline[iii-htmp[l1].istart]
-			                        *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]
-			                        *htmp[l1].vspline[iii2-htmp[l1].istart]
-			                        *rg_vals[htmp[l1].ib][jjj2-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-			                    }
-			                  }
-		                  }
-		                }
-		              }
-		              else {
-		                for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		                  mat2[iii+rgord[htmp[l1].ib][ri1]*nadufit[htmp[l1].ib]]
-			            +=htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-		                  mat1[iii+nadufit[htmp[l1].ib]*(nadufit[htmp[l1].ib]+1)]+=
-			            htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000*htmp[l1].w;
-		                  mat1[nadufit[htmp[l1].ib]+iii*(nadufit[htmp[l1].ib]+1)]+=
-			            htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].adu/1000*htmp[l1].w;
-
-		                  for (jjj=htmp[l1].istart;jjj<=htmp[l1].iend;jjj++) {
-			                  mat1[iii+jjj*(nadufit[htmp[l1].ib]+1)]+=
-			                    htmp[l1].vspline[iii-htmp[l1].istart]
-			                    *htmp[l1].vspline[jjj-htmp[l1].istart]*htmp[l1].w;
-		                  }
-		                }
-		              }
-		            }
-	            }
-	          }
-	        }
-	      }
-      }
-
-
-      double *lb = (double *) malloc(sizeof(double)*(newnr[nbolo]));
-      MPI_Reduce(v1,lb,newnr[nbolo],MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-      memcpy(v1,lb,sizeof(double)*(newnr[nbolo]));
-      free(lb);
-
-      lb = (double *) malloc(sizeof(double)*((nadufit[ib]+1)*(nadufit[ib]+1)));
-      MPI_Reduce(mat1,lb,((nadufit[ib]+1)*(nadufit[ib]+1)),MPI_DOUBLE,MPI_SUM,ib,MPI_COMM_WORLD);
-      memcpy(mat1,lb,sizeof(double)*((nadufit[ib]+1)*(nadufit[ib]+1)));
-      free(lb);
-
-      lb = (double *) malloc(sizeof(double)*((newnr[ib+1]-newnr[ib])*(nadufit[ib]+1)));
-      MPI_Reduce(mat2,lb,((newnr[ib+1]-newnr[ib])*(nadufit[ib]+1)),MPI_DOUBLE,MPI_SUM,ib,MPI_COMM_WORLD);
-      memcpy(mat2,lb,sizeof(double)*((newnr[ib+1]-newnr[ib])*(nadufit[ib]+1)));
-      free(lb);
-
-/*==============================================================================
-  AND NOW STORE THE MATRIX TO INVERT
-  ==============================================================================*/
-
-    if (rank==ib) {
-
-      for (j=newnr[ib];j<newnr[ib];j++) {
-        for (k=0;k<(nadufit[ib]+1);k++) {
-          for (l=0;l<(nadufit[ib]+1);l++) {
-            mat1[k+l*(nadufit[ib]+1)]-=mat2[k+(j-newnr[ib])*(nadufit[ib]+1)]
-	      *mat2[l+(j-newnr[ib])*(nadufit[ib]+1)]/v1[j];
-          }
-        }
-      }
-
-      for (j=newnr[ib];j<newnr[ib];j++) {
-        for (k=0;k<nadufit[ib]+1;k++) {
-          mat2[k+(j-newnr[ib])*(nadufit[ib]+1)]=mat2[k+(j-newnr[ib])*(nadufit[ib]+1)]/v1[j];
-        }
-      }
-
-
-#ifdef ADDNADUFITP1
-      for (k=0;k<nadufit[ib];k++) {
-	for (j=0;j<nadufit[ib];j++) mat1[j+k*nadufit[ib]]=mat1[j+k*(nadufit[ib]+1)];
-      }
-#endif
-    }
-
-    if (rank!=ib) {
-      free(mat1);
-    }
-    else mat1_adu = mat1;
-    if (rank!=ib) free(mat2);
-    else mat2_adu = mat2;
-    free(v1);
-    }
-  }
-
-  for (ib=0;ib<nbolo;ib++) {
-    if (rank==0) fprintf(stderr,"Fit ADU BOLO %d\n",(int) ib);
-    ivec[ib] = (double *) malloc(sizeof(double)*((nadufit[ib]+1)));
-    double *vec = (double *) malloc(sizeof(double)*((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]));
-    memset(vec,0,sizeof(double)*((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]));
-
-    for (k=0;k<nnbpix;k++) {
-      if (mapsi[k]!=UNSEENPIX) {
-	      long ndata = loc_nhpix[k];
-	      hpix *htmp = loc_hpix[k];
-
-	      if (Param->OUT_NOPOL[0]%2==0) {
-	        for (l1=0;l1<ndata;l1++) if (htmp[l1].ib==ib) {
-	            long ri1=htmp[l1].rg-globalBeginRing;
-	            long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-              if (flg_rg[htmp[l1].ib][ri1]!=0) {
-		            double CO1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].co
-						              -dpsisi[htmp[l1].ib]*htmp[l1].si);
-		            double SI1=eta_dest[htmp[l1].ib]*(dpsico[htmp[l1].ib]*htmp[l1].si
-						              +dpsisi[htmp[l1].ib]*htmp[l1].co);
-
-		            long iii,jjj;
-		            double gg2=lgain[htmp[l1].ib];
-
-                /*
-		            double sig_corr = (htmp[l1].sig*gg2-htmp[l1].Sub_HPR);
-		            if (NORM_GAIN==0) sig_corr-=htmp[l1].hpr_cal;
-		            else sig_corr-=htmp[l1].freefree;
-
-		            sig_corr-=htmp[l1].corr_cnn;
-
-		            sig_corr-=x3[iri1];
-
-		            // ATTENTION GAINSTEP EST FORCE A 1
-		            sig_corr-=x3[newnr[nbolo]+htmp[l1].ib]*htmp[l1].model;
-
-		            if (nmatco!=0) {
-		              sig_corr -=htmp[l1].comap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+htmp[l1].ib];
-		            }
-		            if (nmatdust!=0) {
-		              sig_corr -=htmp[l1].dustmap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+htmp[l1].ib];
-		            }
-		            if (nfreefree!=0) {
-		              sig_corr -=htmp[l1].freefree*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+nmatdust+htmp[l1].ib];
-		            }
-		            for (m=0;m<npixhpr;m++)  {
-		              sig_corr -= htmp[l1].listofhpr[m]*x3[newnr[nbolo]+nbolo*(GAINSTEP)+m*nbolo+htmp[l1].ib];
-		            }
-
-                */
-
-
-                long ir =rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-                //calcul signal corriger 
-                double sig_corr = htmp[l1].m-x3[ir];
-                for(int m =0;m<npixhpr;m++){
-                    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];   
-                }
-                for(int m =0;m<npixmap;m++){
-                    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];   
-                }
-		for(int m =0;m<htmp[l1].nShpr;m++){
-		  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
-		}
-		sig_corr-x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
-
-
-
-
-		            double residu=sig_corr-mapsi[k]-CO1*mapsq[k]-SI1*mapsu[k];
-
-		            vec[nadufit[htmp[l1].ib]]+=residu*htmp[l1].adu/1000.*htmp[l1].w;
-		            if (ADURGSTEP[htmp[l1].ib]>2) {
-		              for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		                for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-		                  int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		                  vec[l_idx]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]
-			            *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-		                }
-		              }
-		            }
-		            else {
-		              for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		                vec[iii]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-		              }
-		            }
-		            vec[(nadufit[htmp[l1].ib]+1)+iri1-newnr[htmp[l1].ib]]+=residu*htmp[l1].w;
-	            }
-	          }
-	      }else {
-	        for (l1=0;l1<ndata;l1++) if (htmp[l1].ib==ib) {
-            long ri1=htmp[l1].rg-globalBeginRing;
-            long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-            if (flg_rg[htmp[l1].ib][ri1]!=0) {
-
-		          long iii,jjj;
-		          double gg2=lgain[htmp[l1].ib];
-
-              /*  
-		          double sig_corr = (htmp[l1].sig*gg2-htmp[l1].Sub_HPR);
-		          if (NORM_GAIN==0) sig_corr-=htmp[l1].hpr_cal;
-		          else sig_corr-=htmp[l1].freefree;
-
-		          sig_corr-=htmp[l1].corr_cnn;
-
-		          sig_corr-=x3[iri1];
-
-		          // ATTENTION GAINSTEP EST FORCE A 1
-		          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib]*htmp[l1].model;
-
-		          if (nmatco!=0) {
-		            sig_corr -=htmp[l1].comap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+htmp[l1].ib];
-		          }
-		          if (nmatdust!=0) {
-		            sig_corr -=htmp[l1].dustmap*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+htmp[l1].ib];
-		          }
-		          if (nfreefree!=0) {
-		            sig_corr -=htmp[l1].freefree*x3[newnr[nbolo]+nbolo*(npixhpr+GAINSTEP)+nmatco+nmatdust+htmp[l1].ib];
-		          }
-		          for (m=0;m<npixhpr;m++)  {
-		            sig_corr -= htmp[l1].listofhpr[m]*x3[newnr[nbolo]+nbolo*(GAINSTEP)+m*nbolo+htmp[l1].ib];
-		          }
-              */
-
-              long ir =rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-              //calcul signal corriger 
-              double sig_corr = htmp[l1].m-x3[ir];
-              for(int m =0;m<npixhpr;m++){
-                sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];   
-              }
-	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
-              for(int m =0;m<npixmap;m++){
-                sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];   
-              }
-	      for(int m =0;m<htmp[l1].nShpr;m++){
-		sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
-	      }
-
-
-
-
-		          double residu=sig_corr-mapsi[k];
-
-		          vec[nadufit[htmp[l1].ib]]+=residu*htmp[l1].adu/1000.*htmp[l1].w;
-		          if (ADURGSTEP[htmp[l1].ib]>2) {
-		            for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		              for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-		                int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		                vec[l_idx]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]
-			          *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*htmp[l1].w;
-		              }
-		            }
-		          }else {
-		            for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-		              vec[iii]+=residu*htmp[l1].vspline[iii-htmp[l1].istart]*htmp[l1].w;
-		            }
-		          }
-		            vec[(nadufit[htmp[l1].ib]+1)+iri1-newnr[htmp[l1].ib]]+=residu*htmp[l1].w;
-	            }
-	          }
-	      }
-      }
-    }
-
-
-#ifdef OPTIMPI
-    double *lb = (double *) malloc(sizeof(double)*((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]));
-    MPI_Reduce(vec,lb,((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]),MPI_DOUBLE,MPI_SUM,ib,MPI_COMM_WORLD);
-    memcpy(vec,lb,sizeof(double)*((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]));
-    free(lb);
-#else
-    if (rank==ib) {
-
-      double *lb = (double *) malloc(sizeof(double)*((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]));
-
-      for (rrk=0;rrk<mpi_size;rrk++) if (rrk!=ib) {
-	      MPI_Recv(lb,sizeof(double)*((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]), MPI_BYTE, rrk,1031, MPI_COMM_WORLD,&statu);
-	      for (l=0;l<(nadufit[ib]+1)+newnr[ib+1]-newnr[ib];l++) vec[l]+=lb[l];
-      }
-      free(lb);
-
-    }
-    else {
-      MPI_Send(vec,sizeof(double)*((nadufit[ib]+1)+newnr[ib+1]-newnr[ib]), MPI_BYTE, ib, 1031, MPI_COMM_WORLD);
-    }
-
-#endif
-
-/*==============================================================================
-  AND NOW STORE THE MATRIX TO INVERT
-  ==============================================================================*/
-
-    if (rank==ib) {
-      for (j=newnr[ib];j<newnr[ib];j++) {
-        for (k=0;k<nadufit[ib]+1;k++) {
-          vec[k]-=mat2_adu[k+(j-newnr[ib])*(nadufit[ib]+1)]*vec[(nadufit[ib]+1)+j];
-        }
-      }
-
-      memcpy(ivec[ib],vec,sizeof(double)*((nadufit[ib]+1)));
-      imat = (double *) malloc(sizeof(double)*(nadufit[ib]+1)*(nadufit[ib]+1));
-      memcpy(imat,mat1_adu,sizeof(double)*(nadufit[ib]+1)*(nadufit[ib]+1));
-    }
-    free(vec);
-  }
-  /*
-  free(mapsi);
-  free(mapsq);
-  free(mapsu);
-  */
-  free(map);
-
-  if (rank<nbolo) {
-    fprintf(stderr,"Invert FIT_ADU MATRIX bolo=%d proc=%d %ld %ld\n",(int) rank,(int) rank,(long) imat,(long) ivec[rank]);
-#if 0
-    fprintf(stderr,"WRITE MATRIX %d\n",rank);
-    char path[512];
-    sprintf(path,"mat1opt_%d",rank);
-    FILE *fp=fopen(path,"w");
-    fwrite(imat,(nadufit[rank]+1)*(nadufit[rank]+1)*sizeof(double),1,fp);
-    fclose(fp);
-    sprintf(path,"vecopt_%d",rank);
-    fp=fopen(path,"w");
-    fwrite(ivec[rank],(nadufit[rank]+1)*sizeof(double),1,fp);
-    fclose(fp);
-
-#endif
-
-#ifdef ADDNADUFITP1
-    lusol(imat,ivec[rank],(nadufit[rank]/*+1*/));
-#else
-    lusol(imat,ivec[rank],(nadufit[rank]+1));
-#endif
-
-    free(imat);
-
-#ifdef TESTFITADU
-    PIOSTRING saveg;
-    sprintf(saveg,"%s_OUTNL",Param->Out_VEC[i]);
-    fprintf(stderr,"Write OUTNL  %lld\n",(long long) (PIOWriteVECT(saveg,ivec[rank],0,sizeof(PIODOUBLE)*(nadufit[rank]+1)))/sizeof(double));
-#endif
-
-  }
-
-  /// MODIF
-  for (ib=0;ib<nbolo;ib++) MPI_Bcast(ivec[ib],sizeof(double)*(nadufit[ib]+1),MPI_BYTE, ib, MPI_COMM_WORLD);
-
-  memset(outtemp,0,sizeof(double)*320*320*nbolo);
-  memset(nouttemp,0,sizeof(double)*320*320*nbolo);
-
-  for (k=0;k<nnbpix;k++) {
-    long ndata = loc_nhpix[k];
-    hpix *htmp = loc_hpix[k];
-    int l1;
-
-    for (l1=0;l1<ndata;l1++) {
-      long ri1=htmp[l1].rg-globalBeginRing;
-      if (flg_rg[htmp[l1].ib][ri1]!=0) {
-	long iii,jjj;
-
-#ifdef ADDNADUFITP1
-	htmp[l1].corr_nl=0
-#else
-	htmp[l1].corr_nl=ivec[htmp[l1].ib][nadufit[htmp[l1].ib]]*htmp[l1].adu/1000.;
-#endif
-
-	if (ADURGSTEP[htmp[l1].ib]>2) {
-	  for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-	    for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-              int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-		htmp[l1].corr_nl+=htmp[l1].vspline[iii-htmp[l1].istart]
-		  *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg]*ivec[htmp[l1].ib][l_idx];
-	    }
-	  }
-	}
-	else {
-	  for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-	    htmp[l1].corr_nl+=htmp[l1].vspline[iii-htmp[l1].istart]*ivec[htmp[l1].ib][iii];
-	  }
-	}
-
-	outtemp[htmp[l1].adu/100+320*(htmp[l1].rg/100)+320*320*htmp[l1].ib]+=htmp[l1].corr_nl;
-	nouttemp[htmp[l1].adu/100+320*(htmp[l1].rg/100)+320*320*htmp[l1].ib]+=1;
-      }
-    }
-  }
-
-#ifdef OPTIMPI
-  double *lb = (double *) malloc(sizeof(double)*320*320*nbolo);
-  MPI_Reduce(outtemp,lb,320*320*nbolo,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-  memcpy(outtemp,lb,sizeof(double)*320*320*nbolo);
-  MPI_Reduce(nouttemp,lb,320*320*nbolo,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-  memcpy(nouttemp,lb,sizeof(double)*320*320*nbolo);
-  free(lb);
-#else
-  if (rank==0) {
-    double *lb = (double *) malloc(sizeof(double)*320*320*nbolo);
-    for (rrk=1;rrk<mpi_size;rrk++) {
-      MPI_Recv(lb,sizeof(double)*320*320*nbolo, MPI_BYTE, rrk,1031, MPI_COMM_WORLD,&statu);
-      for (l=0;l<320*320*nbolo;l++) outtemp[l]+=lb[l];
-      MPI_Recv(lb,sizeof(double)*320*320*nbolo, MPI_BYTE, rrk,1032, MPI_COMM_WORLD,&statu);
-      for (l=0;l<320*320*nbolo;l++) nouttemp[l]+=lb[l];
-    }
-    free(lb);
-    for (l=0;l<320*320*nbolo;l++) if (nouttemp[l]>0) outtemp[l]/=nouttemp[l];
-  }
-  else {
-    MPI_Send(outtemp,sizeof(double)*320*320*nbolo, MPI_BYTE, 0, 1031, MPI_COMM_WORLD);
-    MPI_Send(nouttemp,sizeof(double)*320*320*nbolo, MPI_BYTE, 0, 1032, MPI_COMM_WORLD);
-  }
-#endif
-
-  free(lgain);
-
-  for (i=0;i<nbolo;i++) free(ivec[i]);
-  free(ivec);
-}
-
-#endif
- 
 // -------------------------------------------------------------------------------------------------------------
 void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
 
@@ -3012,11 +2225,11 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
     
     for(int n = 0;n<Param->n_val_mean;n++){
       double sum2 = 0.0;
-      for(int b = 0;b<nbolo*(npixhpr);b++){
-	  sum2+=(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]-Param->val_mean[n])*Param->do_mean[b+n*(nbolo*npixhpr)];
+      for(int b = 0;b<nbolo*(npixhpr+npixShpr);b++){
+	sum2+=(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]-Param->val_mean[n])*Param->do_mean[b+n*(nbolo*(npixhpr+npixShpr))];
       }
-      for(int b = 0;b<nbolo*npixhpr;b++){
-	q2[newnr[nbolo]+b+(GAINSTEP2)*nbolo]+= sum2*Param->w_mean[n]*Param->do_mean[b+n*(nbolo*npixhpr)];
+      for(int b = 0;b<nbolo*(npixhpr+npixShpr);b++){
+	q2[newnr[nbolo]+b+(GAINSTEP2)*nbolo]+= sum2*Param->w_mean[n]*Param->do_mean[b+n*(nbolo*(npixhpr+npixShpr))];
       }
     }
     // NORMLISATION IS MANDATORY FOR MAP TEMPLATE
@@ -3030,6 +2243,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           q2[newnr[nbolo]+b+(m+npixhpr+GAINSTEP2)*nbolo]+= sum2*msum;
         }
     }
+#if 0
     // NORMLISATION IS MANDATORY FOR MAP TEMPLATE
     for(int m =0;m<npixShpr;m++){
         double sum2 = 0.0;
@@ -3041,6 +2255,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           q2[newnr[nbolo]+b+(m+npixhpr+npixmap+GAINSTEP2)*nbolo]+= sum2*msum;
         }
     }
+#endif
     
     // NORMLISATION GAIN MOYEN
     if(GAINSTEP2 != 0 && NORM_GAIN==1) {
@@ -5594,54 +4809,6 @@ int main(int argc,char *argv[])  {
   PIOLONG ib;
   eta=(double *) malloc(sizeof(double)*nbolo); // (1-crosspol)/(1+crosspol)
   eta_dest=(double *) malloc(sizeof(double)*nbolo);
-  dpsico=(double *) malloc(sizeof(double)*nbolo);
-  dpsisi=(double *) malloc(sizeof(double)*nbolo);
-  
-  PIOLONG nadu3=Param->n_NADU;
-  GAINSTEPADU=Param->n_NADU;
-  DODISTOR=0;
-  if (GAINSTEPADU!=0) {
-    DODISTOR=0;
-    for (i=0;i<Param->n_NADU;i++) {
-      if (Param->NADU[i]>1) DODISTOR=Param->NADU[i];
-    }
-    if (DODISTOR>0) {
-      if (mpi_size<nbolo) {
-	fprintf(stderr,"Number of bolometer should be bigger than number of bolometer for the fit_adu function\n");
-
-	exit(-1);
-      }
-#if 0
-      // USELESS IF NOT USING
-      if (DODISTOR>16) nadudeg=7;
-      else nadudeg=1;
-#endif
-      GAINSTEPADU=nadu3; //Param->GAINSTEP;
-      nadu3=GAINSTEPADU;
-      //Param->GAINSTEP=1;
-      for (i=0;i<nbolo;i++) {
-	nadufit[i]=Param->NADU[i];
-	ADURGSTEP[i] = Param->NADUSTEP[i];
-	nadustep[i]=ADUSTEP;  // histogram independant from NADU
-      }
-    }
-  }
-  if (DODISTOR!=0) {
-    for (i=0;i<nbolo;i++) {
-      bspline[i] = bspline_alloc (3,nadufit[i]-2);
-      bspline_init_uniform (bspline[i], 0.0, 128.0);
-      if (rank==0) fprintf(stderr,"DODISTOR [%d]: %d %d\n",(int) i,(int) DODISTOR,(int) bspline[i]->Ncoefs);
-
-      if (ADURGSTEP[i]>2) {
-	bsplineTime[i] = bspline_alloc (3,ADURGSTEP[i]-2);
-	bspline_init_uniform (bsplineTime[i], 0.0, 1.0);
-	if (rank==0) fprintf(stderr,"DODISTOR TIME [%d]: %d %d\n",(int) i,(int) ADURGSTEP[i],(int) bsplineTime[i]->Ncoefs);
-      }
-    }
-  }
-  else {
-    if (rank==0) fprintf(stderr,"DODISTOR : %d\n",(int) DODISTOR);
-  }
 
   if (rank==0) fprintf(stderr,"Avv GAIN is equal to 0 if ==1 : NORM_GAIN : %d\n",(int) Param->NORM_GAIN);
 
@@ -5740,8 +4907,6 @@ int main(int argc,char *argv[])  {
     if (Param->D_NOPOL) eta_dest[ib]=0;
     else eta_dest[ib]=eta[ib];
 
-    dpsico[ib]=1;
-    dpsisi[ib]=0;
     double sxi= (Param->Calibration[ib]/Param->NEP[ib])*(Param->Calibration[ib]/Param->NEP[ib]);
     if (rank==0) fprintf(stderr,"SXI %d %lg\n",(int) ib,sxi);
     sprintf(Command,"begin=%lld;end=%lld",
@@ -5787,18 +4952,6 @@ int main(int argc,char *argv[])  {
     /*=========================================================================================
       Compute spline in Time:
       =========================================================================================*/
-    
-#if 0
-    if (ADURGSTEP[ib]>2) {
-      for (i=globalBeginRing;i<=globalEndRing;i++) {
-	double sadu=((double) ibadring[i-globalBeginRing])/rg_max;
-	//	if (rank==0) fprintf(stderr,"RG_MAX %ld %lf\n",(long) i,(double) sadu);
-	bspline_value(bsplineTime[ib],sadu,rg_start[ib]+i,rg_end[ib]+i);
-	double *vals = bsplineTime[ib]->vals;
-	for (j=rg_start[ib][i];j<=rg_end[ib][i];j++) rg_vals[ib][j-rg_start[ib][i]+4*i]=vals[j];
-      }
-    }
-#endif
 
     int iter;
     PIOFLOAT *stim_hpr[MAXSIMU];
@@ -5958,20 +5111,6 @@ int main(int argc,char *argv[])  {
             fprintf(stderr, "Impossible to read Theo_HPR[%ld]: %s %d\n",i*nbolo+ib,Param->Theo_HPR[i*nbolo+ib],tperr);
             exit ( -1);
           }
-        }
-
-        PIOFLOAT *ADU;
-        if (Param->flag_ADU==_PAR_TRUE) {
-          ADU = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE);
-          tperr = noDMC_readObject_PIOFLOAT(Param->ADU[ib],rg*RINGSIZE,RINGSIZE,ADU);
-          if (tperr<0) {
-            fprintf(stderr, "Impossible to read ADU[%ld]: %s %d %ld\n",ib,Param->ADU[ib],tperr,(long) rg);
-            exit ( -1);
-          }
-        }
-        else {
-          ADU = (PIOFLOAT *) _PIOMALLOC(sizeof(PIOFLOAT)*RINGSIZE);
-          for (i=0;i<RINGSIZE;i++) ADU[i]=0;
         }
 
         PIOFLOAT *External;
@@ -6200,18 +5339,9 @@ int main(int argc,char *argv[])  {
 	    } else {
 	      tp_hpix->Sub_HPR = 0.0;
 	    }
-#if 0
-	    tp_hpix->sig=ADU[i]/104978.;
-#endif
+	    
 	    tp_hpix->corr_nl = 0;
 	    tp_hpix->corr_cnn = 0;
-	    tp_hpix->adu    = (PIOINT) (floor(ADU[i]));
-	    if (tp_hpix->adu+16000<0) tp_hpix->adu=-16000;
-	    if (tp_hpix->adu+16000>31999) tp_hpix->adu=15999;
-	    tp_hpix->adu=tp_hpix->adu+16000;
-	    // SADU should be driven by the badring information!!!
-	    //tp_hpix->sadu=(rg-globalBeginRing)/((float)((globalEndRing+1) - globalBeginRing));
-	    tp_hpix->sadu=((float) ibadring[rg-globalBeginRing])/rg_max;
 	    
 	    init_channels(tp_hpix,
 			  projFunc,
@@ -6259,16 +5389,8 @@ int main(int argc,char *argv[])  {
 	    tp_hpix->surv = surv;
 	    tp_hpix->ib = ib;
 	    tp_hpix->rg = rg;
-#if GAIN_RATIO
-	    if (gain_ratio_off[ib][rg]>10000000) {
-	      tp_hpix->gi = gain_ratio_off[ib][rg];
-	      //tp_hpix->ggi = gain_ratio[ib][rg];
-	    }
-	    else {
-	    }
-#endif
 #define NBPH (4096)
-	    tp_hpix->gi = rg;
+	    tp_hpix->gi = 0;
 	    //tp_hpix->ggi = 1.;
 	    tp_hpix->hrg = (External[i]*NBPH)/(2*M_PI);
 	    //tp_hpix->xrg = (double) (rg-240)/25000.;
@@ -6305,7 +5427,6 @@ int main(int argc,char *argv[])  {
         free(th);
         free(ph);
         free(psi);
-        free(ADU);
       } // if not badring
     } // end ring loop
 
@@ -6822,23 +5943,11 @@ int main(int argc,char *argv[])  {
   }
   
  //========================================================================
-  // if ADU option is open do the histogram and transfrom the adu field in the data
 
-  double *histo_adu[MAXADUBOLO];
-  double *xadu[MAXADUBOLO];
-  for (i=0;i<nbolo;i++) {
-    histo_adu[i] =(double *) malloc(nadustep[i]*sizeof(double));
-    memset(histo_adu[i],0,nadustep[i]*sizeof(double));
-    xadu[i] = (double *) malloc(128*sizeof(double));
-  }
 
   double *histo_gi = (double *) malloc(32000*sizeof(double)*nbolo);
   double *histo2_gi = (double *) malloc(32000*sizeof(double)*nbolo);
   double *histon_gi = (double *) malloc(32000*sizeof(double)*nbolo);
-  int *invgi       = (int *)    malloc(32000*sizeof(int)*nbolo);
-  //GAINSTEP = nadu3;
-  double *xgi      = (double *) malloc(GAINSTEP*sizeof(double)*nbolo);
-  double *nxgi     = (double *) malloc(GAINSTEP*sizeof(double)*nbolo);
 
   double mat_dip[4*nbolo];
   double vec_dip[2*nbolo];
@@ -6883,12 +5992,6 @@ int main(int argc,char *argv[])  {
 	  histo_gi[ htmp[l1].rg+htmp[l1].ib*32000]+=ww*tmp;
 	  histo2_gi[htmp[l1].rg+htmp[l1].ib*32000]+=ww*tmp*tmp;
 	  histon_gi[htmp[l1].rg+htmp[l1].ib*32000]+=ww;
-	  
-#if 1
-	  if (DODISTOR!=0) histo_adu[htmp[l1].ib][htmp[l1].adu]+=ww;
-#else
-	  if (DODISTOR!=0) histo_adu[htmp[l1].ib][htmp[l1].adu]=1;
-#endif
 	  
 	  mat_dip[0+4*htmp[l1].ib]+=ww*htmp[l1].model*htmp[l1].model;
 	  mat_dip[1+4*htmp[l1].ib]+=ww*htmp[l1].model;
@@ -6992,310 +6095,9 @@ int main(int argc,char *argv[])  {
     }
   }
 
-#if 1
-  if (Param->flag_ADU==_PAR_TRUE) {
-    for (ib=0;ib<nbolo;ib++) {
-
-      if (rank==0) {
-        MPI_Status statu;
-        int rrk;
-        double *l_histo;
-	PIOSTRING saveg;
-
-        if (nadustep[ib]<32000) {
-          l_histo = (double *) malloc((32000)*sizeof(double));
-        }
-        else {
-          l_histo = (double *) malloc((nadustep[ib])*sizeof(double));
-        }
-
-        for (rrk=1;rrk<mpi_size;rrk++) {
-          if (DODISTOR!=0) {
-            MPI_Recv(l_histo,sizeof(double)*nadustep[ib], MPI_BYTE, rrk,51, MPI_COMM_WORLD,&statu);
-            for (j=0;j<nadustep[i];j++) histo_adu[ib][j]+=l_histo[j];
-          }
-          MPI_Recv(l_histo,sizeof(double)*32000, MPI_BYTE, rrk,54, MPI_COMM_WORLD,&statu);
-          for (j=0;j<32000;j++) histo_gi[j+ib*32000]+=l_histo[j];
-          MPI_Recv(l_histo,sizeof(double)*32000, MPI_BYTE, rrk,55, MPI_COMM_WORLD,&statu);
-          for (j=0;j<32000;j++) histo2_gi[j+ib*32000]+=l_histo[j];
-          MPI_Recv(l_histo,sizeof(double)*32000, MPI_BYTE, rrk,56, MPI_COMM_WORLD,&statu);
-          for (j=0;j<32000;j++) histon_gi[j+ib*32000]+=l_histo[j];
-        }
-        free(l_histo);
-
-        int tmpi=0;
-
-        if (DODISTOR!=0) {
-          memset(xadu[ib],0,sizeof(double)*128);
-
-          for (j=1;j<ADUSTEP;j++) {
-            histo_adu[ib][j]+=histo_adu[ib][j-1];
-          }
-          for (j=0;j<ADUSTEP;j++) {
-            histo_adu[ib][j]*=128./histo_adu[ib][ADUSTEP-1];
-            if (histo_adu[ib][j]>=128.0) histo_adu[ib][j]=128.0; // cas pbs d'arrondi
-          }
-
-          double *nxadu=(double *) malloc(128*sizeof(double));
-          memset(nxadu,0,128*sizeof(double));      
-
-         for (j=1;j<ADUSTEP;j++) {
-            int xii=(int) histo_adu[ib][j];
-            if (xii>=128) xii=127;
-            xadu[ib][xii]+=j;
-            nxadu[xii]+=1;
-          }
-
-          for (j=0;j<128;j++) {
-            xadu[ib][j]/=nxadu[j];
-          }
-          free(nxadu);
-
-          sprintf(saveg,"%s_HISTO_ADU",Param->Out_VEC[ib]);
-          fprintf(stderr,"Write HISTO_ADU  %lld\n",(long long) (PIOWriteVECT(saveg,histo_adu[ib],0,sizeof(PIODOUBLE)*nadustep[ib])/sizeof(PIODOUBLE)));
-
-          sprintf(saveg,"%s_XADU",Param->Out_VEC[ib]);
-          fprintf(stderr,"Write XADU  %lld\n",(long long) (PIOWriteVECT(saveg,xadu[ib],0,sizeof(PIODOUBLE)*(128))/sizeof(PIODOUBLE)));
-        }
-        sprintf(saveg,"%s_HISTO_GAIN",Param->Out_VEC[ib]);
-        for (i=0;i<32000;i++) if (histon_gi[i+ib*32000]>0) histo_gi[i+ib*32000]=
-                                                             histo2_gi[i+ib*32000]
-                                                             -histo_gi[i+ib*32000]*histo_gi[i+ib*32000]/histon_gi[i+ib*32000];
-
-        fprintf(stderr,"Write HISTO_GAIN  %lld\n",(long long) (PIOWriteVECT(saveg,histo_gi+ib*32000,0,32000*sizeof(double))/sizeof(double)));
-
-        for (i=1;i<32000;i++) histo_gi[i+ib*32000]+=histo_gi[i-1+ib*32000];
-
-        double step=(histo_gi[31999+ib*32000]+1)/GAINSTEP;
-	      tmpi=0;
-        memset(xgi+ib*GAINSTEP,0,sizeof(double)*GAINSTEP);
-        memset(nxgi+ib*GAINSTEP,0,sizeof(double)*GAINSTEP);
-        invgi[0+ib*32000]=0;
-        for (i=1;i<32000;i++) {
-          invgi[i+ib*32000]=tmpi;
-          xgi[tmpi+ib*GAINSTEP]+=(i)*(histo_gi[i+ib*32000]-histo_gi[i-1+ib*32000]);
-          nxgi[tmpi+ib*GAINSTEP]+=(histo_gi[i+ib*32000]-histo_gi[i-1+ib*32000]);
-          if (histo_gi[i+ib*32000]>step*(1+tmpi)) {
-            if (tmpi<GAINSTEP-1) {
-	      tmpi++;
-	    }
-          }
-        }
-        for (i=0;i<32000;i++) {
-          if (invgi[i+ib*32000]>=GAINSTEP) invgi[i+ib*32000]=GAINSTEP-1;
-        }
-
-        for (i=0;i<GAINSTEP;i++) {
-          xgi[i+ib*GAINSTEP]/=nxgi[i+ib*GAINSTEP];
-        }
-
-        sprintf(saveg,"%s_INV_GI",Param->Out_VEC[ib]);
-        fprintf(stderr,"Write INV_GI  %lld\n",(long long) PIOWriteVECT(saveg,invgi+ib*32000,0,32000*sizeof(int))/sizeof(int));
-
-        sprintf(saveg,"%s_XGI",Param->Out_VEC[ib]);
-        fprintf(stderr,"Write XGI  %lld\n",(long long) PIOWriteVECT(saveg,xgi+ib*GAINSTEP,0,sizeof(PIODOUBLE)*GAINSTEP)/sizeof(PIODOUBLE));
-      }
-      else {
-        if (DODISTOR!=0) MPI_Send(histo_adu[ib], sizeof(double)*nadustep[ib], MPI_BYTE, 0, 51, MPI_COMM_WORLD);
-	MPI_Send(histo_gi+ib*32000, sizeof(double)*32000, MPI_BYTE, 0, 54, MPI_COMM_WORLD);
-        MPI_Send(histo2_gi+ib*32000, sizeof(double)*32000, MPI_BYTE, 0, 55, MPI_COMM_WORLD);
-        MPI_Send(histon_gi+ib*32000, sizeof(double)*32000, MPI_BYTE, 0, 56, MPI_COMM_WORLD);
-      }
-    }
-
-    if (DODISTOR!=0) {
-      for (ib=0;ib<nbolo;ib++) {
-	MPI_Bcast(histo_adu[ib],sizeof(double)*nadustep[ib], MPI_BYTE, 0, MPI_COMM_WORLD);
-      }
-    }
-
-    MPI_Bcast(invgi,sizeof(int)*32000*nbolo, MPI_BYTE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(xgi,sizeof(double)*GAINSTEP*nbolo, MPI_BYTE, 0, MPI_COMM_WORLD);
-
-    for (k=0;k<nnbpix;k++)  {
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-      int l1;
-      for (l1=0;l1<ndata;l1++) {
-	if (GAINSTEP>0) {
-	  htmp[l1].gi=invgi[htmp[l1].gi+32000*htmp[l1].ib];
-	}
-	else {
-	  htmp[l1].gi=0;
-	}
-      }
-    }
-  }
- #endif
-
-#if 0
-  if (DODISTOR!=0) {
-  
-    for (k=0;k<nnbpix;k++) {
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-      int l1;
-      for (l1=0;l1<ndata;l1++) {
-
-        double xxadu=histo_adu[htmp[l1].ib][htmp[l1].adu];
-        bspline_value(bspline[htmp[l1].ib], xxadu, &(htmp[l1].istart),&(htmp[l1].iend));
-        if (htmp[l1].istart<0) {
-          fprintf(stderr,"xadu1=%lg %lg\n",xxadu,(double) histo_adu[htmp[l1].ib][htmp[l1].adu]);
-          exit(-1);
-        }
-        if (htmp[l1].iend-htmp[l1].istart>3) fprintf(stderr,"SUP 4 %ld\n",(long) (htmp[l1].iend-htmp[l1].istart));
-        double *vals = bspline[htmp[l1].ib]->vals;
-        for (i=htmp[l1].istart;i<=htmp[l1].iend;i++) htmp[l1].vspline[i-htmp[l1].istart]=vals[i];
-
-
-        //htmp[l1].istart+=htmp[l1].sadu*nadufit/(ADURGSTEP);
-        //htmp[l1].iend+=htmp[l1].sadu*nadufit/(ADURGSTEP);
-        //htmp[l1].adu = 0;
-      }
-    }
-
-#define STEPRG_HISTOADU (128)
-
-    for (ib=0;ib<nbolo;ib++) {
-      if (ADURGSTEP[ib]>2) {
-	double *spline_stat = (double *) malloc(sizeof(double)*STEPRG_HISTOADU*3200);
-	memset(spline_stat,0,STEPRG_HISTOADU*3200*sizeof(double));
-
-	for (k=0;k<nnbpix;k++) {
-	  long ndata = loc_nhpix[k];
-	  hpix *htmp = loc_hpix[k];
-	  int l1;
-	  for (l1=0;l1<ndata;l1++) if (htmp[l1].ib==ib) {
-	    spline_stat[(int)(htmp[l1].adu/10)+3200*((int) (htmp[l1].sadu*STEPRG_HISTOADU))]+=1;
-	  }
-	}
-
-	if (rank==0) {
-	  MPI_Status statu;
-	  int rrk;
-	  double *l_spline_stat=(double *) malloc(3200*STEPRG_HISTOADU*sizeof(double));
-	  for (rrk=1;rrk<mpi_size;rrk++) {
-	    MPI_Recv(l_spline_stat,sizeof(double)*3200*STEPRG_HISTOADU, MPI_BYTE, rrk,51, MPI_COMM_WORLD,&statu);
-	    for (j=0;j<3200*STEPRG_HISTOADU;j++) spline_stat[j]+=l_spline_stat[j];
-	  }
-	  free(l_spline_stat);
-
-	  for (j=0;j<STEPRG_HISTOADU;j++) {
-	    for (k=1;k<3200;k++) spline_stat[k+3200*j]+=spline_stat[k-1+3200*j];
-	    for (k=0;k<3200;k++) spline_stat[k+3200*j]=spline_stat[k+3200*j]*128/spline_stat[3199+3200*j];
-	  }
-
-#if 0
-	  char thename[128];
-	  sprintf(thename,"spline_stat_%d.dat",(int) i);
-	  FILE *fp=fopen(thename,"w");
-	  fwrite(spline_stat,3200*STEPRG_HISTOADU*sizeof(double),1,fp);
-	  fclose(fp);
-#endif
-	}
-	else {
-	  MPI_Send(spline_stat, sizeof(double)*3200*STEPRG_HISTOADU, MPI_BYTE, 0, 51, MPI_COMM_WORLD);
-	}
-
-	MPI_Bcast(spline_stat,sizeof(double)*3200*STEPRG_HISTOADU, MPI_BYTE, 0, MPI_COMM_WORLD);
-
-
-	for (k=0;k<nnbpix;k++) {
-	  long ndata = loc_nhpix[k];
-	  hpix *htmp = loc_hpix[k];
-	  int l1;
-	  for (l1=0;l1<ndata;l1++) if (htmp[l1].ib==ib) {
-
-	      double xxadu=spline_stat[(int)(htmp[l1].adu/10)+3200*((int) (htmp[l1].sadu*STEPRG_HISTOADU))];
-	      bspline_value(bspline[htmp[l1].ib], xxadu, &(htmp[l1].istart),&(htmp[l1].iend));
-	      if (htmp[l1].istart<0) {
-		fprintf(stderr,"xadu2=%lg %lg %d %d\n",xxadu,(double) spline_stat[(int)(htmp[l1].adu/10)+3200*((int) (htmp[l1].sadu*STEPRG_HISTOADU))],(int)(htmp[l1].adu/10),((int) (htmp[l1].sadu*STEPRG_HISTOADU)));
-		exit(-1);
-	      }
-	      if (htmp[l1].iend-htmp[l1].istart>3) fprintf(stderr,"SUP 4 %ld\n",(long) (htmp[l1].iend-htmp[l1].istart));
-	      double *vals = bspline[htmp[l1].ib]->vals;
-	      for (i=htmp[l1].istart;i<=htmp[l1].iend;i++) htmp[l1].vspline[i-htmp[l1].istart]=vals[i];
-	    }
-	}
-
-	free(spline_stat);
-	nadufit[ib]=ADURGSTEP[ib]*nadufit[ib];
-      }
-    }
-
-    //===================================================================================
-    //                    DEBUG AND TEST FIT_ADU_NL
-    //===================================================================================
-
-#ifdef TESTFITADU
-    double **splineval= (double **) malloc(sizeof(double *)*nbolo);
-    for (i=0;i<nbolo;i++) {
-      splineval[i] = malloc(sizeof(double)*nadufit[i]);
-      for (j=0;j<nadufit[i];j++) splineval[i][j]=1E-5*exp(-((j-nadufit[i]/2.)*(j-nadufit[i]/2.))/8.);
-      double avvspline=0;
-      for (j=0;j<nadufit[i];j++) avvspline+=splineval[i][j];
-      avvspline/=nadufit[i];
-      for (j=0;j<nadufit[i];j++) splineval[i][j]-=avvspline;
-    }
-    for (k=0;k<nnbpix;k++) {
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-      int l1,iii,jjj;
-      for (l1=0;l1<ndata;l1++) {
-
-	htmp[l1].listp[0]=htmp[l1].model+0.01*htmp[l1].adu/1000.;
-	if (ADURGSTEP[htmp[l1].ib]>2) {
-	  for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-	    for (jjj=rg_start[htmp[l1].ib][htmp[l1].rg];jjj<=rg_end[htmp[l1].ib][htmp[l1].rg];jjj++) {
-	      int l_idx=jjj+ADURGSTEP[htmp[l1].ib]*iii;
-	      htmp[l1].listp[0]+=splineval[htmp[l1].ib][l_idx]*htmp[l1].vspline[iii-htmp[l1].istart]
-		  *rg_vals[htmp[l1].ib][jjj-rg_start[htmp[l1].ib][htmp[l1].rg]+4*htmp[l1].rg];
-	    }
-	  }
-	}
-	else {
-	  for (iii=htmp[l1].istart;iii<=htmp[l1].iend;iii++) {
-	    htmp[l1].listp[0]+=splineval[htmp[l1].ib][iii]*htmp[l1].vspline[iii-htmp[l1].istart];
-	  }
-	}
-      }
-    }
-    for (i=0;i<nbolo;i++) {
-      if (rank==0) {
-	PIOSTRING saveg;
-	sprintf(saveg,"%s_INNL",Param->Out_VEC[i]);
-	fprintf(stderr,"Write INNL  %lld\n",(long long) (PIOWriteVECT(saveg,splineval[i],0,sizeof(PIODOUBLE)*(nadufit[i])))/sizeof(double));
-      }
-      free(splineval[i]);
-    }
-
-    free(splineval);
-#endif
-
-  }// END OF DODISTOR!=0
-#endif
-  for (ib=0;ib<nbolo;ib++) {
-    free(xadu[ib]);
-    free(histo_adu[ib]);
-  }
   free(histo_gi);
   free(histo2_gi);
   free(histon_gi);
-
-#if 0
-  SSI = (double *) malloc(sizeof(double)*nnbpix);
-  SSQ = (double *) malloc(sizeof(double)*nnbpix);
-  SSU = (double *) malloc(sizeof(double)*nnbpix);
-  SSI2 = (double *) malloc(sizeof(double)*nnbpix);
-  SSQ2 = (double *) malloc(sizeof(double)*nnbpix);
-  SSU2 = (double *) malloc(sizeof(double)*nnbpix);
-  II = (double *) malloc(sizeof(double)*nnbpix);
-  IQ = (double *) malloc(sizeof(double)*nnbpix);
-  IU = (double *) malloc(sizeof(double)*nnbpix);
-  QQ = (double *) malloc(sizeof(double)*nnbpix);
-  UU = (double *) malloc(sizeof(double)*nnbpix);
-  QU = (double *) malloc(sizeof(double)*nnbpix);
-#endif
 
   long l_off_nmatpix=0;
   {
@@ -7318,8 +6120,7 @@ int main(int argc,char *argv[])  {
 
   // decoupe vecteur matrice par proc
 
-  long maxsizemat=newnr[nbolo]+nbolo*(GAINSTEPADU+npixhpr+1+npixmap+npixShpr);
-  if (GAINSTEP>GAINSTEPADU) maxsizemat=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
+  long maxsizemat=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
   if (newnr2[nbolo]>maxsizemat&&CUTRG>(1)) {
     maxsizemat=newnr2[nbolo];
   }
@@ -7406,7 +6207,6 @@ int main(int argc,char *argv[])  {
     docutrg=nitbogo-1;
 
     ittt=1;
-    g=(double *) malloc(sizeof(double)*GAINSTEP*nbolo);
     memset(x2     ,0,maxsizemat*sizeof (double));
     memset(x2old  ,0,maxsizemat*sizeof (double));
     memset(x2init ,0,maxsizemat*sizeof (double));
@@ -7419,22 +6219,7 @@ int main(int argc,char *argv[])  {
     memset(hit_WW   ,0,maxsizemat*sizeof (double));
     memset(hit_L1   ,0,maxsizemat*sizeof (double));
     memset(hit_L2   ,0,maxsizemat*sizeof (double));
-  #if DORGG
-    for (i=0;i<newnr[nbolo];i++) g[i]=1.;
-  #else
-    for (i=0;i<GAINSTEP*nbolo;i++) g[i]=1.;
-  #endif
 
-    nadu=GAINSTEPADU;
-#if 0
-    double *reshisto=(double *) malloc(sizeof(double)*GAINSTEPADU*nbolo);
-    memset(reshisto,0,sizeof(double)*GAINSTEPADU*nbolo);
-
-    if (rank==0) {
-      fprintf(stderr,"NADU %ld\n", (long) nadu);
-    }
-    PrintFreeMemOnNodes( rank, mpi_size, "before solving matrix");
-#endif
 
     MPI_Barrier(MPI_COMM_WORLD);
     // Exchange dip against sig in the XI2
@@ -7461,8 +6246,7 @@ int main(int argc,char *argv[])  {
 
     gainoff=0;
 
-    if (GAINSTEP<GAINSTEPADU) nmatres=newnr[nbolo]+nbolo*(GAINSTEPADU+npixhpr+npixmap+npixShpr);
-    else nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
+    nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
 
     double *x3= (double *) malloc(sizeof(double)*(nmatres)); 
 
@@ -7492,62 +6276,7 @@ int main(int argc,char *argv[])  {
 	}
 	resxi/=(nbolo*GAINSTEP);
       }
-#if 0
-      if (Param->n_do_foscat>0) {
-	if(Param->do_foscat[itt] == 1){
-	  foscat(x3,gain,Nside,begpix[rank],edpix[rank],Param->do_templates);
-	}
-      }
-      MPI_Barrier(MPI_COMM_WORLD);
-#endif
 
-
-
-#if 0
-      if (COMP_CNN>0&&itt>=Param->CNN_START) { //itt>=2&&itt<Param->NITT-2) {
-        GetProcMem(&vmem,&phymem);
-        if (rank==0) fprintf(stderr,"Rank: %ld Line=%d MEM %.1lf[%.1lf]MB\n",
-		             (long) rank, __LINE__,
-		             (double) vmem/1024./1024.,
-		             (double) phymem/1024./1024.);
-        //fit_cnn2d_rg(x3,gain);
-
-        fit_cnn(x3,gain,itt-Param->CNN_START);
-
-        if (rank==0) fprintf(stderr,"Rank: %ld Line=%d MEM %.1lf[%.1lf]MB\n",
-		             (long) rank, __LINE__,
-		             (double) vmem/1024./1024.,
-		             (double) phymem/1024./1024.);
-      }
-
-
-
-      // when we start to use fit_adu_nl?
-      // it seems that does not really matter
-      // on sims consistent resutls
-      //      if (DODISTOR!=0&&itt>=3) {
-      if (DODISTOR!=0&&itt>0) {
-
-	// OLD USAGE OF NLTEMP, NOW COMPUTES THE CORRECTION FOR TRACABILITY
-	//=================================================================
-	// ltemp : equal to the average correction x=adu, y=ringindex
-	//corr_nl is the variabile used
-	// nltemp could be removed
-	double *nltemp = (double *) malloc(sizeof(double)*nbolo*320*320);
-	double *ltemp = (double *) malloc(sizeof(double)*nbolo*320*320);
-	//fit_adu_nl_opt(x3,gain,ltemp,nltemp); 
-	
-	if (rank==0) {
-	  PIOSTRING saveg;
- 	  sprintf(saveg,"%s_%d_%d_CORRNL",Param->Out_VEC[0],stim_first_seed+iter,itt);
-	  fprintf(stderr,"Write CORRNL  %lld\n",(long long) (PIOWriteVECT(saveg,ltemp,0,sizeof(PIODOUBLE)*(nbolo*320*320)))/sizeof(double));
-	  fprintf(stderr,"Write CORRNL  %lld\n",(long long) (PIOWriteVECT(saveg,nltemp,sizeof(PIODOUBLE)*(nbolo*320*320),
-									  sizeof(PIODOUBLE)*(nbolo*320*320)))/sizeof(double));
-	}
-	free(ltemp);
-	free(nltemp);
-      }
-#endif
 
       if (GAINSTEP>0) {
 	for (i=0;i<nbolo;i++){
@@ -7623,13 +6352,7 @@ int main(int argc,char *argv[])  {
         else sprintf(saveg,"%s_%d_OFF",Param->Out_VEC[i],stim_first_seed+iter);
 
         fprintf(stderr,"Write OFF  %lld\n",(long long) PIOWriteVECT(saveg,tmpoff,sizeof(PIODOUBLE)*globalBeginRing,sizeof(PIODOUBLE)*(globalRangeRing)));
-#if 0
-        for (j=0;j<globalRangeRing;j++) tmpoff[j]=gain[invgi[j+globalBeginRing+i*32000]+GAINSTEP*i];
-        if (stim_first_seed+iter==0) sprintf(saveg,"%s_GAIN",Param->Out_VEC[i]);
-        else sprintf(saveg,"%s_%d_GAIN",Param->Out_VEC[i],stim_first_seed+iter);
-
-        fprintf(stderr,"Write GAIN  %lld\n",(long long) PIOWriteVECT(saveg,tmpoff,sizeof(PIODOUBLE)*globalBeginRing,sizeof(PIODOUBLE)*(globalRangeRing)));
-#endif
+	
         if (CUTRG>1) {
           PIODOUBLE *tmpcutoff = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*(globalRangeRing)*CUTRG);
           for (j=0;j<CUTRG*(globalRangeRing);j++) {
@@ -7658,12 +6381,13 @@ int main(int argc,char *argv[])  {
     }
 
     double avvgain=0;
-    for (i=0;i<nbolo*GAINSTEP;i++) avvgain+=x3[newnr[nbolo]+i];
-    avvgain/=((double)(nbolo*GAINSTEP));
+    if (GAINSTEP>0) {
+      for (i=0;i<nbolo*GAINSTEP;i++) avvgain+=x3[newnr[nbolo]+i];
+      avvgain/=((double)(nbolo*GAINSTEP));
 
-
-    if (rank==0)  {
-      fprintf(stderr,"AVVGAIN: %lf\n",avvgain);
+      if (rank==0)  {
+	fprintf(stderr,"AVVGAIN: %lf\n",avvgain);
+      }
     }
 
     if (number_of_iterations==iter+1) {
@@ -7776,6 +6500,7 @@ int main(int argc,char *argv[])  {
 	  //calcul signal corriger
 	  double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
 	  double rsig = htmp[l1].sig*g1;
+	  
 	  double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
 	  double sig_corr2 = sig_corr;
 	  sig_corr-=x3[iri1];
