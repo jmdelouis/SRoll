@@ -4,7 +4,7 @@
 #endif
 
 // MAP NAME DEFINITION
-#define MAXOUTMAP (2048)
+#define MAX_OUT_NAME_LENGTH (2048)
 
 #define CNN_NSIDE (32)
 
@@ -561,12 +561,14 @@ void GetProcMem(long *vmem,long *phymem)
     sprintf(name,"/proc/%d/stat",(int) getpid());
 
     fp=fopen(name,"r");
-    fscanf(fp,"%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %lu %lu %ld",
-	   &pid,comm,&state,&ppid,&pgrp,&session,&tty_nr,&tpgid,&flags,&minflt,&cminflt,&majflt,
-	   &cmajflt,&utime,&stime,&cutime,&cstime,&priority,&nice,&xxx,&itrealvalue,&starttime,&vsize,
-	   &rss);
+    int err=fscanf(fp,"%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %lu %lu %ld",
+		   &pid,comm,&state,&ppid,&pgrp,&session,&tty_nr,&tpgid,&flags,&minflt,&cminflt,&majflt,
+		   &cmajflt,&utime,&stime,&cutime,&cstime,&priority,&nice,&xxx,&itrealvalue,&starttime,&vsize,
+		   &rss);
     fclose(fp);
-   
+    if (err==EOF) {
+      fprintf(stderr,"Problem while trying to get proc info\n");
+    }
     *vmem=vsize;
     *phymem=rss*4096;
 }
@@ -577,8 +579,11 @@ float GetLoadAvg()
     float a,b,c;
 
     FILE *fp=fopen("/proc/loadavg","r");
-    fgets(Line,256,fp);
+    char *err=fgets(Line,256,fp);
     fclose(fp);
+    if (err==NULL) {
+      fprintf(stderr,"Problem while trying to get load average info\n");
+    }
     sscanf(Line,"%f %f %f",&a,&b,&c);
     return(a);
 }
@@ -966,29 +971,29 @@ double solvemap(double *x,double *y,double *z,
 #define MAXSIMU (1)
 #endif
 
-// * maximum number of Theo_HPR HPR templates per bolometer
+// * maximum number of External HPR templates per bolometer
 // * from main():
-//     npixhpr = Param->n_Theo_HPR / nbolo;
-//     assert( npixhpr <= MAXTHEOHPR);
-// * can be set at compilation time with '-DMAXTHEOHPR=xxx'
+//     npixShpr = Param->n_External / nbolo;
+//     assert( npixShpr <= MAXEXTERNALHPR);
+// * can be set at compilation time with '-DMAXEXTERNALHPR=xxx'
 // * values used in RD12 are 4 at 100ghz-217ghz, 7 at 353ghz and 9 at 545ghz-857ghz
 // * need to remember why it was set to 11 for RD12...
 
 // TROLL update:
-// MAXTHEOHPR = 5 TF (H0, H1, H2, H3, H4 + TT1@353) + ANGLE + POLEFF + TDUST + CO13 + SYNCROTRON = 10
-// see "extra theo tempaltes" comment around line 6616
-// updated assert( npixhpr+5 <= MAXTHEOHPR);
+// MAXEXTERNALHPR = 5 TF (H0, H1, H2, H3, H4 + TT1@353) + ANGLE + POLEFF + TDUST + CO13 + SYNCROTRON = 10
+// see "extra external tempaltes" comment around line 6616
+// updated assert( npixShpr+5 <= MAXEXTERNALHPR);
 // 545/857 : 
-// MAXTHEOHPR = 8 TF + 1FSL + ANGLE + POLEFF + CO13  = 12
+// MAXEXTERNALHPR = 8 TF + 1FSL + ANGLE + POLEFF + CO13  = 12
 
-#ifndef MAXTHEOHPR
-#define MAXTHEOHPR (10)
+#ifndef MAXEXTERNALHPR
+#define MAXEXTERNALHPR (10)
 #endif
-#ifndef MAXTHEOSHPR
-#define MAXTHEOSHPR (1)
+#ifndef MAXEXTERNALSHPR
+#define MAXEXTERNALSHPR (4)
 #endif
-#ifndef MAXTHEOMAP
-#define MAXTHEOMAP (3)
+#ifndef MAXEXTERNALMAP
+#define MAXEXTERNALMAP (3)
 #endif
 #ifndef MAXCHAN
 #define MAXCHAN (16)
@@ -997,20 +1002,16 @@ double solvemap(double *x,double *y,double *z,
 typedef struct {
   PIOFLOAT sig;
   PIOFLOAT listp[MAXSIMU];
-  PIOFLOAT listofhpr[MAXTHEOHPR];
   PIOINT   nShpr;
-  PIOFLOAT listofShpr[MAXTHEOSHPR];
-  PIOINT   listofShpr_idx[MAXTHEOSHPR];
-  PIOFLOAT listofmap[MAXTHEOMAP];
+  PIOFLOAT listofShpr[MAXEXTERNALSHPR];
+  PIOINT   listofShpr_idx[MAXEXTERNALSHPR];
+  PIOFLOAT listofmap[MAXEXTERNALMAP];
   PIOINT ipix;
   PIOINT rg;
-  PIOINT hrg;
-  PIOFLOAT corr_nl;
   PIOFLOAT corr_cnn;
   PIOINT gi;
   PIOFLOAT hpr_cal;
   PIOFLOAT Sub_HPR;
-  PIOFLOAT External;
   PIOFLOAT w;
   PIOBYTE  surv;
   PIOBYTE  ib;
@@ -1019,6 +1020,7 @@ typedef struct {
   PIOFLOAT channels[MAXCHAN];
   PIOINT ipix_foscat;
   //add for new version
+  int diag_idx;
   double m;
   double R_ij;
   double alpha[MAXCHAN];
@@ -1831,11 +1833,8 @@ double *dpixu;
 
 PIOBYTE **flg_rg;
 long npixShpr;
-long npixhpr;
 long npixmap;
 long ittt,itbogo;
-double *qmat;
-double *umat;
 long nmatres;
 int testzero=-1;
 
@@ -1844,7 +1843,7 @@ double *NEP_tab = NULL;
 
 long DOCO13=0;
 long NDOCNN=0;
-int DOCNN[MAXTHEOHPR];
+int DOCNN[MAXEXTERNALHPR];
 PIOBYTE COMP_CNN=0;
 WrapPython MyPythonBackend;
 
@@ -1861,7 +1860,6 @@ double *hit2;
 double *hit_WW;
 double *hit_L1;
 double *hit_L2;
-PIOLONG docutrg;
 
 long nmatpix;
 #define FITGAIN
@@ -1872,12 +1870,9 @@ long nmatpix;
 #endif
 int DOTDUST;
 int MAXFREQ=0;
-PIOLONG CUTRG;
-PIOLONG *newnr2;
 PIODOUBLE *imatrice;
 PIOINT **rgord;
 troll_parContent *Param;
-PIOINT **rgord2;
 //int *the_stat_pix;
 double delta0;
 PIOLONG  globalRangeRing;
@@ -1942,15 +1937,12 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
           }
 
           b2[ir]+=tmp;
-
-          for(int m=0;m<npixhpr;m++){
-            b2[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]+=htmp[l1].listofhpr[m]*tmp;
-          }     
+	  
           for(int m=0;m<npixmap;m++){
-            b2[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]+=htmp[l1].listofmap[m]*tmp;
+            b2[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]+=htmp[l1].listofmap[m]*tmp;
           }
           for(int m=0;m<htmp[l1].nShpr;m++){
-            b2[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]+=htmp[l1].listofShpr[m]*tmp;
+            b2[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2)*nbolo]+=htmp[l1].listofShpr[m]*tmp;
           }
 	  
 
@@ -1974,20 +1966,14 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
           hit_L2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
           //hit_L1[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
 
-          for(int m = 0;m<npixhpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-            hit_L2[irt]+= htmp[l1].w*htmp[l1].listofhpr[m]*htmp[l1].listofhpr[m]; // poids stat de chaque valeurs 
-            hit_L1[irt]+= htmp[l1].w*htmp[l1].listofhpr[m]; // poids stat de chaque valeurs 
-            hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
-          }
           for(int m = 0;m<npixmap;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             hit_L2[irt]+= htmp[l1].w*htmp[l1].listofmap[m]*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
             hit_L1[irt]+= htmp[l1].w*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
             hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
           }
           for(int m = 0;m<htmp[l1].nShpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixmap);
             hit_L2[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
             hit_L1[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
             hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
@@ -2015,17 +2001,8 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
           hit_L1[ir] =0; // poids stat de chaque valeurs 
           hit_L2[ir] =0; // poids stat de chaque valeurs 
 
-          for(int m = 0;m<npixhpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
-	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
-	    }
-            hit_L2[irt] = htmp[l1].w; // poids stat de chaque valeurs 
-            hit_L1[irt] = htmp[l1].w; // poids stat de chaque valeurs 
-            hit_WW[irt] = htmp[l1].w; // poids stat de chaque valeurs 
-          }
           for(int m = 0;m<npixmap;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
 	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
 	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
 	    }
@@ -2034,7 +2011,7 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
             hit_WW[irt] = 0; // poids stat de chaque valeurs 
           }
           for(int m = 0;m<htmp[l1].nShpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixmap);
 	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
 	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
 	    }
@@ -2105,17 +2082,13 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
           val = x[ir];
           
-          for(int m = 0;m<npixhpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-            val+= x[irt]*htmp[l1].listofhpr[m];            
-          }
           for(int m = 0;m<npixmap;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];            
           }
 	  
           for(int m = 0;m<htmp[l1].nShpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofShpr[m];            
           }
           
@@ -2137,17 +2110,13 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
         if (flg_rg[htmp[l1].ib][ri1]!=0) {
           ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 
-          val = x[ir]; // calcul val            
-          for(int m = 0;m<npixhpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-            val+= x[irt]*htmp[l1].listofhpr[m];  
-          }            
+          val = x[ir]; // calcul val 
           for(int m = 0;m<npixmap;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];  
           }   
           for(int m = 0;m<htmp[l1].nShpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofShpr[m];  
           }
           if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
@@ -2172,16 +2141,12 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];      
           val = x[ir]; // calcul val            
 
-          for(int m = 0;m<npixhpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-            val+= x[irt]*htmp[l1].listofhpr[m];
-          }
           for(int m = 0;m<npixmap;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+npixhpr+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];
           }
           for(int m = 0;m<htmp[l1].nShpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2);
+            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofShpr[m];
           }
           if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2 ]*htmp[l1].model;
@@ -2199,14 +2164,11 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 
           q2[ir]+= tmp;        //ie  ((val-s_X[k])-htmp[l1].alpha[k]*htmp[l1].channels[k]*R_ij_bis);
        
-          for(int m=0;m<npixhpr;m++){           
-            q2[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]+= htmp[l1].listofhpr[m]*tmp;          
-          }
           for(int m=0;m<npixmap;m++){           
-            q2[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]+= htmp[l1].listofmap[m]*tmp;          
+            q2[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]+= htmp[l1].listofmap[m]*tmp;          
           }
           for(int m=0;m<htmp[l1].nShpr;m++){           
-            q2[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]+= htmp[l1].listofShpr[m]*tmp;          
+            q2[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2)*nbolo]+= htmp[l1].listofShpr[m]*tmp;          
           }
 
           if(GAINSTEP2 != 0){ 
@@ -2225,22 +2187,22 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
     
     for(int n = 0;n<Param->n_val_mean;n++){
       double sum2 = 0.0;
-      for(int b = 0;b<nbolo*(npixhpr+npixShpr);b++){
-	sum2+=(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]-Param->val_mean[n])*Param->do_mean[b+n*(nbolo*(npixhpr+npixShpr))];
+      for(int b = 0;b<nbolo*(npixShpr);b++){
+	sum2+=(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]-Param->val_mean[n])*Param->do_mean[b+n*(nbolo*(npixShpr))];
       }
-      for(int b = 0;b<nbolo*(npixhpr+npixShpr);b++){
-	q2[newnr[nbolo]+b+(GAINSTEP2)*nbolo]+= sum2*Param->w_mean[n]*Param->do_mean[b+n*(nbolo*(npixhpr+npixShpr))];
+      for(int b = 0;b<nbolo*(npixShpr);b++){
+	q2[newnr[nbolo]+b+(GAINSTEP2)*nbolo]+= sum2*Param->w_mean[n]*Param->do_mean[b+n*(nbolo*(npixShpr))];
       }
     }
     // NORMLISATION IS MANDATORY FOR MAP TEMPLATE
     for(int m =0;m<npixmap;m++){
         double sum2 = 0.0;
 	for(int b = 0;b<nbolo;b++){
-          sum2+=x[newnr[nbolo]+b+(m+npixhpr+GAINSTEP2)*nbolo];
+          sum2+=x[newnr[nbolo]+b+(m+GAINSTEP2)*nbolo];
         }
         
 	for(int b = 0;b<nbolo;b++){
-          q2[newnr[nbolo]+b+(m+npixhpr+GAINSTEP2)*nbolo]+= sum2*msum;
+          q2[newnr[nbolo]+b+(m+GAINSTEP2)*nbolo]+= sum2*msum;
         }
     }
 #if 0
@@ -2248,11 +2210,11 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
     for(int m =0;m<npixShpr;m++){
         double sum2 = 0.0;
 	for(int b = 0;b<nbolo;b++){
-          sum2+=x[newnr[nbolo]+b+(m+npixhpr+npixmap+GAINSTEP2)*nbolo];
+          sum2+=x[newnr[nbolo]+b+(m+npixmap+GAINSTEP2)*nbolo];
         }
         
 	for(int b = 0;b<nbolo;b++){
-          q2[newnr[nbolo]+b+(m+npixhpr+npixmap+GAINSTEP2)*nbolo]+= sum2*msum;
+          q2[newnr[nbolo]+b+(m+npixmap+GAINSTEP2)*nbolo]+= sum2*msum;
         }
     }
 #endif
@@ -2338,7 +2300,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
   GAINSTEP2=GAINSTEP;
 
-  nmatres=newnr[nbolo]+nbolo*(npixhpr+npixmap+npixShpr+GAINSTEP2);
+  nmatres=newnr[nbolo]+nbolo*(npixmap+npixShpr+GAINSTEP2);
 
   MPI_Bcast(&nmatres, sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
 
@@ -2404,12 +2366,8 @@ void minimize_gain_tf(double *ix2,double *gaingi){
           double g1=gaingi[htmp[l1].gi+htmp[l1].ib*GAINSTEP]; //get gain 
           //long ir = rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 
-          /*
-          if (NORM_GAIN==0) val_tmp=(htmp[l1].sig*g1-htmp[l1].Sub_HPR-htmp[l1].hpr_cal-htmp[l1].corr_nl-htmp[l1].corr_cnn); // Calcul du signal 
-          else val_tmp=(htmp[l1].sig*g1-htmp[l1].Sub_HPR-htmp[l1].freefree-htmp[l1].corr_nl-htmp[l1].corr_cnn);         
-          */
 
-          val_tmp =htmp[l1].sig*g1- htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+          val_tmp =htmp[l1].sig*g1- htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	  if (REMOVE_CAL==1) {
 	    val_tmp -=  htmp[l1].hpr_cal;
 	  }
@@ -2820,7 +2778,7 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
 	        long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 	        //calcul signal corriger
 	        double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-	        double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+	        double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	        double sig_corr2 = sig_corr;
 	        sig_corr-=x3[iri1];
 	        
@@ -2829,14 +2787,11 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
 	          sig_corr2-=htmp[l1].hpr_cal;
 	        }
 	        
-	        for(int m =0;m<npixhpr;m++){
-	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
-	        }
 	        for(int m =0;m<npixmap;m++){
-	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
+	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
 	        }
 	        for(int m =0;m<htmp[l1].nShpr;m++){
-	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
+	          sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
 	        }
 		
 	        sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
@@ -2949,7 +2904,7 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
   
       
       if (flg_rg[htmp[l1].ib][ri1]!=0) {
-          for (int m=0;m<npixhpr;m++)  {
+          for (int m=0;m<npixShpr;m++)  {
               if (do_templates[m]==1) { // update PDUST
                 htmp[l1].listofhpr[m]=htmp[l1].channels[1]*new_templates[0][index_pix]+htmp[l1].channels[2]*new_templates[1][index_pix];                
               }
@@ -3241,14 +3196,11 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	  //calcul signal corriger 
 	  double sig_corr = htmp[l1].m-x3[iri1]; 
 	 
-	  for(int m =0;m<npixhpr;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m]
-	  }
 	  for(int m =0;m<npixmap;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m]
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m]
 	  }
 	  for(int m =0;m<htmp[l1].nShpr;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m]
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m]
 	  }
 	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 	  
@@ -3271,10 +3223,10 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	     
 	  double temp=0;
 	  for(int m =0;m<htmp[l1].nShpr;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixhpr+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+npixmap+GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
 	  }
 	  
-	  for(int m =0;m<npixhpr;m++){
+	  for(int m =0;m<npixShpr;m++){
 	    if (DOCNN[m]==0) {
 	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m]
 	     }
@@ -3287,7 +3239,7 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 	    
 	  int iring=rgcnn[htmp[l1].ib][htmp[l1].rg];
-	  int ipha=(int)(CNN_XSIZE*(htmp[l1].External)/(2*M_PI));
+	  int ipha=0.0 ; //(int)(CNN_XSIZE*(htmp[l1].External)/(2*M_PI));
 	  if (ipha==CNN_XSIZE) ipha=CNN_XSIZE-1;
 	  if (ipha<0||ipha>CNN_XSIZE-1) {
 	    fprintf(stderr,"CNN_XSIZE PBS %d\n",ipha);
@@ -3586,7 +3538,7 @@ void fit_cnn(double *x3,double *gain,int out_itt)
     testcorr=-1;
     avv_poleff=0;
   }
-  for (m=0;m<npixhpr;m++)  {
+  for (m=0;m<npixShpr;m++)  {
     if (DOCNN[m]!=0) ncorr++;
   }
 
@@ -3596,7 +3548,7 @@ void fit_cnn(double *x3,double *gain,int out_itt)
       if (NOMOREFITTED==0) {
 	      cnn_coef  = EXECPYTHON(PyObject_CallObject(MyPythonBackend.allocf32, arglist));
 	      float *l_coef=PyArray_DATA((PyArrayObject *) cnn_coef);
-	      for (m=0;m<npixhpr;m++)  {
+	      for (m=0;m<npixShpr;m++)  {
 	        if (DOCNN[m]!=0) {
 	          for (j=0;j<nbolo;j++) {
 	            l_coef[j+(DOCNN[m]-1)*nbolo]=x3[newnr[nbolo]+nbolo*(GAINSTEP)+m*nbolo+j];
@@ -3608,7 +3560,7 @@ void fit_cnn(double *x3,double *gain,int out_itt)
       py_coef = cnn_coef;
       float *tp_coef = PyArray_DATA((PyArrayObject *) py_coef);
   
-      for (m=0;m<npixhpr;m++)  {
+      for (m=0;m<npixShpr;m++)  {
 	      if (DOCNN[m]!=0) {
 	        if (rank==0) {
 	          fprintf(stderr,"iPOLEFF %3d ",DOCNN[m]);
@@ -3836,15 +3788,11 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	
 	int iring = rgcnn[htmp[l1].ib][htmp[l1].rg];
 	
-	int ipha=(int)(CNN_XSIZE*(htmp[l1].External)/(2*M_PI));
+	int ipha=(int)(0); //CNN_XSIZE*(htmp[l1].External)/(2*M_PI));
 	
 	if (ipha==CNN_XSIZE) ipha=CNN_XSIZE-1;
 
-	//for (m=0;m<npixhpr;m++)  {
-	//   if (DOCNN[m]!=0) {
-	//     htmp[l1].listofhpr[m]=correction[DOCNN[m]-1][iii]; //sqrt(-2*log( drand48()))*cos(2*M_PI*drand48());
-	//   }
-	for (m=0;m<npixhpr;m++)  {
+	for (m=0;m<npixShpr;m++)  {
 	    if (DOCNN[m]==1) {
 	      htmp[l1].listofhpr[m]=sqrt(-2*log( drand48()))*cos(2*M_PI*drand48()); // should be set to something otherwise it generates Nan during the minimization
 	    }
@@ -3881,7 +3829,7 @@ void fit_cnn(double *x3,double *gain,int out_itt)
   if (NOMOREFITTED==0) {
     int mm;
     NOMOREFITTED=1;
-    for (mm=0;mm<npixhpr;mm++)  {
+    for (mm=0;mm<npixShpr;mm++)  {
       if (DOCNN[mm]==1) { //NOMOREFITTED) {
 	for (i=0;i<nbolo;i++) {
 	  x3[newnr[nbolo]+nbolo*(GAINSTEP)+mm*nbolo+i]=0;
@@ -3975,8 +3923,11 @@ int maxsize=0;
 void GetHostname( PIOSTRING hostname) {
 
   FILE *f = fopen("/proc/sys/kernel/hostname", "r");
-  fscanf( f, "%s", hostname);
+  int err=fscanf( f, "%s", hostname);
   fclose( f);
+  if (err==EOF) {
+    fprintf(stderr,"Problem while trying to get proc info\n");
+  }
 }
  
 ////////////////////////////////////////////////////////////////////////////////
@@ -4213,7 +4164,7 @@ int copy_int_array(PyObject *pArray, PIOINT *array) {
 int copy_float_array(PyObject *pArray, PIOFLOAT *array) {
   
   if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
-    fprintf(stderr, "L'objet n'est ni une liste ni un tuple\n");
+    fprintf(stderr, "The provided object is not a list or a tuple\n");
     exit(0);
     return -1;
   }
@@ -4261,10 +4212,40 @@ int Get_NumberOfChannels(PyObject *projFunc)
   return n;
 }
 
-void init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo)
+
+int Get_NumberOfDiag(PyObject *diagFunc)
+{
+  PyObject *pValue=NULL;
+  int n=0;
+  
+  if (diagFunc != NULL){
+    pValue = PyObject_CallMethod(diagFunc,"getnumber_of_index",NULL);
+
+    // Traitement de la valeur de retour
+    if (pValue != NULL) {
+      // Assurer que pValue est un tuple
+      n=(int) PyLong_AsLong(pValue);
+      Py_DECREF(pValue);
+    }
+    else {
+      PyErr_Print();
+      exit(0);
+    }
+    
+  }
+  else {
+    PyErr_Print();
+    exit(0);
+  }
+  
+  return n;
+}
+
+double init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo,double hit,int idx_in_ring,PIOFLOAT *sig)
 {
   
   PyObject *pValue=NULL;
+  double ohit=0;
   
   if (projFunc != NULL){
     PyObject *pArg1 = PyFloat_FromDouble((double)psi); // val est un flottant
@@ -4277,18 +4258,36 @@ void init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,dou
     PyObject *pArg3 = PyFloat_FromDouble((double)rgnorm); // val est un flottant
     PyObject *pArg4 = PyLong_FromLong((long) ipix); // val est un flottant
     PyObject *pArg5 = PyLong_FromLong((long)idx_bolo); // val est un flottant
+    PyObject *pArg6 = PyFloat_FromDouble((double) hit); // val est un flottant
+    PyObject *pArg7 = PyLong_FromLong((long)idx_in_ring); // val est un flottant
+    PyObject *pArg8 = PyFloat_FromDouble((double) *sig); // val est un flottant
     
-    pValue = PyObject_CallMethod(projFunc, "eval", "(OOOOO)", pArg1, pList,  pArg3, pArg4, pArg5);
+    pValue = PyObject_CallMethod(projFunc, "eval", "(OOOOOOOO)",
+				 pArg1, pList, pArg3,
+				 pArg4, pArg5, pArg6,
+				 pArg7, pArg8);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
-      int err=copy_float_array(pValue,h->channels);
-      if (err!=MAXCHANNELS) {
+      if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 3) {
+	// Extraire les deux tableaux du tuple
+	*sig = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 0));
+	ohit = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 1));
+	int err=copy_float_array(PyTuple_GetItem(pValue, 2),h->channels);
+	if (err!=MAXCHANNELS) {
 	  fprintf(stderr, "Projection function does not provide the good number of channels: expected %d  get %d\n",MAXCHANNELS,err);
+	}
+      }
+      else {
+	  fprintf(stderr, "Projection function does not provide the good number of argument (3): expected sig,hit,chan_value\n");
+	  fprintf(stderr, " Where sig and hit are a double (respectively signal and hit count) and\n");
+	  fprintf(stderr, " chan_value is a list of double values with len(chan_value)=%d",MAXCHANNELS);
+	  exit(0);
       }
       Py_DECREF(pValue);
     }
     else {
+      fprintf(stderr, "Problem while trying to compute the projection\n");
       PyErr_Print();
       exit(0);
     }
@@ -4299,14 +4298,19 @@ void init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,dou
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
     Py_DECREF(pArg5);
+    Py_DECREF(pArg6);
+    Py_DECREF(pArg7);
+    Py_DECREF(pArg8);
     
   } else {
     PyErr_Print();
     exit(0);
   }
+
+    return ohit;
   
 }
-		    
+
 int calc_sparse_hpr(PyObject *sparseFunc,
 		    long rg,
 		    long ib,
@@ -4349,6 +4353,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 	Py_DECREF(pValue);
       }
       else {
+	fprintf(stderr,"Problem while executing the method get_diag_idx inside SparseFunc class\n");
 	PyErr_Print();
 	exit(0);
       }
@@ -4362,6 +4367,60 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     Py_DECREF(pList);
     
   } else {
+    PyErr_Print();
+    exit(0);
+  }
+  
+  return n;
+}
+
+
+int calc_diag_hpr(PyObject *diagFunc,
+		  long rg,
+		  long ib,
+		  long hpix,
+		  double psi,
+		  PIOFLOAT *External)
+{
+  PyObject *pValue=NULL;
+  int n=-1;
+
+  if (diagFunc != NULL){
+    // Créer des arguments pour la fonction Python
+    // Création des arguments
+    PyObject *pArg1 = PyLong_FromLong((long)rg); // rg est un entier
+    PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
+    PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
+    PyObject *pArg4 = PyFloat_FromDouble((double)psi); // val est un flottant
+    PyObject *pList = PyList_New(NB_EXTERNAL);
+    
+    for (int i = 0; i < NB_EXTERNAL; i++) {
+      PyList_SetItem(pList, i, PyFloat_FromDouble((double) External[i*RINGSIZE]));
+    }
+
+    // Appel de la méthode 'eval's
+    pValue = PyObject_CallMethod(diagFunc, "get_diag_idx", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pList);
+
+    // Traitement de la valeur de retour
+    if (pValue != NULL) {
+      n=(int) PyLong_AsLong(pValue);
+      Py_DECREF(pValue);
+    }
+    else {
+      fprintf(stderr,"Problem while executing the method get_diag_idx inside DiagFunc class\n");
+      PyErr_Print();
+      exit(0);
+    }
+
+    // Nettoyage des arguments
+    Py_DECREF(pArg1);
+    Py_DECREF(pArg2);
+    Py_DECREF(pArg3);
+    Py_DECREF(pArg4);
+    Py_DECREF(pList);
+    
+  } else {
+    fprintf(stderr,"no DiagFunc class defined\n");
     PyErr_Print();
     exit(0);
   }
@@ -4412,13 +4471,14 @@ int main(int argc,char *argv[])  {
     fprintf( stderr, "%s: at %s",                        __FILE__, ctime( &now));
     fprintf( stderr, "%s: with %d MPI ranks\n", __FILE__, mpi_size); //, omp_get_max_threads());
     fprintf( stderr, "%s: --------------------------\n", __FILE__ );
-
+#if 0
     /* Ensure mpi_rank is a power of two (required by some algo...) */
     if (!isPowerOfTwo(mpi_size)) {
       fprintf(stderr,"INVALID mpi_size(%d), shall be a power of two!\n", mpi_size);
       return 1;
     }
-    fprintf( stderr, "\nstarting troll with MAXSIMU=%d, MAXTHEOHPR=%d\n", MAXSIMU, MAXTHEOHPR);
+#endif
+    fprintf( stderr, "\nstarting troll with MAXSIMU=%d, MAXEXTERNALHPR=%d\n", MAXSIMU, MAXEXTERNALHPR);
   }
 
   //------ read params ----
@@ -4519,11 +4579,11 @@ int main(int argc,char *argv[])  {
 
 
   // get CNN parameters if needed
-  memset(DOCNN,0,MAXTHEOHPR*sizeof(int));
+  memset(DOCNN,0,MAXEXTERNALHPR*sizeof(int));
   
   if (Param->flag_DOCNN==_PAR_TRUE) {
-    if (Param->n_DOCNN>MAXTHEOHPR) {
-      fprintf(stderr,"To big DOCNN table [%d], should be smaller than [%d] as the max number of TF\n",(int)(Param->n_DOCNN),(int)(MAXTHEOHPR));
+    if (Param->n_DOCNN>MAXEXTERNALHPR) {
+      fprintf(stderr,"To big DOCNN table [%d], should be smaller than [%d] as the max number of TF\n",(int)(Param->n_DOCNN),(int)(MAXEXTERNALHPR));
       exit(0);
     }
     COMP_CNN=1;
@@ -4754,7 +4814,6 @@ int main(int argc,char *argv[])  {
   PIOLONG LMAX=Param->LMAX*(Param->LMAX+1)+Param->LMAX;
 #endif
   MPI_Barrier(MPI_COMM_WORLD);
-  CUTRG=Param->CUTRG;
 
   PIOSTRING *mapout = (PIOSTRING *) malloc(sizeof(PIOSTRING)*Param->n_Out_MAP);
 
@@ -4787,22 +4846,21 @@ int main(int argc,char *argv[])  {
   PIOINT *l_nhpix  = (PIOINT *) malloc(sizeof(PIOINT)*12*Nside*Nside);
   hpix **l_hpix = (hpix **) malloc(sizeof(hpix *)*12*Nside*Nside);
   memset(l_nhpix,0,sizeof(PIOINT)*12*Nside*Nside);
+#if 0
+  assert( Param->n_External % nbolo == 0);
+  npixShpr = Param->n_External / nbolo;
+  assert( npixShpr <= MAXEXTERNALHPR);
+#endif
   
-  assert( Param->n_Theo_HPR % nbolo == 0);
-  npixhpr = Param->n_Theo_HPR / nbolo;
-  assert( npixhpr <= MAXTHEOHPR);
-  
-  assert( Param->n_Theo_MAP % MAXCHANNELS == 0);
-  npixmap = Param->n_Theo_MAP/MAXCHANNELS;
-  assert( npixmap <= MAXTHEOMAP); 
+  assert( Param->n_External_MAP % MAXCHANNELS == 0);
+  npixmap = Param->n_External_MAP/MAXCHANNELS;
+  assert( npixmap <= MAXEXTERNALMAP); 
 
   /*======================================================
     =
     =      read data
     =
     =*/
-
-  PIOFLOAT **theo = (PIOFLOAT **) malloc(sizeof(PIOFLOAT *)*npixhpr);
 
   long vmem,phymem;
   
@@ -4817,16 +4875,16 @@ int main(int argc,char *argv[])  {
 
   PIOFLOAT **mapmodel = NULL;
 
-  if (Param->flag_Theo_MAP==_PAR_TRUE) {
+  if (Param->flag_External_MAP==_PAR_TRUE) {
 
-    mapmodel = (PIOFLOAT **) malloc(sizeof(PIOFLOAT)*Param->n_Theo_MAP);
+    mapmodel = (PIOFLOAT **) malloc(sizeof(PIOFLOAT)*Param->n_External_MAP);
     
-    for (int l=0;l<Param->n_Theo_MAP;l++) {
+    for (int l=0;l<Param->n_External_MAP;l++) {
       mapmodel[l]= (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*12*nside128*nside128);
 
-      PIOLONG nsa  = noDMC_readObject_PIOFLOAT(Param->Theo_MAP[l],0,12*nside128*nside128,mapmodel[l]);
+      PIOLONG nsa  = noDMC_readObject_PIOFLOAT(Param->External_MAP[l],0,12*nside128*nside128,mapmodel[l]);
       if (nsa<0) {
-	      fprintf(stderr, "Impossible to the model map: %s %d\n",Param->Theo_MAP[l],(int) nsa);
+	      fprintf(stderr, "Impossible to the model map: %s %d\n",Param->External_MAP[l],(int) nsa);
 
 	      exit ( -1);
       }
@@ -4845,6 +4903,7 @@ int main(int argc,char *argv[])  {
   }
  
   PyObject *sparseFunc=NULL;
+  PyObject *diagFunc=NULL;
   PyObject *pArgs = NULL;
   PyObject *pClass = NULL;
   
@@ -4856,14 +4915,14 @@ int main(int argc,char *argv[])  {
 
     if (pModule == NULL) {
       PyErr_Print();
-      fprintf(stderr, "Échec du chargement du module\n");
+      fprintf(stderr, "Problem while creating the sparseFunc from class %s\n",argv[1]);
       return 1;
     }
 
     pClass = PyObject_GetAttrString(pModule, Param->SparseFunc);
     if (pClass == NULL || !PyCallable_Check(pClass)) {
       PyErr_Print();
-      fprintf(stderr, "Échec de la récupération de la classe SparseFunc\n");
+      fprintf(stderr, "Problem while loading the classe SparseFunc\n");
       Py_XDECREF(pClass);
       Py_DECREF(pModule);
       return 1;
@@ -4875,12 +4934,46 @@ int main(int argc,char *argv[])  {
 
     if (sparseFunc == NULL) {
       PyErr_Print();
-      fprintf(stderr, "Échec de la création de l'instance de la classe\n");
+      fprintf(stderr, "Problem while creating the class instance\n");
       Py_DECREF(pModule);
       return 1;
     }
   }
 
+  int nb_diag=0;
+  if (Param->flag_DiagFunc==_PAR_TRUE) {
+    PyObject *pName = PyUnicode_FromString(argv[1]);
+    PyObject *pModule = PyImport_Import(pName);
+    Py_DECREF(pName);
+
+    if (pModule == NULL) {
+      PyErr_Print();
+      fprintf(stderr, "Problem while creating the DiagFunc from class %s\n",argv[1]);
+      return 1;
+    }
+
+    pClass = PyObject_GetAttrString(pModule, Param->DiagFunc);
+    if (pClass == NULL || !PyCallable_Check(pClass)) {
+      PyErr_Print();
+      fprintf(stderr, "Problem while loading the DiagFunc class\n");
+      Py_XDECREF(pClass);
+      Py_DECREF(pModule);
+      return 1;
+    }
+    // Créer un tuple pour les arguments du constructeur
+    pArgs = PyTuple_New(1);
+    PyTuple_SetItem(pArgs, 0, pyParam);  // Le tuple prend la propriété de 'param'
+    diagFunc = PyObject_CallObject(pClass,pArgs); 
+
+    if (sparseFunc == NULL) {
+      PyErr_Print();
+      fprintf(stderr, "Problem while creating the class instance\n");
+      Py_DECREF(pModule);
+      return 1;
+    }
+    nb_diag=Get_NumberOfDiag(diagFunc);
+  }
+  
   int number_of_iterations = 1;
 
   NB_EXTERNAL=Param->n_External/nbolo;
@@ -4949,6 +5042,7 @@ int main(int argc,char *argv[])  {
     if (rank==0) fprintf(stderr,"bad_rings = %d\n",bad_rings);
     
     if (rank==0) fprintf(stderr,"RG_MAX %ld\n",(long) rg_max);
+    if (rank==0) fprintf(stderr,"NB_DIAG %ld\n",(long) nb_diag);
     /*=========================================================================================
       Compute spline in Time:
       =========================================================================================*/
@@ -4967,31 +5061,6 @@ int main(int argc,char *argv[])  {
             (double) vmem/1024./1024., (double) phymem/1024./1024.);
       }
 
-#if 0
-      stimParameters stimPar;
-      // read stim parameter file for this bolometer and broadcast it to all MPI ranks
-      init_stim( &stimPar, Param->stim_paramfiles[ib]);
-      number_of_iterations = stimPar.Param.iterations;
-      if (number_of_iterations > MAXSIMU) {
-        fprintf(stderr, "Number of simulation iterations %d > MAXSIMU %d\n", number_of_iterations, MAXSIMU);
-        exit ( -1);
-      }
-      if ((number_of_iterations > 1) && (stimPar.Param.stay_in_memory == -1)) {
-        stimPar.Param.stay_in_memory = 1;
-      } else {
-        stimPar.Param.stay_in_memory = 0;
-      }
-      stim_first_seed = stimPar.Param.random_seed;
-
-      // iterate on stim
-      for (iter = 0; iter < number_of_iterations; iter++) {
-        stim_hpr[iter] = malloc( ring_count * RINGSIZE * sizeof( PIOFLOAT));
-        assert( stim_hpr[iter] != NULL);
-        stim( &stimPar, globalRankInfo.BeginRing[rank], ring_count, stim_hpr[iter]);
-        stimPar.Param.random_seed++;
-      }
-      free_stim( &stimPar);
-#endif
       if (rank==0) {
         GetProcMem(&vmem,&phymem);
         fprintf(stderr,"\nafter stim bolo loop: used VMEM %.1lf[PHYS %.1lf]MB\n",
@@ -5103,16 +5172,6 @@ int main(int argc,char *argv[])  {
           free( addhpr);
         }
 
-        PIOSTRING tpname;
-        for (i=0;i<npixhpr;i++) {
-          theo[i] = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE);
-          tperr = noDMC_readObject_PIOFLOAT(Param->Theo_HPR[i*nbolo+ib],rg*RINGSIZE,RINGSIZE,theo[i]);
-          if (tperr<0) {
-            fprintf(stderr, "Impossible to read Theo_HPR[%ld]: %s %d\n",i*nbolo+ib,Param->Theo_HPR[i*nbolo+ib],tperr);
-            exit ( -1);
-          }
-        }
-
         PIOFLOAT *External;
         if (Param->flag_External==_PAR_TRUE) {
           External = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE*NB_EXTERNAL);
@@ -5138,8 +5197,8 @@ int main(int argc,char *argv[])  {
           fprintf( stderr, "Impossible to read Ptg[%ld]: %s %d\n", ib, Param->Ptg[ib], tperr);
           exit ( -1);
         }
-
-        sprintf( tpname,"%s_TUPLE_1",Param->Ptg[ib]);
+	char tpname[MAX_OUT_NAME_LENGTH];
+        sprintf(tpname,"%s_TUPLE_1",Param->Ptg[ib]);
         th = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*RINGSIZE);
         tperr = noDMC_readObject_PIODOUBLE(tpname,rg*RINGSIZE,RINGSIZE,th);
         if (tperr<0) {
@@ -5216,16 +5275,13 @@ int main(int argc,char *argv[])  {
 	  //fprintf(stderr,"EXTERNAL v2 %ld %lf %lf %lf\n",(long) rg,v2[0],v2[1],v2[2]);
 	  
 	  PIOFLOAT vExternal0=1E30;
-	  PIOINT iph0=0;
 	  
 	  for (i=0;i<RINGSIZE;i++) if (h[i]>0) {
 	      double vec[3];
 	      ang2vec(th[i],ph[i],vec);
 	      double xx=vec[0]*v0[0]+vec[1]*v0[1]+vec[2]*v0[2];
 	      double yy=vec[0]*v1[0]+vec[1]*v1[1]+vec[2]*v1[2];
-	      if (Param->flag_External!=_PAR_TRUE) {
-		External[i]=atan2(yy,xx);
-	      }
+	      
 	      tmp=sqrt(xx*xx+yy*yy);
 	      navr+=1;
 	      avr+=tmp;
@@ -5235,68 +5291,10 @@ int main(int argc,char *argv[])  {
 		(vec[2]-(EPOLEZ))*(vec[2]-(EPOLEZ));
 	      if (tmp<vExternal0) {
 		vExternal0=tmp;
-		iph0=i;
 	      } 
 	    }
-	    
-	  if (Param->flag_External!=_PAR_TRUE) {
-	    for (i=0;i<RINGSIZE;i++) External[i]=fmod(External[i]+3*M_PI-External[iph0],2*M_PI);
-	    
-	    //if External goes in the wrong direction invert the direction (warning 1-0~ 2M_Pi)
-	    if (External[1]<External[0]||External[2]<External[1]) {
-	      // fmod to ensure [0,2*M_PI[ domain
-	      for (i=0;i<RINGSIZE;i++) External[i]=fmod(4*M_PI-External[i],2*M_PI);
-	    }
-	  }
 
 	  long nrg_htmp = 0;
-
-
-	  // BUILE TF IS NEEDED
-	  if (Param->BUILDTF>0) {
-	    double *bmat,*bvec;
-
-	    bmat=(double *) malloc(Param->BUILDTF*Param->BUILDTF*4*sizeof(double));
-	    bvec=(double *) malloc(Param->BUILDTF*2*sizeof(double));
-
-	    memset(bmat,0,Param->BUILDTF*Param->BUILDTF*4*sizeof(double));
-	    memset(bvec,0,Param->BUILDTF*2*sizeof(double));
-
-	    for (i=0;i<RINGSIZE;i++) {
-	      long ipix;
-	      if (h[i]>0) {
-		ang2pix_ring( Nside, th[i], ph[i], &ipix);
-		double model=hprtab_cal[i];
-		for(int l=0;l<MAXCHANNELS;l++) {
-		  //TODO : CHANNELS NOT YET COMPUTED
-		  model+=skymodel[l][ipix];
-		  for (j=0;j<Param->BUILDTF;j++) {
-		    for (k=0;k<Param->BUILDTF;k++) {
-		      bmat[2*j   + (2*k)*Param->BUILDTF*2  ] += cos(External[i]*(j+1))*cos(External[i]*(k+1));
-		      bmat[2*j+1 + (2*k)*Param->BUILDTF*2  ] += sin(External[i]*(j+1))*cos(External[i]*(k+1));
-		      bmat[2*j   + (2*k+1)*Param->BUILDTF*2] += cos(External[i]*(j+1))*sin(External[i]*(k+1));
-		      bmat[2*j+1 + (2*k+1)*Param->BUILDTF*2] += sin(External[i]*(j+1))*sin(External[i]*(k+1));
-		    }
-		    bvec[2*j  ]+=model*cos(External[i]*(j+1));
-		    bvec[2*j+1]+=model*sin(External[i]*(j+1));
-		  }
-		}
-	      }
-	    }
-
-	    lusol(bmat,bvec,Param->BUILDTF*2);
-
-	    for (i=0;i<RINGSIZE;i++) {
-	      if (h[i]>0) {
-		      for (j=0;j<Param->BUILDTF;j++) {
-		        theo[j*2][i]=bvec[2*j]*cos(External[i]*(j+1))+bvec[2*j+1]*sin(External[i]*(j+1));
-		        theo[j*2+1][i]=-bvec[2*j]*sin(External[i]*(j+1))+bvec[2*j+1]*cos(External[i]*(j+1));
-		      }
-	      }
-	    }
-	    free(bmat);
-	    free(bvec);
-	  }
 
           for (i=0;i<RINGSIZE;i++) if (h[i]>0) {
             long ipix;
@@ -5326,13 +5324,9 @@ int main(int argc,char *argv[])  {
 	    }
 	    
 	    tp_hpix->sig=tp_hpix->listp[0];
-	    
-	    tp_hpix->External=External[i];
-	    
-	    //double soldip=SOLDIPX*vecpix[0]+SOLDIPY*vecpix[1]+SOLDIPZ*vecpix[2];
-	    //tp_hpix->soldip = hprtab_cal[i];
+   
 	    tp_hpix->hpr_cal   = hprtab_cal[i];
-	    //tp_hpix->thsig  = hprtab_cal[i];
+	    
 	    tp_hpix->hit    = 1/sqrt(h[i]);
 	    if (Sub_HPR != NULL) {
 	      tp_hpix->Sub_HPR = Sub_HPR[i]*Param->SUB_HPRCOEF[ib];
@@ -5340,18 +5334,18 @@ int main(int argc,char *argv[])  {
 	      tp_hpix->Sub_HPR = 0.0;
 	    }
 	    
-	    tp_hpix->corr_nl = 0;
 	    tp_hpix->corr_cnn = 0;
 	    
-	    init_channels(tp_hpix,
-			  projFunc,
-			  psi[i],
-			  External+i,
-			  (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
-			  ipix,
-			  ib);
-	    
-	    for (j=0;j<npixhpr;j++) tp_hpix->listofhpr[j]=theo[j][i];
+	    tp_hpix->hit = init_channels(tp_hpix,
+					 projFunc,
+					 psi[i],
+					 External+i,
+					 (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
+					 ipix,
+					 ib,
+					 tp_hpix->hit,
+					 i,
+					 &(tp_hpix->sig));
 
 	    if (sparseFunc!=NULL) {
 	      
@@ -5371,6 +5365,16 @@ int main(int argc,char *argv[])  {
 		}
 	      }
 	    }
+	    if (diagFunc!=NULL) {
+	      tp_hpix->diag_idx = calc_diag_hpr(diagFunc,
+						rg,
+						ib,
+						ipix,
+						psi[i],
+						External+i);
+	      
+	    }
+	    
 	    
 	    for (j=0;j<npixmap;j++) {
 	      tp_hpix->listofmap[j]=0;
@@ -5391,9 +5395,6 @@ int main(int argc,char *argv[])  {
 	    tp_hpix->rg = rg;
 #define NBPH (4096)
 	    tp_hpix->gi = 0;
-	    //tp_hpix->ggi = 1.;
-	    tp_hpix->hrg = (External[i]*NBPH)/(2*M_PI);
-	    //tp_hpix->xrg = (double) (rg-240)/25000.;
 	    tp_hpix->ipix = ipix;
 	    l_nhpix[ipix]+=1;
 	    if (isnan(tp_hpix->sig)||isnan(tp_hpix->w)||isnan(tp_hpix->hpr_cal)) {
@@ -5422,7 +5423,6 @@ int main(int argc,char *argv[])  {
         }
         free(Sub_HPR);
         free(hprtab_cal);
-        for (i=0;i<npixhpr;i++) free(theo[i]);
         free(External);
         free(th);
         free(ph);
@@ -5456,7 +5456,7 @@ int main(int argc,char *argv[])  {
   }
 
   if (mapmodel!=NULL) {
-    for (int l=0;l<Param->n_Theo_MAP;l++) {
+    for (int l=0;l<Param->n_External_MAP;l++) {
       free(mapmodel[l]);
     }
     free(mapmodel);
@@ -5465,8 +5465,10 @@ int main(int argc,char *argv[])  {
   PrintFreeMemOnNodes( rank, mpi_size, "before pixel balancing");
 
   if (sparseFunc!=NULL) {
-    MPI_Bcast(&npixShpr,sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
-    
+    long lnpix=npixShpr;
+    long mnpix;
+    MPI_Allreduce(&lnpix,&mnpix,1,MPI_LONG, MPI_MAX,MPI_COMM_WORLD);
+    npixShpr=mnpix;
     ClosepFunc(sparseFunc);
     
     Py_DECREF(pClass);
@@ -5474,8 +5476,8 @@ int main(int argc,char *argv[])  {
   }
 
   if (rank==0) fprintf(stderr,"NSHPR %d\n",(int) npixShpr);
-  if (rank==0) fprintf(stderr,"NHPR %d\n",(int) npixhpr);
   if (rank==0) fprintf(stderr,"NMAP %d\n",(int) npixmap);
+ 
   /*======================================================
     =
     =      compute load balancing between proc
@@ -5502,10 +5504,13 @@ int main(int argc,char *argv[])  {
 
   if (rank==0) fprintf(stderr,"Sort pixel to make it run faster\n");
   nnbpix=12*Nside*Nside/mpi_size;
+ 
   for (i=0;i<mpi_size;i++) {
     begpix[i]=i*nnbpix;
     edpix[i]=(i+1)*nnbpix-1;
   }
+  edpix[mpi_size-1]=12*Nside*Nside-1;
+  
   int *stat_pix = (int *) malloc( 2*12*Nside*Nside*sizeof(int));
   memset(stat_pix,0,2*12*Nside*Nside*sizeof(int));
   realpix = (int *) malloc(sizeof(int)*nnbpix);
@@ -5615,7 +5620,6 @@ int main(int argc,char *argv[])  {
   }
   free(l_nhpix);
   l_nhpix=new_nhpix;
-
   free(stat_pix);
 
   GetProcMem(&vmem,&phymem);
@@ -5630,7 +5634,86 @@ int main(int argc,char *argv[])  {
     =      order data per pixel and per proc
     =
     =*/
+  
+#if 1
+  int *begbuf = (int *) malloc(mpi_size*sizeof(int));
+  hpix * tbs = NULL;
+  long ntbs=0;
+  
+  for (int k=0;k<mpi_size;k++) {
+    begbuf[k]=ntbs*sizeof(hpix);
+    for (i=begpix[k];i<edpix[k]+1;i++) {
+      if (l_nhpix[i]>0) {
+	if (tbs==NULL) {
+	  tbs = (hpix *) malloc(l_nhpix[i]*sizeof(hpix));
+	}
+	else {
+	  tbs = (hpix *) realloc(tbs,(ntbs+l_nhpix[i])*sizeof(hpix));
+	}
+	memcpy(tbs+ntbs,l_hpix[i],l_nhpix[i]*sizeof(hpix));
+	ntbs+=l_nhpix[i];
+	free(l_hpix[i]);
+      }
+    }
+  }
+  free(l_hpix);
+  free(l_nhpix);
+  
+  begbuf[mpi_size]=ntbs*sizeof(hpix);
+       	    
+  /* exchange all buffer information */
+  int *allbuf = (int *) malloc(mpi_size*(mpi_size+1)*sizeof(int));
+  
+  MPI_Allgather(begbuf,mpi_size+1,MPI_INT,allbuf,(mpi_size+1),MPI_INT,MPI_COMM_WORLD);
 
+  int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
+  int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
+  int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
+  int *rdispls = (int *) calloc(mpi_size,sizeof(int));
+  
+  for (i=0;i<size;i++) {
+    sendcounts[i]=begbuf[i+1]-begbuf[i];
+    sdispls[i]=begbuf[i];
+    recvcounts[i]=allbuf[i*(size+1)+rank+1]-allbuf[i*(size+1)+rank];
+  }
+  
+  rdispls[0]=0;
+  for (i=1;i<size;i++) {
+    rdispls[i]=rdispls[i-1]+recvcounts[i-1];
+  }
+
+  long ldata=(rdispls[size-1]+recvcounts[size-1])/sizeof(hpix);
+
+  hpix *otbs = (hpix *) malloc(ldata*sizeof(hpix));
+
+  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Alltoallv(tbs,sendcounts,sdispls,MPI_BYTE,
+		otbs,recvcounts,rdispls,MPI_BYTE,
+		MPI_COMM_WORLD);
+
+  free(tbs);
+  tbs=otbs;
+  
+  nnbpix = edpix[rank]-begpix[rank]+1;
+
+  loc_hpix = (hpix **) malloc(sizeof(hpix *)*nnbpix);
+  loc_nhpix = (PIOINT *) malloc(sizeof(PIOINT)*nnbpix);
+  memset(loc_nhpix,0,sizeof(PIOINT)*nnbpix);
+
+  for (int kk=0;kk<ldata;kk++) {
+    j=tbs[kk].ipix-begpix[rank];
+    if (loc_nhpix[j]==0) {
+      loc_hpix[j] = (hpix *) malloc(sizeof(hpix));
+    }
+    else {
+      loc_hpix[j] = (hpix *) realloc(loc_hpix[j],(1+loc_nhpix[j])*sizeof(hpix));
+    }
+    memcpy(loc_hpix[j]+loc_nhpix[j],tbs+kk,sizeof(hpix));
+    loc_nhpix[j] +=1;
+  }
+  
+  free(tbs);
+#else
   nnbpix = edpix[rank]-begpix[rank]+1;
 
   loc_hpix = (hpix **) malloc(sizeof(hpix *)*nnbpix);
@@ -5638,8 +5721,7 @@ int main(int argc,char *argv[])  {
   memset(loc_nhpix,0,sizeof(PIOINT)*nnbpix);
 
   MPI_Barrier(MPI_COMM_WORLD);
-
-
+  
   //========================================================================
   // USE iterative approach to avoid slow down while exchanging data
   long nstep=log((double)(mpi_size))/log(2.0)+0.001;
@@ -5745,7 +5827,8 @@ int main(int argc,char *argv[])  {
 
   free(l_hpix);
   free(l_nhpix);
-
+#endif
+  
   GetProcMem(&vmem,&phymem);
   if (rank%64==0) fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
               (long) rank, getpid(),
@@ -5780,8 +5863,6 @@ int main(int argc,char *argv[])  {
   
   cond = (PIODOUBLE *) malloc(nnbpix*sizeof(PIODOUBLE));
   memset(imatrice,0,nnbpix*sizeof(PIODOUBLE));
-  
-  MPI_Status statu;
   
   long l_nmatpix=0;
   fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
@@ -5872,25 +5953,6 @@ int main(int argc,char *argv[])  {
     free(l_flg_rg);
   }
 
-#if 0
-  if (CUTRG>1) {
-    for (ib=0;ib<nbolo;ib++) {
-      PIOBYTE *l_flg_rg = (PIOBYTE *) malloc(sizeof(PIOBYTE)*
-					     (globalRangeRing)*CUTRG);
-
-      for (rrk=0;rrk<mpi_size;rrk++) {
-	if (rrk==rank) memcpy(l_flg_rg ,flg_rg2[ib] ,sizeof(PIOBYTE)*
-			    d  (globalRangeRing)*CUTRG);
-	MPI_Bcast(l_flg_rg,sizeof(PIOBYTE)*
-		  (globalRangeRing)*CUTRG, MPI_BYTE, rrk, MPI_COMM_WORLD);
-	for (i=0;i<(globalRangeRing)*CUTRG;i++) if (l_flg_rg[i]==1) flg_rg2[ib][i]=1;
-
-      }
-      free(l_flg_rg);
-    }
-  }
-#endif
-
   GetProcMem(&vmem,&phymem);
   if (rank%64==0) fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
               (long) rank, getpid(),
@@ -5900,9 +5962,6 @@ int main(int argc,char *argv[])  {
   rgord = (PIOINT **) malloc(nbolo*sizeof(PIOINT *));
   rgordinv = (PIOINT **) malloc(nbolo*sizeof(PIOINT *));
   newnr  = (PIOLONG *) malloc((nbolo+1)*sizeof(PIOLONG));
-  rgord2 = (PIOINT **) malloc(nbolo*sizeof(PIOINT *));
-  PIOINT **rgordinv2 = (PIOINT **) malloc(nbolo*sizeof(PIOINT *));
-  newnr2  = (PIOLONG *) malloc((nbolo+1)*sizeof(PIOLONG));
 
   newnr[0]=0;
   for (ib=0;ib<nbolo;ib++) {
@@ -5919,22 +5978,6 @@ int main(int argc,char *argv[])  {
     }
   }
   for (ib=1;ib<nbolo+1;ib++) newnr[ib]+=newnr[ib-1];
-
-  newnr2[0]=0;
-  for (ib=0;ib<nbolo;ib++) {
-    rgord2[ib] = (PIOINT *) malloc(sizeof(PIOINT)*
-                                  (globalRangeRing)*CUTRG);
-    rgordinv2[ib] = (PIOINT *) malloc(sizeof(PIOINT)*
-                                     (globalRangeRing)*CUTRG);
-
-    newnr2[ib+1]=0;
-    for (i=0;i<(globalRangeRing)*CUTRG;i++) if (flg_rg[ib][i/CUTRG]>0) {
-      rgord2[ib][i]=newnr2[ib+1];
-      rgordinv2[ib][newnr2[ib+1]]=i;
-      newnr2[ib+1]++;
-    }
-  }
-  for (ib=1;ib<nbolo+1;ib++) newnr2[ib]+=newnr2[ib-1];
 
   if (rank==0) {
     fprintf(stderr,"RK%d SHOULD DETERMINE %ld VALUES ",rank,(long) nnbpix);
@@ -6005,76 +6048,6 @@ int main(int argc,char *argv[])  {
     }
   }
 
-  /*===============================================================================================
-    COMPUTE CUTTING RING FOR OPTIMAL MAP-MAKING
-    ===============================================================================================*/
-
-  if (CUTRG>1) {
-    int l_rank;
-    for (l_rank=0;l_rank<mpi_size;l_rank++) {
-      long nring=globalRankInfo.EndRing[l_rank]-globalRankInfo.BeginRing[l_rank]+1;
-      PIOLONG * histo_External = (PIOLONG *) malloc(sizeof(PIOLONG)*NBPH*nbolo*nring);
-      PIOLONG * l_histo_External = (PIOLONG *) malloc(sizeof(PIOLONG)*NBPH*nbolo*nring);
-      int l1;
-      memset(histo_External,0,sizeof(PIOLONG)*NBPH*nbolo*nring);
-      for (k=0;k<nnbpix;k++)  {
-        if (flgpix[k]>0) {
-          long ndata = loc_nhpix[k];
-          hpix *htmp = loc_hpix[k];
-          for (l1=0;l1<ndata;l1++) {
-            long ri1=htmp[l1].rg-globalBeginRing;
-            if (flg_rg[htmp[l1].ib][ri1]!=0) {
-              if (htmp[l1].rg>=globalRankInfo.BeginRing[l_rank]&&htmp[l1].rg<=globalRankInfo.EndRing[l_rank]) {
-                histo_External[htmp[l1].hrg+(htmp[l1].rg-globalRankInfo.BeginRing[l_rank]+htmp[l1].ib*nring)*NBPH]+=ndata-1;
-              }
-            }
-          }
-        }
-      }
-      if (rank==0) {
-        for (rrk=1;rrk<mpi_size;rrk++) {
-          MPI_Recv(l_histo_External,sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, rrk,351, MPI_COMM_WORLD,&statu);
-          for (l1=0;l1<NBPH*nbolo*nring;l1++) histo_External[l1]+=l_histo_External[l1];
-        }
-        for (ib=0;ib<nbolo;ib++) {
-          for (j=0;j<nring;j++) {
-            for (l1=1;l1<NBPH;l1++) histo_External[l1+(j+ib*nring)*NBPH]+=histo_External[l1-1+(j+ib*nring)*NBPH];
-            if (histo_External[NBPH-1+(j+ib*nring)*NBPH]==0) {
-              for (l1=0;l1<NBPH;l1++) histo_External[l1+(j+ib*nring)*NBPH]=(l1*CUTRG)/NBPH;
-            }
-            else {
-	      for (l1=0;l1<NBPH;l1++) histo_External[l1+(j+ib*nring)*NBPH]=(histo_External[l1+(j+ib*nring)*NBPH]*CUTRG)/(1+histo_External[NBPH-1+(j+ib*nring)*NBPH]);
-            }
-            for (l1=0;l1<NBPH;l1++) if (histo_External[l1+(j+ib*nring)*NBPH]>CUTRG-1) histo_External[l1+(j+ib*nring)*NBPH]=CUTRG-1;
-          }
-        }
-
-        fprintf(stderr,"Ring %d %d Done\n",(int) globalRankInfo.BeginRing[l_rank], (int) globalRankInfo.EndRing[l_rank]);
-
-      }
-      else {
-        MPI_Send(histo_External, sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, 0, 351, MPI_COMM_WORLD);
-      }
-
-      MPI_Bcast(histo_External, sizeof(PIOLONG)*NBPH*nbolo*nring, MPI_BYTE, 0, MPI_COMM_WORLD);
-
-      for (k=0;k<nnbpix;k++)  {
-        long ndata = loc_nhpix[k];
-        hpix *htmp = loc_hpix[k];
-        int l1;
-        for (l1=0;l1<ndata;l1++) {
-          long ri1=htmp[l1].rg-globalBeginRing;
-          if (flg_rg[htmp[l1].ib][ri1]!=0) {
-            if (htmp[l1].rg>=globalRankInfo.BeginRing[l_rank]&&htmp[l1].rg<=globalRankInfo.EndRing[l_rank]) {
-              htmp[l1].hrg=htmp[l1].rg*CUTRG+histo_External[htmp[l1].hrg+(htmp[l1].rg-globalRankInfo.BeginRing[l_rank]+htmp[l1].ib*nring)*NBPH];
-            }
-          }
-        }
-      }
-      free(histo_External);
-      free(l_histo_External);
-    }
-  }
 
   //============================================================
   // remove dipole from the first harmonic
@@ -6120,56 +6093,32 @@ int main(int argc,char *argv[])  {
 
   // decoupe vecteur matrice par proc
 
-  long maxsizemat=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
-  if (newnr2[nbolo]>maxsizemat&&CUTRG>(1)) {
-    maxsizemat=newnr2[nbolo];
-  }
-  if (rank==0) fprintf(stderr,"MAXSIZE %ld %ld\n",(long) maxsizemat,(long) newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr));
-  if (rank==0) fprintf(stderr,"NbGain %ld\n",newnr2[nbolo]);
+  long maxsizemat=newnr[nbolo]+nbolo*(GAINSTEP+npixmap+npixShpr);
+  
+  if (rank==0) fprintf(stderr,"MAXSIZE %ld %ld\n",(long) maxsizemat,(long) newnr[nbolo]+nbolo*(GAINSTEP+npixmap+npixShpr));
+
+  x2 =     (double *) malloc (maxsizemat*sizeof (double));
+  x2old =  (double *) malloc (maxsizemat*sizeof (double));
+  x2init = (double *) malloc (maxsizemat*sizeof (double));
+  b2 =     (double *) malloc (maxsizemat*sizeof (double));
+  d2 =     (double *) malloc (maxsizemat*sizeof (double));
+  q2 =     (double *) malloc (maxsizemat*sizeof (double));
+  r2 =     (double *) malloc (maxsizemat*sizeof (double));
+  s2 =     (double *) malloc (maxsizemat*sizeof (double));
+  hit2 =   (double *) malloc (maxsizemat*sizeof (double));
+  hit_WW =   (double *) malloc (maxsizemat*sizeof (double));
+  hit_L2 =   (double *) malloc (maxsizemat*sizeof (double));
+  hit_L1 =   (double *) malloc (maxsizemat*sizeof (double));
 
 
-  //if (Param->CALCODUST==1) {
-  //  totmat=(double *) malloc(8*sizeof(double)*nnbpix);
-  //}
-  qmat=(double *) malloc(sizeof(double)*nnbpix);
-  umat=(double *) malloc(sizeof(double)*nnbpix);
+  for (i=0;i<Param->n_Out_MAP;i++) strcpy(mapout[i],Param->Out_MAP[i]);
 
-#ifdef COMATOUT
-    double *rcomat=(double *) malloc(sizeof(double)*nnbpix);
-    double *co_mat=(double *) malloc(sizeof(double)*nnbpix);
-    double *co_qmat=(double *) malloc(sizeof(double)*nnbpix);
-    double *co_umat=(double *) malloc(sizeof(double)*nnbpix);
-#endif
+  if (rank==0) fprintf(stderr,"BEG %d %ld %ld - %ld %ld\n",rank,(long) nmatpix,(long) begpix[rank],(long) edpix[rank],
+		       (long) l_nmatpix);
 
+  MPI_Barrier(MPI_COMM_WORLD);
 
-#ifdef DUSTMATOUT
-    double *dust_mat=(double *) malloc(sizeof(double)*nnbpix);
-    double *dust_qmat=(double *) malloc(sizeof(double)*nnbpix);
-    double *dust_umat=(double *) malloc(sizeof(double)*nnbpix);
-#endif
-    x2 =     (double *) malloc (maxsizemat*sizeof (double));
-    x2old =  (double *) malloc (maxsizemat*sizeof (double));
-    x2init = (double *) malloc (maxsizemat*sizeof (double));
-    b2 =     (double *) malloc (maxsizemat*sizeof (double));
-    d2 =     (double *) malloc (maxsizemat*sizeof (double));
-    q2 =     (double *) malloc (maxsizemat*sizeof (double));
-    r2 =     (double *) malloc (maxsizemat*sizeof (double));
-    s2 =     (double *) malloc (maxsizemat*sizeof (double));
-    hit2 =   (double *) malloc (maxsizemat*sizeof (double));
-    hit_WW =   (double *) malloc (maxsizemat*sizeof (double));
-    hit_L2 =   (double *) malloc (maxsizemat*sizeof (double));
-    hit_L1 =   (double *) malloc (maxsizemat*sizeof (double));
-
-
-    for (i=0;i<Param->n_Out_MAP;i++) strcpy(mapout[i],Param->Out_MAP[i]);
-
-
-    if (rank==0) fprintf(stderr,"BEG %d %ld %ld - %ld %ld\n",rank,(long) nmatpix,(long) begpix[rank],(long) edpix[rank],
-          (long) l_nmatpix);
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
-
+  
   /*======================================================
     =
     =    LOOP ON SEEDs
@@ -6203,8 +6152,6 @@ int main(int argc,char *argv[])  {
       =    PUT to 0
       =
       =*/
-
-    docutrg=nitbogo-1;
 
     ittt=1;
     memset(x2     ,0,maxsizemat*sizeof (double));
@@ -6240,13 +6187,11 @@ int main(int argc,char *argv[])  {
       }
     }
 
-    memset(x2,0,(newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr))*sizeof(double));
-
-    double *xoff= (double *) malloc(sizeof(double)*newnr2[nbolo]);
+    memset(x2,0,(newnr[nbolo]+nbolo*(GAINSTEP+npixmap+npixShpr))*sizeof(double));
 
     gainoff=0;
 
-    nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
+    nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixmap+npixShpr);
 
     double *x3= (double *) malloc(sizeof(double)*(nmatres)); 
 
@@ -6309,19 +6254,19 @@ int main(int argc,char *argv[])  {
 	    if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
 	  }
 	}
-	for (i=GAINSTEP*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr)*nbolo+newnr[nbolo];i++) {
+	for (i=GAINSTEP*nbolo+newnr[nbolo];i<(GAINSTEP)*nbolo+newnr[nbolo];i++) {
 	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"TF=[");
 	  fprintf(stderr,"%lg,",x3[i]);
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
 	}	
-	for (i=(GAINSTEP+npixhpr)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i++) {
+	for (i=(GAINSTEP)*nbolo+newnr[nbolo];i<(GAINSTEP+npixmap)*nbolo+newnr[nbolo];i++) {
 	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"TMAP=[");
 	  fprintf(stderr,"%lg,",x3[i]);
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
 	}
 	int nbSTF=npixShpr;
 	if (nbSTF>200) nbSTF=200;
-	for (i=(GAINSTEP+npixhpr+npixmap)*nbolo+newnr[nbolo];i<(GAINSTEP+npixhpr+npixmap+nbSTF)*nbolo+newnr[nbolo];i++) {
+	for (i=(GAINSTEP+npixmap)*nbolo+newnr[nbolo];i<(GAINSTEP+npixmap+nbSTF)*nbolo+newnr[nbolo];i++) {
 	  if ((i-newnr[nbolo])%nbolo==0) fprintf(stderr,"STF=[");
 	  fprintf(stderr,"%lg,",x3[i]);
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
@@ -6334,7 +6279,7 @@ int main(int argc,char *argv[])  {
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr);
+    nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixmap+npixShpr);
     if (rank==0) {
 
       PIOSTRING commm;
@@ -6352,22 +6297,6 @@ int main(int argc,char *argv[])  {
         else sprintf(saveg,"%s_%d_OFF",Param->Out_VEC[i],stim_first_seed+iter);
 
         fprintf(stderr,"Write OFF  %lld\n",(long long) PIOWriteVECT(saveg,tmpoff,sizeof(PIODOUBLE)*globalBeginRing,sizeof(PIODOUBLE)*(globalRangeRing)));
-	
-        if (CUTRG>1) {
-          PIODOUBLE *tmpcutoff = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*(globalRangeRing)*CUTRG);
-          for (j=0;j<CUTRG*(globalRangeRing);j++) {
-            tmpcutoff[j]=-10000;
-          }
-          if (stim_first_seed+iter==0) sprintf(saveg,"%s_X3",Param->Out_VEC[i]);
-          else sprintf(saveg,"%s_%d_X3",Param->Out_VEC[i],stim_first_seed+iter);
-
-          for (j=newnr2[i];j<newnr2[i+1];j++) tmpcutoff[rgordinv2[i][j-newnr2[i]]]=xoff[j];
-          fprintf(stderr,"Save X3 CUTRG\n");
-          sprintf(commm,"begin=%lld;end=%lld",(long long) globalBeginRing*CUTRG,(long long) globalEndRing*CUTRG);
-          fprintf(stderr,"Write OPTOFF  %lld\n",(long long) PIOWriteVECT(saveg,tmpcutoff,globalBeginRing*CUTRG*sizeof(PIODOUBLE),
-                                                                         (globalRangeRing)*CUTRG*sizeof(PIODOUBLE)));
-          free(tmpcutoff);
-        }
       }
       free(tmpoff);
 
@@ -6375,8 +6304,7 @@ int main(int argc,char *argv[])  {
       else sprintf(saveg,"%s_%d_X2",Param->Out_VEC[0],stim_first_seed+iter);
 
       //for (i=newnr[nbolo]+GAINSTEP*nbolo;i<nmatres;i++) fprintf(stderr,"X2 %d %lg\n",(int) i,x3[i]);
-      fprintf(stderr,"Save X2 NO CUTRG\n");
-      fprintf(stderr,"Write MAT  %lld\n",(long long) PIOWriteVECT(saveg,x3+newnr[nbolo],0,(nbolo*(GAINSTEP+npixhpr+npixmap+npixShpr))*sizeof(PIODOUBLE)));
+      fprintf(stderr,"Write MAT  %lld\n",(long long) PIOWriteVECT(saveg,x3+newnr[nbolo],0,(nbolo*(GAINSTEP+npixmap+npixShpr))*sizeof(PIODOUBLE)));
 
     }
 
@@ -6432,6 +6360,16 @@ int main(int argc,char *argv[])  {
   }
   double * cmap = (double *) malloc(sizeof(double)*nnbpix);
   
+  double *diag_avv=NULL;
+  double *diag_avv2=NULL;
+  double *diag_n=NULL;
+  
+  if (diagFunc!=NULL) {
+    diag_avv  = (double *) malloc(sizeof(double)*nb_diag);
+    diag_avv2  = (double *) malloc(sizeof(double)*nb_diag);
+    diag_n = (double *) malloc(sizeof(double)*nb_diag);
+  }
+  
   double ** imap = (double **) malloc(sizeof(double*)*MAXCHANNELS);
   for (i = 0;i<MAXCHANNELS;i++){
     imap[i]=(double *) malloc(sizeof(double)*nnbpix);
@@ -6460,8 +6398,13 @@ int main(int argc,char *argv[])  {
       PIOSTRING mapname;
       strcpy(mapname, Param->name_surv[isurv]);
       
-    int l1;
-    for (k=0;k<nnbpix;k++) {
+      if (diagFunc!=NULL) {
+	memset(diag_avv,0,sizeof(double)*nb_diag);
+	memset(diag_avv2,0,sizeof(double)*nb_diag);
+	memset(diag_n,0,sizeof(double)*nb_diag);
+      }
+      int l1;
+      for (k=0;k<nnbpix;k++) {
 	
       for(int i =0;i<MAXCHANNELS;i++){
 	map[i][k]=UNSEENPIX;  // ie hp.UNSEEN
@@ -6473,6 +6416,7 @@ int main(int argc,char *argv[])  {
       for(int i =0;i<MAXCHANNELS*MAXCHANNELS;i++){
 	matmap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
       }
+      
 	    
       long ndata = loc_nhpix[k];
       hpix *htmp = loc_hpix[k];
@@ -6501,7 +6445,7 @@ int main(int argc,char *argv[])  {
 	  double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
 	  double rsig = htmp[l1].sig*g1;
 	  
-	  double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+	  double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	  double sig_corr2 = sig_corr;
 	  sig_corr-=x3[iri1];
 	  
@@ -6510,16 +6454,13 @@ int main(int argc,char *argv[])  {
 	    sig_corr2-=htmp[l1].hpr_cal;
 	  }
 	  
-	  for(int m =0;m<npixhpr;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
-	  }
 	  
 	  for(int m =0;m<npixmap;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
 	  }
 	  
 	  for(int m =0;m<htmp[l1].nShpr;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixmap)*nbolo]*htmp[l1].listofShpr[m];
 	  }
 	  
 	  sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
@@ -6573,7 +6514,7 @@ int main(int argc,char *argv[])  {
 	    long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 	    //calcul signal corriger
 	    double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-	    double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_nl-htmp[l1].corr_cnn;
+	    double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	    double sig_corr2 = sig_corr;
 	    sig_corr-=x3[iri1];
 	    
@@ -6582,16 +6523,13 @@ int main(int argc,char *argv[])  {
 	      sig_corr2-=htmp[l1].hpr_cal;
 	    }
 	    
-	    for(int m =0;m<npixhpr;m++){
-	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofhpr[m];
-	    }
 	    
 	    for(int m =0;m<npixmap;m++){
-	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+npixhpr+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
+	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m];
 	    }
 	    
 	    for(int m =0;m<htmp[l1].nShpr;m++){
-	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixhpr+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+	      sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixmap)*nbolo]*htmp[l1].listofShpr[m];
 	    }
 	    
 	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
@@ -6602,43 +6540,70 @@ int main(int argc,char *argv[])  {
 	    avv=avv+htmp[l1].w *sig_corr;
 	    avv2=avv2+htmp[l1].w *sig_corr*sig_corr;
 	    navv=navv+htmp[l1].w;
+	    if (diagFunc!=NULL) {
+	      diag_avv[htmp[l1].diag_idx]+=htmp[l1].w *sig_corr;
+	      diag_avv2[htmp[l1].diag_idx]+=htmp[l1].w *sig_corr*sig_corr;
+	      diag_n[htmp[l1].diag_idx]+=htmp[l1].w;
+	    }
 	  }
 	}
 
 	cmap[k]=sqrt(avv2/navv-(avv/navv)*(avv/navv));
       }
     }
+
+    if (diagFunc!=NULL) {
+      double *l_avv = (double *) malloc(sizeof(double)*(nb_diag));
+      double *l_avv2 = (double *) malloc(sizeof(double)*(nb_diag));
+      double *l_n = (double *) malloc(sizeof(double)*(nb_diag));
+      MPI_Reduce(diag_avv,l_avv,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+      MPI_Reduce(diag_avv2,l_avv2,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+      MPI_Reduce(diag_n,l_n,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+
+      for (k=0;k<nb_diag;k++) diag_avv[k]=sqrt(l_avv2[k]/l_n[k]-(l_avv[k]/l_n[k])*(l_avv[k]/l_n[k]));
+
+      if  (rank==0) {
+	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	sprintf(TEST_OUTMAP,"%s_%s_DIAG", mapout[detset],mapname);
+	PIOWriteVECT(TEST_OUTMAP,diag_avv,0,sizeof(PIODOUBLE)*nb_diag);
+      }
+
+      free(l_avv);
+      free(l_avv2);
+      free(l_n);
+    }
+    
     
     for(int i = 0;i<MAXCHANNELS;i++){
-      char TEST_OUTMAP[MAXOUTMAP];
+      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
       PIOWriteMAP(TEST_OUTMAP,map[i],begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
     }
    
     for(int i = 0;i<MAXCHANNELS;i++){
-      char TEST_OUTMAP[MAXOUTMAP];
+      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_%d_RAW", mapout[detset],mapname,i);
       PIOWriteMAP(TEST_OUTMAP,rmap[i],begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
     }
    
     {
-      char TEST_OUTMAP[MAXOUTMAP];
+      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_STD", mapout[detset],mapname);
       PIOWriteMAP(TEST_OUTMAP,cmap,begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
     }
 #if 0
     for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
-      char TEST_OUTMAP[MAXOUTMAP];
+      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_MAT%d", mapout[detset],mapname,i);
       PIOWriteMAP(TEST_OUTMAP,matmap[i],begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
     }
 #endif
     {
-      char TEST_OUTMAP[MAXOUTMAP];
+      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
       PIOWriteMAP(TEST_OUTMAP,cond,begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
@@ -6654,6 +6619,12 @@ int main(int argc,char *argv[])  {
   free(map);
   free(rmap);
 
+  if (diagFunc!=NULL) {
+    free(diag_avv);
+    free(diag_avv2);
+    free(diag_n);
+  }
+  
   if (rank==0) {
     now = time( NULL);
     fprintf(stderr, "\n%s: --------------------------\n", __FILE__ );
