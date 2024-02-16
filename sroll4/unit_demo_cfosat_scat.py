@@ -1,70 +1,69 @@
 import numpy as np
-
-class test2D:
+import foscat.Spline1D as spl 
   
-  def __init__(self,params):
-    self.valmin=0.488
-    self.valmax=0.838
-
-    nspline=8
-    self.SeaMask=np.load('SeaMask.npy')
-    
-    SPLINE=np.loadtxt('SPLINE%d.txt'%(nspline))
-    SPLINEC=np.loadtxt('SPLINE_CIRC_%d.txt'%(nspline))
-
-    ref={}
-    idx={}
-    
-    for i in range(256):
-      vv1=SPLINE[i,1:-1]
-      lidx1=np.where(vv1>0.0)[0]
-      idx[i]={}
-      ref[i]={}
-      
-      for j in range(256):
-        vv2=SPLINEC[j,1:-1]
-        lidx2=np.where(vv2>0.0)[0]
-        idx[i][j]=[int(lidx1[k])+nspline*int(lidx2[l]) for k in range(len(lidx1)) for l in range(len(lidx2))]
-        ref[i][j]=[vv1[lidx1[k]]*vv2[lidx2[l]] for k in range(len(lidx1)) for l in range(len(lidx2))]
-
-    self.spline_idx=idx
-    self.spline_ref=ref
+class diag_incidence:
   
-  def eval(self,rg,ib,hidx,inc,externals):
+  def __init__(self,params,rank):
 
-    ioff=int(self.SeaMask[hidx])
+    self.valmin=0.205
+    self.valmax=0.945
+    self.npt_incidence=params['npt_incidence']
     
-    a1=int(256*(inc-self.valmin)/(self.valmax-self.valmin))
-    a2=int(256*(np.fmod(externals[0]+2*np.pi,2*np.pi)/(2*np.pi)))
+  def getnumber_of_index(self):
+    return self.npt_incidence
     
-    return [k+64*ioff for k in self.spline_idx[a1][a2]],self.spline_ref[a1][a2]
-  
+  def get_diag_idx(self,rg,ib,hidx,inc,externals):
+    a1=int(self.npt_incidence*(inc-self.valmin)/(self.valmax-self.valmin))
+    return a1
+    
 class test:
   
-  def __init__(self,params):
-    self.valmin=0.488
-    self.valmax=0.838
-<<<<<<< HEAD
-    self.SeaMask=1.0-np.load('SeaMask.npy') # 1 if sea
-
-    self.nspline=8
+  def __init__(self,params,rank):
+    # read the first ring to compute the minvalue
+    tmp=np.fromfile(params['External'][0],offset=params['BeginRing']*4*3000000,count=3000000,dtype='float32')
+    htmp=np.fromfile(params['Hit'][0],offset=params['BeginRing']*4*3000000,count=3000000,dtype='float32')
+    if rank==0:
+      print('Begin Time ',tmp[htmp>0].min())
+    self.timemin=tmp[htmp>0].min()
+    del(tmp)
+    del(htmp)
+    tmp=np.fromfile(params['External'][0],offset=params['EndRing']*4*3000000,count=3000000,dtype='float32')
+    htmp=np.fromfile(params['Hit'][0],offset=params['EndRing']*4*3000000,count=3000000,dtype='float32')
+    if rank==0:
+      print('End Time ',tmp[htmp>0].max())
+    self.timemax=tmp[htmp>0].max()
+    del(tmp)
+    del(htmp)
     
-    SPLINE=np.loadtxt('SPLINE%d.txt'%(self.nspline))
-=======
+    self.valmin=0.205
+    self.valmax=0.945
+    self.nspline=params['nspline']
     
-    self.nspline=8
+    self.nsplinetime=params['nspline_time']
+    if rank==0:
+      print('Use %d knots spline to compute the time variation'%(self.nsplinetime))
+    splinetime=spl.Spline1D(self.nsplinetime)
+    
+    ref={}
+    idx={}
 
-    try:
-      SPLINE=np.loadtxt('SPLINE%d.txt'%(self.nspline))
-    except:
-      print('Problem while reading SPLINE%d.txt'%(self.nspline))
->>>>>>> e9d05bcc049f8a17d617d9a68b38014d6e836371
+    for i in range(1024*self.nsplinetime+1):
+      vv1=np.array(splinetime.calculate(i/(1024*self.nsplinetime)))
+      lidx1=np.where(vv1>0.0)[0]
+      
+      idx[i]=[int(self.nspline+k) for k in lidx1]
+      ref[i]=[vv1[lidx1[k]] for k in range(len(lidx1))]
+
+    self.spline_time_idx=idx
+    self.spline_time_ref=ref
+    
+    myspl=spl.Spline1D(self.nspline)
 
     ref={}
     idx={}
 
-    for i in range(256):
-      vv1=SPLINE[i,1:-1]
+    for i in range(256*self.nspline):
+      vv1=np.array(myspl.calculate(i/(256*self.nspline)))
       lidx1=np.where(vv1>0.0)[0]
       
       idx[i]=[int(k) for k in lidx1]
@@ -75,17 +74,35 @@ class test:
   
   def eval(self,rg,ib,hidx,inc,externals):
     
-    a1=int(256*(inc-self.valmin)/(self.valmax-self.valmin))
+    if inc>self.valmax:
+      print(inc)
+    if inc<self.valmin:
+      print(inc)
+      
+    if externals[0]>self.timemax:
+      self.timemax=externals[0]
+      print(externals[0])
+    if externals[0]<self.timemin:
+      self.timemin=externals[0]
+      print(externals[0])
+      
+    a1=int(256*self.nspline*(inc-self.valmin)/(self.valmax-self.valmin))
     
-    return self.spline_idx[a1]+[self.nspline+k for k in range(4)],self.spline_ref[a1]+ \
-      [self.SeaMask[hidx]*np.fabs(externals[1]**2*np.cos(2*externals[0])),self.SeaMask[hidx]*np.fabs(externals[1]**2*np.sin(2*externals[0])),
-       self.SeaMask[hidx]*np.fabs(externals[2]**2*np.cos(2*externals[0])),self.SeaMask[hidx]*np.fabs(externals[2]**2*np.sin(2*externals[0]))]
+    atime=int(1024*self.nsplinetime*(externals[0]-self.timemin)/(self.timemax-self.timemin))
+
+    if atime<0 or atime>self.nsplinetime*1024:
+      print(atime,self.nsplinetime*1024,externals[0],self.timemax)
+      
+    return self.spline_idx[a1],self.spline_ref[a1] #+self.spline_time_idx[atime],self.spline_ref[a1]+self.spline_time_ref[atime]
   
 class proj:
   
-  def __init__(self,params):
-    self.valmin=0.488
-    self.valmax=0.838
+  def __init__(self,params,rank):
+    self.valmin=0.205
+    self.valmax=0.945
+    self.npt_incidence=params['npt_incidence']
+
+    self.std=1/np.fromfile('NOISEMOD',dtype=float)
 
   def getnumber_of_channels(self):
     return 1
@@ -95,16 +112,38 @@ class proj:
            ext_data,
            rg_idx,
            healpix_idx,
-           id_bolo):
+           id_bolo,
+           hit,
+           idx_in_ring,
+           signal):
+      
+    a1=int(self.npt_incidence*(ptg_tuple_2-self.valmin)/(self.valmax-self.valmin))
+    if a1<0 or a1>=self.npt_incidence:
+      hit=0
+      
+    hit=hit*self.std[a1]
     
-    return [1.0]
+    return signal,hit,[1.0]
 
 def main():
   
   # DIR DATA
-  dir_data = "/home1/datawork/mgallian/sroll_data/scat_hpr/"
+  dir_data = "/home1/datawork/mgallian/sroll_data/scat_hpr_v3.3.1"
+
+  # Nombre de ring à sélectionner, ici 100 ring
+  BeginRing = 0
+  EndRing = 1
   
+  # function describing a diag
+  DiagFunc = "diag_incidence"
+  npt_incidence=128
+  
+  # function describing the parameters to fit for instrumental correction
   SparseFunc = "test"
+  nspline=8
+  do_offset=1
+  nspline_time=4
+  
   # Type de projection (voir class proj)
   projection = "proj"
   
@@ -114,7 +153,7 @@ def main():
   #  nombre de détecteurs (SWIM : 10 deg, 6 degres ...) ?
   nbolo = 1
   #bolo=['V1_2']
-  bolo=['V6_db_vv']
+  bolo=['V8_db_vv']
   inci_str=''
 
   # paramètre utilisé pour scat2healpix.py 
@@ -122,10 +161,6 @@ def main():
 
   # Resolution healpix Du template WW3 
   TEMPLATE_NSIDE = Nside
-
-  # Nombre de ring à sélectionner, ici 100 ring
-  BeginRing = 0
-  EndRing= 30
 
   # En prendre 1 ring  sur RSTEP : pour run 1, pour debug  plus de 1 
   RSTEP = 1
@@ -140,10 +175,9 @@ def main():
   
   val_mean = [0.0 for i in range(2)] 
   # poids dans la matrice 
-  w_mean = [1E8 for i in range(2)]
+  w_mean = [1E10 for i in range(2)]
   # normalize 
-  do_mean = [1 for k in range(8)]+[0 for k in range(12)]+[1 for k in range(4)]
-  
+  do_mean = [1 for k in range(nspline)]+[0 for k in range(nspline_time)]+[0 for k in range(nspline)]+[1 for k in range(nspline_time)]
   
   # Nombre de survey : On peut grouper plusieurs survey ou les prendre 1 par 1
   MAPRINGS = [1]
@@ -191,13 +225,6 @@ def main():
   
   # bolomask Définir les cartes :  1 ière carte = tous les détecteurs, 2 ième carte 1 ier et 2 ième détecteur 
   bolomask = [1]
-  # bolomask = [1,1,1,1,
-  #             1,0,0,1,
-  #             0,1,1,0]
-  
-  # Pas utilisé  mais doit être de dim : bolo.size /!\  
-  old_bolo=['857-1']
-
 
   #%% ############################## INPUTS ####################################
 
@@ -208,39 +235,18 @@ def main():
   # Signal un par détecteur 
   Signal = ["%s/SCAT_%s_sig"%(dir_data,i) for i in bolo]
 
-  # Phase
-  ADU = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]
-
-  # Défini les orbits pas bons 
-  # Badring = ["%s/SCAT_%s_discarded_rings"%(dir_data,i) for i in bolo]
-  # Badring = ['ALLGOOD']
-
-  # Calibration contient les données wave watch
-  #HPR_Calib = ["%s/SCAT_PRED4_LS10_CalibWW3"]
-  #HPR_Calib = ['/home1/datawork/jmdeloui/SCAT_V2_ECMWF']
-
-<<<<<<< HEAD
-  External = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]+ \
-    ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_U"%(i) for i in bolo]+ \
-    ["/home1/datawork/jmdeloui/SCAT_%s_ECMWF_V"%(i) for i in bolo]
-=======
-  External = ["%s/SCAT_%s_phase"%(dir_data,i) for i in bolo]
->>>>>>> e9d05bcc049f8a17d617d9a68b38014d6e836371
+  External = ["%s/SCAT_%s_time"%(dir_data,i) for i in bolo]
   
   # Nombre de fois qu'on est passé dans une cellule healpix pour chaque ring 
   Hit = ["%s/SCAT_%s_hit"%(dir_data,i) for i in bolo]
   
   # Pointage 
   Ptg = ["%s/SCAT_%s_ptg"%(dir_data,i) for i in bolo]
-  
-  # permet de fit les erreurs en fonction de l'angle alpha
-  #HPR = ['/home1/datawork/jmdeloui/SCAT_V2_ECMWF_U','/home1/datawork/jmdeloui/SCAT_V2_ECMWF_V']
 
 
 
   #%% ####################################### OUTPUTS  ############################################
   bolo_map = ['SCAT']  
-
 
   dirout='/home1/datawork/jmdeloui/scat_maps/'
 
@@ -253,22 +259,8 @@ def main():
   Out_xi2_corr = [dirout+"/%s%s"%(OMAP,i) for i in bolo]
 
 
-  #%% ################### Pas utilisé  ######################## 
-
-  # PARAMETRES RELIE AU RESEAU DE NEURONE --> old 
-  DOCNN = [0]
-  CALLCNN = "/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll/py_function_pwst_pol.py"
-  CNN_START = NITT
-  #PARAMETRES DIMENSION CNN: 12*32*32 carte nside  =12 et 2 canaux Q et U
-  CNN_XSIZE = 256
-  CNN_YSIZE = 256
-  CNN_RESIDU = 0.0
-  CNN_WEIGHTS = "/export/home/tfoulquier/WIDXR_files"
-
-  #Path for netcdf
-  INST_CNN = '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
-  MAP_CNN =  '/home3/homedir7/perso/tfoulqui/workspace/srollexx_work/sroll'
-
+  #%% ################### Pas utilisé  ########################
+  
   D_NOPOL = 1 # Utilisé
   KCMBIN = 0
   ADDDIP = 0
@@ -276,36 +268,18 @@ def main():
   DOMAXVRAIE = 1
   XI2STOP = 1.0
 
-  # pas utilisé
-  n_bolo =len(bolo)
-
-  # Pas utilisé 
-  old_bolo=['857-1']
-
   # Pas utilisé: pour cosmo 
   Monop = [0]
   FSLCOEF = [0.0]
   OUT_NOPOL = [1]
   n_OUT_NOPOL=len(OUT_NOPOL)
 
-  # Pas utilisé
-  TEMPLATEMAP = "/export/home/tfoulquier/data_sroll/MAP/map_857_2018.float32.bin"
-
-  # Pas utilisé
-  in_template_map_I = ["/export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin" for i in range(0,nbolo)]
-  in_template_map_Q = ["/export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin"for i in range(0,nbolo)]
-  in_template_map_U = ["/export/home/tfoulquier/data_sroll/MAP/map_null.float32.bin"for i in range(0,nbolo)]
-  # Pas utilisé
-
-  # Pas utilisé --> pour réseau neuronne 
-  fsl = ["/export/home1/jmdeloui/CFOSAT/CFOSAT_%s_Signal"%(i) for i in bolo]
-  rgcnn = ["/export/home/tfoulquier/data_sroll/reduced_MAP/reduced_NULL_rgadutot.int32.bin"for i in range(0,nbolo)]
-
-
   ###################  ###################  ###################
 
-  print('reading ok')
+  
   params = vars()
 
   return params
 
+if __name__ == "__main__":
+    main()
