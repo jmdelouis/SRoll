@@ -104,6 +104,7 @@ def main():
 	Out_VEC = []
 	number_of_Out_VEC = 
 	verbose = 
+	do_offset = 
 	dmc_output_path = 
 	dmc_error_path = 
 	stim_paramfiles = []

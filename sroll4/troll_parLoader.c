@@ -340,6 +340,7 @@ paramDef troll_paramDef_list[] = {
   {"Out_MAP", true, false, false},
   {"Out_VEC", true, false, false},
   {"verbose", false, false, false},
+  {"do_offset", false, false, false},
   {"dmc_output_path", false, false, false},
   {"dmc_error_path", false, false, false},
   {"stim_paramfiles", true, false, false},
@@ -352,7 +353,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 79;
+int troll_paramDef_list_size = 80;
 
 
 
@@ -1137,6 +1138,15 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->verbose = myRead_PIOINT(*value);
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'verbose': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
+      return 1;
+    }
+  }
+  else if (strcmp(name, "do_offset") == 0) {
+    param->flag_do_offset = _PAR_TRUE;
+    errno = 0;
+    param->do_offset = myRead_PIOINT(*value);
+    if (errno != 0) {
+      fprintf(stderr, "ERROR: 'do_offset': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
       return 1;
     }
   }

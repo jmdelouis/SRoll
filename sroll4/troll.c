@@ -52,17 +52,22 @@
 #define OPTIMPI
 #endif
 
+#ifndef DOOFFSET
+#define DOOFFSET 1
+#endif
+
 PIOINT **rgordinv;
 
 float *tpparam=NULL; // parameters for neural network initialise to NULL at the beginning.
 int CNN_NB_PARAM=0;
 
+int verbose=0;
 PIOINT Nside;
 long NORM_GAIN=0;
 long REMOVE_CAL=0;
 
 int NUMBEROFITER=500;
-
+int do_offset=DOOFFSET;
 int NORMFITPOL=0;
 
 int PIOWriteVECT(const char *path,void *value,int off,int size);
@@ -224,6 +229,7 @@ PyObject *EXECPYTHON(PyObject *TheObject)
   if (TheObject==NULL) {
     fprintf(stderr,"EXECPYTHON : error object null\n");
     PyErr_Print();
+    MPI_Finalize(); 
     exit(0);
   }
   return(TheObject);
@@ -237,6 +243,7 @@ PyObject *CALLPYTHON(PyObject *Dict,const char *name)
   else {
     fprintf(stderr,"Problem while loading %s function\n",name);
     PyErr_Print();
+    MPI_Finalize(); 
     exit(0);
   }
   return(NULL);
@@ -1936,7 +1943,9 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
             tmp-= sum_channels[k]*htmp[l1].alpha[k] ;
           }
 
-          b2[ir]+=tmp;
+	  if (do_offset==1) {
+	    b2[ir]+=tmp;
+	  }
 	  
           for(int m=0;m<npixmap;m++){
             b2[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]+=htmp[l1].listofmap[m]*tmp;
@@ -1961,11 +1970,12 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
       for(int l1=0;l1<ndata;l1++){
         long ri1=htmp[l1].rg-globalBeginRing;  
         if (flg_rg[htmp[l1].ib][ri1]!=0) {
-          ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];      
-          hit_WW[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
-          hit_L2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
-          //hit_L1[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
-
+	  if (do_offset==1) {
+	    ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];      
+	    hit_WW[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+	    hit_L2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+	    //hit_L1[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+	  }
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             hit_L2[irt]+= htmp[l1].w*htmp[l1].listofmap[m]*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
@@ -1993,14 +2003,16 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
       for(int l1=0;l1<ndata;l1++){
         long ri1=htmp[l1].rg-globalBeginRing;  
         if (flg_rg[htmp[l1].ib][ri1]!=0) {
-          ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	  if (hit_WW[ir]>0&&hit_L2[ir]!=hit_L1[ir]) {
-	    hit2[ir] += hit_L2[ir] - hit_L1[ir]*hit_L1[ir]/hit_WW[ir];
+	  if (do_offset==1) {
+	    ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
+	    if (hit_WW[ir]>0&&hit_L2[ir]!=hit_L1[ir]) {
+	      hit2[ir] += hit_L2[ir] - hit_L1[ir]*hit_L1[ir]/hit_WW[ir];
+	    }
+	    hit_WW[ir] =0; // poids stat de chaque valeurs 
+	    hit_L1[ir] =0; // poids stat de chaque valeurs 
+	    hit_L2[ir] =0; // poids stat de chaque valeurs
 	  }
-          hit_WW[ir] =0; // poids stat de chaque valeurs 
-          hit_L1[ir] =0; // poids stat de chaque valeurs 
-          hit_L2[ir] =0; // poids stat de chaque valeurs 
-
+	  
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
 	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
@@ -2080,8 +2092,10 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
         if (flg_rg[htmp[l1].ib][ri1]!=0) {
 	  
           ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-          val = x[ir];
-          
+	  if (do_offset==1) {
+	    val = x[ir];
+          }
+	  
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];            
@@ -2095,7 +2109,9 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
 
           for(int l =0;l<MAXCHANNELS;l++){ 
-	    csum[l]+=x[ir]*htmp[l1].channels[l];
+	    if (do_offset==1) {
+	      csum[l]+=x[ir]*htmp[l1].channels[l];
+	    }
             s_X[l]+= htmp[l1].w *htmp[l1].channels[l]*val;
           }  
         }
@@ -2110,7 +2126,10 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
         if (flg_rg[htmp[l1].ib][ri1]!=0) {
           ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 
-          val = x[ir]; // calcul val 
+	  if (do_offset==1) {
+	    val = x[ir]; // calcul val
+	  }
+	  
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];  
@@ -2138,9 +2157,12 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
         long ri1=htmp[l1].rg-globalBeginRing;  
        
          if (flg_rg[htmp[l1].ib][ri1]!=0) {
-          ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];      
-          val = x[ir]; // calcul val            
+          ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib]; 
 
+	  if (do_offset==1) {
+	    val = x[ir]; // calcul val            
+	  }
+	  
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
             val+= x[irt]*htmp[l1].listofmap[m];
@@ -2162,7 +2184,9 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
             tmp -=sum_channels[k]*htmp[l1].alpha[k];
           }
 
-          q2[ir]+= tmp;        //ie  ((val-s_X[k])-htmp[l1].alpha[k]*htmp[l1].channels[k]*R_ij_bis);
+	  if (do_offset==1) {
+	    q2[ir]+= tmp;        //ie  ((val-s_X[k])-htmp[l1].alpha[k]*htmp[l1].channels[k]*R_ij_bis);
+	  }
        
           for(int m=0;m<npixmap;m++){           
             q2[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]+= htmp[l1].listofmap[m]*tmp;          
@@ -2205,19 +2229,6 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           q2[newnr[nbolo]+b+(m+GAINSTEP2)*nbolo]+= sum2*msum;
         }
     }
-#if 0
-    // NORMLISATION IS MANDATORY FOR MAP TEMPLATE
-    for(int m =0;m<npixShpr;m++){
-        double sum2 = 0.0;
-	for(int b = 0;b<nbolo;b++){
-          sum2+=x[newnr[nbolo]+b+(m+npixmap+GAINSTEP2)*nbolo];
-        }
-        
-	for(int b = 0;b<nbolo;b++){
-          q2[newnr[nbolo]+b+(m+npixmap+GAINSTEP2)*nbolo]+= sum2*msum;
-        }
-    }
-#endif
     
     // NORMLISATION GAIN MOYEN
     if(GAINSTEP2 != 0 && NORM_GAIN==1) {
@@ -2231,20 +2242,22 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
       }
     }
 
-    // NORMLISATION OFFSET
-    //offset
-    for(int l1 = 0;l1 <newnr[nbolo];l1++){
-      sum += x[l1]*msum;
-    }
-    for(int l1 = 0;l1 <newnr[nbolo];l1++){
-      q2[l1] += sum*msum;
-    }
+    if (do_offset==1) {
+      // NORMLISATION OFFSET
+      //offset
+      for(int l1 = 0;l1 <newnr[nbolo];l1++){
+	sum += x[l1]*msum;
+      }
+      for(int l1 = 0;l1 <newnr[nbolo];l1++){
+	q2[l1] += sum*msum;
+      }
 #if 1
-    // NORMALIZE OFFSET AGAINT CHANNELS
-    for (int i=0;i<MAXCHANNELS;i++) {
-      for (int j=0;j<newnr[nbolo];j++) q2[j]+=csum[i];
-    }   
+      // NORMALIZE OFFSET AGAINT CHANNELS
+      for (int i=0;i<MAXCHANNELS;i++) {
+	for (int j=0;j<newnr[nbolo];j++) q2[j]+=csum[i];
+      }   
 #endif
+    }
   }
 
   free(csum);
@@ -2780,7 +2793,9 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
 	        double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
 	        double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	        double sig_corr2 = sig_corr;
-	        sig_corr-=x3[iri1];
+		if (do_offset==1) {
+		  sig_corr-=x3[iri1];
+		}
 	        
 	        if (REMOVE_CAL==1) {
 	          sig_corr-=htmp[l1].hpr_cal;
@@ -3194,7 +3209,11 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	if (flg_rg[htmp[l1].ib][ri1]!=0) {
 	  long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 	  //calcul signal corriger 
-	  double sig_corr = htmp[l1].m-x3[iri1]; 
+	  double sig_corr = htmp[l1].m;
+	  
+	  if (do_offset==1) {
+	    sig_corr -= x3[iri1];
+	  }
 	 
 	  for(int m =0;m<npixmap;m++){
 	    sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP2)*nbolo]*htmp[l1].listofmap[m]
@@ -3219,7 +3238,11 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	if (flg_rg[htmp[l1].ib][ri1]!=0) {
 	  long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 	  //calcul signal corriger 
-	  double sig_corr = htmp[l1].m-x3[iri1]+htmp[l1].corr_cnn;  
+	  double sig_corr = htmp[l1].m+htmp[l1].corr_cnn; 
+	  
+	  if (do_offset==1) {
+	    sig_corr -= x3[iri1];
+	  }
 	     
 	  double temp=0;
 	  for(int m =0;m<htmp[l1].nShpr;m++){
@@ -3677,6 +3700,8 @@ void fit_cnn(double *x3,double *gain,int out_itt)
 	PyObject *res=EXECPYTHON(PyObject_CallObject(MyPythonBackend.gloss, arglist)); 
 	if (res==NULL) {
 	  PyErr_Print();
+	  MPI_Finalize();
+	  exit(0)
 	}
 	float *loss=PyArray_DATA((PyArrayObject *)res);
 	float l_loss[2];
@@ -4115,6 +4140,7 @@ PyObject * init_PyFunction(char* path,char *funcname){
 
     if (!PyCallable_Check(pFunc)){
         PyErr_Print();
+	MPI_Finalize();
         exit(0);
     }
     
@@ -4131,6 +4157,7 @@ long exec_PyFunction(PyObject *pFunc){
         
     } else {
         PyErr_Print();
+	MPI_Finalize();
         exit(0);
     }
   
@@ -4200,12 +4227,14 @@ int Get_NumberOfChannels(PyObject *projFunc)
     }
     else {
       PyErr_Print();
+      MPI_Finalize();
       exit(0);
     }
     
   }
   else {
     PyErr_Print();
+    MPI_Finalize();
     exit(0);
   }
   
@@ -4229,12 +4258,14 @@ int Get_NumberOfDiag(PyObject *diagFunc)
     }
     else {
       PyErr_Print();
+      MPI_Finalize();
       exit(0);
     }
     
   }
   else {
     PyErr_Print();
+    MPI_Finalize();
     exit(0);
   }
   
@@ -4289,6 +4320,7 @@ double init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,d
     else {
       fprintf(stderr, "Problem while trying to compute the projection\n");
       PyErr_Print();
+      MPI_Finalize();  
       exit(0);
     }
 
@@ -4304,6 +4336,7 @@ double init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,d
     
   } else {
     PyErr_Print();
+    MPI_Finalize(); 
     exit(0);
   }
 
@@ -4353,8 +4386,9 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 	Py_DECREF(pValue);
       }
       else {
-	fprintf(stderr,"Problem while executing the method get_diag_idx inside SparseFunc class\n");
+	fprintf(stderr,"Problem while executing the method get value inside SparseFunc class\n");
 	PyErr_Print();
+	MPI_Finalize(); 
 	exit(0);
       }
     }
@@ -4368,6 +4402,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     
   } else {
     PyErr_Print();
+    MPI_Finalize(); 
     exit(0);
   }
   
@@ -4401,14 +4436,19 @@ int calc_diag_hpr(PyObject *diagFunc,
     // Appel de la méthode 'eval's
     pValue = PyObject_CallMethod(diagFunc, "get_diag_idx", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pList);
 
+    
     // Traitement de la valeur de retour
     if (pValue != NULL) {
       n=(int) PyLong_AsLong(pValue);
       Py_DECREF(pValue);
     }
     else {
+      fprintf(stderr,"%d\n",(int) rg);
+      fprintf(stderr,"%d\n",(int) ib);
+      fprintf(stderr,"%d\n",(int) hpix);
       fprintf(stderr,"Problem while executing the method get_diag_idx inside DiagFunc class\n");
       PyErr_Print();
+      MPI_Finalize(); 
       exit(0);
     }
 
@@ -4422,6 +4462,7 @@ int calc_diag_hpr(PyObject *diagFunc,
   } else {
     fprintf(stderr,"no DiagFunc class defined\n");
     PyErr_Print();
+    MPI_Finalize(); 
     exit(0);
   }
   
@@ -4492,6 +4533,12 @@ int main(int argc,char *argv[])  {
   }
 
   Param = &par;
+
+  if (Param->flag_verbose==_PAR_TRUE) verbose=Param->verbose;
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+
+
+  if (Param->flag_do_offset==_PAR_TRUE) do_offset=Param->do_offset;
   
   PyObject *projFunc=NULL;
   if (Param->flag_projection==_PAR_TRUE) {
@@ -4516,8 +4563,11 @@ int main(int argc,char *argv[])  {
       return 1;
     }
     // Créer un tuple pour les arguments du constructeur
-    pArgs = PyTuple_New(1);
+    pArgs = PyTuple_New(2);
+    PyObject *pyRank = PyLong_FromLong((long) rank); // val est un flottant
+    
     PyTuple_SetItem(pArgs, 0, pyParam);  // Le tuple prend la propriété de 'param'
+    PyTuple_SetItem(pArgs, 1, pyRank);  // Provide the mpi rank 
     projFunc = PyObject_CallObject(pClass,pArgs); 
 
     if (projFunc == NULL) {
@@ -4527,6 +4577,8 @@ int main(int argc,char *argv[])  {
       return 1;
     }
   }
+  
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
   if (projFunc==NULL) {
     MAXCHANNELS = 1;
@@ -4540,6 +4592,8 @@ int main(int argc,char *argv[])  {
       exit(0);
     }
   }
+  
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
 
   if (rank==0)  fprintf(stderr,"Projection uses %d channels\n",MAXCHANNELS);
 
@@ -4563,7 +4617,9 @@ int main(int argc,char *argv[])  {
       fprintf(stderr,"Error while copy the parameters\n");
     }
   }
-
+  
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   NUMBEROFITER = Param->N_IN_ITT;
 
   /*-------------------------------------------------------------------------*/
@@ -4577,7 +4633,8 @@ int main(int argc,char *argv[])  {
   assert( Param->n_OUT_NOPOL == Param->n_Out_MAP);
   assert( Param->n_Sub_HPR == Param->n_SUB_HPRCOEF);
 
-
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   // get CNN parameters if needed
   memset(DOCNN,0,MAXEXTERNALHPR*sizeof(int));
   
@@ -4596,7 +4653,9 @@ int main(int argc,char *argv[])  {
     if (Param->flag_CNN_CORE==_PAR_TRUE) num_tensorflow=Param->CNN_CORE;
     
     /* Determine my color for tensorflow serveur*/ 
-    int color = rank % num_tensorflow; 
+    int color = rank % num_tensorflow;
+    
+    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
          
     /* Split the intercommunicator */ 
     MPI_Comm_split (MPI_COMM_WORLD, color, rank, &python_comm );
@@ -4659,6 +4718,8 @@ int main(int argc,char *argv[])  {
     }
   }
 
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   if (Param->flag_MAPRINGS == 0) {
     Param->flag_MAPRINGS = 1;
     Param->n_MAPRINGS = Param->n_Out_MAP;
@@ -4733,6 +4794,8 @@ int main(int argc,char *argv[])  {
     return 1;
   }
 
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   if (Param->flag_stim_paramfiles == 1) {
     /* Compute load balancing per sample count, starting from the end where very long rings are */
     for (int irank = mpi_size-1; irank >= 0 ; irank--) {
@@ -4787,6 +4850,8 @@ int main(int argc,char *argv[])  {
     }
   }
 
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   /* Display ring dispatching between ranks */
  //if (Param->verbose > 0) {
     for (int irank = 0; irank < mpi_size; irank++) {
@@ -4817,6 +4882,8 @@ int main(int argc,char *argv[])  {
 
   PIOSTRING *mapout = (PIOSTRING *) malloc(sizeof(PIOSTRING)*Param->n_Out_MAP);
 
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   NORM_GAIN = Param->NORM_GAIN;
   REMOVE_CAL = Param->REMOVE_CAL;
 
@@ -4875,6 +4942,8 @@ int main(int argc,char *argv[])  {
 
   PIOFLOAT **mapmodel = NULL;
 
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   if (Param->flag_External_MAP==_PAR_TRUE) {
 
     mapmodel = (PIOFLOAT **) malloc(sizeof(PIOFLOAT)*Param->n_External_MAP);
@@ -4907,6 +4976,8 @@ int main(int argc,char *argv[])  {
   PyObject *pArgs = NULL;
   PyObject *pClass = NULL;
   
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   npixShpr=0;
   if (Param->flag_SparseFunc==_PAR_TRUE) {
     PyObject *pName = PyUnicode_FromString(argv[1]);
@@ -4928,8 +4999,10 @@ int main(int argc,char *argv[])  {
       return 1;
     }
     // Créer un tuple pour les arguments du constructeur
-    pArgs = PyTuple_New(1);
+    pArgs = PyTuple_New(2);
+    PyObject *pyRank = PyLong_FromLong((long) rank); // val est un flottant
     PyTuple_SetItem(pArgs, 0, pyParam);  // Le tuple prend la propriété de 'param'
+    PyTuple_SetItem(pArgs, 1, pyRank);  // Provide the mpi rank 
     sparseFunc = PyObject_CallObject(pClass,pArgs); 
 
     if (sparseFunc == NULL) {
@@ -4940,6 +5013,8 @@ int main(int argc,char *argv[])  {
     }
   }
 
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   int nb_diag=0;
   if (Param->flag_DiagFunc==_PAR_TRUE) {
     PyObject *pName = PyUnicode_FromString(argv[1]);
@@ -4961,8 +5036,10 @@ int main(int argc,char *argv[])  {
       return 1;
     }
     // Créer un tuple pour les arguments du constructeur
-    pArgs = PyTuple_New(1);
+    pArgs = PyTuple_New(2);
+    PyObject *pyRank = PyLong_FromLong((long) rank); // val est un flottant
     PyTuple_SetItem(pArgs, 0, pyParam);  // Le tuple prend la propriété de 'param'
+    PyTuple_SetItem(pArgs, 1, pyRank);  // Provide the mpi rank 
     diagFunc = PyObject_CallObject(pClass,pArgs); 
 
     if (sparseFunc == NULL) {
@@ -4976,6 +5053,8 @@ int main(int argc,char *argv[])  {
   
   int number_of_iterations = 1;
 
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+  
   NB_EXTERNAL=Param->n_External/nbolo;
   if (NB_EXTERNAL==0) NB_EXTERNAL=1;
   
@@ -5069,6 +5148,8 @@ int main(int argc,char *argv[])  {
 
     }
 
+    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+    
     for (rg=globalRankInfo.BeginRing[rank];rg<=globalRankInfo.EndRing[rank];rg+=Param->RSTEP) {
 
       if (badring[rg-globalBeginRing]==0) {
@@ -5174,7 +5255,7 @@ int main(int argc,char *argv[])  {
 
         PIOFLOAT *External;
         if (Param->flag_External==_PAR_TRUE) {
-          External = (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*RINGSIZE*NB_EXTERNAL);
+          External = (PIOFLOAT *) _PIOMALLOC(sizeof(PIOFLOAT)*RINGSIZE*NB_EXTERNAL);
 	  for (i=0;i<NB_EXTERNAL;i++) {
 	    tperr = noDMC_readObject_PIOFLOAT(Param->External[ib+i*nbolo],rg*RINGSIZE,RINGSIZE,External+i*RINGSIZE);
 	    if (tperr<0) {
@@ -5677,6 +5758,9 @@ int main(int argc,char *argv[])  {
     recvcounts[i]=allbuf[i*(size+1)+rank+1]-allbuf[i*(size+1)+rank];
   }
   
+  free(begbuf);
+  free(allbuf);
+  
   rdispls[0]=0;
   for (i=1;i<size;i++) {
     rdispls[i]=rdispls[i-1]+recvcounts[i-1];
@@ -5691,6 +5775,10 @@ int main(int argc,char *argv[])  {
 		otbs,recvcounts,rdispls,MPI_BYTE,
 		MPI_COMM_WORLD);
 
+  free(sdispls);
+  free(sendcounts);
+  free(recvcounts);
+  free(rdispls);
   free(tbs);
   tbs=otbs;
   
@@ -5961,24 +6049,29 @@ int main(int argc,char *argv[])  {
 
   rgord = (PIOINT **) malloc(nbolo*sizeof(PIOINT *));
   rgordinv = (PIOINT **) malloc(nbolo*sizeof(PIOINT *));
+  
   newnr  = (PIOLONG *) malloc((nbolo+1)*sizeof(PIOLONG));
-
+  
   newnr[0]=0;
   for (ib=0;ib<nbolo;ib++) {
     rgord[ib] = (PIOINT *) malloc(sizeof(PIOINT)*
-                                  (globalRangeRing));
+				  (globalRangeRing));
     rgordinv[ib] = (PIOINT *) malloc(sizeof(PIOINT)*
-                                     (globalRangeRing));
-
+				     (globalRangeRing));
+    
     newnr[ib+1]=0;
     for (i=0;i<(globalRangeRing);i++) if (flg_rg[ib][i]>0) {
-      rgord[ib][i]=newnr[ib+1];
-      rgordinv[ib][newnr[ib+1]]=i;
-      newnr[ib+1]++;
-    }
+	rgord[ib][i]=newnr[ib+1];
+	rgordinv[ib][newnr[ib+1]]=i;
+	newnr[ib+1]++;
+      }
   }
   for (ib=1;ib<nbolo+1;ib++) newnr[ib]+=newnr[ib-1];
-
+  
+  if (do_offset==0) {
+    for (ib=1;ib<nbolo+1;ib++) newnr[ib]=0;
+  }
+  
   if (rank==0) {
     fprintf(stderr,"RK%d SHOULD DETERMINE %ld VALUES ",rank,(long) nnbpix);
     for (i=0;i<nbolo+1;i++) fprintf(stderr,"%ld ",(long) newnr[i]);
@@ -6233,18 +6326,22 @@ int main(int argc,char *argv[])  {
 
       if (rank==0) {
         fprintf(stderr,"GI XIGAIN %.10lg\n",sqrt(resxi));
-	fprintf(stderr,"MEAN_OFF=[");
-	for (i=0;i<nbolo;i++) {
-	  double  osum=0;
-	  for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll];
-	  fprintf(stderr,"%lg,",osum/(newnr[i+1]-newnr[i]));
+	if (do_offset==1) {
+	  fprintf(stderr,"MEAN_OFF=[");
+	  for (i=0;i<nbolo;i++) {
+	    double  osum=0;
+	    for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll];
+	    fprintf(stderr,"%lg,",osum/(newnr[i+1]-newnr[i]));
+	  }
+	  fprintf(stderr,"]\n");
 	}
-	fprintf(stderr,"]\n");
-	fprintf(stderr,"MEAN2_OFF=[");
-	for (i=0;i<nbolo;i++) {
-	  double  osum=0;
-	  for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll]*x3[ll];
-	  fprintf(stderr,"%lg,",sqrt(osum)/(newnr[i+1]-newnr[i]));
+	if (do_offset==1) {
+	  fprintf(stderr,"MEAN2_OFF=[");
+	  for (i=0;i<nbolo;i++) {
+	    double  osum=0;
+	    for (int ll=newnr[i];ll<newnr[i+1];ll++) osum+=x3[ll]*x3[ll];
+	    fprintf(stderr,"%lg,",sqrt(osum)/(newnr[i+1]-newnr[i]));
+	  }
 	}
 	fprintf(stderr,"]\n");
 	if (GAINSTEP>0) {
@@ -6284,21 +6381,23 @@ int main(int argc,char *argv[])  {
 
       PIOSTRING commm;
       PIOSTRING saveg;
-      // Write offset
-      PIODOUBLE *tmpoff = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*(globalRangeRing));
-
-      for (i=0;i<nbolo;i++) {
-        sprintf(commm,"begin=%lld;end=%lld",(long long) globalBeginRing,(long long) globalEndRing);
-        for (j=0;j<globalRangeRing;j++) {
-          tmpoff[j]=-10000;
-        }
-        for (j=newnr[i];j<newnr[i+1];j++) tmpoff[rgordinv[i][j-newnr[i]]]=x3[j];
-        if (stim_first_seed+iter==0) sprintf(saveg,"%s_OFF",Param->Out_VEC[i]);
-        else sprintf(saveg,"%s_%d_OFF",Param->Out_VEC[i],stim_first_seed+iter);
-
-        fprintf(stderr,"Write OFF  %lld\n",(long long) PIOWriteVECT(saveg,tmpoff,sizeof(PIODOUBLE)*globalBeginRing,sizeof(PIODOUBLE)*(globalRangeRing)));
+      if (do_offset==1) {
+	// Write offset
+	PIODOUBLE *tmpoff = (PIODOUBLE *) malloc(sizeof(PIODOUBLE)*(globalRangeRing));
+	
+	for (i=0;i<nbolo;i++) {
+	  sprintf(commm,"begin=%lld;end=%lld",(long long) globalBeginRing,(long long) globalEndRing);
+	  for (j=0;j<globalRangeRing;j++) {
+	    tmpoff[j]=-10000;
+	  }
+	  for (j=newnr[i];j<newnr[i+1];j++) tmpoff[rgordinv[i][j-newnr[i]]]=x3[j];
+	  if (stim_first_seed+iter==0) sprintf(saveg,"%s_OFF",Param->Out_VEC[i]);
+	  else sprintf(saveg,"%s_%d_OFF",Param->Out_VEC[i],stim_first_seed+iter);
+	  
+	  fprintf(stderr,"Write OFF  %lld\n",(long long) PIOWriteVECT(saveg,tmpoff,sizeof(PIODOUBLE)*globalBeginRing,sizeof(PIODOUBLE)*(globalRangeRing)));
+	}
+	free(tmpoff);
       }
-      free(tmpoff);
 
       if (stim_first_seed+iter==0) sprintf(saveg,"%s_X2",Param->Out_VEC[0]);
       else sprintf(saveg,"%s_%d_X2",Param->Out_VEC[0],stim_first_seed+iter);
@@ -6447,7 +6546,10 @@ int main(int argc,char *argv[])  {
 	  
 	  double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	  double sig_corr2 = sig_corr;
-	  sig_corr-=x3[iri1];
+
+	  if (do_offset==1) {
+	    sig_corr-=x3[iri1];
+	  }
 	  
 	  if (REMOVE_CAL==1) {
 	    sig_corr-=htmp[l1].hpr_cal;
@@ -6516,7 +6618,10 @@ int main(int argc,char *argv[])  {
 	    double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
 	    double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	    double sig_corr2 = sig_corr;
-	    sig_corr-=x3[iri1];
+
+	    if (do_offset==1) {
+	      sig_corr-=x3[iri1];
+	    }
 	    
 	    if (REMOVE_CAL==1) {
 	      sig_corr-=htmp[l1].hpr_cal;
@@ -6577,12 +6682,14 @@ int main(int argc,char *argv[])  {
     for(int i = 0;i<MAXCHANNELS;i++){
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
+      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       PIOWriteMAP(TEST_OUTMAP,map[i],begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
     }
    
     for(int i = 0;i<MAXCHANNELS;i++){
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       sprintf(TEST_OUTMAP,"%s_%s_%d_RAW", mapout[detset],mapname,i);
       PIOWriteMAP(TEST_OUTMAP,rmap[i],begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
@@ -6590,6 +6697,7 @@ int main(int argc,char *argv[])  {
    
     {
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       sprintf(TEST_OUTMAP,"%s_%s_STD", mapout[detset],mapname);
       PIOWriteMAP(TEST_OUTMAP,cmap,begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
@@ -6604,6 +6712,7 @@ int main(int argc,char *argv[])  {
 #endif
     {
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
       PIOWriteMAP(TEST_OUTMAP,cond,begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);

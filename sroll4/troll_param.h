@@ -33,7 +33,7 @@
  */
 
 typedef struct {
-
+  
   /* ---- Parameter BeginRing ------------------------------------------
    * First ring to consider (included)
    */
@@ -453,6 +453,12 @@ typedef struct {
    */
   PIOINT verbose;
   PIOBYTE flag_verbose;  /* ==_PAR_TRUE if verbose is present */
+  
+  /* ---- Optional Parameter do_offset -----------------------------------
+   * Verbosity level. 0 : normal, 1:do_offset
+   */
+  PIOINT do_offset;
+  PIOBYTE flag_do_offset;  /* ==_PAR_TRUE if do_offset is present */
 
   /* ---- Optional Parameter dmc_output_path ---------------------------
    * Special slot to store the output logging path
