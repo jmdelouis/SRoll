@@ -67,6 +67,7 @@ long NORM_GAIN=0;
 long REMOVE_CAL=0;
 
 int NUMBEROFITER=500;
+double LIMIT_ITER=1E-30;
 int do_offset=DOOFFSET;
 int NORMFITPOL=0;
 
@@ -1964,7 +1965,7 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
       
   
       //Calcul hit2
-      // le but est de calculer la variance de chacun des paramètre dans chaque pixel.
+      // le but est de calculer l'amplitude de chacun des paramètre dans chaque pixel.
       // hit 2 est la somme des variances sur tous les pixels.
       
       for(int l1=0;l1<ndata;l1++){
@@ -1972,74 +1973,20 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
         if (flg_rg[htmp[l1].ib][ri1]!=0) {
 	  if (do_offset==1) {
 	    ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];      
-	    hit_WW[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
-	    hit_L2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
-	    //hit_L1[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+	    hit2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
 	  }
           for(int m = 0;m<npixmap;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-            hit_L2[irt]+= htmp[l1].w*htmp[l1].listofmap[m]*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
-            hit_L1[irt]+= htmp[l1].w*htmp[l1].listofmap[m]; // poids stat de chaque valeurs 
-            hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
+            hit2[irt]+= htmp[l1].listofmap[m]*htmp[l1].w; // poids stat de chaque valeurs 
           }
           for(int m = 0;m<htmp[l1].nShpr;m++){
             irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixmap);
-            hit_L2[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
-            hit_L1[irt]+= htmp[l1].w*htmp[l1].listofShpr[m]; // poids stat de chaque valeurs 
-            hit_WW[irt]+= htmp[l1].w; // poids stat de chaque valeurs 
+            hit2[irt]+= htmp[l1].listofShpr[m]*htmp[l1].w; // poids stat de chaque valeurs 
           }
 	  
           if(GAINSTEP2 != 0) {
 	    irt=newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2;
-	    hit_L2[irt]+=htmp[l1].w*htmp[l1].model*htmp[l1].model;
-	    hit_L1[irt]+=htmp[l1].w*htmp[l1].model;
-	    hit_WW[irt]+=htmp[l1].w;
-	  }
-        }
-      }
-      //Remise à 0 et calcul de hit2 si hit_WW est different de 0
-      //On considere que c'est plus rapide de remetre à 0 comme cela.
-      
-      for(int l1=0;l1<ndata;l1++){
-        long ri1=htmp[l1].rg-globalBeginRing;  
-        if (flg_rg[htmp[l1].ib][ri1]!=0) {
-	  if (do_offset==1) {
-	    ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	    if (hit_WW[ir]>0&&hit_L2[ir]!=hit_L1[ir]) {
-	      hit2[ir] += hit_L2[ir] - hit_L1[ir]*hit_L1[ir]/hit_WW[ir];
-	    }
-	    hit_WW[ir] =0; // poids stat de chaque valeurs 
-	    hit_L1[ir] =0; // poids stat de chaque valeurs 
-	    hit_L2[ir] =0; // poids stat de chaque valeurs
-	  }
-	  
-          for(int m = 0;m<npixmap;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(m+GAINSTEP2);
-	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
-	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
-	    }
-            hit_L2[irt] = 0; // poids stat de chaque valeurs 
-            hit_L1[irt] = 0; // poids stat de chaque valeurs 
-            hit_WW[irt] = 0; // poids stat de chaque valeurs 
-          }
-          for(int m = 0;m<htmp[l1].nShpr;m++){
-            irt = newnr[nbolo]+htmp[l1].ib+nbolo*(htmp[l1].listofShpr_idx[m]+GAINSTEP2+npixmap);
-	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
-	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
-	    }
-            hit_L2[irt] = 0; // poids stat de chaque valeurs 
-            hit_L1[irt] = 0; // poids stat de chaque valeurs 
-            hit_WW[irt] = 0; // poids stat de chaque valeurs 
-          }
-	  
-          if(GAINSTEP2 != 0) {
-	    irt=newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2;
-	    if (hit_WW[irt]>0&&hit_L2[irt]!=hit_L1[irt]) {
-	      hit2[irt] += (hit_L2[irt] - hit_L1[irt]*hit_L1[irt]/hit_WW[irt]);
-	    }
-	    hit_L2[irt] = 0;
-	    hit_L1[irt] = 0;
-	    hit_WW[irt] = 0;
+	    hit2[irt]+=htmp[l1].w*htmp[l1].model;
 	  }
         }
       }
@@ -2294,7 +2241,6 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   // Init 
   long i,k,l1;
   int itermax = NUMBEROFITER;
-  double tol = 1E-20;
   PIOLONG GAINSTEP2;
   int rank;
   int size;
@@ -2454,58 +2400,30 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
 
   // Recuperation de b2
-  #ifdef OPTIMPI
   {
     double *lb = (double *) malloc(sizeof(double)*(nmatres));
     MPI_Reduce(b2,lb,nmatres,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD); //parallisation MPI -- recuperation b
     memcpy(b2,lb,sizeof(double)*(nmatres)); // copy b2 dans lb
     free(lb);
   }
-  #else
-  if (rank==0) {
-    double *lb = (double *) malloc(sizeof(double)*(nmatres));
-    for (rrk=1;rrk<mpi_size;rrk++) {
-      MPI_Recv(lb,sizeof(double)*(nmatres), MPI_BYTE, rrk,1031, MPI_COMM_WORLD,&statu);
-      for (l=0;l<nmatres;l++) b2[l]+=lb[l];
-    }
-    free(lb);
-  }
-  else MPI_Send(b2, sizeof(double)*(nmatres), MPI_BYTE, 0, 1031, MPI_COMM_WORLD);
-  #endif
 
-
-  #ifdef OPTIMPI //recup and send hit2
+  //recup and send hit2
   {
     double *lb = (double *) malloc(sizeof(double)*(nmatres));
     MPI_Reduce(hit2,lb,nmatres,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
     memcpy(hit2,lb,sizeof(double)*(nmatres));
     free(lb);
   }
-  #else
-  if (rank==0) {
-    double *lb = (double *) malloc(sizeof(double)*(nmatres));
-    for (rrk=1;rrk<mpi_size;rrk++) {
-      MPI_Recv(lb,sizeof(double)*(nmatres), MPI_BYTE, rrk,1033, MPI_COMM_WORLD,&statu);
-      for (l=0;l<nmatres;l++) hit2[l]+=lb[l];
-    }
-    free(lb);
-  }
-  else {
-    MPI_Send(hit2, sizeof(double)*(nmatres), MPI_BYTE, 0, 1033, MPI_COMM_WORLD); // nmatres = nb total d'inconnus = ring + n templates
-  }
-  #endif
   // END Recuperation de b2 and hit2
 
 
   //Send q2
-  #ifdef OPTIMPI
   {
     double *lb = (double *) malloc(sizeof(double)*(nmatres));
     MPI_Reduce(q2,lb,nmatres,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
     memcpy(q2,lb,sizeof(double)*(nmatres));
     free(lb);
   }
-  #endif
   // End send q2
 
 
@@ -2547,7 +2465,8 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   if (itbogo==0) delta0 = 0;
 
   if(rank==0) fprintf(stderr,"\n---------\n");
-  for(int n=0;n<itermax;n++){
+  int n=0;
+  while(n<itermax) {
       
       gettimeofday(&tp1,NULL);
       
@@ -2604,7 +2523,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       }
 
       //test delta
-      if(delta<tol){
+      if(delta<LIMIT_ITER*delta0){
         gettimeofday(&tp2,NULL);
         time_exc = (double)(tp2.tv_sec-tp1.tv_sec)+(1E-6)*(tp2.tv_usec-tp1.tv_usec);
         tot_time += time_exc;
@@ -2650,7 +2569,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       tot_time += time_exc;
       if (rank==0&&n%10==0) fprintf(stderr,"iter: %d/%d beta = %12lg  alpha = %12lg  delta = %12lg  %12lfs\n",n,itermax,beta,alpha,delta,time_exc);
 
-      
+      n=n+1;
   }
   if(rank==0) fprintf(stderr,"tot_time = %lg\n",tot_time);
 
@@ -4529,15 +4448,22 @@ int main(int argc,char *argv[])  {
   PyObject *pyParam = troll_readParam(&par, argv[1] );
   if (pyParam==NULL) {
     fprintf(stderr, "Unable to parse the parameter file.\n");
+    MPI_Finalize();        /* free parameters info */
     exit(-1);
   }
 
   Param = &par;
 
+  if (Param->EndRing-Param->BeginRing+1<mpi_size) {
+    if (rank==0)
+      fprintf(stderr, "Number of MPI rank %d should be smaller than number pointing period %d.\n",
+	    mpi_size,(int) (Param->EndRing-Param->BeginRing+1));
+    MPI_Finalize();        /* free parameters info */
+    exit(-1);
+  }
   if (Param->flag_verbose==_PAR_TRUE) verbose=Param->verbose;
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
-
-
+      
   if (Param->flag_do_offset==_PAR_TRUE) do_offset=Param->do_offset;
   
   PyObject *projFunc=NULL;
@@ -4621,6 +4547,7 @@ int main(int argc,char *argv[])  {
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
   NUMBEROFITER = Param->N_IN_ITT;
+  LIMIT_ITER = Param->S_IN_ITT;
 
   /*-------------------------------------------------------------------------*/
   /* parameters consistency checks                                           */
@@ -5174,7 +5101,8 @@ int main(int argc,char *argv[])  {
         assert( (h != NULL) && "Not enough memory to allocate hitcount HPR array");
         tperr = noDMC_readObject_PIOFLOAT(Param->Hit[ib],rg*RINGSIZE,RINGSIZE,h);
         if (tperr<0) {
-          fprintf(stderr, "Impossible to read Hit[%ld]: %s %d\n",ib,Param->Hit[ib],tperr);          exit ( -1);
+          fprintf(stderr, "Impossible to read Hit[%ld]: %s %d\n",ib,Param->Hit[ib],tperr);
+	  exit ( -1);
         }
 
         if (Param->flag_Sub_HPR == _PAR_TRUE) {
@@ -5556,8 +5484,16 @@ int main(int argc,char *argv[])  {
     Py_DECREF(pArgs);
   }
 
-  if (rank==0) fprintf(stderr,"NSHPR %d\n",(int) npixShpr);
+  if (rank==0) fprintf(stderr,"Number Of Sparse Value %d\n",(int) npixShpr);
   if (rank==0) fprintf(stderr,"NMAP %d\n",(int) npixmap);
+  if (rank==0) fprintf(stderr,"Number of Detector %d\n",(int) nbolo);
+  if (rank==0) fprintf(stderr,"Number of val means %d\n",(int) Param->n_val_mean);
+  if (Param->n_do_mean!=npixShpr*nbolo*Param->n_val_mean) {
+    fprintf(stderr, "do_mean param should have the size [%ld (Number Of Sparse Value x Number of Detector x Number of val weigts)] but found %ld\n",
+	    (long) (npixShpr*nbolo*Param->n_val_mean),
+	    (long) (Param->n_do_mean));
+    exit(0);
+  }
  
   /*======================================================
     =
@@ -6682,14 +6618,12 @@ int main(int argc,char *argv[])  {
     for(int i = 0;i<MAXCHANNELS;i++){
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
-      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       PIOWriteMAP(TEST_OUTMAP,map[i],begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
     }
    
     for(int i = 0;i<MAXCHANNELS;i++){
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       sprintf(TEST_OUTMAP,"%s_%s_%d_RAW", mapout[detset],mapname,i);
       PIOWriteMAP(TEST_OUTMAP,rmap[i],begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
@@ -6697,7 +6631,6 @@ int main(int argc,char *argv[])  {
    
     {
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       sprintf(TEST_OUTMAP,"%s_%s_STD", mapout[detset],mapname);
       PIOWriteMAP(TEST_OUTMAP,cmap,begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);
@@ -6712,7 +6645,6 @@ int main(int argc,char *argv[])  {
 #endif
     {
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
       PIOWriteMAP(TEST_OUTMAP,cond,begpix[rank],begpix[rank]+nnbpix-1);
       MPI_Barrier(MPI_COMM_WORLD);

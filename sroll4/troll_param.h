@@ -253,6 +253,11 @@ typedef struct {
    */
   PIOINT N_IN_ITT;
   
+  /* ---- Parameter S_IN_ITT -----------------------------------------------
+   *
+   */
+  PIODOUBLE S_IN_ITT;
+  
   /* ---- Parameter NADU -----------------------------------------------
    *
    */
@@ -299,7 +304,7 @@ typedef struct {
   /* ---- Parameter  do_mean ---------------------------------------------
    *
    */  
-  PIOINT *do_mean;
+  PIODOUBLE *do_mean;
   PIOLONG n_do_mean; /* ==number_of_do_mean */
  
   /* ---- Parameter  val_mean ---------------------------------------------

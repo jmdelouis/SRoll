@@ -309,6 +309,7 @@ paramDef troll_paramDef_list[] = {
   {"AVGDUST", false, true, false},
   {"NITT", false, true, false},
   {"N_IN_ITT", false, true, false},
+  {"S_IN_ITT", false, true, false},
   {"NADU", true, true, false},
   {"NADUSTEP", true, true, false},
   {"in_template_map", true, false, false},
@@ -353,7 +354,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 80;
+int troll_paramDef_list_size = 81;
 
 
 
@@ -771,6 +772,14 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       return 1;
     }
   }
+  else if (strcmp(name, "S_IN_ITT") == 0) {
+    errno = 0;
+    param->S_IN_ITT = myRead_PIODOUBLE(*value);
+    if (errno != 0) {
+      fprintf(stderr, "ERROR: 'S_IN_ITT': Unable to convert value '%s' to target type %s\n", *value, "PIODOUBLE");
+      return 1;
+    }
+  }
   else if (strcmp(name, "NADU") == 0) {
     param->n_NADU = list_size;
     param->NADU = malloc(list_size * sizeof(PIOINT));
@@ -874,7 +883,7 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
   }
   else if (strcmp(name, "do_mean") == 0) {
     param->n_do_mean = list_size;
-    param->do_mean = malloc(list_size * sizeof(PIOINT));
+    param->do_mean = malloc(list_size * sizeof(PIODOUBLE));
     if (param->do_mean == NULL) {
       perror("Error");
       return 1;
@@ -882,9 +891,9 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     int i;
     for (i = 0; i < list_size; i++) {
       errno = 0;
-      param->do_mean[i] = myRead_PIOINT(value[i]);
+      param->do_mean[i] = myRead_PIODOUBLE(value[i]);
       if (errno != 0) {
-        fprintf(stderr, "ERROR: 'do_mean': Unable to convert value '%s' to target type %s\n", value[i], "PIOINT");
+        fprintf(stderr, "ERROR: 'do_mean': Unable to convert value '%s' to target type %s\n", value[i], "PIODOUBLE");
         return 1;
       }
     }

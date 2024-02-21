@@ -51,6 +51,7 @@ def main():
 	AVGDUST = 	#mandatory parameter
 	NITT = 	#mandatory parameter
 	N_IN_ITT = 	#mandatory parameter
+	S_IN_ITT = 	#mandatory parameter
 	NADU = []
 	number_of_NADU = 	#mandatory parameter
 	NADUSTEP = []
