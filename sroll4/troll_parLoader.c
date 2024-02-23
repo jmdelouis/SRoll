@@ -274,7 +274,6 @@ paramDef *getParamDef(char *name, paramDef paramDef_list[], int paramDef_list_si
 paramDef troll_paramDef_list[] = {
   {"BeginRing", false, true, false},
   {"EndRing", false, true, false},
-  {"CrossPol", true, true, false},
   {"ADDPOL", false, false, false},
   {"Calibration", true, true, false},
   {"seuilcond", false, true, false},
@@ -286,27 +285,16 @@ paramDef troll_paramDef_list[] = {
   {"SEED", true, true, false},
   {"OUT_NOPOL", true, true, false},
   {"SUB_HPRCOEF", true, true, false},
-  {"D_NOPOL", false, true, false},
   {"SAVEINTMAP", false, true, false},
-  {"CALLCNN", false, false, false},
-  {"CNN_WEIGHTS", false, false, false},
-  {"CNN_ITT", false, false, false},
-  {"CNN_START", false, false, false},
   {"CNN_LEARN_PARAM", false, false, false},
   {"CNN_TMPID", false, false, false},
-  {"CNN_RESIDU", false, false, false},
-  {"CNN_XSIZE", false, false, false},
-  {"CNN_YSIZE", false, false, false},
   {"BUILDTF", false, false, false},
-  {"CUTRG", false, true, false},
   {"TEMPLATE_NSIDE", false, false, false},
   {"RSTEP", false, true, false},
   {"GAINSTEP", false, true, false},
   {"Nside", false, true, false},
   {"do_foscat", true, true, false},
   {"do_templates", true, true, false},
-  {"XI2STOP", false, true, false},
-  {"AVGDUST", false, true, false},
   {"NITT", false, true, false},
   {"N_IN_ITT", false, true, false},
   {"S_IN_ITT", false, true, false},
@@ -334,7 +322,6 @@ paramDef troll_paramDef_list[] = {
   {"External_MAP", true, false, false},
   {"Ptg", true, false, false},
   {"Hit", true, false, false},
-  {"HPR_Calib", true, false, false},
   {"Badring", true, false, false},
   {"VarGain", true, false, false},
   {"Mask", false, false, false},
@@ -354,7 +341,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 81;
+int troll_paramDef_list_size = 68;
 
 
 
@@ -397,23 +384,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'EndRing': Unable to convert value '%s' to target type %s\n", *value, "PIOLONG");
       return 1;
-    }
-  }
-  else if (strcmp(name, "CrossPol") == 0) {
-    param->n_CrossPol = list_size;
-    param->CrossPol = malloc(list_size * sizeof(PIODOUBLE));
-    if (param->CrossPol == NULL) {
-      perror("Error");
-      return 1;
-    }
-    int i;
-    for (i = 0; i < list_size; i++) {
-      errno = 0;
-      param->CrossPol[i] = myRead_PIODOUBLE(value[i]);
-      if (errno != 0) {
-        fprintf(stderr, "ERROR: 'CrossPol': Unable to convert value '%s' to target type %s\n", value[i], "PIODOUBLE");
-        return 1;
-      }
     }
   }
   else if (strcmp(name, "ADDPOL") == 0) {
@@ -574,45 +544,11 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       }
     }
   }
-  else if (strcmp(name, "D_NOPOL") == 0) {
-    errno = 0;
-    param->D_NOPOL = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'D_NOPOL': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
   else if (strcmp(name, "SAVEINTMAP") == 0) {
     errno = 0;
     param->SAVEINTMAP = myRead_PIOINT(*value);
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'SAVEINTMAP': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
-  else if (strcmp(name, "CALLCNN") == 0) {
-    param->flag_CALLCNN = _PAR_TRUE;
-    strcpy(param->CALLCNN, *value);
-  }
-  else if (strcmp(name, "CNN_WEIGHTS") == 0) {
-    param->flag_CNN_WEIGHTS = _PAR_TRUE;
-    strcpy(param->CNN_WEIGHTS, *value);
-  }
-  else if (strcmp(name, "CNN_ITT") == 0) {
-    param->flag_CNN_ITT = _PAR_TRUE;
-    errno = 0;
-    param->CNN_ITT = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'CNN_ITT': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
-  else if (strcmp(name, "CNN_START") == 0) {
-    param->flag_CNN_START = _PAR_TRUE;
-    errno = 0;
-    param->CNN_START = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'CNN_START': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
       return 1;
     }
   }
@@ -629,47 +565,12 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->flag_CNN_TMPID = _PAR_TRUE;
     strcpy(param->CNN_TMPID, *value);
   }
-  else if (strcmp(name, "CNN_RESIDU") == 0) {
-    param->flag_CNN_RESIDU = _PAR_TRUE;
-    errno = 0;
-    param->CNN_RESIDU = myRead_PIOFLOAT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'CNN_RESIDU': Unable to convert value '%s' to target type %s\n", *value, "PIOFLOAT");
-      return 1;
-    }
-  }
-  else if (strcmp(name, "CNN_XSIZE") == 0) {
-    param->flag_CNN_XSIZE = _PAR_TRUE;
-    errno = 0;
-    param->CNN_XSIZE = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'CNN_XSIZE': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
-  else if (strcmp(name, "CNN_YSIZE") == 0) {
-    param->flag_CNN_YSIZE = _PAR_TRUE;
-    errno = 0;
-    param->CNN_YSIZE = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'CNN_YSIZE': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
   else if (strcmp(name, "BUILDTF") == 0) {
     param->flag_BUILDTF = _PAR_TRUE;
     errno = 0;
     param->BUILDTF = myRead_PIOINT(*value);
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'BUILDTF': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
-      return 1;
-    }
-  }
-  else if (strcmp(name, "CUTRG") == 0) {
-    errno = 0;
-    param->CUTRG = myRead_PIOINT(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'CUTRG': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
       return 1;
     }
   }
@@ -738,22 +639,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
         fprintf(stderr, "ERROR: 'do_templates': Unable to convert value '%s' to target type %s\n", value[i], "PIOINT");
         return 1;
       }
-    }
-  }
-  else if (strcmp(name, "XI2STOP") == 0) {
-    errno = 0;
-    param->XI2STOP = myRead_PIODOUBLE(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'XI2STOP': Unable to convert value '%s' to target type %s\n", *value, "PIODOUBLE");
-      return 1;
-    }
-  }
-  else if (strcmp(name, "AVGDUST") == 0) {
-    errno = 0;
-    param->AVGDUST = myRead_PIODOUBLE(*value);
-    if (errno != 0) {
-      fprintf(stderr, "ERROR: 'AVGDUST': Unable to convert value '%s' to target type %s\n", *value, "PIODOUBLE");
-      return 1;
     }
   }
   else if (strcmp(name, "NITT") == 0) {
@@ -1070,19 +955,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     int i;
     for (i = 0; i < list_size; i++) {
       strcpy(param->Hit[i], value[i]);
-    }
-  }
-  else if (strcmp(name, "HPR_Calib") == 0) {
-    param->flag_HPR_Calib = _PAR_TRUE;
-    param->n_HPR_Calib = list_size;
-    param->HPR_Calib = malloc(list_size * sizeof(PIOSTRING));
-    if (param->HPR_Calib == NULL) {
-      perror("Error");
-      return 1;
-    }
-    int i;
-    for (i = 0; i < list_size; i++) {
-      strcpy(param->HPR_Calib[i], value[i]);
     }
   }
   else if (strcmp(name, "Badring") == 0) {

@@ -28,13 +28,18 @@ CFITSIO_TAR  := $(CFITSIO_ROOT)/cfitsio3410.tar.gz
 CFITSIO_DIR  := $(CFITSIO_ROOT)/cfitsio
 CFITSIO_LIB  := $(CFITSIO_DIR)/libcfitsio.a
 
+ifdef PYTHON
+PYTHON := $(PYTHON)
+else
+PYTHON := python
+endif
 
 # --- Python wrapper ---
-DIRPYTHONINC := $(shell python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
-DIRPYTHONLIB := $(shell python -c "from distutils.sysconfig import get_config_var;import sysconfig; print(get_config_var('LIBDIR')+' -Wl,-rpath,'+get_config_var('LIBDIR'))")
-LIBPYTHONLIB := $(shell python -c "import sysconfig; print('-lpython'+sysconfig.get_config_var('LDVERSION'))")
+DIRPYTHONINC := $(shell $(PYTHON) -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
+DIRPYTHONLIB := $(shell $(PYTHON) -c "from distutils.sysconfig import get_config_var;import sysconfig; print(get_config_var('LIBDIR')+' -Wl,-rpath,'+get_config_var('LIBDIR'))")
+LIBPYTHONLIB := $(shell $(PYTHON) -c "import sysconfig; print('-lpython'+sysconfig.get_config_var('LDVERSION'))")
 OPTIONPYTHON := -DPYTHON3
-#PYTHONCONF := $(shell python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
+#PYTHONCONF := $(shell $(PYTHON) -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
 
 PYTHONLIB = -L${DIRPYTHONLIB} ${LIBPYTHONLIB} -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
 
@@ -137,6 +142,10 @@ troll_857: troll.c $(OBJTROLL)
 #troll_857: alwaysCheckModules
 troll_cfosat: troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
+
+#troll_857: alwaysCheckModules
+troll_planck: troll.c $(OBJTROLL)
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=27664 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
 #troll_20tf: alwaysCheckModules
 
 dist:

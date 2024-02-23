@@ -44,11 +44,6 @@ typedef struct {
    */
   PIOLONG EndRing;
 
-  /* ---- List CrossPol ------------------------------------------------
-   *
-   */
-  PIODOUBLE *CrossPol;
-  PIOLONG n_CrossPol; /* ==number_of_CrossPol */
   
   /* ---- List ADDPOL ---------------------------------------------
    *
@@ -116,41 +111,10 @@ typedef struct {
   PIOFLOAT *SUB_HPRCOEF;
   PIOLONG n_SUB_HPRCOEF; /* ==number_of_SUB_HPRCOEF */
 
-  /* ---- Parameter D_NOPOL --------------------------------------------
-   *
-   */
-  PIOINT D_NOPOL;
-
   /* ---- Parameter SAVEINTMAP -----------------------------------------
    *
    */
   PIOINT SAVEINTMAP;
-  
-  /* ---- Parameter CALLCNN -----------------------------------------
-   *
-   */
-  PIOSTRING CALLCNN  ;
-  PIOBYTE flag_CALLCNN;  /* ==_PAR_TRUE if CALLCNN is present */
-
-  /* ---- Parameter CNN_WEIGHTS -----------------------------------------
-   *
-   */
-  PIOSTRING CNN_WEIGHTS;
-  PIOBYTE flag_CNN_WEIGHTS;  /* ==_PAR_TRUE if CNN_WEIGHTS is present */
-
-  /* ---- Parameter CNN_ITT -----------------------------------------
-   *
-   */
-  PIOINT CNN_ITT;
-  PIOBYTE flag_CNN_ITT;  /* ==_PAR_TRUE if CNN_ITT is present */
-
-  
-  /* ---- Parameter CNN_START -----------------------------------------
-   *
-   */
-  PIOINT CNN_START;
-  PIOBYTE flag_CNN_START;  /* ==_PAR_TRUE if CNN_START is present */
-
   
   /* ---- Parameter CNN_LEARN_PARAM -----------------------------------------
    *
@@ -163,37 +127,14 @@ typedef struct {
    */
   PIOSTRING CNN_TMPID;
   PIOBYTE flag_CNN_TMPID;  /* ==_PAR_TRUE if CNN_TMPID is present */
-    
+ 
 
-  /* ---- Parameter CNN_RESIDU -----------------------------------------
-   *
-   */
-  PIOFLOAT CNN_RESIDU;
-  PIOBYTE flag_CNN_RESIDU;  /* ==_PAR_TRUE if CNN_RESIDU is present */
-
-  /* ---- Parameter CNN_XSIZE -----------------------------------------
-   *
-   */
-  PIOINT CNN_XSIZE;
-  PIOBYTE flag_CNN_XSIZE;  /* ==_PAR_TRUE if CNN_XSIZE is present */
-
-  /* ---- Parameter CNN_YSIZE -----------------------------------------
-   *
-   */
-  PIOINT CNN_YSIZE;
-  PIOBYTE flag_CNN_YSIZE;  /* ==_PAR_TRUE if CNN_YSIZE is present */
-  
-  /* ---- Parameter BUILDTF -----------------------------------------
+  /*-----------------------------------------
    *
    */
   PIOINT  BUILDTF;
   PIOBYTE flag_BUILDTF;  /* ==_PAR_TRUE if BUILDTF is present */
 
-
-  /* ---- Parameter CUTRG ----------------------------------------------
-   *
-   */
-  PIOINT CUTRG;
 
   /* ---- Optional Parameter TEMPLATE_NSIDE -------------------------------------------
    *
@@ -231,17 +172,6 @@ typedef struct {
   PIOINT * do_templates;
   PIOLONG n_do_templates;
   
-
-  /* ---- Parameter XI2STOP --------------------------------------------
-   *
-   */
-  PIODOUBLE XI2STOP;
-
-
-  /* ---- Parameter AVGDUST --------------------------------------------
-   *
-   */
-  PIODOUBLE AVGDUST;
 
   /* ---- Parameter NITT -----------------------------------------------
    *
@@ -409,14 +339,6 @@ typedef struct {
   PIOSTRING *Hit;
   PIOBYTE flag_Hit;  /* ==_PAR_TRUE if Hit is present */
   PIOLONG n_Hit; /* ==number_of_Hit */
-
-  /* ---- Optional InputList HPR_Calib -------------------------------
-   * list of HPRs containing the total dipole component that will be subtracted,
-   * not fitted, from Signal. Must be KCMB.
-   */
-  PIOSTRING *HPR_Calib;
-  PIOBYTE flag_HPR_Calib;  /* ==_PAR_TRUE if HPR_Calib is present */
-  PIOLONG n_HPR_Calib; /* ==number_of_HPR_Calib */
 
   /* ---- Optional InputList Badring -----------------------------------
    *
