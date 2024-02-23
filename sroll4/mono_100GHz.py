@@ -1,5 +1,37 @@
 import numpy as np
+import foscat.Spline1D as spl 
 
+class test:
+  
+  def __init__(self,params,rank,begin_rg,end_rg):
+    # read the first ring to compute the minvalue
+    self.time_min=params['BeginRing']
+    self.time_max=params['EndRing']
+    self.nspline=params['nspline']
+    self.time_step=128
+    
+    splinetime=spl.Spline1D(self.nspline)
+    
+    ref1={}
+    idx1={}
+
+    for i in range(self.time_step*self.nspline+1):
+      vv1=np.array(splinetime.calculate(i/(self.time_step*self.nspline)))
+      lidx1=np.where(vv1>0.0)[0]
+      if len(lidx1)>4:
+        print(i,len(lidx1))
+      idx1[i]=[int(k) for k in lidx1]
+      ref1[i]=[vv1[lidx1[k]] for k in range(len(lidx1))]
+      
+    self.spline_time_idx=idx1
+    self.spline_time_ref=ref1
+  
+  def eval(self,rg,ib,hidx,inc,externals):
+      
+    a1=int(self.time_step*self.nspline*(rg-self.time_min)/(self.time_max-self.time_min))
+
+    return self.spline_time_idx[a1],self.spline_time_ref[a1]
+  
 class proj:
   
   def __init__(self,params,rank,begin_rg,end_rg):
@@ -8,10 +40,11 @@ class proj:
     self.l_beg=begin_rg
     self.l_end=end_rg
     self.eta=[(1-k)/(1+k) for k in params['CrossPol']]
+    self.Calibration=[1/k for k in params['Calibration']]
 
   def getnumber_of_channels(self):
     print('get number of chan')
-    return 3
+    return 1
   
   def eval(self,
            ptg_tuple_2,
@@ -23,13 +56,12 @@ class proj:
            idx_in_ring,
            signal,
            calib):
-    
+
     calib=ext_data[id_bolo]
 
-    return signal,hit,calib,[1.0,
-                             self.eta[id_bolo]*np.cos(2*ptg_tuple_2),
-                             self.eta[id_bolo]*np.sin(2*ptg_tuple_2)]
-             
+    return signal,hit,calib,[1.0]
+
+
 def main():
   
   # DIR DATA
@@ -42,42 +74,46 @@ def main():
   # Type de projection (voir class proj)
   projection = "proj"
   
+  # Class definissant les corrections 
+  SparseFunc = "test"
+  nspline = 100
+
   # do the offset
-  do_offset=1
+  do_offset=0
 
   #Nom map output
-  OMAP='100ds1'
+  OMAP='100-1A'
   
   #  nombre de détecteurs (SWIM : 10 deg, 6 degres ...) ?
-  bolo=['100-1a','100-1b','100-4a','100-4b']
-  bolo2=['00_100_1a','01_100_1b','80_100_4a','81_100_4b']
+  bolo=['100-1a']
+  bolo2=['00_100_1a']
 
-  # Resolution carte finale
-  Nside = 32
+  # paramètre utilisé pour scat2healpix.py 
+  Nside = 64
 
   # En prendre 1 ring  sur RSTEP : pour run 1, pour debug  plus de 1 
-  RSTEP = 400
+  RSTEP = 100
 
-  # Sélection de ring par portion pour carte en survey a la fin
+  # Sélection de ring par portion
   beg_surv=[BeginRing]
   end_surv=[EndRing]
   name_surv=['Full']
 
-  # Pour chaque parametres sparse ajoute-t-on une contrainet sur la moyenne
-  val_mean = [] 
-  # poids dans la matrice 
-  w_mean = []
-  # normalize 
-  do_mean = []
+  # Pour chaque détecteur est ce qu'on rajoute une moyenne à nos fit
   
-  # Nombre de survey dans cahcune des cartes produites. 
-  # La definition des surveys est pris dans les tableaux beg_surv,end_surv  etc.
+  val_mean = [0.0] 
+  # poids dans la matrice 
+  w_mean = [1.0]
+  # normalize 
+  do_mean = [1.0 for k in range(nspline)]
+  
+  # Nombre de survey : On peut grouper plusieurs survey ou les prendre 1 par 1
   MAPRINGS = [1]
   
-  # Normaliser le gain entre detecteur (cas de calibration absolue inconnue) 
+  # Normaliser le gain 
   NORM_GAIN = 0
 
-  # Soustrait le calibrateur dans la carte produite à la fin
+  # Soustraire wave watch 3 à la première itération (NITT) 
   REMOVE_CAL = 1
 
 
@@ -85,13 +121,13 @@ def main():
   seuilcond = 100
 
   # Nombre d'itération pour fit le gain 
-  NITT = 4
+  NITT = 5
   
   # Nombre d'itération entre chaque iteration de gain
-  N_IN_ITT = 500
+  N_IN_ITT = 100
   
   # Limite de calcul
-  S_IN_ITT = 1E-24
+  S_IN_ITT = 1E-20
   
   # Nan value 
   UNSEEN = -1.6375e30 
@@ -106,18 +142,18 @@ def main():
 
 
   # Calibration de départ des détecteurs (coeff + polarisation)
-  Calibration = [1.00340513024e-13,1.23240311873e-13,1.46826316998e-13,1.17469574177e-13]  
+  Calibration = [1.00340513024e-13]  
 
   # Calibration de départ des détecteurs (polarisation)
-  CrossPol = [0.0272,0.0293,0.0219,0.0402]
+  CrossPol = [0.0272]
 
   # Bruit blanc de chaque détecteurs
-  NEP = [2.4767234259e-16,2.56729781043e-16,2.26421345033e-16,2.45551518841e-16]
+  NEP = [2.4767234259e-16]
   
-  Monop = [2.2605358109e-15,6.33346357328e-15,6.29208169223e-16,3.36970326506e-15]
+  Monop = [2.2605358109e-15]
 
-  # bolomask Définir les cartes :  1 ière carte = tous les détecteurs, 2 ième carte 1 ier et 2 ième détecteur 
-  bolomask = [1,1,1,1]
+  # bolomask défini quel bolometre sont utilisés pour calculer les cartes :  
+  bolomask = [1]
 
   #%% ############################## INPUTS ####################################
 
