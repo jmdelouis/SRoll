@@ -4358,6 +4358,8 @@ int main(int argc,char *argv[])  {
   }
   edpix[mpi_size-1]=12*Nside*Nside-1;
   
+  nnbpix=edpix[rank]-begpix[rank]+1;
+  
   int *stat_pix = (int *) malloc( 2*12*Nside*Nside*sizeof(int));
   memset(stat_pix,0,2*12*Nside*Nside*sizeof(int));
   realpix = (int *) malloc(sizeof(int)*nnbpix);
@@ -4370,7 +4372,6 @@ int main(int argc,char *argv[])  {
       stat_pix[i]=l_nhpix[i];
     }
 
-#ifdef OPTIMPI
     {
       int *l_stat_pix = (int *) malloc(12*Nside*Nside*sizeof(int));
       MPI_Reduce(stat_pix,l_stat_pix,12*Nside*Nside,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
@@ -4378,18 +4379,8 @@ int main(int argc,char *argv[])  {
       memcpy(stat_pix,l_stat_pix,12*Nside*Nside*sizeof(int));
       free(l_stat_pix);
     }
-#endif
 
     if (rank==0) {
-#ifndef OPTIMPI
-      MPI_Status statu;
-      int *l_stat_pix = (int *) malloc(12*Nside*Nside*sizeof(int));
-      for (rrk=1;rrk<mpi_size;rrk++) {
-        MPI_Recv(l_stat_pix,sizeof(int)*12*Nside*Nside, MPI_BYTE, rrk,31, MPI_COMM_WORLD,&statu);
-        for (j=0;j<12*Nside*Nside;j++) stat_pix[j]+=l_stat_pix[j];
-      }
-      free(l_stat_pix);
-#endif
       fprintf(stderr,"regrid\n");
       hpint *statp = (hpint *) malloc(12*Nside*Nside*sizeof(hpint));
 
@@ -4401,24 +4392,21 @@ int main(int argc,char *argv[])  {
       fprintf(stderr,"sort\n");
       qsort(statp,12*Nside*Nside,sizeof(hpint),compar_int);
 
+      for (j=0;j<12*Nside*Nside;j++) {
+	statp[j].hit=j%(2*mpi_size);
+      }
+      for (j=0;j<12*Nside*Nside;j++) {
+	if (statp[j].hit>mpi_size-1) statp[j].hit=mpi_size-1-statp[j].hit;
+      }
+      
+      qsort(statp,12*Nside*Nside,sizeof(hpint),compar_int);
+      
       for (rrk=0;rrk<mpi_size;rrk++) {
-	for (i=0;i<nnbpix/4;i++) {
+	for (i=0;i<edpix[rrk]-begpix[rrk]+1;i++) {
 
-	  stat_pix[i           +(mpi_size-1-rrk)*nnbpix] = statp[i*mpi_size*4+rrk].ipx;
-	  stat_pix[i+nnbpix/4  +(mpi_size-1-rrk)*nnbpix] = statp[i*mpi_size*4+2*mpi_size-1-rrk].ipx;
-	  stat_pix[i+nnbpix/2  +rrk*nnbpix]              = statp[i*mpi_size*4+2*mpi_size+rrk].ipx;
-	  stat_pix[i+3*nnbpix/4+rrk*nnbpix]              = statp[i*mpi_size*4+2*mpi_size+2*mpi_size-1-rrk].ipx;
-
-#if 0
-	  if (i==0) fprintf(stderr,"%d %d %d %d %d %d\n",(int) (mpi_size-1-rrk),
-			    statp[i*mpi_size*2+rrk].hit,statp[i*mpi_size*2+2*mpi_size-1-rrk].hit,
-			    (int) rrk,
-			    statp[i*mpi_size*4+2*mpi_size+rrk].ipx,statp[i*mpi_size*4+2*mpi_size+2*mpi_size-1-rrk].ipx);
-#endif
-	  stat_pix[12*Nside*Nside+statp[i*mpi_size*4+rrk].ipx]=(mpi_size-1-rrk);
-	  stat_pix[12*Nside*Nside+statp[i*mpi_size*4+2*mpi_size-1-rrk].ipx]=(mpi_size-1-rrk);
-	  stat_pix[12*Nside*Nside+statp[i*mpi_size*4+2*mpi_size+rrk].ipx]=rrk;
-	  stat_pix[12*Nside*Nside+statp[i*mpi_size*4+2*mpi_size+2*mpi_size-1-rrk].ipx]=rrk;
+	  stat_pix[i+begpix[rrk]] = statp[i+begpix[rrk]].ipx;
+	  
+	  stat_pix[12*Nside*Nside+statp[i+begpix[rrk]].ipx]=i+begpix[rrk];
 	}
       }
       free(statp);
@@ -4428,16 +4416,12 @@ int main(int argc,char *argv[])  {
       fclose(fp);
 #endif
     }
-#ifndef OPTIMPI
-    else  {
-      MPI_Send(stat_pix, sizeof(int)*12*Nside*Nside, MPI_BYTE, 0, 31, MPI_COMM_WORLD);
-    }
-#endif
+    
     // NOT A BCAST TO BE CHANGED TO MPI_SCATTER FOR OPTIMALITY
     MPI_Bcast(stat_pix,sizeof(int)*12*Nside*Nside*2, MPI_BYTE, 0, MPI_COMM_WORLD);
 
-    for (i=0;i<nnbpix;i++) realpix[i]=stat_pix[i+rank*nnbpix];
-    for (i=0;i<nnbpix;i++) irealpix[i]=stat_pix[12*Nside*Nside+i+rank*nnbpix];
+    for (i=0;i<nnbpix;i++) realpix[i]=stat_pix[i+begpix[rank]];
+    for (i=0;i<nnbpix;i++) irealpix[i]=stat_pix[12*Nside*Nside+i+begpix[rank]];
     for (i=0;i<nnbpix;i++) newmask[i]=mask[realpix[i]];
   }
   free(mask);
@@ -5452,7 +5436,7 @@ int main(int argc,char *argv[])  {
       free(l_n);
     }
     
-    
+    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
     for(int i = 0;i<MAXCHANNELS;i++){
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
@@ -5460,6 +5444,7 @@ int main(int argc,char *argv[])  {
       MPI_Barrier(MPI_COMM_WORLD);
     }
    
+    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
     for(int i = 0;i<MAXCHANNELS;i++){
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_%d_RAW", mapout[detset],mapname,i);
@@ -5467,6 +5452,7 @@ int main(int argc,char *argv[])  {
       MPI_Barrier(MPI_COMM_WORLD);
     }
    
+    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
     {
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_STD", mapout[detset],mapname);
@@ -5481,6 +5467,7 @@ int main(int argc,char *argv[])  {
       MPI_Barrier(MPI_COMM_WORLD);
     }
 #endif
+    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
     {
       char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
       sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
