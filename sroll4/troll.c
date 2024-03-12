@@ -2444,7 +2444,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   if (rank==0) {
     for (i=0; i < nmatres; i++){
       r2[i] = b2[i] - q2[i]; //r = b - Ax0 = Ax - Ax0  
-      if (hit2[i]>1.0) d2[i] = r2[i]/hit2[i]; //d2 => p
+      if (hit2[i]>0.0) d2[i] = r2[i]/hit2[i]; //d2 => p
       //if (rank==0)  fprintf(stderr,"[DEBUG] i = %d q2[] %lf b2[] =%lf r2[] = %lf ,d2[] = %lf , hit2[] = %lf \n",i,q2[i],b2[i],r2[i],d2[i],hit2[i]);
 
     }
@@ -2510,7 +2510,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       
       for(int k = 0;k < nmatres;k++){
         alpha_tmp+= d2[k]*projX[k];
-        if (hit2[k]>1.0) tmp += (r2[k]/hit2[k])*r2[k];
+        if (hit2[k]>0.0) tmp += (r2[k]/hit2[k])*r2[k];
       }
       //alpha = delta /alpha_tmp;
       alpha = tmp /alpha_tmp;
@@ -2552,7 +2552,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       tmp = 0.0;
       sum =0.0;
       for(int i =0;i<nmatres;i++){
-        if (hit2[i]>1.0) {
+        if (hit2[i]>0.0) { //>1 ?????
 	  tmp += (new_r[i]/hit2[i])*new_r[i];
 	  sum += (r2[i]/hit2[i])*r2[i];
 	}
@@ -2565,7 +2565,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
       //calcul new_p
       for(int k =0;k<nmatres;k++){
-        if (hit2[k]>1.0) new_p[k] = (new_r[k]/hit2[k])+beta*d2[k];
+        if (hit2[k]>0.0) new_p[k] = (new_r[k]/hit2[k])+beta*d2[k];
       }
 
       //mise a jour r,p,x
@@ -2577,7 +2577,6 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       time_exc = (double)(tp2.tv_sec-tp1.tv_sec)+(1E-6)*(tp2.tv_usec-tp1.tv_usec);
       tot_time += time_exc;
       if (rank==0&&n%10==0) fprintf(stderr,"iter: %d/%d beta = %12lg  alpha = %12lg  delta = %12lg  %12lfs\n",n,itermax,beta,alpha,delta,time_exc);
-
       n=n+1;
   }
   if(rank==0) fprintf(stderr,"tot_time = %lg\n",tot_time);
@@ -4171,7 +4170,6 @@ int main(int argc,char *argv[])  {
 	    
 	    tp_hpix->sig=tp_hpix->listp[0];
 	    
-	    tp_hpix->hit    = 1/sqrt(h[i]);
 	    if (Sub_HPR != NULL) {
 	      tp_hpix->Sub_HPR = Sub_HPR[i]*Param->SUB_HPRCOEF[ib];
 	    } else {
@@ -4187,10 +4185,12 @@ int main(int argc,char *argv[])  {
 					 (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
 					 ipix,
 					 ib,
-					 tp_hpix->hit,
+					 h[i],
 					 i,
 					 &(tp_hpix->sig),
 					 &(tp_hpix->hpr_cal));
+
+	    tp_hpix->hit    = 1/sqrt(tp_hpix->hit);
 
 	    tp_hpix->model=tp_hpix->hpr_cal;
 

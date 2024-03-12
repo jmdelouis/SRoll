@@ -148,6 +148,11 @@ troll_planck: troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=27664 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
 #troll_20tf: alwaysCheckModules
 
+#troll_857: alwaysCheckModules
+troll_LB: troll.c $(OBJTROLL)
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=37200 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
+#troll_20tf: alwaysCheckModules
+
 dist:
 	$(RM) $(ARCHIVE_FILENAME)
 	$(TAR) --exclude=".*" --exclude="CVS" --exclude="sroll*.tgz" --dereference -zcf $(ARCHIVE_FILENAME) *.c *.h Makefile
