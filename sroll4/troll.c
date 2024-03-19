@@ -8,6 +8,7 @@
 
 #define CNN_NSIDE (32)
 
+#define CALCMATRIX
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1993,6 +1994,7 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
     }
   }
 }
+
 // -------------------------------------------------------------------------------------------------------------
 void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAINSTEP2){
   //plap
@@ -2065,7 +2067,11 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
         }
       }
 
+#ifdef CALCMATRIX 
+      invertMatrix(MAT,s_X,MAXCHANNELS,rank);   
+#else
       invertMatrix(imatrice+pix*MAXCHANNELS*MAXCHANNELS,s_X,MAXCHANNELS,rank);         
+#endif
   
       //calcul sum_Rij_bis
       for(int l1=0;l1<ndata;l1++){  
@@ -2155,7 +2161,6 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 
   }
 
-
   if(rank == 0){
     double msum=1E4;
     
@@ -2164,7 +2169,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
       for(int b = 0;b<npixShpr;b++){
 	sum2+=(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]-Param->val_mean[n])*Param->do_mean[b+n*(npixShpr)];
       }
-      for(int b = 0;b<nbolo*(npixShpr);b++){
+      for(int b = 0;b<npixShpr;b++){
 	q2[newnr[nbolo]+b+(GAINSTEP2)*nbolo]+= sum2*Param->w_mean[n]*Param->do_mean[b+n*(npixShpr)];
       }
     }
@@ -2180,7 +2185,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
           q2[newnr[nbolo]+b+(m+GAINSTEP2)*nbolo]+= sum2*msum;
         }
     }
-    
+
     // NORMLISATION GAIN MOYEN
     if(GAINSTEP2 != 0 && NORM_GAIN==1) {
       double sum2 = 0.0;
@@ -2268,6 +2273,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
   nmatres=newnr[nbolo]+nbolo*(npixmap+GAINSTEP2)+npixShpr;
 
+
   MPI_Bcast(&nmatres, sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
 
   double *x_tab = (double *) malloc(sizeof(double)*(nmatres));
@@ -2347,7 +2353,6 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       }
     }
    
-     
 #ifdef CALCMATRIX   
     //Inversion de matrice
     invertMatrix(MAT,SI,MAXCHANNELS,rank);
@@ -2398,10 +2403,8 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   memset(hit2,0,sizeof(double)*(nmatres));
   memset(q2,0,sizeof(double)*(nmatres));
 
-
   proj_data(b2,nnbpix,rank,nmatres,GAINSTEP2); //calcul b2
   proj_grad(q2,nmatres,x_tab,nnbpix,rank,GAINSTEP2); // Calcul q2 
-
 
   // Recuperation de b2
   {
@@ -2467,7 +2470,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
     
   
   if (itbogo==0) delta0 = 0;
-  
+#if 1
   int n=0;
   while(n<itermax) {
       
@@ -2485,7 +2488,6 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       free(lb);
 
       MPI_Bcast(projX, sizeof(double)*nmatres, MPI_BYTE, 0, MPI_COMM_WORLD);
-
 
       //Calcul delta
       tmp = 0.0;
@@ -2579,6 +2581,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       if (rank==0&&n%10==0) fprintf(stderr,"iter: %d/%d beta = %12lg  alpha = %12lg  delta = %12lg  %12lfs\n",n,itermax,beta,alpha,delta,time_exc);
       n=n+1;
   }
+#endif
   if(rank==0) fprintf(stderr,"tot_time = %lg\n",tot_time);
 
   itbogo ++;
@@ -3150,7 +3153,7 @@ long exec_PyFunction(PyObject *pFunc){
     return PyLong_AsLong(result);
 }
 // Fonction pour copier les données d'un tableau Python d'entiers à un tableau C
-int copy_int_array(PyObject *pArray, PIOINT *array) {
+int copy_int_array(PyObject *pArray, PIOINT *array,int maxsize) {
   
   if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
     fprintf(stderr, "L'objet n'est ni une liste ni un tuple\n");
@@ -3159,7 +3162,13 @@ int copy_int_array(PyObject *pArray, PIOINT *array) {
   }
 
   Py_ssize_t n = PyList_Check(pArray) ? PyList_Size(pArray) : PyTuple_Size(pArray);
-
+  
+  if (maxsize!=-1) {
+    if (n>maxsize) {
+      fprintf(stderr,"Table read from python (%d) is bigger than allocated memory (%d)\n",(int)n,maxsize);
+      exit(0);
+    }
+  }
   for (Py_ssize_t i = 0; i < n; i++) {
     PyObject *item = PyList_Check(pArray) ? PyList_GetItem(pArray, i) : PyTuple_GetItem(pArray, i);
     if (!PyLong_Check(item)) {
@@ -3172,7 +3181,7 @@ int copy_int_array(PyObject *pArray, PIOINT *array) {
   return (int) n;
 }
 // Fonction pour copier les données d'un tableau Python d'entiers à un tableau C
-int copy_float_array(PyObject *pArray, PIOFLOAT *array) {
+int copy_float_array(PyObject *pArray, PIOFLOAT *array,int maxsize) {
   
   if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
     fprintf(stderr, "The provided object is not a list or a tuple\n");
@@ -3182,6 +3191,12 @@ int copy_float_array(PyObject *pArray, PIOFLOAT *array) {
 
   Py_ssize_t n = PyList_Check(pArray) ? PyList_Size(pArray) : PyTuple_Size(pArray);
 
+  if (maxsize!=-1) {
+    if (n>maxsize) {
+      fprintf(stderr,"Table read from python (%d) is bigger than allocated memory (%d)\n",(int)n,maxsize);
+      exit(0);
+    }
+  }
   for (Py_ssize_t i = 0; i < n; i++) {
     PyObject *item = PyList_Check(pArray) ? PyList_GetItem(pArray, i) : PyTuple_GetItem(pArray, i);
     if (!PyFloat_Check(item)) {
@@ -3290,7 +3305,7 @@ int Get_NumberOfDiag(PyObject *diagFunc)
 	*sig = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 0));
 	ohit = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 1));
 	*calib = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 2));
-	int err=copy_float_array(PyTuple_GetItem(pValue, 3),h->channels);
+	int err=copy_float_array(PyTuple_GetItem(pValue, 3),h->channels,MAXCHAN);
 	if (err!=MAXCHANNELS) {
 	  fprintf(stderr, "Projection function does not provide the good number of channels: expected %d  get %d\n",MAXCHANNELS,err);
 	}
@@ -3335,6 +3350,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 		    long rg,
 		    long ib,
 		    long hpix,
+		    long i,
 		    double psi,
 		    PIOFLOAT *External,
 		    PIOFLOAT *oval,
@@ -3349,7 +3365,8 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     PyObject *pArg1 = PyLong_FromLong((long)rg); // rg est un entier
     PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
-    PyObject *pArg4 = PyFloat_FromDouble((double)psi); // val est un flottant
+    PyObject *pArg4 = PyLong_FromLong((long)i); // idx est un entier
+    PyObject *pArg5 = PyFloat_FromDouble((double)psi); // val est un flottant
     PyObject *pList = PyList_New(NB_EXTERNAL);
     
     for (int i = 0; i < NB_EXTERNAL; i++) {
@@ -3357,15 +3374,15 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     }
 
     // Appel de la méthode 'eval's
-    pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pList);
+    pValue = PyObject_CallMethod(sparseFunc, "eval", "(OOOOOO)", pArg1, pArg2, pArg3, pArg4,  pArg5, pList);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
       // Assurer que pValue est un tuple
       if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
 	// Extraire les deux tableaux du tuple
-	int n1=copy_int_array(PyTuple_GetItem(pValue, 0), oval_idx);
-	int n2=copy_float_array(PyTuple_GetItem(pValue, 1), oval);
+	int n1=copy_int_array(PyTuple_GetItem(pValue, 0), oval_idx,MAXEXTERNALSHPR);
+	int n2=copy_float_array(PyTuple_GetItem(pValue, 1), oval,MAXEXTERNALSHPR);
 	if (n1!=n2) {
 	  fprintf(stderr, "Sparse function should provide an equal number of invex and value, here Sroll received %d %d\n",n1,n2);
 	}
@@ -3385,6 +3402,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     Py_DECREF(pArg2);
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
+    Py_DECREF(pArg5);
     Py_DECREF(pList);
     
   } else {
@@ -3401,6 +3419,7 @@ int calc_diag_hpr(PyObject *diagFunc,
 		  long rg,
 		  long ib,
 		  long hpix,
+		  long i,
 		  double psi,
 		  PIOFLOAT *External)
 {
@@ -3413,7 +3432,8 @@ int calc_diag_hpr(PyObject *diagFunc,
     PyObject *pArg1 = PyLong_FromLong((long)rg); // rg est un entier
     PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
-    PyObject *pArg4 = PyFloat_FromDouble((double)psi); // val est un flottant
+    PyObject *pArg4 = PyLong_FromLong((long)i); // idx est un entier
+    PyObject *pArg5 = PyFloat_FromDouble((double)psi); // val est un flottant
     PyObject *pList = PyList_New(NB_EXTERNAL);
     
     for (int i = 0; i < NB_EXTERNAL; i++) {
@@ -3421,7 +3441,7 @@ int calc_diag_hpr(PyObject *diagFunc,
     }
 
     // Appel de la méthode 'eval's
-    pValue = PyObject_CallMethod(diagFunc, "get_diag_idx", "(OOOOO)", pArg1, pArg2, pArg3, pArg4, pList);
+    pValue = PyObject_CallMethod(diagFunc, "get_diag_idx", "(OOOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5, pList);
 
     
     // Traitement de la valeur de retour
@@ -3444,6 +3464,7 @@ int calc_diag_hpr(PyObject *diagFunc,
     Py_DECREF(pArg2);
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
+    Py_DECREF(pArg5);
     Py_DECREF(pList);
     
   } else {
@@ -3475,8 +3496,9 @@ int main(int argc,char *argv[])  {
   PIOLONG rg;
   int stim_first_seed = 0;
   time_t now;
-
+  
   //PIODOUBLE  dip[]={-0.000233797238224 , -0.00222070369388 , 0.00250271842609};
+
 
   //TESPT;
   MPI_Init(&argc, &argv);
@@ -3486,7 +3508,6 @@ int main(int argc,char *argv[])  {
   rank=rank_size;
   MPI_Comm_size(MPI_COMM_WORLD,&size);
   mpi_size=size;
-
   
   if (rank==0) {
     char rpath[PATH_MAX];
@@ -4200,6 +4221,7 @@ int main(int argc,char *argv[])  {
 					       rg,
 					       ib,
 					       ipix,
+					       i,
 					       psi[i],
 					       External+i,
 					       tp_hpix->listofShpr,
@@ -4218,6 +4240,7 @@ int main(int argc,char *argv[])  {
 						rg,
 						ib,
 						ipix,
+						i,
 						psi[i],
 						External+i);
 	      
@@ -4489,48 +4512,52 @@ int main(int argc,char *argv[])  {
   }
   free(l_hpix);
   free(l_nhpix);
-  
-  begbuf[mpi_size]=ntbs*sizeof(hpix);
+
+  long ldata=ntbs;
+
+  if (mpi_size>1) { 
+    begbuf[mpi_size]=ntbs*sizeof(hpix);
        	    
-  /* exchange all buffer information */
-  int *allbuf = (int *) malloc(mpi_size*(mpi_size+1)*sizeof(int));
-  
-  MPI_Allgather(begbuf,mpi_size+1,MPI_INT,allbuf,(mpi_size+1),MPI_INT,MPI_COMM_WORLD);
-
-  int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
-  int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
-  int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
-  int *rdispls = (int *) calloc(mpi_size,sizeof(int));
-  
-  for (i=0;i<size;i++) {
-    sendcounts[i]=begbuf[i+1]-begbuf[i];
-    sdispls[i]=begbuf[i];
-    recvcounts[i]=allbuf[i*(size+1)+rank+1]-allbuf[i*(size+1)+rank];
+    /* exchange all buffer information */
+    int *allbuf = (int *) malloc(mpi_size*(mpi_size+1)*sizeof(int));
+    
+    MPI_Allgather(begbuf,mpi_size+1,MPI_INT,allbuf,(mpi_size+1),MPI_INT,MPI_COMM_WORLD);
+    
+    int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
+    int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
+    int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
+    int *rdispls = (int *) calloc(mpi_size,sizeof(int));
+    
+    for (i=0;i<size;i++) {
+      sendcounts[i]=begbuf[i+1]-begbuf[i];
+      sdispls[i]=begbuf[i];
+      recvcounts[i]=allbuf[i*(size+1)+rank+1]-allbuf[i*(size+1)+rank];
+    }
+    
+    free(begbuf);
+    free(allbuf);
+    
+    rdispls[0]=0;
+    for (i=1;i<size;i++) {
+      rdispls[i]=rdispls[i-1]+recvcounts[i-1];
+    }
+    
+    ldata=(rdispls[size-1]+recvcounts[size-1])/sizeof(hpix);
+    
+    hpix *otbs = (hpix *) malloc(ldata*sizeof(hpix));
+    
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Alltoallv(tbs,sendcounts,sdispls,MPI_BYTE,
+		  otbs,recvcounts,rdispls,MPI_BYTE,
+		  MPI_COMM_WORLD);
+    
+    free(sdispls);
+    free(sendcounts);
+    free(recvcounts);
+    free(rdispls);
+    free(tbs);
+    tbs=otbs;
   }
-  
-  free(begbuf);
-  free(allbuf);
-  
-  rdispls[0]=0;
-  for (i=1;i<size;i++) {
-    rdispls[i]=rdispls[i-1]+recvcounts[i-1];
-  }
-
-  long ldata=(rdispls[size-1]+recvcounts[size-1])/sizeof(hpix);
-
-  hpix *otbs = (hpix *) malloc(ldata*sizeof(hpix));
-
-  MPI_Barrier(MPI_COMM_WORLD);
-  MPI_Alltoallv(tbs,sendcounts,sdispls,MPI_BYTE,
-		otbs,recvcounts,rdispls,MPI_BYTE,
-		MPI_COMM_WORLD);
-
-  free(sdispls);
-  free(sendcounts);
-  free(recvcounts);
-  free(rdispls);
-  free(tbs);
-  tbs=otbs;
   
   nnbpix = edpix[rank]-begpix[rank]+1;
 
@@ -4696,11 +4723,12 @@ int main(int argc,char *argv[])  {
   flgpix = (PIOBYTE *) malloc(sizeof(PIOBYTE)*nnbpix);
   memset(flgpix,0,sizeof(PIOBYTE)*nnbpix);
 
+#ifdef CALCMATRIX
+#else
   imatrice = (PIODOUBLE *) malloc(nnbpix*MAXCHANNELS*MAXCHANNELS*sizeof(PIODOUBLE));
   memset(imatrice,0,nnbpix*MAXCHANNELS*MAXCHANNELS*sizeof(PIODOUBLE));
-  
+#endif
   cond = (PIODOUBLE *) malloc(nnbpix*sizeof(PIODOUBLE));
-  memset(imatrice,0,nnbpix*sizeof(PIODOUBLE));
   
   long l_nmatpix=0;
   fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
@@ -4711,21 +4739,26 @@ int main(int argc,char *argv[])  {
       
     cond[k] = 0.0;
     double matrice[MAXCHAN*MAXCHAN];
+    double imat[MAXCHAN*MAXCHAN];
     memset(matrice,0,MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
     
     long ndata = loc_nhpix[k];
     if (ndata>2) {
       hpix *htmp = loc_hpix[k];
       for (i0=0;i0<ndata;i0++) { 
-	      for(int i = 0;i<MAXCHANNELS;i++){        
-	        for(int j = 0;j<MAXCHANNELS;j++){
-	          matrice[i+j*MAXCHANNELS] += htmp[i0].w *htmp[i0].channels[j]*htmp[i0].channels[i];
-	        }
-	      } 
+	for(int i = 0;i<MAXCHANNELS;i++){        
+	  for(int j = 0;j<MAXCHANNELS;j++){
+	    matrice[i+j*MAXCHANNELS] += htmp[i0].w *htmp[i0].channels[j]*htmp[i0].channels[i];
+	  }
+	} 
       }     
       
+#ifdef CALCMATRIX
+      cond[k]=cond_thres(matrice,imat,MAXCHANNELS);
+#else
       //test if matrice inversible 
       cond[k]=cond_thres(matrice,imatrice+MAXCHANNELS*MAXCHANNELS*k,MAXCHANNELS);
+#endif
       
       if (cond[k] < Param->seuilcond) {
 	      flgpix[k]=1;
@@ -5170,7 +5203,7 @@ int main(int argc,char *argv[])  {
       }
     }
 
-    if (number_of_iterations==iter+1) {
+    if (iter=number_of_iterations-1) {
       free(x2);
       free(x2old);
       free(x2init);
@@ -5184,7 +5217,7 @@ int main(int argc,char *argv[])  {
       free(hit_L1);
       free(hit_L2);
     }
-
+ 
     MPI_Barrier(MPI_COMM_WORLD);
     if (rank%64==0) {
       GetProcMem(&vmem,&phymem);

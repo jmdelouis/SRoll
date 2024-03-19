@@ -41,7 +41,7 @@ LIBPYTHONLIB := $(shell $(PYTHON) -c "import sysconfig; print('-lpython'+sysconf
 OPTIONPYTHON := -DPYTHON3
 #PYTHONCONF := $(shell $(PYTHON) -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
 
-PYTHONLIB = -L${DIRPYTHONLIB} ${LIBPYTHONLIB} -lpthread -ldl  -lutil -lm  -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
+PYTHONLIB = -L${DIRPYTHONLIB} ${LIBPYTHONLIB} -lpthread -ldl  -lutil -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
 
 
 # --- NO_DMC_LIB package ---
@@ -133,7 +133,7 @@ troll_parLoader.c: $(PAR_LOADER_INPUT_HEADER_TROLL_DEF)
 	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_TROLL_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX_TROLL)"
 
 %.o: %.c alwaysCheckModules
-	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic -lm 
+	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic
 
 #troll_857: alwaysCheckModules
 troll_857: troll.c $(OBJTROLL)
@@ -141,17 +141,16 @@ troll_857: troll.c $(OBJTROLL)
 
 #troll_857: alwaysCheckModules
 troll_cfosat: troll.c $(OBJTROLL)
-	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -fno-finite-math-only -lm
 
 #troll_857: alwaysCheckModules
 troll_planck: troll.c $(OBJTROLL)
-	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=27664 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=27664 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -fno-finite-math-only -lm
 #troll_20tf: alwaysCheckModules
 
 #troll_857: alwaysCheckModules
 troll_LB: troll.c $(OBJTROLL)
-	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=37200 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -lm -fno-finite-math-only
-#troll_20tf: alwaysCheckModules
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=37200 -DMAXSIMU=1 -DMAXEXTERNALSHPR=4  -DMAXEXTERNALMAP=1 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -o $@ $< $(OBJTROLL) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -fno-finite-math-only -lm
 
 dist:
 	$(RM) $(ARCHIVE_FILENAME)
