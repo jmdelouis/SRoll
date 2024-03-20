@@ -2218,6 +2218,19 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 
   free(csum);
 }
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void apply_invertMatrix(double * mat,double *vec,int n,int rank){
+ 
+
+      double *tmp_vec = malloc(n*sizeof(double));
+      memset(tmp_vec,0,n*sizeof(double));  
+      matvec(mat,vec,tmp_vec,n);
+      memcpy(vec,tmp_vec,n*sizeof(double)); 
+      
+      free(tmp_vec);
+ 
+}
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void invertMatrix(double * mat,double *vec,int n,int rank){
  
@@ -2755,7 +2768,7 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
     cond[k]=cond_thres(matrix,Imatrix,MAXCHANNELS);  
     
     if (cond[k] < Param->seuilcond) {	               
-      invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
+      apply_invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
       for(int i = 0;i<MAXCHANNELS;i++){
 	signal[i][k]= vector[i];
       }
@@ -5313,7 +5326,7 @@ int main(int argc,char *argv[])  {
       memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
       memset(vector,0,MAXCHANNELS*sizeof(double));
       memset(rvector,0,MAXCHANNELS*sizeof(double));
-      
+
       for (l1=0;l1<ndata;l1++) {
 	// select only bolometers in detset
 	int use_bolo = 0;
@@ -5372,11 +5385,11 @@ int main(int argc,char *argv[])  {
       cond[k]=cond_thres(matrix,Imatrix,MAXCHANNELS);  
       
       if (cond[k] < Param->seuilcond) {	               
-	invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
+	apply_invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
 	for(int i = 0;i<MAXCHANNELS;i++){
 	  map[i][k]= vector[i];
 	}      
-	invertMatrix(Imatrix,rvector,MAXCHANNELS,rank);	       
+	apply_invertMatrix(Imatrix,rvector,MAXCHANNELS,rank);	       
 	for(int i = 0;i<MAXCHANNELS;i++){
 	  rmap[i][k]= rvector[i];
 	}
