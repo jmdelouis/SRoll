@@ -328,24 +328,9 @@ paramDef troll_paramDef_list[] = {
   {"rgcnn", true, false, false},
   {"invgi", true, false, false},
   {"Sub_HPR", true, false, false},
-  {"Theo_HPR", true, false, false},
   {"SparseFunc", false, false, false},
-  {"Theo_MAP", true, false, false},
-  {"ADU", true, false, false},
-  {"Theo_CO", false, false, false},
-  {"Theo_13CO", false, false, false},
-  {"Theo_FREEFREE", false, false, false},
-  {"in_synchro_map_I", false, false, false},
-  {"in_synchro_map_Q", false, false, false},
-  {"in_synchro_map_U", false, false, false},
-  {"Theo_Dust_I", false, false, false},
-  {"Theo_Dust_Q", false, false, false},
-  {"Theo_Dust_U", false, false, false},
-  {"Theo_TDust_I", false, false, false},
-  {"Theo_TDust_Q", false, false, false},
-  {"Theo_TDust_U", false, false, false},
-  {"Sim_Dust_Q", false, false, false},
-  {"Sim_Dust_U", false, false, false},
+  {"DiagFunc", false, false, false},
+  {"External_MAP", true, false, false},
   {"Ptg", true, false, false},
   {"Hit", true, false, false},
   {"HPR_Calib", true, false, false},
@@ -355,6 +340,7 @@ paramDef troll_paramDef_list[] = {
   {"Out_MAP", true, false, false},
   {"Out_VEC", true, false, false},
   {"verbose", false, false, false},
+  {"do_offset", false, false, false},
   {"dmc_output_path", false, false, false},
   {"dmc_error_path", false, false, false},
   {"stim_paramfiles", true, false, false},
@@ -367,7 +353,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 94;
+int troll_paramDef_list_size = 80;
 
 
 
@@ -1030,104 +1016,26 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
       strcpy(param->Sub_HPR[i], value[i]);
     }
   }
-  else if (strcmp(name, "Theo_HPR") == 0) {
-    param->flag_Theo_HPR = _PAR_TRUE;
-    param->n_Theo_HPR = list_size;
-    param->Theo_HPR = malloc(list_size * sizeof(PIOSTRING));
-    if (param->Theo_HPR == NULL) {
-      perror("Error");
-      return 1;
-    }
-    int i;
-    for (i = 0; i < list_size; i++) {
-      strcpy(param->Theo_HPR[i], value[i]);
-    }
-  }
   else if (strcmp(name, "SparseFunc") == 0) {
     param->flag_SparseFunc = _PAR_TRUE;
     strcpy(param->SparseFunc, *value);
   }
-  else if (strcmp(name, "Theo_MAP") == 0) {
-    param->flag_Theo_MAP = _PAR_TRUE;
-    param->n_Theo_MAP = list_size;
-    param->Theo_MAP = malloc(list_size * sizeof(PIOSTRING));
-    if (param->Theo_MAP == NULL) {
+  else if (strcmp(name, "DiagFunc") == 0) {
+    param->flag_DiagFunc = _PAR_TRUE;
+    strcpy(param->DiagFunc, *value);
+  }
+  else if (strcmp(name, "External_MAP") == 0) {
+    param->flag_External_MAP = _PAR_TRUE;
+    param->n_External_MAP = list_size;
+    param->External_MAP = malloc(list_size * sizeof(PIOSTRING));
+    if (param->External_MAP == NULL) {
       perror("Error");
       return 1;
     }
     int i;
     for (i = 0; i < list_size; i++) {
-      strcpy(param->Theo_MAP[i], value[i]);
+      strcpy(param->External_MAP[i], value[i]);
     }
-  }
-  else if (strcmp(name, "ADU") == 0) {
-    param->flag_ADU = _PAR_TRUE;
-    param->n_ADU = list_size;
-    param->ADU = malloc(list_size * sizeof(PIOSTRING));
-    if (param->ADU == NULL) {
-      perror("Error");
-      return 1;
-    }
-    int i;
-    for (i = 0; i < list_size; i++) {
-      strcpy(param->ADU[i], value[i]);
-    }
-  }
-  else if (strcmp(name, "Theo_CO") == 0) {
-    param->flag_Theo_CO = _PAR_TRUE;
-    strcpy(param->Theo_CO, *value);
-  }
-  else if (strcmp(name, "Theo_13CO") == 0) {
-    param->flag_Theo_13CO = _PAR_TRUE;
-    strcpy(param->Theo_13CO, *value);
-  }
-  else if (strcmp(name, "Theo_FREEFREE") == 0) {
-    param->flag_Theo_FREEFREE = _PAR_TRUE;
-    strcpy(param->Theo_FREEFREE, *value);
-  }
-  else if (strcmp(name, "in_synchro_map_I") == 0) {
-    param->flag_in_synchro_map_I = _PAR_TRUE;
-    strcpy(param->in_synchro_map_I, *value);
-  }
-  else if (strcmp(name, "in_synchro_map_Q") == 0) {
-    param->flag_in_synchro_map_Q = _PAR_TRUE;
-    strcpy(param->in_synchro_map_Q, *value);
-  }
-  else if (strcmp(name, "in_synchro_map_U") == 0) {
-    param->flag_in_synchro_map_U = _PAR_TRUE;
-    strcpy(param->in_synchro_map_U, *value);
-  }
-  else if (strcmp(name, "Theo_Dust_I") == 0) {
-    param->flag_Theo_Dust_I = _PAR_TRUE;
-    strcpy(param->Theo_Dust_I, *value);
-  }
-  else if (strcmp(name, "Theo_Dust_Q") == 0) {
-    param->flag_Theo_Dust_Q = _PAR_TRUE;
-    strcpy(param->Theo_Dust_Q, *value);
-  }
-  else if (strcmp(name, "Theo_Dust_U") == 0) {
-    param->flag_Theo_Dust_U = _PAR_TRUE;
-    strcpy(param->Theo_Dust_U, *value);
-  }
-  else if (strcmp(name, "Theo_TDust_I") == 0) {
-    param->flag_Theo_TDust_I = _PAR_TRUE;
-    strcpy(param->Theo_TDust_I, *value);
-  }
-  else if (strcmp(name, "Theo_TDust_Q") == 0) {
-    param->flag_Theo_TDust_Q = _PAR_TRUE;
-    strcpy(param->Theo_TDust_Q, *value);
-  }
-  else if (strcmp(name, "Theo_TDust_U") == 0) {
-    param->flag_Theo_TDust_U = _PAR_TRUE;
-    strcpy(param->Theo_TDust_U, *value);
-  }
-  else if (strcmp(name, "Sim_Dust_Q") == 0) {
-    param->flag_Sim_Dust_Q = _PAR_TRUE;
-    strcpy(param->Sim_Dust_Q, *value);
-  }
-  else if (strcmp(name, "Sim_Dust_U") == 0) {
-    param->flag_Sim_Dust_U = _PAR_TRUE;
-    strcpy(param->Sim_Dust_U, *value);
   }
   else if (strcmp(name, "Ptg") == 0) {
     param->flag_Ptg = _PAR_TRUE;
@@ -1230,6 +1138,15 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->verbose = myRead_PIOINT(*value);
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'verbose': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
+      return 1;
+    }
+  }
+  else if (strcmp(name, "do_offset") == 0) {
+    param->flag_do_offset = _PAR_TRUE;
+    errno = 0;
+    param->do_offset = myRead_PIOINT(*value);
+    if (errno != 0) {
+      fprintf(stderr, "ERROR: 'do_offset': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
       return 1;
     }
   }

@@ -33,7 +33,7 @@
  */
 
 typedef struct {
-
+  
   /* ---- Parameter BeginRing ------------------------------------------
    * First ring to consider (included)
    */
@@ -371,13 +371,6 @@ typedef struct {
   PIOSTRING *Sub_HPR;
   PIOBYTE flag_Sub_HPR;  /* ==_PAR_TRUE if Sub_HPR is present */
   PIOLONG n_Sub_HPR; /* ==number_of_Sub_HPR */
-
-  /* ---- Optional InputList Theo_HPR ---------------------------------
-   *
-   */
-  PIOSTRING *Theo_HPR;
-  PIOBYTE flag_Theo_HPR;  /* ==_PAR_TRUE if Theo_HPR is present */
-  PIOLONG n_Theo_HPR; /* ==number_of_Theo_HPR */
   
   /* ---- Optional Input SparseFunc ---------------------------------
    *
@@ -385,104 +378,18 @@ typedef struct {
   PIOSTRING SparseFunc;
   PIOBYTE flag_SparseFunc;  /* ==_PAR_TRUE if SparseFunc is present */
 
-  /* ---- Optional InputList Theo_MAP ---------------------------------
+  /* ---- Optional Input DiagFunc ---------------------------------
    *
    */
-  PIOSTRING *Theo_MAP;
-  PIOBYTE flag_Theo_MAP;  /* ==_PAR_TRUE if Theo_MAP is present */
-  PIOLONG n_Theo_MAP; /* ==number_of_Theo_MAP */
+  PIOSTRING DiagFunc;
+  PIOBYTE flag_DiagFunc;  /* ==_PAR_TRUE if SparseFunc is present */
 
-  /* ---- Optional InputList ADU ---------------------------------------
+  /* ---- Optional InputList External_MAP ---------------------------------
    *
    */
-  PIOSTRING *ADU;
-  PIOBYTE flag_ADU;  /* ==_PAR_TRUE if ADU is present */
-  PIOLONG n_ADU; /* ==number_of_ADU */
-
-  /* ---- Optional Input Theo_CO ---------------------------------------
-   * Input CO Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_CO;
-  PIOBYTE flag_Theo_CO;  /* ==_PAR_TRUE if Theo_CO is present */
-
-  /* ---- Optional Input Theo_13CO ---------------------------------------
-   * Input 13CO Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_13CO;
-  PIOBYTE flag_Theo_13CO;  /* ==_PAR_TRUE if Theo_13CO is present */
-
-  /* ---- Optional Input Theo_FREEFREE ---------------------------------
-   * Input FREEFREE Map (theoritical) refitted inside the
-   * software
-   */
-  PIOSTRING Theo_FREEFREE;
-  PIOBYTE flag_Theo_FREEFREE;  /* ==_PAR_TRUE if Theo_FREEFREE is present */
-
-  /* ---- Optional Input in_synchro_map_I -----------------------------------
-   * Input Dust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING in_synchro_map_I;
-  PIOBYTE flag_in_synchro_map_I;  /* ==_PAR_TRUE if in_synchro_map_I is present */
-
-  /* ---- Optional Input in_synchro_map_Q -----------------------------------
-   *  Input Dust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING in_synchro_map_Q;
-  PIOBYTE flag_in_synchro_map_Q;  /* ==_PAR_TRUE if in_synchro_map_Q is present */
-
-  /* ---- Optional Input in_synchro_map_U -----------------------------------
-   *  Input Dust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING in_synchro_map_U;
-  PIOBYTE flag_in_synchro_map_U;  /* ==_PAR_TRUE if in_synchro_map_U is present */
-
-  /* ---- Optional Input Theo_Dust_I -----------------------------------
-   * Input Dust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_Dust_I;
-  PIOBYTE flag_Theo_Dust_I;  /* ==_PAR_TRUE if Theo_Dust_I is present */
-
-  /* ---- Optional Input Theo_Dust_Q -----------------------------------
-   *  Input Dust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_Dust_Q;
-  PIOBYTE flag_Theo_Dust_Q;  /* ==_PAR_TRUE if Theo_Dust_Q is present */
-
-  /* ---- Optional Input Theo_Dust_U -----------------------------------
-   *  Input Dust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_Dust_U;
-  PIOBYTE flag_Theo_Dust_U;  /* ==_PAR_TRUE if Theo_Dust_U is present */
-
-  /* ---- Optional Input Theo_Tdust_I -----------------------------------
-   * Input Tdust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_TDust_I;
-  PIOBYTE flag_Theo_TDust_I;  /* ==_PAR_TRUE if Theo_Tdust_I is present */
-
-  /* ---- Optional Input Theo_Tdust_Q -----------------------------------
-   *  Input Tdust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_TDust_Q;
-  PIOBYTE flag_Theo_TDust_Q;  /* ==_PAR_TRUE if Theo_Tdust_Q is present */
-
-  /* ---- Optional Input Theo_Tdust_U -----------------------------------
-   *  Input Tdust Map (theoritical) refitted inside the software
-   */
-  PIOSTRING Theo_TDust_U;
-  PIOBYTE flag_Theo_TDust_U;  /* ==_PAR_TRUE if Theo_Tdust_U is present */
-
-  /* ---- Optional Input Sim_Dust_Q ------------------------------------
-   *
-   */
-  PIOSTRING Sim_Dust_Q;
-  PIOBYTE flag_Sim_Dust_Q;  /* ==_PAR_TRUE if Sim_Dust_Q is present */
-
-  /* ---- Optional Input Sim_Dust_U ------------------------------------
-   *
-   */
-  PIOSTRING Sim_Dust_U;
-  PIOBYTE flag_Sim_Dust_U;  /* ==_PAR_TRUE if Sim_Dust_U is present */
+  PIOSTRING *External_MAP;
+  PIOBYTE flag_External_MAP;  /* ==_PAR_TRUE if External_MAP is present */
+  PIOLONG n_External_MAP; /* ==number_of_External_MAP */
 
   /* ---- Optional InputList Ptg ----------------------------------
    *
@@ -546,6 +453,12 @@ typedef struct {
    */
   PIOINT verbose;
   PIOBYTE flag_verbose;  /* ==_PAR_TRUE if verbose is present */
+  
+  /* ---- Optional Parameter do_offset -----------------------------------
+   * Verbosity level. 0 : normal, 1:do_offset
+   */
+  PIOINT do_offset;
+  PIOBYTE flag_do_offset;  /* ==_PAR_TRUE if do_offset is present */
 
   /* ---- Optional Parameter dmc_output_path ---------------------------
    * Special slot to store the output logging path
