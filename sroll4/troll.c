@@ -4504,21 +4504,31 @@ int main(int argc,char *argv[])  {
     =*/
   
 #if 1
-  int *begbuf = (int *) malloc(mpi_size*sizeof(int));
+  int *id_buff;
+  if (mpi_size>1) { 
+    id_buff = NULL;
+  }
+  
   hpix * tbs = NULL;
   long ntbs=0;
   
-  for (int k=0;k<mpi_size;k++) {
-    begbuf[k]=ntbs*sizeof(hpix);
+  for (long k=0;k<mpi_size;k++) {
     for (i=begpix[k];i<edpix[k]+1;i++) {
       if (l_nhpix[i]>0) {
 	if (tbs==NULL) {
 	  tbs = (hpix *) malloc(l_nhpix[i]*sizeof(hpix));
+	  if (mpi_size>1) id_buff = (int *) malloc(l_nhpix[i]*sizeof(int));
 	}
 	else {
 	  tbs = (hpix *) realloc(tbs,(ntbs+l_nhpix[i])*sizeof(hpix));
+	  if (mpi_size>1) id_buff = (int *) realloc(id_buff,(ntbs+l_nhpix[i])*sizeof(int));
 	}
 	memcpy(tbs+ntbs,l_hpix[i],l_nhpix[i]*sizeof(hpix));
+	if (mpi_size>1) {
+	  for (long l=0;l<l_nhpix[i];l++) {
+	    id_buff[ntbs+l]=k;
+	  }
+	}
 	ntbs+=l_nhpix[i];
 	free(l_hpix[i]);
       }
@@ -4530,47 +4540,142 @@ int main(int argc,char *argv[])  {
   long ldata=ntbs;
 
   if (mpi_size>1) { 
-    begbuf[mpi_size]=ntbs*sizeof(hpix);
-       	    
-    /* exchange all buffer information */
-    int *allbuf = (int *) malloc(mpi_size*(mpi_size+1)*sizeof(int));
-    
-    MPI_Allgather(begbuf,mpi_size+1,MPI_INT,allbuf,(mpi_size+1),MPI_INT,MPI_COMM_WORLD);
-    
-    int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
-    int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
-    int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
-    int *rdispls = (int *) calloc(mpi_size,sizeof(int));
-    
-    for (i=0;i<size;i++) {
-      sendcounts[i]=begbuf[i+1]-begbuf[i];
-      sdispls[i]=begbuf[i];
-      recvcounts[i]=allbuf[i*(size+1)+rank+1]-allbuf[i*(size+1)+rank];
+    hpix *otbs=NULL;
+    long notbs=0;
+    long *begbuf = (long *) malloc((mpi_size+1)*sizeof(long));
+
+    begbuf[0]=0;
+
+    for (long k=0;k<ntbs;k++) {
+      begbuf[id_buff[k]+1]=(k+1)*sizeof(hpix);
     }
-    
-    free(begbuf);
-    free(allbuf);
-    
-    rdispls[0]=0;
-    for (i=1;i<size;i++) {
-      rdispls[i]=rdispls[i-1]+recvcounts[i-1];
+
+#define MAXMPIBUFFER (10000000)
+    if (ntbs<MAXMPIBUFFER) {
+      
+      /* exchange all buffer information */
+      long *allbuf = (long *) malloc(mpi_size*(mpi_size+1)*sizeof(long));
+      
+      MPI_Allgather(begbuf,mpi_size+1,MPI_LONG,allbuf,(mpi_size+1),MPI_LONG,MPI_COMM_WORLD);
+      
+      int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
+      int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
+      int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
+      int *rdispls = (int *) calloc(mpi_size,sizeof(int));
+      
+      for (i=0;i<mpi_size;i++) {
+	sendcounts[i]=begbuf[i+1]-begbuf[i];
+	sdispls[i]=begbuf[i];
+	recvcounts[i]=allbuf[i*(mpi_size+1)+rank+1]-allbuf[i*(mpi_size+1)+rank];
+      }
+      
+      free(begbuf);
+      free(allbuf);
+      
+      rdispls[0]=0;
+      for (i=1;i<mpi_size;i++) {
+	rdispls[i]=rdispls[i-1]+recvcounts[i-1];
+      }
+      
+      ldata=(rdispls[mpi_size-1]+recvcounts[mpi_size-1])/sizeof(hpix);
+      
+      
+      otbs = (hpix *) malloc(ldata*sizeof(hpix));
+
+      MPI_Barrier(MPI_COMM_WORLD);
+      MPI_Alltoallv(tbs,sendcounts,sdispls,MPI_BYTE,
+		    otbs,recvcounts,rdispls,MPI_BYTE,
+		    MPI_COMM_WORLD);
+      
+      free(sdispls);
+      free(sendcounts);
+      free(recvcounts);
+      free(rdispls);
+      free(tbs);
+      free(id_buff);
+      tbs=otbs;
     }
-    
-    ldata=(rdispls[size-1]+recvcounts[size-1])/sizeof(hpix);
-    
-    hpix *otbs = (hpix *) malloc(ldata*sizeof(hpix));
-    
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Alltoallv(tbs,sendcounts,sdispls,MPI_BYTE,
-		  otbs,recvcounts,rdispls,MPI_BYTE,
-		  MPI_COMM_WORLD);
-    
-    free(sdispls);
-    free(sendcounts);
-    free(recvcounts);
-    free(rdispls);
-    free(tbs);
-    tbs=otbs;
+    else {
+      long nbuffer=ntbs/MAXMPIBUFFER;
+      if (nbuffer*MAXMPIBUFFER<ntbs) nbuffer++;
+      //nbuffer=1;
+
+      if (rank==0) fprintf(stderr,"Too much data per proc cut the data exchange in subpieces [%d]\n",(int) nbuffer);
+
+      hpix * l_tbs = (hpix *) malloc(sizeof(hpix)*(ntbs/nbuffer+1));
+
+      for (long k=0;k<nbuffer;k++) {
+	long l_ntbs=0;
+
+	if (rank==0) fprintf(stderr,"Start [%d] ...",(int) k);
+
+	begbuf[0]=0;
+
+	for (long l=k;l<ntbs;l+=nbuffer) {
+	  begbuf[id_buff[l]+1]=(l_ntbs+1)*sizeof(hpix);
+	  memcpy(l_tbs+l_ntbs,tbs+l,sizeof(hpix));
+	  l_ntbs++;
+	}
+
+	/* exchange all buffer information */
+	long *allbuf = (long *) malloc(mpi_size*(mpi_size+1)*sizeof(long));
+      
+	MPI_Allgather(begbuf,mpi_size+1,MPI_LONG,allbuf,(mpi_size+1),MPI_LONG,MPI_COMM_WORLD);
+      
+	int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
+	int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
+	int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
+	int *rdispls = (int *) calloc(mpi_size,sizeof(int));
+      
+	for (i=0;i<mpi_size;i++) {
+	  sendcounts[i]=begbuf[i+1]-begbuf[i];
+	  sdispls[i]=begbuf[i];
+	  recvcounts[i]=allbuf[i*(mpi_size+1)+rank+1]-allbuf[i*(mpi_size+1)+rank];
+	}
+      
+	free(allbuf);
+      
+	rdispls[0]=0;
+	for (i=1;i<mpi_size;i++) {
+	  rdispls[i]=rdispls[i-1]+recvcounts[i-1];
+	}
+      
+	ldata=(rdispls[mpi_size-1]+recvcounts[mpi_size-1])/sizeof(hpix);
+
+	hpix *l_otbs = (hpix *) malloc(ldata*sizeof(hpix));
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	MPI_Alltoallv(l_tbs,sendcounts,sdispls,MPI_BYTE,
+		      l_otbs,recvcounts,rdispls,MPI_BYTE,
+		      MPI_COMM_WORLD);
+	
+	free(sdispls);
+	free(sendcounts);
+	free(recvcounts);
+	free(rdispls);
+
+	if (otbs==NULL) {
+	  otbs = (hpix *) malloc(ldata*sizeof(hpix));
+	}
+	else {
+	  otbs = (hpix *) realloc(otbs,(notbs+ldata)*sizeof(hpix));
+	}
+	memcpy(otbs+notbs,l_otbs,ldata*sizeof(hpix));
+
+	free(l_otbs);
+	
+	notbs += ldata;
+	if (rank==0) 
+	  fprintf(stderr,"Finish [%d] %ld %ld\n",(int) k,(long) notbs,(long) ntbs);
+      }
+
+      free(begbuf);
+      free(l_tbs);
+      free(tbs);
+      tbs=otbs;
+      ldata=notbs;
+    }
   }
   
   nnbpix = edpix[rank]-begpix[rank]+1;
@@ -4581,6 +4686,10 @@ int main(int argc,char *argv[])  {
 
   for (int kk=0;kk<ldata;kk++) {
     j=tbs[kk].ipix-begpix[rank];
+    if (j<0||j>nnbpix) {
+      fprintf(stderr,"Problem whil exchanging data between processors %d\n",(int) j);
+      exit(0);
+    }
     if (loc_nhpix[j]==0) {
       loc_hpix[j] = (hpix *) malloc(sizeof(hpix));
     }
