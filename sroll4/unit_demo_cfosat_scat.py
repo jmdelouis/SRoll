@@ -3,7 +3,7 @@ import foscat.Spline1D as spl
   
 class diag_incidence:
   
-  def __init__(self,params,rank):
+  def __init__(self,params,rank,beginring,endring):
 
     self.valmin=0.205
     self.valmax=0.945
@@ -15,13 +15,16 @@ class diag_incidence:
   def get_diag_idx(self,rg,ib,hidx,inc,externals):
     a1=int(self.npt_incidence*(inc-self.valmin)/(self.valmax-self.valmin))
     return a1
-    
+
+
 class test:
   
-  def __init__(self,params,rank):
+  def __init__(self,params,rank,beginring,endring):
     # read the first ring to compute the minvalue
+    self.time_step=256
     tmp=np.fromfile(params['External'][0],offset=params['BeginRing']*4*3000000,count=3000000,dtype='float32')
     htmp=np.fromfile(params['Hit'][0],offset=params['BeginRing']*4*3000000,count=3000000,dtype='float32')
+
     if rank==0:
       print('Begin Time ',tmp[htmp>0].min())
     self.timemin=tmp[htmp>0].min()
@@ -29,6 +32,7 @@ class test:
     del(htmp)
     tmp=np.fromfile(params['External'][0],offset=params['EndRing']*4*3000000,count=3000000,dtype='float32')
     htmp=np.fromfile(params['Hit'][0],offset=params['EndRing']*4*3000000,count=3000000,dtype='float32')
+    
     if rank==0:
       print('End Time ',tmp[htmp>0].max())
     self.timemax=tmp[htmp>0].max()
@@ -44,18 +48,20 @@ class test:
       print('Use %d knots spline to compute the time variation'%(self.nsplinetime))
     splinetime=spl.Spline1D(self.nsplinetime)
     
-    ref={}
-    idx={}
+    ref1={}
+    idx1={}
 
-    for i in range(1024*self.nsplinetime+1):
-      vv1=np.array(splinetime.calculate(i/(1024*self.nsplinetime)))
+    for i in range(self.time_step*self.nsplinetime+1):
+      vv1=np.array(splinetime.calculate(i/(self.time_step*self.nsplinetime)))
       lidx1=np.where(vv1>0.0)[0]
+      if len(lidx1)>4:
+        print(i,len(lidx1))
+      # AJOUTE NSPLINE POUR EVITER DE CONFONDRE LES INDEXS
+      idx1[i]=[int(k+self.nspline) for k in lidx1]
+      ref1[i]=[vv1[lidx1[k]] for k in range(len(lidx1))]
       
-      idx[i]=[int(self.nspline+k) for k in lidx1]
-      ref[i]=[vv1[lidx1[k]] for k in range(len(lidx1))]
-
-    self.spline_time_idx=idx
-    self.spline_time_ref=ref
+    self.spline_time_idx=idx1
+    self.spline_time_ref=ref1
     
     myspl=spl.Spline1D(self.nspline)
 
@@ -65,7 +71,6 @@ class test:
     for i in range(256*self.nspline):
       vv1=np.array(myspl.calculate(i/(256*self.nspline)))
       lidx1=np.where(vv1>0.0)[0]
-      
       idx[i]=[int(k) for k in lidx1]
       ref[i]=[vv1[lidx1[k]] for k in range(len(lidx1))]
 
@@ -80,24 +85,24 @@ class test:
       print(inc)
       
     if externals[0]>self.timemax:
-      self.timemax=externals[0]
-      print(externals[0])
+      print('PROBLEM IN TIME MAX ',externals[0])
     if externals[0]<self.timemin:
-      self.timemin=externals[0]
-      print(externals[0])
+      print('PROBLEM IN TIME MIN ',externals[0])
       
     a1=int(256*self.nspline*(inc-self.valmin)/(self.valmax-self.valmin))
     
-    atime=int(1024*self.nsplinetime*(externals[0]-self.timemin)/(self.timemax-self.timemin))
+    atime=int(self.time_step*self.nsplinetime*(externals[0]-self.timemin)/(self.timemax-self.timemin))
 
-    if atime<0 or atime>self.nsplinetime*1024:
-      print(atime,self.nsplinetime*1024,externals[0],self.timemax)
-      
-    return self.spline_idx[a1],self.spline_ref[a1] #+self.spline_time_idx[atime],self.spline_ref[a1]+self.spline_time_ref[atime]
+    if atime<0 or atime>self.nsplinetime*self.time_step:
+      print('PROBLEM IN TIME SCALE')
+      print(atime,self.nsplinetime*self.time_step,externals[0],self.timemax)
+      exit(0)
+    
+    return self.spline_idx[a1]+self.spline_time_idx[atime],self.spline_ref[a1]+self.spline_time_ref[atime]
   
 class proj:
   
-  def __init__(self,params,rank):
+  def __init__(self,params,rank,beginring,endring):
     self.valmin=0.205
     self.valmax=0.945
     self.npt_incidence=params['npt_incidence']
@@ -105,7 +110,7 @@ class proj:
     self.std=1/np.fromfile('NOISEMOD',dtype=float)
 
   def getnumber_of_channels(self):
-    return 1
+    return 2
   
   def eval(self,
            ptg_tuple_2,
@@ -115,7 +120,8 @@ class proj:
            id_bolo,
            hit,
            idx_in_ring,
-           signal):
+           signal,
+           calib):
       
     a1=int(self.npt_incidence*(ptg_tuple_2-self.valmin)/(self.valmax-self.valmin))
     if a1<0 or a1>=self.npt_incidence:
@@ -123,7 +129,7 @@ class proj:
       
     hit=hit*self.std[a1]
     
-    return signal,hit,[1.0]
+    return signal,hit,calib,[1.0,np.cos(ptg_tuple_2)**2]
 
 def main():
   
@@ -132,7 +138,7 @@ def main():
 
   # Nombre de ring à sélectionner, ici 100 ring
   BeginRing = 0
-  EndRing = 1
+  EndRing = 30
   
   # function describing a diag
   DiagFunc = "diag_incidence"
@@ -141,8 +147,8 @@ def main():
   # function describing the parameters to fit for instrumental correction
   SparseFunc = "test"
   nspline=8
-  do_offset=1
-  nspline_time=4
+  do_offset=0
+  nspline_time=(1+EndRing- BeginRing)*2
   
   # Type de projection (voir class proj)
   projection = "proj"
@@ -171,13 +177,12 @@ def main():
   name_surv=['Full']
 
   # Pour chaque détecteur est ce qu'on rajoute une moyenne à nos fit
-  do_mean = []
   
   val_mean = [0.0 for i in range(2)] 
   # poids dans la matrice 
-  w_mean = [1E10 for i in range(2)]
+  w_mean = [1.0,1.0]
   # normalize 
-  do_mean = [1 for k in range(nspline)]+[0 for k in range(nspline_time)]+[0 for k in range(nspline)]+[1 for k in range(nspline_time)]
+  do_mean = [1.0 for k in range(nspline)]+[0.0 for k in range(nspline_time)]+[0.0 for k in range(nspline)]+[1.0 for k in range(nspline_time)]
   
   # Nombre de survey : On peut grouper plusieurs survey ou les prendre 1 par 1
   MAPRINGS = [1]
@@ -196,7 +201,12 @@ def main():
 
   # Nombre d'itération pour fit le gain 
   NITT = 1
+  
+  # Nombre d'itération entre chaque iteration de gain
   N_IN_ITT = 1000
+  
+  # Limite de calcul
+  S_IN_ITT = 1E-30
   
   # Nan value 
   UNSEEN = -1.6375e30 
@@ -204,9 +214,6 @@ def main():
 
   # 1 seul gain pour toute la mission
   GAINSTEP = 0
-  # On sait pas ce que c'est mais 1 si 1 capteur 
-  NADU = [1]
-  NADUSTEP= [1]
 
   # ???
   verbose = 0
@@ -217,11 +224,8 @@ def main():
   # Calibration de départ des détecteurs (coeff + polarisation)
   Calibration = [1.0]  
 
-  # Calibration de départ des détecteurs (polarisation)
-  CrossPol = [0.0]
-
   # Bruit blanc de chaque détecteurs
-  NEP = [1]
+  NEP = [1.0]
   
   # bolomask Définir les cartes :  1 ière carte = tous les détecteurs, 2 ième carte 1 ier et 2 ième détecteur 
   bolomask = [1]
@@ -253,26 +257,9 @@ def main():
   # Out path
   Out_MAP = [dirout+"/%s_%s%s"%(OMAP,i,inci_str) for i in bolo]
   Out_VEC = [dirout+"/%s%s"%(OMAP,i) for i in bolo]
-  Out_Offset = [dirout+"/%s%s"%(OMAP,i) for i in bolo]
-  Out_Offset_corr = [dirout+"/%s%s"%(OMAP,i) for i in bolo]
-  Out_xi2 = [dirout+"/%s%s"%(OMAP,i) for i in bolo]
-  Out_xi2_corr = [dirout+"/%s%s"%(OMAP,i) for i in bolo]
-
-
-  #%% ################### Pas utilisé  ########################
   
-  D_NOPOL = 1 # Utilisé
-  KCMBIN = 0
-  ADDDIP = 0
-  CUTRG= 1
-  DOMAXVRAIE = 1
-  XI2STOP = 1.0
-
   # Pas utilisé: pour cosmo 
   Monop = [0]
-  FSLCOEF = [0.0]
-  OUT_NOPOL = [1]
-  n_OUT_NOPOL=len(OUT_NOPOL)
 
   ###################  ###################  ###################
 

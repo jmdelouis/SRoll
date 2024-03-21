@@ -5,8 +5,6 @@
 def main():
 	BeginRing = 	#mandatory parameter
 	EndRing = 	#mandatory parameter
-	CrossPol = []
-	number_of_CrossPol = 	#mandatory parameter
 	ADDPOL = 
 	Calibration = []
 	number_of_Calibration = 	#mandatory parameter
@@ -26,19 +24,10 @@ def main():
 	number_of_OUT_NOPOL = 	#mandatory parameter
 	SUB_HPRCOEF = []
 	number_of_SUB_HPRCOEF = 	#mandatory parameter
-	D_NOPOL = 	#mandatory parameter
 	SAVEINTMAP = 	#mandatory parameter
-	CALLCNN = 
-	CNN_WEIGHTS = 
-	CNN_ITT = 
-	CNN_START = 
 	CNN_LEARN_PARAM = 
 	CNN_TMPID = 
-	CNN_RESIDU = 
-	CNN_XSIZE = 
-	CNN_YSIZE = 
 	BUILDTF = 
-	CUTRG = 	#mandatory parameter
 	TEMPLATE_NSIDE = 
 	RSTEP = 	#mandatory parameter
 	GAINSTEP = 	#mandatory parameter
@@ -47,10 +36,9 @@ def main():
 	number_of_do_foscat = 	#mandatory parameter
 	do_templates = []
 	number_of_do_templates = 	#mandatory parameter
-	XI2STOP = 	#mandatory parameter
-	AVGDUST = 	#mandatory parameter
 	NITT = 	#mandatory parameter
 	N_IN_ITT = 	#mandatory parameter
+	S_IN_ITT = 	#mandatory parameter
 	NADU = []
 	number_of_NADU = 	#mandatory parameter
 	NADUSTEP = []
@@ -92,8 +80,6 @@ def main():
 	number_of_Ptg = 
 	Hit = []
 	number_of_Hit = 
-	HPR_Calib = []
-	number_of_HPR_Calib = 
 	Badring = []
 	number_of_Badring = 
 	VarGain = []
