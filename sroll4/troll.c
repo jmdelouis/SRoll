@@ -3284,11 +3284,11 @@ int Get_NumberOfDiag(PyObject *diagFunc)
   return n;
 }
 
- double init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo,double hit,int idx_in_ring,PIOFLOAT *sig,PIOFLOAT *calib)
+int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo,int idx_in_ring,PIOFLOAT *sig,PIOFLOAT *calib,PIOFLOAT *hit)
 {
   
   PyObject *pValue=NULL;
-  double ohit=0;
+  int is_valid=0;
   
   if (projFunc != NULL){
     PyObject *pArg1 = PyFloat_FromDouble((double)psi); // val est un flottant
@@ -3301,7 +3301,7 @@ int Get_NumberOfDiag(PyObject *diagFunc)
     PyObject *pArg3 = PyFloat_FromDouble((double)rgnorm); // val est un flottant
     PyObject *pArg4 = PyLong_FromLong((long) ipix); // val est un flottant
     PyObject *pArg5 = PyLong_FromLong((long)idx_bolo); // val est un flottant
-    PyObject *pArg6 = PyFloat_FromDouble((double) hit); // val est un flottant
+    PyObject *pArg6 = PyFloat_FromDouble((double) *hit); // val est un flottant
     PyObject *pArg7 = PyLong_FromLong((long)idx_in_ring); // val est un flottant
     PyObject *pArg8 = PyFloat_FromDouble((double) *sig); // val est un flottant
     PyObject *pArg9 = PyFloat_FromDouble((double) *calib); // val est un flottant
@@ -3315,16 +3315,17 @@ int Get_NumberOfDiag(PyObject *diagFunc)
     if (pValue != NULL) {
       if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 5) {
 	// Extraire les deux tableaux du tuple
-	*sig = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 0));
-	ohit = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 1));
-	*calib = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 2));
-	int err=copy_float_array(PyTuple_GetItem(pValue, 3),h->channels,MAXCHAN);
+	is_valid = (int) PyLong_AsLong(PyTuple_GetItem(pValue, 0));
+	*sig = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 1));
+	*hit = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 2));
+	*calib = (double) PyFloat_AsDouble(PyTuple_GetItem(pValue, 3));
+	int err=copy_float_array(PyTuple_GetItem(pValue, 4),h->channels,MAXCHAN);
 	if (err!=MAXCHANNELS) {
 	  fprintf(stderr, "Projection function does not provide the good number of channels: expected %d  get %d\n",MAXCHANNELS,err);
 	}
       }
       else {
-	  fprintf(stderr, "Projection function does not provide the good number of argument (4): expected sig,hit,chan_value\n");
+	  fprintf(stderr, "Projection function does not provide the good number of argument (4): expected is_valid,sig,hit,chan_value\n");
 	  fprintf(stderr, " Where sig and hit are a double (respectively signal and hit count) and\n");
 	  fprintf(stderr, " chan_value is a list of double values with len(chan_value)=%d",MAXCHANNELS);
 	  exit(0);
@@ -3355,7 +3356,7 @@ int Get_NumberOfDiag(PyObject *diagFunc)
     exit(0);
   }
   
-  return ohit;
+  return is_valid;
   
 }
 
@@ -4175,59 +4176,62 @@ int main(int argc,char *argv[])  {
         }
 	long nrg_htmp=0;
 	for (i=0;i<RINGSIZE;i++) {
-	  if (h[i]>0) {
-            long ipix;
-            long ipix128;
-            long l_ipix128;
-            nrg_htmp++;
-            double vecpix[3];
-            ang2pix_ring( Nside, th[i], ph[i], &ipix);
-            ang2pix_ring( nside128, th[i], ph[i], &ipix128); // Beware taht nside128 could be different from 128
-            ang2pix_ring( 128, th[i], ph[i], &l_ipix128);
-
-	    ang2vec(th[i], ph[i],vecpix);
-	    hpix *tp_hpix;
+	  hpix tmp_hpix;
+	  long ipix;
+	  long ipix128;
+	  long l_ipix128;
+	  nrg_htmp++;
+	  double vecpix[3];
+	  ang2pix_ring( Nside, th[i], ph[i], &ipix);
+	  ang2pix_ring( nside128, th[i], ph[i], &ipix128); // Beware taht nside128 could be different from 128
+	  ang2pix_ring( 128, th[i], ph[i], &l_ipix128);
+	  
+	  ang2vec(th[i], ph[i],vecpix);
+	  hpix *tp_hpix=&tmp_hpix;
             
+	  memset(tp_hpix,0,sizeof(hpix));
+
+	  for (int iter = 0; iter < number_of_iterations; iter++) {
+	    tp_hpix->listp[iter]=(y[iter][i]-Param->Monop[ib])/Param->Calibration[ib];
+	  }
+	  
+	  tp_hpix->sig=tp_hpix->listp[0];
+	  
+	  if (Sub_HPR != NULL) {
+	    tp_hpix->Sub_HPR = Sub_HPR[i]*Param->SUB_HPRCOEF[ib];
+	  } else {
+	    tp_hpix->Sub_HPR = 0.0;
+	  }
+	  
+	  tp_hpix->corr_cnn = 0;
+	  
+	  int is_valid = init_channels(tp_hpix,
+				   projFunc,
+				   psi[i],
+				   External+i,
+				   (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
+				   ipix,
+				   ib,
+				   i,
+				   &(tp_hpix->sig),
+				   &(tp_hpix->hpr_cal),
+				   h+i);
+	  
+	  if (is_valid) {
 	    if (l_nhpix[ipix]==0) {
 	      l_hpix[ipix] = (hpix *) malloc(sizeof(hpix));
 	    }
 	    else {
 	      l_hpix[ipix] = (hpix *) realloc(l_hpix[ipix],(l_nhpix[ipix]+1)*sizeof(hpix));
 	    }
+	    memcpy(l_hpix[ipix]+l_nhpix[ipix],tp_hpix,sizeof(hpix));
+	    
 	    tp_hpix=l_hpix[ipix]+l_nhpix[ipix];
-
-	    memset(tp_hpix,0,sizeof(hpix));
-
-	    for (int iter = 0; iter < number_of_iterations; iter++) {
-	      tp_hpix->listp[iter]=(y[iter][i]-Param->Monop[ib])/Param->Calibration[ib];
-	    }
 	    
-	    tp_hpix->sig=tp_hpix->listp[0];
+	    tp_hpix->hit = 1/sqrt(h[i]);
 	    
-	    if (Sub_HPR != NULL) {
-	      tp_hpix->Sub_HPR = Sub_HPR[i]*Param->SUB_HPRCOEF[ib];
-	    } else {
-	      tp_hpix->Sub_HPR = 0.0;
-	    }
-	    
-	    tp_hpix->corr_cnn = 0;
-	    
-	    tp_hpix->hit = init_channels(tp_hpix,
-					 projFunc,
-					 psi[i],
-					 External+i,
-					 (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
-					 ipix,
-					 ib,
-					 h[i],
-					 i,
-					 &(tp_hpix->sig),
-					 &(tp_hpix->hpr_cal));
-
-	    tp_hpix->hit    = 1/sqrt(tp_hpix->hit);
-
 	    tp_hpix->model=tp_hpix->hpr_cal;
-
+	    
 	    if (sparseFunc!=NULL) {
 	      
 	      tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,
@@ -4247,7 +4251,7 @@ int main(int argc,char *argv[])  {
 		}
 	      }
 	    }
-
+	    
 	    if (diagFunc!=NULL) {
 	      tp_hpix->diag_idx = calc_diag_hpr(diagFunc,
 						rg,
@@ -4263,12 +4267,12 @@ int main(int argc,char *argv[])  {
 	    for (j=0;j<npixmap;j++) {
 	      tp_hpix->listofmap[j]=0;
 	      for (int k=0;k<MAXCHANNELS;k++) {
-		      tp_hpix->listofmap[j]+=tp_hpix->channels[k]*mapmodel[j][ipix128];
+		tp_hpix->listofmap[j]+=tp_hpix->channels[k]*mapmodel[j][ipix128];
 	      }
 	    }
-
+	    
 	    tp_hpix->w=h[i]*sxi;
-	         
+	    
 	    tp_hpix->surv = surv;
 	    tp_hpix->ib = ib;
 	    tp_hpix->rg = rg;
@@ -4277,12 +4281,9 @@ int main(int argc,char *argv[])  {
 	    l_nhpix[ipix]+=1;
 	    if (isnan(tp_hpix->sig)||isnan(tp_hpix->w)||isnan(tp_hpix->hpr_cal)) {
 	      fprintf(stderr,"NAN NAN NAN %lf %lf %lf %ld %ld\n",tp_hpix->hpr_cal,tp_hpix->sig,tp_hpix->w,(long)rg,(long)i);
-	    }
-	    
+	    }  
 	  }
 	}
-
-
 
 	if ((rank==0) && (rg==globalRankInfo.BeginRing[rank]) ) {
 	  GetProcMem(&vmem,&phymem);
