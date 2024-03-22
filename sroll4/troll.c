@@ -5326,7 +5326,7 @@ int main(int argc,char *argv[])  {
       }
     }
 
-    if (iter=number_of_iterations-1) {
+    if (iter==number_of_iterations-1) {
       free(x2);
       free(x2old);
       free(x2init);
