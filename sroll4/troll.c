@@ -5336,7 +5336,6 @@ int main(int argc,char *argv[])  {
 	      long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
 	      //calcul signal corriger
 	      double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-	      double rsig = htmp[l1].sig*g1;
 	      
 	      double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
 	      
