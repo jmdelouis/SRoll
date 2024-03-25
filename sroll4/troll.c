@@ -4005,7 +4005,6 @@ int main(int argc,char *argv[])  {
       
       // Traitement de la valeur de retour
       if (pValue != NULL) {
-	TestUpdateSparse=1;
 	Py_DECREF(pValue);
       }
       
@@ -4436,7 +4435,8 @@ int main(int argc,char *argv[])  {
     long mnpix;
     MPI_Allreduce(&lnpix,&mnpix,1,MPI_LONG, MPI_MAX,MPI_COMM_WORLD);
     npixShpr=mnpix;
-    ClosepFunc(sparseFunc);
+    if (TestUpdateSparse==0)
+      ClosepFunc(sparseFunc);
     
     Py_DECREF(pClass);
     Py_DECREF(pArgs);
@@ -5301,6 +5301,129 @@ int main(int argc,char *argv[])  {
     double resxi=1;
 
     while (itt<Param->NITT) {
+
+      //=======================================================================================================
+      // Start update if needed
+      //=======================================================================================================
+      if (TestUpdateSparse==1) {
+	if (rank==0)
+	  fprintf(stderr,"update_eval method available Update model to be fitted\n");
+
+	// Init matrice and vecteur
+	double *matrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
+	double *Imatrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double));
+	double *vector = malloc(MAXCHANNELS*sizeof(double));
+	double *rvector = malloc(MAXCHANNELS*sizeof(double));
+
+	//=======================================================================================================
+	// Compute the map
+	//=======================================================================================================
+	
+	for (k=0;k<nnbpix;k++) {
+	  
+	  long ndata = loc_nhpix[k];
+	  hpix *htmp = loc_hpix[k];
+
+	  memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
+	  memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
+	  memset(vector,0,MAXCHANNELS*sizeof(double));
+	  memset(rvector,0,MAXCHANNELS*sizeof(double));
+	  
+	  for (int l1=0;l1<ndata;l1++) {
+	    long ri1=htmp[l1].rg-globalBeginRing;
+	
+	    if (flg_rg[htmp[l1].ib][ri1]!=0) {
+	      long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
+	      //calcul signal corriger
+	      double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
+	      double rsig = htmp[l1].sig*g1;
+	      
+	      double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
+	      
+	      if (do_offset==1) {
+		sig_corr-=x3[iri1];
+	      }
+	      
+	      if (REMOVE_CAL==1) {
+		sig_corr-=htmp[l1].hpr_cal;
+	      }
+	      
+	      if(GAINSTEP!=0)  
+		sig_corr-=x3[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP]*htmp[l1].model;
+	      
+	      for(int m =0;m<npixmap;m++){
+		sig_corr-=x3[newnr[nbolo]+htmp[l1].ib+(m+GAINSTEP)*nbolo]*htmp[l1].listofmap[m];
+	      }
+	      
+	      for(int m =0;m<htmp[l1].nShpr;m++){
+		sig_corr-=x3[newnr[nbolo]+htmp[l1].listofShpr_idx[m]+(GAINSTEP+npixmap)*nbolo]*htmp[l1].listofShpr[m];
+	      }
+	   
+	      //calcul matrix & vector
+	      for(int i = 0;i<MAXCHANNELS;i++){  
+		vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
+	      }
+	      
+	      for(int i = 0;i<MAXCHANNELS;i++){        
+		for(int j = 0;j<MAXCHANNELS;j++){
+		  matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
+		}
+	      } 
+	    }
+	  }
+	  
+	  double l_cond=cond_thres(matrix,Imatrix,MAXCHANNELS);  
+      
+	  if (l_cond < Param->seuilcond) {	               
+	    apply_invertMatrix(Imatrix,vector,MAXCHANNELS,rank);
+
+	    PyObject *pChan= PyList_New(MAXCHANNELS);
+	    PyObject *pVal = PyList_New(MAXCHANNELS);
+	    for (int i = 0; i < MAXCHANNELS; i++) {
+	      PyList_SetItem(pVal, i, PyFloat_FromDouble((double) vector[i]));
+	    }
+	    for (int l1=0;l1<ndata;l1++) {
+	      PyObject *pIdx = PyList_New(htmp[l1].nShpr);
+	      PyObject *pWw  = PyList_New(htmp[l1].nShpr);
+	      for(int m =0;m<htmp[l1].nShpr;m++){
+		PyList_SetItem(pIdx, m, PyLong_FromLong((long) htmp[l1].listofShpr_idx[m]));
+		PyList_SetItem(pWw, m, PyFloat_FromDouble((double) htmp[l1].listofShpr[m]));
+	      }
+	      for (int i = 0; i < MAXCHANNELS; i++) {
+		PyList_SetItem(pChan, i, PyFloat_FromDouble((double) htmp[l1].channels[i]));
+	      }
+	      
+	      PyObject *pValue = PyObject_CallMethod(sparseFunc, "update_eval", "(OOOO)", pIdx,pWw,pChan,pVal);
+	      
+	      // Traitement de la valeur de retour
+	      if (pValue != NULL) {
+		// Assurer que pValue est un tuple
+		if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
+		  // Extraire les deux tableaux du tuple
+		  int n1=copy_int_array(PyTuple_GetItem(pValue, 0), htmp[l1].listofShpr_idx,MAXEXTERNALSHPR);
+		  int n2=copy_float_array(PyTuple_GetItem(pValue, 1), htmp[l1].listofShpr,MAXEXTERNALSHPR);
+		  if (n1!=n2) {
+		    fprintf(stderr, "Update Sparse function should provide an equal number of invex and value, here Sroll received %d %d\n",n1,n2);
+		  }
+		  htmp[l1].nShpr=n1;
+		  Py_DECREF(pValue);
+		}
+	      }
+	      Py_DECREF(pIdx);
+	      Py_DECREF(pWw);
+	    }
+	    // Nettoyage des arguments
+	    Py_DECREF(pChan);
+	    Py_DECREF(pVal);
+	  }
+	}
+	free(matrix);
+	free(Imatrix);
+	free(vector);
+	free(rvector);
+      }
+
+
       memset(newnr[nbolo]+x3,0,sizeof(double)*nbolo*GAINSTEP);
      
       if (nmatres>0)
@@ -5371,12 +5494,6 @@ int main(int argc,char *argv[])  {
 	}	
       }
 
-      //=======================================================================================================
-      // Start update if needed
-      //=======================================================================================================
-      if (TestUpdateSparse==1) {
-	fprintf(stderr,"update_eval method available Update model to fit \n");
-      }
       itt++;
       MPI_Barrier(MPI_COMM_WORLD);
     }
