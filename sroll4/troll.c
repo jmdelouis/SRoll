@@ -3105,6 +3105,43 @@ int PIOWriteVECT(const char *path,void *value,int off,int size)
 }
 
 /* ---------------------------------------------------------------------------------*/
+int CheckMethods(PyObject *pClass,const char *name) {
+  int test_method=0;
+  // Récupérer la liste des attributs de la classe
+  PyObject *pDir = PyObject_Dir(pClass);
+  
+  // Vérifier si la liste est valide
+  if (pDir == NULL) {
+    printf("Erreur: Impossible de récupérer la liste des attributs de la classe\n");
+    return 0;
+  }
+  
+  // Parcourir la liste des attributs
+  Py_ssize_t size = PyList_Size(pDir);
+  for (Py_ssize_t i = 0; i < size; ++i) {
+    // Récupérer le nom de l'attribut
+    PyObject *pAttrName = PyList_GetItem(pDir, i);
+    const char *attrName = PyUnicode_AsUTF8(pAttrName);
+    
+    // Vérifier si l'attribut est une méthode
+    PyObject *pAttr = PyObject_GetAttrString(pClass, attrName);
+    if (pAttr != NULL && PyCallable_Check(pAttr)) {
+      if (strcmp(name,attrName)==0) {
+	//fprintf(stderr,"Méthode : %s\n", attrName);
+	test_method=1;
+      }
+    }
+    Py_XDECREF(pAttr);
+  }
+  
+  // Libérer les ressources
+  Py_DECREF(pDir);
+
+  return(test_method);
+}
+
+
+/* ---------------------------------------------------------------------------------*/
 PyObject * init_PyFunction(char* path,char *funcname){
     /* Load python parameters form file gived in parameters path */    
 
@@ -3435,6 +3472,7 @@ int calc_diag_hpr(PyObject *diagFunc,
 		  long hpix,
 		  long i,
 		  double psi,
+		  double sig,
 		  PIOFLOAT *External)
 {
   PyObject *pValue=NULL;
@@ -3448,6 +3486,7 @@ int calc_diag_hpr(PyObject *diagFunc,
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
     PyObject *pArg4 = PyLong_FromLong((long)i); // idx est un entier
     PyObject *pArg5 = PyFloat_FromDouble((double)psi); // val est un flottant
+    PyObject *pArg6 = PyFloat_FromDouble((double)sig); // val est un flottant
     PyObject *pList = PyList_New(NB_EXTERNAL);
     
     for (int i = 0; i < NB_EXTERNAL; i++) {
@@ -3455,7 +3494,7 @@ int calc_diag_hpr(PyObject *diagFunc,
     }
 
     // Appel de la méthode 'eval's
-    pValue = PyObject_CallMethod(diagFunc, "get_diag_idx", "(OOOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5, pList);
+    pValue = PyObject_CallMethod(diagFunc, "get_diag_idx", "(OOOOOOO)", pArg1, pArg2, pArg3, pArg4, pArg5, pArg6, pList);
 
     
     // Traitement de la valeur de retour
@@ -3479,6 +3518,7 @@ int calc_diag_hpr(PyObject *diagFunc,
     Py_DECREF(pArg3);
     Py_DECREF(pArg4);
     Py_DECREF(pArg5);
+    Py_DECREF(pArg6);
     Py_DECREF(pList);
     
   } else {
@@ -3889,7 +3929,7 @@ int main(int argc,char *argv[])  {
   PyObject *diagFunc=NULL;
   PyObject *pArgs = NULL;
   PyObject *pClass = NULL;
-  
+  PIOINT TestUpdateSparse=0;
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
   npixShpr=0;
@@ -3912,6 +3952,18 @@ int main(int argc,char *argv[])  {
       Py_DECREF(pModule);
       return 1;
     }
+
+    if (CheckMethods(pClass,"eval")==0) {
+      PyErr_Print();
+      fprintf(stderr, "Sparse class does not have an eval method\n");
+      Py_DECREF(pModule);
+      Py_DECREF(sparseFunc);
+      return 1;
+    }
+
+    // check if sparse funtion need to be upgraded
+    TestUpdateSparse=CheckMethods(pClass,"update_eval");
+
     // Créer un tuple pour les arguments du constructeur
     pArgs = PyTuple_New(4);
 
@@ -3932,6 +3984,37 @@ int main(int argc,char *argv[])  {
       Py_DECREF(pModule);
       return 1;
     }
+
+    // check update eval method to avoid problem much latter
+    if (TestUpdateSparse==1) {
+   
+      PyObject *pIdx = PyList_New(MAXCHANNELS);
+      PyObject *pWw  = PyList_New(MAXCHANNELS);
+      PyObject *pChan= PyList_New(MAXCHANNELS);
+      PyObject *pVal = PyList_New(MAXCHANNELS);
+      
+      for (int i = 0; i < MAXCHANNELS; i++) {
+	PyList_SetItem(pIdx, i, PyLong_FromLong(i));
+	PyList_SetItem(pWw, i, PyFloat_FromDouble(i));
+	PyList_SetItem(pChan, i, PyFloat_FromDouble(i));
+	PyList_SetItem(pVal, i, PyFloat_FromDouble(i));
+      }
+      
+      // Appel de la méthode 'eval's
+      PyObject *pValue = PyObject_CallMethod(sparseFunc, "update_eval", "(OOOO)", pIdx,pWw,pChan,pVal);
+      
+      // Traitement de la valeur de retour
+      if (pValue != NULL) {
+	TestUpdateSparse=1;
+	Py_DECREF(pValue);
+      }
+      
+      // Nettoyage des arguments
+      Py_DECREF(pIdx);
+      Py_DECREF(pWw);
+      Py_DECREF(pChan);
+      Py_DECREF(pVal);
+    } 
   }
 
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
@@ -3977,6 +4060,13 @@ int main(int argc,char *argv[])  {
       return 1;
     }
     nb_diag=Get_NumberOfDiag(diagFunc);
+
+    if (CheckMethods(diagFunc,"get_diag_idx")==0) {
+      PyErr_Print();
+      fprintf(stderr, "Diag class does not have a 'get_diag_idx' method\n");
+      Py_DECREF(diagFunc);
+      return 1;
+    }
   }
   
   int number_of_iterations = 1;
@@ -4259,6 +4349,7 @@ int main(int argc,char *argv[])  {
 						ipix,
 						i,
 						psi[i],
+						tp_hpix->sig,
 						External+i);
 	      
 	    }
@@ -4666,6 +4757,7 @@ int main(int argc,char *argv[])  {
 	free(l_otbs);
 	
 	notbs += ldata;
+
 	if (rank==0) 
 	  fprintf(stderr,"Finish [%d] %ld %ld\n",(int) k,(long) notbs,(long) ntbs);
       }
@@ -5277,6 +5369,13 @@ int main(int argc,char *argv[])  {
 	  fprintf(stderr,"%lg,",x3[i]);
 	  if ((i-newnr[nbolo])%nbolo==nbolo-1) fprintf(stderr,"]\n");
 	}	
+      }
+
+      //=======================================================================================================
+      // Start update if needed
+      //=======================================================================================================
+      if (TestUpdateSparse==1) {
+	fprintf(stderr,"update_eval method available Update model to fit \n");
       }
       itt++;
       MPI_Barrier(MPI_COMM_WORLD);
