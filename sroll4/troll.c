@@ -3401,7 +3401,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
 		    long rg,
 		    long ib,
 		    long hpix,
-		    long i,
+		    long idx,
 		    double psi,
 		    PIOFLOAT *External,
 		    PIOFLOAT *oval,
@@ -3416,7 +3416,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     PyObject *pArg1 = PyLong_FromLong((long)rg); // rg est un entier
     PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
-    PyObject *pArg4 = PyLong_FromLong((long)i); // idx est un entier
+    PyObject *pArg4 = PyLong_FromLong((long)idx); // idx est un entier
     PyObject *pArg5 = PyFloat_FromDouble((double)psi); // val est un flottant
     PyObject *pList = PyList_New(NB_EXTERNAL);
     
@@ -3470,7 +3470,7 @@ int calc_diag_hpr(PyObject *diagFunc,
 		  long rg,
 		  long ib,
 		  long hpix,
-		  long i,
+		  long idx,
 		  double psi,
 		  double sig,
 		  PIOFLOAT *External)
@@ -3484,13 +3484,13 @@ int calc_diag_hpr(PyObject *diagFunc,
     PyObject *pArg1 = PyLong_FromLong((long)rg); // rg est un entier
     PyObject *pArg2 = PyLong_FromLong((long)ib); // ib est un entier
     PyObject *pArg3 = PyLong_FromLong((long)hpix); // idx est un entier
-    PyObject *pArg4 = PyLong_FromLong((long)i); // idx est un entier
+    PyObject *pArg4 = PyLong_FromLong((long)idx); // idx est un entier
     PyObject *pArg5 = PyFloat_FromDouble((double)psi); // val est un flottant
     PyObject *pArg6 = PyFloat_FromDouble((double)sig); // val est un flottant
     PyObject *pList = PyList_New(NB_EXTERNAL);
     
-    for (int i = 0; i < NB_EXTERNAL; i++) {
-      PyList_SetItem(pList, i, PyFloat_FromDouble((double) External[i*RINGSIZE]));
+    for (int j= 0; j < NB_EXTERNAL; j++) {
+      PyList_SetItem(pList, j, PyFloat_FromDouble((double) External[j*RINGSIZE]));
     }
 
     // Appel de la méthode 'eval's
@@ -4368,10 +4368,10 @@ int main(int argc,char *argv[])  {
 	    tp_hpix->rg = rg;
 	    tp_hpix->gi = 0;
 	    tp_hpix->ipix = ipix;
-	    l_nhpix[ipix]+=1;
 	    if (isnan(tp_hpix->sig)||isnan(tp_hpix->w)||isnan(tp_hpix->hpr_cal)) {
 	      fprintf(stderr,"NAN NAN NAN %lf %lf %lf %ld %ld\n",tp_hpix->hpr_cal,tp_hpix->sig,tp_hpix->w,(long)rg,(long)i);
 	    }  
+	    else l_nhpix[ipix]+=1;
 	  }
 	}
 
