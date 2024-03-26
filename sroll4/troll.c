@@ -5772,9 +5772,9 @@ int main(int argc,char *argv[])  {
 	    avv2=avv2+htmp[l1].w *sig_corr*sig_corr;
 	    navv=navv+htmp[l1].w;
 	    if (diagFunc!=NULL) {
-	      diag_avv[htmp[l1].diag_idx]+=htmp[l1].w *sig_corr;
-	      diag_avv2[htmp[l1].diag_idx]+=htmp[l1].w *sig_corr*sig_corr;
-	      diag_n[htmp[l1].diag_idx]+=htmp[l1].w;
+	      diag_avv[htmp[l1].diag_idx]  += htmp[l1].w *sig_corr;
+	      diag_avv2[htmp[l1].diag_idx] += htmp[l1].w *sig_corr*sig_corr;
+	      diag_n[htmp[l1].diag_idx]    += htmp[l1].w;
 	    }
 	  }
 	}
@@ -5787,9 +5787,11 @@ int main(int argc,char *argv[])  {
     }
 
     if (diagFunc!=NULL) {
+      
       double *l_avv = (double *) malloc(sizeof(double)*(nb_diag));
       double *l_avv2 = (double *) malloc(sizeof(double)*(nb_diag));
       double *l_n = (double *) malloc(sizeof(double)*(nb_diag));
+      
       MPI_Reduce(diag_avv,l_avv,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
       MPI_Reduce(diag_avv2,l_avv2,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
       MPI_Reduce(diag_n,l_n,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
@@ -5800,6 +5802,12 @@ int main(int argc,char *argv[])  {
 	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
 	sprintf(TEST_OUTMAP,"%s_%s_DIAG", mapout[detset],mapname);
 	PIOWriteVECT(TEST_OUTMAP,diag_avv,0,sizeof(PIODOUBLE)*nb_diag);
+	sprintf(TEST_OUTMAP,"%s_%s_DIAG_W", mapout[detset],mapname);
+	PIOWriteVECT(TEST_OUTMAP,l_n,0,sizeof(PIODOUBLE)*nb_diag);
+	sprintf(TEST_OUTMAP,"%s_%s_DIAG_L1", mapout[detset],mapname);
+	PIOWriteVECT(TEST_OUTMAP,l_avv,0,sizeof(PIODOUBLE)*nb_diag);
+	sprintf(TEST_OUTMAP,"%s_%s_DIAG_L2", mapout[detset],mapname);
+	PIOWriteVECT(TEST_OUTMAP,l_avv,0,sizeof(PIODOUBLE)*nb_diag);
       }
 
       free(l_avv);
