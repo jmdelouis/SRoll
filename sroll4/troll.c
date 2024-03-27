@@ -72,11 +72,15 @@ double LIMIT_ITER=1E-30;
 int do_offset=DOOFFSET;
 int NORMFITPOL=0;
 
+PyObject *sparseFunc=NULL;
+PIOINT TestNormalizeSparse=0;
+
 int PIOWriteVECT(const char *path,void *value,int off,int size);
 double det(double *mat, int n);
 
 int *realpix;
 int *irealpix;
+int rank_zero=0;
 
 enum MAPRINGS_values {
   FULL        = 1,
@@ -153,6 +157,8 @@ int mpi_tensorflow_size;
 MPI_Comm python_comm;
 MPI_Comm tensorflow_comm;
 int NB_EXTERNAL=0;
+
+void sum_double_array(PyObject *pArray, PIODOUBLE *array,int maxsize);
 
 int compar_int(const void *a, const void *b)
 {
@@ -454,7 +460,7 @@ void InitPython(WrapPython *mywrap, char *myfunct, int rank)
     thepath[lastslash]='\0';
     lastslash++;
   }
-  if (rank==0) {
+  if (rank==rank_zero) {
     fprintf(stderr,"Call python module in path\n%s\n",thepath);
   }
   Py_Initialize();
@@ -477,7 +483,7 @@ void InitPython(WrapPython *mywrap, char *myfunct, int rank)
     if (thepath[i]=='.') lastslash=i;
   if (lastslash!=-1) thepath[lastslash]='\0';
 
-  if (rank==0) {
+  if (rank==rank_zero) {
     fprintf(stderr,"Call module : %s\n",thepath);
   }
 
@@ -1115,7 +1121,7 @@ double gcmat_mpi(double *mat,double *vec,int n,int nn,long begr,long edr)
   delta0 = delta_new;
 
 
-  if (rank==0) fprintf (stderr, "iter = %d - delta0 = %lg - delta_new = %lg\n", iter, delta0, delta_new);
+  if (rank==rank_zero) fprintf (stderr, "iter = %d - delta0 = %lg - delta_new = %lg\n", iter, delta0, delta_new);
 
   while (iter < itermax && delta_new > eps*eps*delta0)
     {
@@ -1149,7 +1155,7 @@ double gcmat_mpi(double *mat,double *vec,int n,int nn,long begr,long edr)
 
       if (iter % 100 == 0)
         {
-          if (rank==0&&iter%10==0) fprintf (stderr,"gcmat_mpi() iter = %d - delta0 = %lg - delta_new = %lg\n", iter, delta0, delta_new);
+          if (rank==rank_zero&&iter%10==0) fprintf (stderr,"gcmat_mpi() iter = %d - delta0 = %lg - delta_new = %lg\n", iter, delta0, delta_new);
           for (i=0; i < n; i++)
             q[i] = 0.0;
 
@@ -1192,9 +1198,9 @@ double gcmat_mpi(double *mat,double *vec,int n,int nn,long begr,long edr)
         d[i] = s[i] + beta * d[i];
       iter ++;
     }
-  if (rank==0) fprintf (stderr,"gcmat_mpi2() iter = %d - delta0 = %lg - delta_new = %lg\n",
+  if (rank==rank_zero) fprintf (stderr,"gcmat_mpi2() iter = %d - delta0 = %lg - delta_new = %lg\n",
           iter, delta0, delta_new);
-  if (rank==0) fprintf (stderr,"CG in iter = %d (max=%d)\n", iter, itermax);
+  if (rank==rank_zero) fprintf (stderr,"CG in iter = %d (max=%d)\n", iter, itermax);
   for (i=0;i<mpi_size;i++) {
     memcpy(vec+tab_begr[i],x+tab_begr[i],(tab_edr[i]-tab_begr[i]+1)*sizeof(double));
     MPI_Bcast(vec+tab_begr[i], sizeof(double)*(tab_edr[i]-tab_begr[i]+1), MPI_BYTE, i, MPI_COMM_WORLD);
@@ -1753,7 +1759,7 @@ void dfpmin(double *p,int n,double ftol,int *iter,double *fret,double (*func)(),
     diffp=sqrt(diffp/n);
 
     if (2.0*fabs(*fret-fp) <= ftol*(fabs(*fret)+fabs(fp)+EPS)||*fret<1E-10||diffp<1E-10 ||fabs(*fret-fp)<1E-12) {
-      if (rank==0) fprintf(stderr,"END ABS fret[%ld] = %.10lg %.10lg %lg %lg %lg %lg : %lg %lg %lg\n",(long) its,fp,*fret,
+      if (rank==rank_zero) fprintf(stderr,"END ABS fret[%ld] = %.10lg %.10lg %lg %lg %lg %lg : %lg %lg %lg\n",(long) its,fp,*fret,
                            p[gainoff+0],p[gainoff+1],p[gainoff+2],p[gainoff+3],ftol*(fabs(*fret)+fabs(fp)+EPS),fabs(*fret-fp),diffp);
       free(hdg);
       free(dg);
@@ -1766,7 +1772,7 @@ void dfpmin(double *p,int n,double ftol,int *iter,double *fret,double (*func)(),
     }
     memcpy(p0,p,n*sizeof(double));
 
-    if (rank==0) fprintf(stderr,"fret[%ld] %lg =\t%.10lg\t%.10lg\t%lg\t[ %lg %lg %lg %lg ]\n",(long) its,diffp,fp,*fret,fp-*fret,
+    if (rank==rank_zero) fprintf(stderr,"fret[%ld] %lg =\t%.10lg\t%.10lg\t%lg\t[ %lg %lg %lg %lg ]\n",(long) its,diffp,fp,*fret,fp-*fret,
                          p[gainoff+0],p[gainoff+1],p[gainoff+2],p[gainoff+3]);
     fp=(*fret);
     for (i=0;i<n;i++) dg[i]=g[i];
@@ -2161,8 +2167,32 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 
   }
 
-  if(rank == 0){
+  if(rank == rank_zero){ // to compute normalisation on precessor with less rings
     double msum=1E4;
+
+    if (TestNormalizeSparse==1) {
+      PyObject *pX = PyList_New(npixShpr);
+      
+      for(int b = 0;b<npixShpr;b++){
+	PyList_SetItem(pX, b, PyFloat_FromDouble(x[newnr[nbolo]+b+(GAINSTEP2)*nbolo]));
+      }
+      // Appel de la méthode sparse
+      PyObject *pValue = PyObject_CallMethod(sparseFunc, "normalize", "(O)", pX);
+      
+      // Traitement de la valeur de retour
+      if (pValue != NULL) {
+	// Assurer que pValue est un tuple
+	sum_double_array(pValue,q2+newnr[nbolo]+(GAINSTEP2)*nbolo,npixShpr);
+	Py_DECREF(pValue);
+      }
+      else {
+	fprintf(stderr,"Problem while loading the 'normalize' method of the class sparse\n");
+	exit(0);
+      }
+      // Nettoyage des arguments
+      Py_DECREF(pX);
+    }
+    
     
     for(int n = 0;n<Param->n_val_mean;n++){
       double sum2 = 0.0;
@@ -2208,7 +2238,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 	q2[l1] += sum*msum;
       }
 #if 1
-      // NORMALIZE OFFSET AGAINT CHANNELS
+      // NORMALIZE OFFSET AGAINST CHANNELS
       for (int i=0;i<MAXCHANNELS;i++) {
 	for (int j=0;j<newnr[nbolo];j++) q2[j]+=csum[i];
       }   
@@ -2287,7 +2317,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   nmatres=newnr[nbolo]+nbolo*(npixmap+GAINSTEP2)+npixShpr;
 
 
-  MPI_Bcast(&nmatres, sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&nmatres, sizeof(long), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
   double *x_tab = (double *) malloc(sizeof(double)*(nmatres));
   double *projX =(double *) malloc(sizeof(double)*(nmatres));
@@ -2297,7 +2327,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   double *res = (double *) malloc(sizeof(double)*(nmatres));
 
 
-  if (rank==0) {
+  if (rank==rank_zero) {
     fprintf(stderr,"==============================\n\nminimize_gain_nopol(): ITERATION NOPOL %ld/%d %ld \n\n==============================\n",itbogo,Param->NITT,(long) GAINSTEP);
     fprintf(stderr,"GAIN ");
     for (i=0;i<nbolo;i++) fprintf(stderr,"%lg ",gaingi[i*GAINSTEP]);
@@ -2344,7 +2374,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
           }
 #endif
 
-          //if(rank == 0) for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++) fprintf(stderr,"MAT[%d] = %lg\n",i,MAT[i]);
+          //if(rank == rank_zero) for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++) fprintf(stderr,"MAT[%d] = %lg\n",i,MAT[i]);
     
           //Calcul de carte        
           //long ri1=htmp[l1].rg-globalBeginRing; // check valide ring 
@@ -2373,7 +2403,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
     invertMatrix(imatrice+k*MAXCHANNELS*MAXCHANNELS,SI,MAXCHANNELS,rank);
 #endif
     /*
-      if(rank == 0){
+      if(rank == rank_zero){
       for(int i=0;i<MAXCHANNELS;i++){
       for(int j=0;j<MAXCHANNELS;j++){   
       fprintf(stderr,"MAT[%d] = %lf\n",i,MAT[j+MAXCHANNELS*i]);
@@ -2422,7 +2452,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   // Recuperation de b2
   {
     double *lb = (double *) malloc(sizeof(double)*(nmatres));
-    MPI_Reduce(b2,lb,nmatres,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD); //parallisation MPI -- recuperation b
+    MPI_Reduce(b2,lb,nmatres,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD); //parallisation MPI -- recuperation b
     memcpy(b2,lb,sizeof(double)*(nmatres)); // copy b2 dans lb
     free(lb);
   }
@@ -2430,7 +2460,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   //recup and send hit2
   {
     double *lb = (double *) malloc(sizeof(double)*(nmatres));
-    MPI_Reduce(hit2,lb,nmatres,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+    MPI_Reduce(hit2,lb,nmatres,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
     memcpy(hit2,lb,sizeof(double)*(nmatres));
     free(lb);
   }
@@ -2440,16 +2470,16 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   //Send q2
   {
     double *lb = (double *) malloc(sizeof(double)*(nmatres));
-    MPI_Reduce(q2,lb,nmatres,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+    MPI_Reduce(q2,lb,nmatres,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
     memcpy(q2,lb,sizeof(double)*(nmatres));
     free(lb);
   }
   // End send q2
 
 
-  if (rank==0)  fprintf(stderr,"B2 %lg\n",b2[0]);
-  if (rank==0)  fprintf(stderr,"H2 %lg\n",hit2[0]);
-  if (rank==0)  fprintf(stderr,"Q2 %lg\n",q2[0]);
+  if (rank==rank_zero)  fprintf(stderr,"B2 %lg\n",b2[0]);
+  if (rank==rank_zero)  fprintf(stderr,"H2 %lg\n",hit2[0]);
+  if (rank==rank_zero)  fprintf(stderr,"Q2 %lg\n",q2[0]);
 
   //init r2 and d2 to 0
   memset(r2,0,sizeof(double)*(nmatres)); 
@@ -2457,19 +2487,19 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 
 
   //Calcul r and p
-  if (rank==0) {
+  if (rank==rank_zero) {
     for (i=0; i < nmatres; i++){
       r2[i] = b2[i] - q2[i]; //r = b - Ax0 = Ax - Ax0  
       if (hit2[i]>0.0) d2[i] = r2[i]/hit2[i]; //d2 => p
-      //if (rank==0)  fprintf(stderr,"[DEBUG] i = %d q2[] %lf b2[] =%lf r2[] = %lf ,d2[] = %lf , hit2[] = %lf \n",i,q2[i],b2[i],r2[i],d2[i],hit2[i]);
+      //if (rank==rank_zero)  fprintf(stderr,"[DEBUG] i = %d q2[] %lf b2[] =%lf r2[] = %lf ,d2[] = %lf , hit2[] = %lf \n",i,q2[i],b2[i],r2[i],d2[i],hit2[i]);
 
     }
   }
 
 
-  MPI_Bcast(d2, sizeof(double)*nmatres, MPI_BYTE, 0, MPI_COMM_WORLD);
-  MPI_Bcast(r2, sizeof(double)*nmatres, MPI_BYTE, 0, MPI_COMM_WORLD);
-  MPI_Bcast(hit2, sizeof(double)*nmatres, MPI_BYTE, 0, MPI_COMM_WORLD);  
+  MPI_Bcast(d2, sizeof(double)*nmatres, MPI_BYTE, rank_zero, MPI_COMM_WORLD);
+  MPI_Bcast(r2, sizeof(double)*nmatres, MPI_BYTE, rank_zero, MPI_COMM_WORLD);
+  MPI_Bcast(hit2, sizeof(double)*nmatres, MPI_BYTE, rank_zero, MPI_COMM_WORLD);  
 
     
   memset(new_x,0,sizeof(double)*nmatres);
@@ -2496,11 +2526,11 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       //send projX
       double *lb = (double *) malloc(sizeof(double)*(nmatres));
       memset(lb,0,sizeof(double)*nmatres);
-      MPI_Reduce(projX,lb,nmatres,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+      MPI_Reduce(projX,lb,nmatres,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
       memcpy(projX,lb,sizeof(double)*(nmatres));
       free(lb);
 
-      MPI_Bcast(projX, sizeof(double)*nmatres, MPI_BYTE, 0, MPI_COMM_WORLD);
+      MPI_Bcast(projX, sizeof(double)*nmatres, MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
       //Calcul delta
       tmp = 0.0;
@@ -2515,9 +2545,9 @@ void minimize_gain_tf(double *ix2,double *gaingi){
 	delta0 = delta;
 	if (tol==-1) tol=LIMIT_ITER*delta0;
 
-	if(rank==0) fprintf(stderr,"\n---------\n");
-	if(rank==0) fprintf(stderr,"\n D0=%lg LIMIT=%lg\n",delta0,tol);
-	if(rank==0) fprintf(stderr,"\n---------\n");
+	if(rank==rank_zero) fprintf(stderr,"\n---------\n");
+	if(rank==rank_zero) fprintf(stderr,"\n D0=%lg LIMIT=%lg\n",delta0,tol);
+	if(rank==rank_zero) fprintf(stderr,"\n---------\n");
       }
       //calcul alpha
       alpha_tmp = 0.0;
@@ -2531,7 +2561,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       alpha = tmp /alpha_tmp;
       // manage case where alpha_tmp=0
       if (isnormal(alpha)) {
-	      MPI_Bcast(&alpha, sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);
+	      MPI_Bcast(&alpha, sizeof(double), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
       }
       else {
       	alpha=0;
@@ -2552,11 +2582,11 @@ void minimize_gain_tf(double *ix2,double *gaingi){
         time_exc = (double)(tp2.tv_sec-tp1.tv_sec)+(1E-6)*(tp2.tv_usec-tp1.tv_usec);
         tot_time += time_exc;
 
-        if(rank ==0) fprintf(stderr,"\n==> End delta = %lg time = %3lfs\n",delta,tot_time);
+        if(rank == rank_zero) fprintf(stderr,"\n==> End delta = %lg time = %3lfs\n",delta,tot_time);
         //for(int i =0;i<nmatres;i++) res[i] = new_x[i];
 
         memcpy(ix2,new_x,sizeof(double)*(nmatres));
-        MPI_Bcast(ix2, sizeof(double)*(nmatres), MPI_BYTE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(ix2, sizeof(double)*(nmatres), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
         
         itbogo ++;       
         
@@ -2576,7 +2606,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       beta =tmp/sum;
       
     
-      MPI_Bcast(&beta, sizeof(double), MPI_BYTE, 0, MPI_COMM_WORLD);
+      MPI_Bcast(&beta, sizeof(double), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
       //calcul new_p
       for(int k =0;k<nmatres;k++){
@@ -2591,15 +2621,15 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       gettimeofday(&tp2,NULL);
       time_exc = (double)(tp2.tv_sec-tp1.tv_sec)+(1E-6)*(tp2.tv_usec-tp1.tv_usec);
       tot_time += time_exc;
-      if (rank==0&&n%10==0) fprintf(stderr,"iter: %d/%d beta = %12lg  alpha = %12lg  delta = %12lg  %12lfs\n",n,itermax,beta,alpha,delta,time_exc);
+      if (rank==rank_zero&&n%10==0) fprintf(stderr,"iter: %d/%d beta = %12lg  alpha = %12lg  delta = %12lg  %12lfs\n",n,itermax,beta,alpha,delta,time_exc);
       n=n+1;
   }
 #endif
-  if(rank==0) fprintf(stderr,"tot_time = %lg\n",tot_time);
+  if(rank==rank_zero) fprintf(stderr,"tot_time = %lg\n",tot_time);
 
   itbogo ++;
   memcpy(ix2,new_x,sizeof(double)*(nmatres));
-  MPI_Bcast(ix2, sizeof(double)*(nmatres), MPI_BYTE, 0, MPI_COMM_WORLD);
+  MPI_Bcast(ix2, sizeof(double)*(nmatres), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
       
 
 }
@@ -2632,14 +2662,14 @@ void buildmap(double * map,double *signal,int begpix,int endpix){
   if (getbeginfo==0) {
     getbeginfo=1;
     int i,rrk;
-    if (rank==0) {
+    if (rank==rank_zero) {
       allbeg = (int *) malloc(sizeof(int)*mpi_size);
       allend = (int *) malloc(sizeof(int)*mpi_size);
     }
-    MPI_Gather(&begpix,sizeof(int),MPI_BYTE,allbeg,sizeof(int),MPI_BYTE,0,MPI_COMM_WORLD);
-    MPI_Gather(&endpix,sizeof(int),MPI_BYTE,allend,sizeof(int),MPI_BYTE,0,MPI_COMM_WORLD);
+    MPI_Gather(&begpix,sizeof(int),MPI_BYTE,allbeg,sizeof(int),MPI_BYTE,rank_zero,MPI_COMM_WORLD);
+    MPI_Gather(&endpix,sizeof(int),MPI_BYTE,allend,sizeof(int),MPI_BYTE,rank_zero,MPI_COMM_WORLD);
 
-    if (rank==0) {
+    if (rank==rank_zero) {
       for (rrk=0;rrk<mpi_size;rrk++) {
 	      if (maxsize<allend[rrk]-allbeg[rrk]+1) maxsize=allend[rrk]-allbeg[rrk]+1;
       }
@@ -2647,22 +2677,22 @@ void buildmap(double * map,double *signal,int begpix,int endpix){
       all_map = (float *) malloc(sizeof(float)*mpi_size*maxsize);
     }
 
-    MPI_Bcast(&maxsize,sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&maxsize,sizeof(int), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
     int *l_idx =(int *)malloc(sizeof(int)*maxsize);
     for (i=begpix;i<=endpix;i++) l_idx[i-begpix]=realpix[i-begpix];
 
-    MPI_Gather(l_idx,sizeof(int)*maxsize,MPI_BYTE,all_realpix,sizeof(int)*maxsize,MPI_BYTE,0,MPI_COMM_WORLD);
+    MPI_Gather(l_idx,sizeof(int)*maxsize,MPI_BYTE,all_realpix,sizeof(int)*maxsize,MPI_BYTE,rank_zero,MPI_COMM_WORLD);
 
     free(l_idx);
   }
   float *l_map =(float *)malloc(sizeof(float)*maxsize);
   for (int k=begpix;k<=endpix;k++) l_map[k-begpix]=value[k-begpix];
-  MPI_Gather(l_map,sizeof(float)*maxsize,MPI_BYTE,all_map,sizeof(float)*maxsize,MPI_BYTE,0,MPI_COMM_WORLD);
+  MPI_Gather(l_map,sizeof(float)*maxsize,MPI_BYTE,all_map,sizeof(float)*maxsize,MPI_BYTE,rank_zero,MPI_COMM_WORLD);
   free(l_map);
 
 
-  if (rank==0) {
+  if (rank==rank_zero) {
     int i,rrk;
     for (rrk=0;rrk<mpi_size;rrk++) {
       int l_beg,l_end;
@@ -2804,7 +2834,7 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
     }
   }
 
-  if(rank == 0){
+  if(rank == rank_zero){
 
     PyObject* py_list = PyList_New(map_size);
     PyObject* py_nside,*py_rank,*py_ite,*func,*result;
@@ -2848,7 +2878,7 @@ void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_tem
   }
 
   //Send templates // for debug only 1 iteration (only send Q) 
-  for(int i =0;i<2;i++) MPI_Bcast(new_templates[i], sizeof(double)*(map_size), MPI_BYTE, 0, MPI_COMM_WORLD);
+  for(int i =0;i<2;i++) MPI_Bcast(new_templates[i], sizeof(double)*(map_size), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
   free(new_templates);
   free(maps);
@@ -2979,7 +3009,7 @@ void PrintFreeMemOnNodes( int mpi_rank, int mpi_size, char* msg) {
   }
 
   MPI_Barrier( MPI_COMM_WORLD);
-  if (mpi_rank == 0) {
+  if (mpi_rank == rank_zero) {
     fprintf( stderr, "\nFree memory per node %s, at %s", msg, ctime( &now));
   }
 
@@ -3033,21 +3063,21 @@ int PIOWriteMAP(const char *path, double *value_in_double,int beg,int end)
     value[i] = (float)value_in_double[i];
   }
   float *map=NULL;
-  if (rank==0)  {
+  if (rank==rank_zero)  {
     map=(float *)malloc(sizeof(float)*map_size);
   }
 
   if (getbeginfo==0) {
     getbeginfo=1;
     int i,rrk;
-    if (rank==0) {
+    if (rank==rank_zero) {
       allbeg = (int *) malloc(sizeof(int)*mpi_size);
       allend = (int *) malloc(sizeof(int)*mpi_size);
     }
-    MPI_Gather(&beg,sizeof(int),MPI_BYTE,allbeg,sizeof(int),MPI_BYTE,0,MPI_COMM_WORLD);
-    MPI_Gather(&end,sizeof(int),MPI_BYTE,allend,sizeof(int),MPI_BYTE,0,MPI_COMM_WORLD);
+    MPI_Gather(&beg,sizeof(int),MPI_BYTE,allbeg,sizeof(int),MPI_BYTE,rank_zero,MPI_COMM_WORLD);
+    MPI_Gather(&end,sizeof(int),MPI_BYTE,allend,sizeof(int),MPI_BYTE,rank_zero,MPI_COMM_WORLD);
 
-    if (rank==0) {
+    if (rank==rank_zero) {
       for (rrk=0;rrk<mpi_size;rrk++) {
 	if (maxsize<allend[rrk]-allbeg[rrk]+1) maxsize=allend[rrk]-allbeg[rrk]+1;
       }
@@ -3055,22 +3085,22 @@ int PIOWriteMAP(const char *path, double *value_in_double,int beg,int end)
       all_map = (float *) malloc(sizeof(float)*mpi_size*maxsize);
     }
 
-    MPI_Bcast(&maxsize,sizeof(int), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&maxsize,sizeof(int), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
     int *l_idx =(int *)malloc(sizeof(int)*maxsize);
     for (i=beg;i<=end;i++) l_idx[i-beg]=realpix[i-beg];
 
-    MPI_Gather(l_idx,sizeof(int)*maxsize,MPI_BYTE,all_realpix,sizeof(int)*maxsize,MPI_BYTE,0,MPI_COMM_WORLD);
+    MPI_Gather(l_idx,sizeof(int)*maxsize,MPI_BYTE,all_realpix,sizeof(int)*maxsize,MPI_BYTE,rank_zero,MPI_COMM_WORLD);
 
     free(l_idx);
   }
   float *l_map =(float *)malloc(sizeof(float)*maxsize);
   for (k=beg;k<=end;k++) l_map[k-beg]=value[k-beg];
-  MPI_Gather(l_map,sizeof(float)*maxsize,MPI_BYTE,all_map,sizeof(float)*maxsize,MPI_BYTE,0,MPI_COMM_WORLD);
+  MPI_Gather(l_map,sizeof(float)*maxsize,MPI_BYTE,all_map,sizeof(float)*maxsize,MPI_BYTE,rank_zero,MPI_COMM_WORLD);
   free(l_map);
 
 
-  if (rank==0) {
+  if (rank==rank_zero) {
     int i,rrk;
     for (rrk=0;rrk<mpi_size;rrk++) {
       int l_beg,l_end;
@@ -3080,7 +3110,7 @@ int PIOWriteMAP(const char *path, double *value_in_double,int beg,int end)
     }
   }
 
-  if (rank==0) {
+  if (rank==rank_zero) {
     PIOSTRING fitspath;
     sprintf( fitspath, "%s.fits", path);
     if (remove( fitspath) == 0) {
@@ -3229,6 +3259,32 @@ int copy_int_array(PyObject *pArray, PIOINT *array,int maxsize) {
   }
 
   return (int) n;
+}
+// Fonction pour copier les données d'un tableau Python d'entiers à un tableau C
+void sum_double_array(PyObject *pArray, PIODOUBLE *array,int maxsize) {
+  
+  if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
+    fprintf(stderr, "The provided object is not a list or a tuple\n");
+    exit(0);
+  }
+
+  Py_ssize_t n = PyList_Check(pArray) ? PyList_Size(pArray) : PyTuple_Size(pArray);
+
+  if (maxsize!=-1) {
+    if (n>maxsize) {
+      fprintf(stderr,"Table read from python (%d) is bigger than allocated memory (%d)\n",(int)n,maxsize);
+      exit(0);
+    }
+  }
+  for (Py_ssize_t i = 0; i < n; i++) {
+    PyObject *item = PyList_Check(pArray) ? PyList_GetItem(pArray, i) : PyTuple_GetItem(pArray, i);
+    if (!PyFloat_Check(item)) {
+      fprintf(stderr, "L'élément n'est pas un double\n");
+      exit(0);
+    }
+    array[i] += PyFloat_AsDouble(item);
+  }
+
 }
 // Fonction pour copier les données d'un tableau Python d'entiers à un tableau C
 int copy_float_array(PyObject *pArray, PIOFLOAT *array,int maxsize) {
@@ -3563,7 +3619,7 @@ int main(int argc,char *argv[])  {
   MPI_Comm_size(MPI_COMM_WORLD,&size);
   mpi_size=size;
   
-  if (rank==0) {
+  if (rank==rank_zero) {
     char rpath[PATH_MAX];
     char * err=realpath( argv[0], rpath);
     if (err) 
@@ -3598,7 +3654,7 @@ int main(int argc,char *argv[])  {
   Param = &par;
 
   if (Param->EndRing-Param->BeginRing+1<mpi_size) {
-    if (rank==0)
+    if (rank==rank_zero)
       fprintf(stderr, "Number of MPI rank %d should be smaller than number pointing period %d.\n",
 	    mpi_size,(int) (Param->EndRing-Param->BeginRing+1));
     MPI_Finalize();        /* free parameters info */
@@ -3656,7 +3712,7 @@ int main(int argc,char *argv[])  {
     PIOLONG rings_per_rank = globalRangeRing / mpi_size;
     /* Check border case: when more proc than ring to process */
     if (rings_per_rank == 0) {
-      if (rank==0) {
+      if (rank==rank_zero) {
         fprintf(stderr,"ERROR: too few data to be processed ("PIOLONG_FMT" rings) regarding the available ranks (%d)\n",
             globalRangeRing, mpi_size);
       }
@@ -3665,7 +3721,7 @@ int main(int argc,char *argv[])  {
       balancing_correction = globalRangeRing - (rings_per_rank * mpi_size);
     }
 
-    if (rank==0) {
+    if (rank==rank_zero) {
       fprintf( stderr, "LoadBalancing globalRangeRing      = "PIOLONG_FMT" \n", globalRangeRing);
       fprintf( stderr, "LoadBalancing rings_per_rank       = "PIOLONG_FMT" \n", rings_per_rank);
       fprintf( stderr, "LoadBalancing balancing_correction = "PIOLONG_FMT" \n", balancing_correction);
@@ -3763,7 +3819,7 @@ int main(int argc,char *argv[])  {
   
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
 
-  if (rank==0)  fprintf(stderr,"Projection uses %d channels\n",MAXCHANNELS);
+  if (rank==rank_zero)  fprintf(stderr,"Projection uses %d channels\n",MAXCHANNELS);
 
   int nside128=128; // IF DONside=1 then all 128 maps are used in Nside
   if (Param->flag_TEMPLATE_NSIDE) {
@@ -3772,12 +3828,12 @@ int main(int argc,char *argv[])  {
 
   GAINSTEP = Param->GAINSTEP;
 
-  if (rank==0) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
+  if (rank==rank_zero) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
   
   /*-------------------------------------------------------------------------*/
   /*   SAVE PARAMETER FILE                                                   */
   /*-------------------------------------------------------------------------*/
-  if (rank==0) {
+  if (rank==rank_zero) {
     char commandtest[PIOSTRINGMAXLEN*64];
     sprintf(commandtest,"cp %s.py %s.py",argv[1],Param->Out_VEC[0]);
     int err=system(commandtest);
@@ -3855,7 +3911,7 @@ int main(int argc,char *argv[])  {
   double avvnep=0;
   for (i=0;i<nbolo;i++) avvnep+=Param->NEP[i]/Param->Calibration[i];
   for (i=0;i<nbolo;i++) NEP_tab[i]=nbolo*Param->NEP[i]/Param->Calibration[i]/avvnep;
-  if (rank==0) {
+  if (rank==rank_zero) {
     for (i=0;i<nbolo;i++) fprintf( stderr,"NEP_tab[%ld]=%lf\n", i, NEP_tab[i]);
   }
 
@@ -3889,7 +3945,7 @@ int main(int argc,char *argv[])  {
   
   PIOLONG ib;
 
-  if (rank==0) fprintf(stderr,"Avv GAIN is equal to 0 if ==1 : NORM_GAIN : %d\n",(int) Param->NORM_GAIN);
+  if (rank==rank_zero) fprintf(stderr,"Avv GAIN is equal to 0 if ==1 : NORM_GAIN : %d\n",(int) Param->NORM_GAIN);
 
   PIOFLOAT **skymodel = (PIOFLOAT **) malloc(sizeof(PIOFLOAT *)*MAXCHANNELS);
   for (i=0;i<MAXCHANNELS;i++) skymodel[i]=(PIOFLOAT *) malloc(sizeof(PIOFLOAT)*12*Nside*Nside);
@@ -3925,11 +3981,12 @@ int main(int argc,char *argv[])  {
     }
   }
  
-  PyObject *sparseFunc=NULL;
   PyObject *diagFunc=NULL;
   PyObject *pArgs = NULL;
   PyObject *pClass = NULL;
+
   PIOINT TestUpdateSparse=0;
+  
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
   npixShpr=0;
@@ -3963,6 +4020,7 @@ int main(int argc,char *argv[])  {
 
     // check if sparse funtion need to be upgraded
     TestUpdateSparse=CheckMethods(pClass,"update_eval");
+    TestNormalizeSparse=CheckMethods(pClass,"normalize");
 
     // Créer un tuple pour les arguments du constructeur
     pArgs = PyTuple_New(4);
@@ -3980,7 +4038,7 @@ int main(int argc,char *argv[])  {
 
     if (sparseFunc == NULL) {
       PyErr_Print();
-      fprintf(stderr, "Problem while creating the class instance\n");
+      fprintf(stderr, "Problem while creating the sparse class instance\n");
       Py_DECREF(pModule);
       return 1;
     }
@@ -4093,7 +4151,7 @@ int main(int argc,char *argv[])  {
     }
 
     double sxi= (Param->Calibration[ib]/Param->NEP[ib])*(Param->Calibration[ib]/Param->NEP[ib]);
-    if (rank==0) fprintf(stderr,"SXI %d %lg\n",(int) ib,sxi);
+    if (rank==rank_zero) fprintf(stderr,"SXI %d %lg\n",(int) ib,sxi);
     sprintf(Command,"begin=%lld;end=%lld",
             (long long) (globalRankInfo.BeginRing[rank]),
             (long long) (globalRankInfo.EndRing[rank]));
@@ -4130,11 +4188,11 @@ int main(int argc,char *argv[])  {
       }
     }
     
-    if (rank==0) fprintf(stderr,"ring_count = %d\n",ring_count);
-    if (rank==0) fprintf(stderr,"bad_rings = %d\n",bad_rings);
+    if (rank==rank_zero) fprintf(stderr,"ring_count = %d\n",ring_count);
+    if (rank==rank_zero) fprintf(stderr,"bad_rings = %d\n",bad_rings);
     
-    if (rank==0) fprintf(stderr,"RG_MAX %ld\n",(long) rg_max);
-    if (rank==0) fprintf(stderr,"NB_DIAG %ld\n",(long) nb_diag);
+    if (rank==rank_zero) fprintf(stderr,"RG_MAX %ld\n",(long) rg_max);
+    if (rank==rank_zero) fprintf(stderr,"NB_DIAG %ld\n",(long) nb_diag);
     /*=========================================================================================
       Compute spline in Time:
       =========================================================================================*/
@@ -4147,13 +4205,13 @@ int main(int argc,char *argv[])  {
 
     if (Param->flag_stim_paramfiles == 1) {
 
-      if (rank==0) {
+      if (rank==rank_zero) {
         GetProcMem(&vmem,&phymem);
         fprintf(stderr,"\nbefore stim bolo loop: used VMEM %.1lf[PHYS %.1lf]MB\n",
             (double) vmem/1024./1024., (double) phymem/1024./1024.);
       }
 
-      if (rank==0) {
+      if (rank==rank_zero) {
         GetProcMem(&vmem,&phymem);
         fprintf(stderr,"\nafter stim bolo loop: used VMEM %.1lf[PHYS %.1lf]MB\n",
             (double) vmem/1024./1024., (double) phymem/1024./1024.);
@@ -4375,7 +4433,7 @@ int main(int argc,char *argv[])  {
 	  }
 	}
 
-	if ((rank==0) && (rg==globalRankInfo.BeginRing[rank]) ) {
+	if ((rank==rank_zero) && (rg==globalRankInfo.BeginRing[rank]) ) {
 	  GetProcMem(&vmem,&phymem);
 	  fprintf(stderr,"Com %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld \n",
 		  Command, (long) rank, getpid(),
@@ -4403,7 +4461,7 @@ int main(int argc,char *argv[])  {
       }
     }
 
-    if (rank==0) {
+    if (rank==rank_zero) {
       GetProcMem(&vmem,&phymem);
       fprintf(stderr,"\nafter troll detector (%ld/%ld): used VMEM %.1lf[PHYS %.1lf]MB\n",
           ib, nbolo-1, (double) vmem/1024./1024., (double) phymem/1024./1024.);
@@ -4435,17 +4493,17 @@ int main(int argc,char *argv[])  {
     long mnpix;
     MPI_Allreduce(&lnpix,&mnpix,1,MPI_LONG, MPI_MAX,MPI_COMM_WORLD);
     npixShpr=mnpix;
-    if (TestUpdateSparse==0)
+    if (TestUpdateSparse==0&&TestNormalizeSparse==0)
       ClosepFunc(sparseFunc);
     
     Py_DECREF(pClass);
     Py_DECREF(pArgs);
   }
 
-  if (rank==0) fprintf(stderr,"Number Of Sparse Value %d\n",(int) npixShpr);
-  if (rank==0) fprintf(stderr,"NMAP %d\n",(int) npixmap);
-  if (rank==0) fprintf(stderr,"Number of Detector %d\n",(int) nbolo);
-  if (rank==0) fprintf(stderr,"Number of val means %d\n",(int) Param->n_val_mean);
+  if (rank==rank_zero) fprintf(stderr,"Number Of Sparse Value %d\n",(int) npixShpr);
+  if (rank==rank_zero) fprintf(stderr,"NMAP %d\n",(int) npixmap);
+  if (rank==rank_zero) fprintf(stderr,"Number of Detector %d\n",(int) nbolo);
+  if (rank==rank_zero) fprintf(stderr,"Number of val means %d\n",(int) Param->n_val_mean);
   if (Param->n_do_mean!=npixShpr*Param->n_val_mean) {
     fprintf(stderr, "do_mean param should have the size [%ld (Number Of Sparse Value x Number of Detector x Number of val weigts)] but found %ld\n",
 	    (long) (npixShpr*Param->n_val_mean),
@@ -4470,14 +4528,14 @@ int main(int argc,char *argv[])  {
     sprintf(commask,"begin=0;end=%lld",(long long) 12*Nside*Nside);
     mask = (PIOINT *) malloc(sizeof(PIOINT)*(12*Nside*Nside));
     long resmask=(long) noDMC_readObject_PIOINT(Param->Mask,0,12*Nside*Nside,mask);
-    if (rank==0) fprintf(stderr,"Mask %ld\n",(long) resmask);
+    if (rank==rank_zero) fprintf(stderr,"Mask %ld\n",(long) resmask);
   }
   else {
     mask = (PIOINT *) _PIOMALLOC(sizeof(PIOINT)*12*Nside*Nside);
     memset(mask,1,sizeof(PIOINT)*nnbpix);
   }
 
-  if (rank==0) fprintf(stderr,"Sort pixel to make it run faster\n");
+  if (rank==rank_zero) fprintf(stderr,"Sort pixel to make it run faster\n");
   nnbpix=12*Nside*Nside/mpi_size;
  
   for (i=0;i<mpi_size;i++) {
@@ -4502,13 +4560,13 @@ int main(int argc,char *argv[])  {
 
     {
       int *l_stat_pix = (int *) malloc(12*Nside*Nside*sizeof(int));
-      MPI_Reduce(stat_pix,l_stat_pix,12*Nside*Nside,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
+      MPI_Reduce(stat_pix,l_stat_pix,12*Nside*Nside,MPI_INT,MPI_SUM,rank_zero,MPI_COMM_WORLD);
 
       memcpy(stat_pix,l_stat_pix,12*Nside*Nside*sizeof(int));
       free(l_stat_pix);
     }
 
-    if (rank==0) {
+    if (rank==rank_zero) {
       fprintf(stderr,"regrid\n");
       hpint *statp = (hpint *) malloc(12*Nside*Nside*sizeof(hpint));
 
@@ -4546,7 +4604,7 @@ int main(int argc,char *argv[])  {
     }
     
     // NOT A BCAST TO BE CHANGED TO MPI_SCATTER FOR OPTIMALITY
-    MPI_Bcast(stat_pix,sizeof(int)*12*Nside*Nside*2, MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(stat_pix,sizeof(int)*12*Nside*Nside*2, MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
     for (i=0;i<nnbpix;i++) realpix[i]=stat_pix[i+begpix[rank]];
     for (i=0;i<nnbpix;i++) irealpix[i]=stat_pix[12*Nside*Nside+i+begpix[rank]];
@@ -4556,7 +4614,7 @@ int main(int argc,char *argv[])  {
   mask=newmask;
   // AND NOW IN FRONT OF YOUR EYES MIX PIXELS TO GET THEM EFFICIENTLY COMPUTED!!!
 
-  if (rank==0) fprintf(stderr,"rebin pixel\n");
+  if (rank==rank_zero) fprintf(stderr,"rebin pixel\n");
   hpix **new_hpix = (hpix **) malloc(sizeof(hpix *)*12*Nside*Nside);
   long l_nr=12*Nside*Nside;
   for (i=0;i<l_nr;i++) {
@@ -4582,7 +4640,7 @@ int main(int argc,char *argv[])  {
   free(stat_pix);
 
   GetProcMem(&vmem,&phymem);
-  if (rank==0) fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
+  if (rank==rank_zero) fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
               (long) rank, getpid(),
               (double) vmem/1024./1024.,
               (double) phymem/1024./1024.,__LINE__);
@@ -4691,14 +4749,14 @@ int main(int argc,char *argv[])  {
       if (nbuffer*MAXMPIBUFFER<ntbs) nbuffer++;
       //nbuffer=1;
 
-      if (rank==0) fprintf(stderr,"Too much data per proc cut the data exchange in subpieces [%d]\n",(int) nbuffer);
+      if (rank==rank_zero) fprintf(stderr,"Too much data per proc cut the data exchange in subpieces [%d]\n",(int) nbuffer);
 
       hpix * l_tbs = (hpix *) malloc(sizeof(hpix)*(ntbs/nbuffer+1));
 
       for (long k=0;k<nbuffer;k++) {
 	long l_ntbs=0;
 
-	if (rank==0) fprintf(stderr,"Start [%d] ...",(int) k);
+	if (rank==rank_zero) fprintf(stderr,"Start [%d] ...",(int) k);
 
 	begbuf[0]=0;
 
@@ -4758,7 +4816,7 @@ int main(int argc,char *argv[])  {
 	
 	notbs += ldata;
 
-	if (rank==0) 
+	if (rank==rank_zero) 
 	  fprintf(stderr,"Finish [%d] %ld %ld\n",(int) k,(long) notbs,(long) ntbs);
       }
 
@@ -4779,7 +4837,7 @@ int main(int argc,char *argv[])  {
   for (int kk=0;kk<ldata;kk++) {
     j=tbs[kk].ipix-begpix[rank];
     if (j<0||j>nnbpix) {
-      fprintf(stderr,"Problem whil exchanging data between processors %d\n",(int) j);
+      fprintf(stderr,"Problem while exchanging data between processors %d\n",(int) j);
       exit(0);
     }
     if (loc_nhpix[j]==0) {
@@ -4820,7 +4878,7 @@ int main(int argc,char *argv[])  {
           //fprintf (stderr,"%d <- %d\n",(int)rank,(int)(rk0+(k+exch/2)%(exch)));
           MPI_Recv(&ntbs,sizeof(long), MPI_BYTE,rk0+(k+exch/2)%(exch),450, MPI_COMM_WORLD,&statu);
 
-          if (rank==0) {
+          if (rank==rank_zero) {
             GetProcMem( &vmem, &phymem);
             fprintf(stderr,"Rank: %d(%s, free=%.2fGB) [%d/%d] used MEM virt:%.1lf[phys:%.1lf]MB line=%d ntbs:%ldMB\n",
                   rank, hostname, GetFreeMemGB(), (int) (rk0+(k+exch/2)%(exch)),(int) exch,
@@ -5005,14 +5063,14 @@ int main(int argc,char *argv[])  {
   }
 
 
-  if (rank==0) fprintf(stderr,"l_nmatpix[%d] %ld / %ld \n",rank,(long) l_nmatpix ,nnbpix );
+  if (rank==rank_zero) fprintf(stderr,"l_nmatpix[%d] %ld / %ld \n",rank,(long) l_nmatpix ,nnbpix );
 
 #ifdef OPTIMPI
   long lb;
-  MPI_Reduce(&l_nmatpix,&lb,1,MPI_LONG,MPI_SUM,0,MPI_COMM_WORLD);
+  MPI_Reduce(&l_nmatpix,&lb,1,MPI_LONG,MPI_SUM,rank_zero,MPI_COMM_WORLD);
   nmatpix=lb;
 #else
-  if (rank==0) {
+  if (rank==rank_zero) {
     long lb;
     nmatpix=l_nmatpix;
     for (rrk=1;rrk<mpi_size;rrk++) {
@@ -5022,7 +5080,7 @@ int main(int argc,char *argv[])  {
   }
   else MPI_Send(&l_nmatpix, sizeof(long), MPI_BYTE, 0, 450, MPI_COMM_WORLD);
 #endif
-  MPI_Bcast(&nmatpix, sizeof(long), MPI_BYTE, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&nmatpix, sizeof(long), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
   for (ib=0;ib<nbolo;ib++) {
     PIOBYTE *l_flg_rg = (PIOBYTE *) malloc(sizeof(PIOBYTE)*
@@ -5070,7 +5128,7 @@ int main(int argc,char *argv[])  {
     for (ib=0;ib<nbolo+1;ib++) newnr[ib]=0;
   }
   
-  if (rank==0) {
+  if (rank==rank_zero) {
     fprintf(stderr,"RK%d SHOULD DETERMINE %ld VALUES ",rank,(long) nnbpix);
     for (i=0;i<nbolo+1;i++) fprintf(stderr,"%ld ",(long) newnr[i]);
     fprintf(stderr,"\n");
@@ -5146,10 +5204,10 @@ int main(int argc,char *argv[])  {
 
   double l_mat[4*100];
   double l_vec[2*100];
-  MPI_Reduce(mat_dip,l_mat,4*nbolo,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-  MPI_Reduce(vec_dip,l_vec,2*nbolo,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+  MPI_Reduce(mat_dip,l_mat,4*nbolo,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
+  MPI_Reduce(vec_dip,l_vec,2*nbolo,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
 
-  if (rank==0) {
+  if (rank==rank_zero) {
 
     for (j=0;j<nbolo;j++) {
 
@@ -5174,7 +5232,7 @@ int main(int argc,char *argv[])  {
     }
   }
 
-  if (rank==0) fprintf(stderr,"BEG-ED %d %ld %ld - %ld %ld\n",rank,(long) nmatpix,(long) begpix[rank],(long) edpix[rank],
+  if (rank==rank_zero) fprintf(stderr,"BEG-ED %d %ld %ld - %ld %ld\n",rank,(long) nmatpix,(long) begpix[rank],(long) edpix[rank],
           (long) l_nmatpix);
   MPI_Barrier(MPI_COMM_WORLD);
 
@@ -5186,7 +5244,7 @@ int main(int argc,char *argv[])  {
 
   long maxsizemat=newnr[nbolo]+nbolo*(GAINSTEP+npixmap)+npixShpr;
   
-  if (rank==0) fprintf(stderr,"MAXSIZE %ld %ld\n",(long) maxsizemat,(long) newnr[nbolo]+nbolo*(GAINSTEP+npixmap)+npixShpr);
+  if (rank==rank_zero) fprintf(stderr,"MAXSIZE %ld %ld\n",(long) maxsizemat,(long) newnr[nbolo]+nbolo*(GAINSTEP+npixmap)+npixShpr);
 
   x2 =     (double *) malloc (maxsizemat*sizeof (double));
   x2old =  (double *) malloc (maxsizemat*sizeof (double));
@@ -5204,7 +5262,7 @@ int main(int argc,char *argv[])  {
 
   for (i=0;i<Param->n_Out_MAP;i++) strcpy(mapout[i],Param->Out_MAP[i]);
 
-  if (rank==0) fprintf(stderr,"BEG %d %ld %ld - %ld %ld\n",rank,(long) nmatpix,(long) begpix[rank],(long) edpix[rank],
+  if (rank==rank_zero) fprintf(stderr,"BEG %d %ld %ld - %ld %ld\n",rank,(long) nmatpix,(long) begpix[rank],(long) edpix[rank],
 		       (long) l_nmatpix);
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -5289,7 +5347,7 @@ int main(int argc,char *argv[])  {
     double *x3= (double *) malloc(sizeof(double)*(nmatres)); 
 
     GetProcMem(&vmem,&phymem);
-    if (rank==0) fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
+    if (rank==rank_zero) fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
                 (long) rank, getpid(),
                 (double) vmem/1024./1024.,
                 (double) phymem/1024./1024.,__LINE__);
@@ -5306,7 +5364,7 @@ int main(int argc,char *argv[])  {
       // Start update if needed
       //=======================================================================================================
       if (TestUpdateSparse==1) {
-	if (rank==0)
+	if (rank==rank_zero)
 	  fprintf(stderr,"update_eval method available Update model to be fitted\n");
 
 	// Init matrice and vecteur
@@ -5447,7 +5505,7 @@ int main(int argc,char *argv[])  {
 	}
       }
 
-      if (rank==0) {
+      if (rank==rank_zero) {
         fprintf(stderr,"GI XIGAIN %.10lg\n",sqrt(resxi));
 	if (do_offset==1) {
 	  fprintf(stderr,"MEAN_OFF=[");
@@ -5501,7 +5559,7 @@ int main(int argc,char *argv[])  {
     MPI_Barrier(MPI_COMM_WORLD);
 
     nmatres=newnr[nbolo]+nbolo*(GAINSTEP+npixmap)+npixShpr;
-    if (rank==0) {
+    if (rank==rank_zero) {
 
       PIOSTRING commm;
       PIOSTRING saveg;
@@ -5536,7 +5594,7 @@ int main(int argc,char *argv[])  {
       for (i=0;i<nbolo*GAINSTEP;i++) avvgain+=x3[newnr[nbolo]+i];
       avvgain/=((double)(nbolo*GAINSTEP));
 
-      if (rank==0)  {
+      if (rank==rank_zero)  {
 	fprintf(stderr,"AVVGAIN: %lf\n",avvgain);
       }
     }
@@ -5792,13 +5850,13 @@ int main(int argc,char *argv[])  {
       double *l_avv2 = (double *) malloc(sizeof(double)*(nb_diag));
       double *l_n = (double *) malloc(sizeof(double)*(nb_diag));
       
-      MPI_Reduce(diag_avv,l_avv,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-      MPI_Reduce(diag_avv2,l_avv2,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
-      MPI_Reduce(diag_n,l_n,nb_diag,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+      MPI_Reduce(diag_avv,l_avv,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
+      MPI_Reduce(diag_avv2,l_avv2,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
+      MPI_Reduce(diag_n,l_n,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
 
       for (k=0;k<nb_diag;k++) diag_avv[k]=sqrt(l_avv2[k]/l_n[k]-(l_avv[k]/l_n[k])*(l_avv[k]/l_n[k]));
 
-      if  (rank==0) {
+      if  (rank==rank_zero) {
 	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
 	sprintf(TEST_OUTMAP,"%s_%s_DIAG", mapout[detset],mapname);
 	PIOWriteVECT(TEST_OUTMAP,diag_avv,0,sizeof(PIODOUBLE)*nb_diag);
@@ -5870,7 +5928,7 @@ int main(int argc,char *argv[])  {
     free(diag_n);
   }
   
-  if (rank==0) {
+  if (rank==rank_zero) {
     now = time( NULL);
     fprintf(stderr, "\n%s: --------------------------\n", __FILE__ );
     fprintf(stderr, "%s: Finished successfully at %s",   __FILE__, ctime( &now));
