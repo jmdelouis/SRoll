@@ -1848,7 +1848,7 @@ double *dpixq;
 double *dpixu;
 
 PIOBYTE **flg_rg;
-long npixShpr;
+long npixShpr=0;
 long npixmap;
 long ittt,itbogo;
 long nmatres;
@@ -4021,7 +4021,7 @@ int main(int argc,char *argv[])  {
     // check if sparse funtion need to be upgraded
     TestUpdateSparse=CheckMethods(pClass,"update_eval");
     TestNormalizeSparse=CheckMethods(pClass,"normalize");
-
+    
     // Créer un tuple pour les arguments du constructeur
     pArgs = PyTuple_New(4);
 
@@ -4071,7 +4071,21 @@ int main(int argc,char *argv[])  {
       Py_DECREF(pWw);
       Py_DECREF(pChan);
       Py_DECREF(pVal);
-    } 
+    }
+    
+    if (CheckMethods(pClass,"getnumber_of_sparse")==1) {
+      
+      PyObject *pValue = PyObject_CallMethod(sparseFunc,"getnumber_of_sparse",NULL);
+
+      // Traitement de la valeur de retour
+      if (pValue != NULL) {
+	// Assurer que pValue est un tuple
+	npixShpr=(int) PyLong_AsLong(pValue);
+	if (rank==rank_zero)
+	  fprintf(stderr,"Number of sparse value %ld\n",(long) npixShpr);
+	Py_DECREF(pValue);
+      }
+    }
   }
 
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
