@@ -127,7 +127,7 @@ class proj:
     if a1<0 or a1>=self.npt_incidence:
       hit=0
       
-    hit=hit*self.std[a1]
+    hit=hit/self.std[a1]
     
     return signal,hit,calib,[1.0,np.cos(ptg_tuple_2)**2]
 
