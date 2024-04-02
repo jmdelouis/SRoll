@@ -85,7 +85,7 @@ CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I
 
 
 # build hprclean before sroll, because sroll uses stimlib which needs HPR_Clean.o
-all: alwaysCheckModules troll_857 troll_cfosat
+all: alwaysCheckModules troll_857 troll_cfosat ressources
 
 
 # DEBUG rule, to print a variable computed in this Makefile, for example OBJ, do: make print-OBJ
@@ -131,6 +131,9 @@ $(LSDIR)/linux_gcc/bin/multimod:
 
 troll_parLoader.c: $(PAR_LOADER_INPUT_HEADER_TROLL_DEF)
 	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_TROLL_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX_TROLL)"
+
+ressources: ressources.c
+	$(CC) ressources.c -o ressources
 
 %.o: %.c alwaysCheckModules
 	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic

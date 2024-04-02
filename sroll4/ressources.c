@@ -33,11 +33,11 @@ void get_cpu_usage(double *cpu_usage) {
 
 	    icpu++;
             if (total_cpu_time == prev_total_cpu_time[icpu]) {
-	      cpu_usage[icpu] = 0.0;
+	      cpu_usage[icpu] = 0.001;
 	    } else {
 	      unsigned long long total_diff = total_cpu_time - prev_total_cpu_time[icpu];
 	      unsigned long long idle_diff = idle_time - prev_idle_time[icpu];
-	      cpu_usage[icpu] = ((total_diff - idle_diff) / (double)total_diff) * 100.0;
+	      cpu_usage[icpu] = ((total_diff - idle_diff) / (double)total_diff) * 100.0+1E-3;
 	    }
             prev_total_cpu_time[icpu]=total_cpu_time;
             prev_idle_time[icpu]=idle_time;
