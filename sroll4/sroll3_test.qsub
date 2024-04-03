@@ -2,7 +2,7 @@
 #PBS -q mpi_1
 #PBS -l select=1:ncpus=28:mem=115g
 #PBS -l walltime=12:00:00
-#PBS -N Dmaptest
+#PBS -N Dscat
 
 cd /home1/datawork/jmdeloui/Troll/iaocea/source/SrollEx
 
