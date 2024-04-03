@@ -3377,6 +3377,60 @@ int Get_NumberOfDiag(PyObject *diagFunc)
   return n;
 }
 
+int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,int idx_in_ring,double rg_norm,PIOFLOAT *External)
+{
+  
+  PyObject *pValue=NULL;
+  int healpix_idx=0;
+  
+  if (projFunc != NULL){
+    PyObject *pArg1 = PyFloat_FromDouble((double)ph); // val est un flottant
+    PyObject *pArg2 = PyFloat_FromDouble((double)th); // val est un flottant
+    PyObject *pArg3 = PyFloat_FromDouble((double)psi); // val est un flottant
+    PyObject *pArg4 = PyLong_FromLong((long)idx_bolo); // val est un flottant
+    PyObject *pArg5 = PyFloat_FromDouble((double)rg_norm); // val est un flottant
+    PyObject *pArg6 = PyLong_FromLong((long)idx_in_ring); // val est un flottant
+
+    PyObject *pList = PyList_New(NB_EXTERNAL);
+    for (int i = 0; i < NB_EXTERNAL; i++) {
+      PyList_SetItem(pList, i, PyFloat_FromDouble((double) External[i*RINGSIZE]));
+    }
+    
+    pValue = PyObject_CallMethod(projFunc, "get_healpix_idx", "(OOOOOOO)",
+				 pArg1, pArg2, pArg3,
+				 pArg4, pArg5, pArg6,
+				 pList);
+
+    // Traitement de la valeur de retour
+    if (pValue != NULL) {
+      healpix_idx=(int) PyLong_AsLong(pValue);
+      Py_DECREF(pValue);
+    }
+    else {
+      fprintf(stderr, "Problem while trying to compute the healpix coordinate in the projection class\n");
+      PyErr_Print();
+      MPI_Finalize();  
+      exit(0);
+    }
+
+    // Nettoyage des arguments
+    Py_DECREF(pArg1);
+    Py_DECREF(pArg2);
+    Py_DECREF(pArg3);
+    Py_DECREF(pArg4);
+    Py_DECREF(pArg5);
+    Py_DECREF(pArg6);
+    Py_DECREF(pList);
+    
+  } else {
+    PyErr_Print();
+    MPI_Finalize(); 
+    exit(0);
+  }
+  
+  return healpix_idx;
+}
+
 int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo,int idx_in_ring,PIOFLOAT *sig,PIOFLOAT *calib,PIOFLOAT *hit)
 {
   
@@ -3759,6 +3813,7 @@ int main(int argc,char *argv[])  {
   /*--- End : MPI: Ring dispatching --- */
 
   PyObject *projFunc=NULL;
+  int calc_hidx_proj=0;
   if (Param->flag_projection==_PAR_TRUE) {
     PyObject *pArgs = NULL;
     PyObject *pClass = NULL;
@@ -3799,6 +3854,11 @@ int main(int argc,char *argv[])  {
       fprintf(stderr, "Échec de la création de l'instance de la classe projection\n");
       Py_DECREF(pModule);
       return 1;
+    }
+
+    if (CheckMethods(pClass,"get_healpix_idx")==1) {
+      if (rank==0) fprintf(stderr,"Use specific pixel map computation from Proj class\n");
+      calc_hidx_proj=1;
     }
   }
   
@@ -4343,7 +4403,15 @@ int main(int argc,char *argv[])  {
 	  long l_ipix128;
 	  nrg_htmp++;
 	  double vecpix[3];
-	  ang2pix_ring( Nside, th[i], ph[i], &ipix);
+
+	  if (calc_hidx_proj==0) {
+	    ang2pix_ring( Nside, th[i], ph[i], &ipix);
+	  }
+	  else {
+	    ipix=Get_hidx(projFunc,ph[i],th[i],psi[i],ib,i,
+			  (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
+			  External+i);
+	  }
 	  ang2pix_ring( nside128, th[i], ph[i], &ipix128); // Beware taht nside128 could be different from 128
 	  ang2pix_ring( 128, th[i], ph[i], &l_ipix128);
 	  
