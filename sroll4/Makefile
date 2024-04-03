@@ -85,7 +85,7 @@ CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I
 
 
 # build hprclean before sroll, because sroll uses stimlib which needs HPR_Clean.o
-all: alwaysCheckModules troll_857 troll_cfosat ressources
+all: alwaysCheckModules troll_857 troll_cfosat
 
 
 # DEBUG rule, to print a variable computed in this Makefile, for example OBJ, do: make print-OBJ
@@ -132,9 +132,6 @@ $(LSDIR)/linux_gcc/bin/multimod:
 troll_parLoader.c: $(PAR_LOADER_INPUT_HEADER_TROLL_DEF)
 	$(MAKE) -C $(PAR_LOADER_BASE_DIR) currentParContentDefHeaderFile="$(PAR_LOADER_INPUT_HEADER_TROLL_DEF)" tagPrefix="$(PAR_LOADER_TAG_PREFIX_TROLL)"
 
-ressources: ressources.c
-	$(CC) ressources.c -o ressources
-
 %.o: %.c alwaysCheckModules
 	$(CC) -c -o $@ $< $(CFLAGS) $(CFGSROLL) -fpic
 
@@ -143,8 +140,12 @@ troll_857: troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DMAXEXTERNALMAP=3 -DMAXCHAN=3 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -o $@ $< $(OBJTROLL)  $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB) -DPYTHON3 $(PYTHONLIB) -lm 
 
 #troll_857: alwaysCheckModules
-troll_cfosat: troll.c $(OBJTROLL)
+troll_cfosat_large: troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXSIMU=1 -DMAXEXTERNALSHPR=48  -DMAXEXTERNALMAP=1 -DMAXCHAN=2 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -fno-finite-math-only -lm
+
+#troll_857: alwaysCheckModules
+troll_cfosat: troll.c $(OBJTROLL)
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DRINGSIZE=3000000 -DMAXSIMU=1 -DMAXEXTERNALSHPR=16  -DMAXEXTERNALMAP=1 -DMAXCHAN=2 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -fno-finite-math-only -lm
 
 #troll_857: alwaysCheckModules
 troll_planck: troll.c $(OBJTROLL)
