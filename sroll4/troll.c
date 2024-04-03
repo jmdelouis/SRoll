@@ -3361,6 +3361,7 @@ int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,int 
 				 pArg4, pArg5, pArg6,
 				 pList);
 
+    
     // Traitement de la valeur de retour
     if (pValue != NULL) {
       if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
