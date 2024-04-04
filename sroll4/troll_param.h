@@ -319,13 +319,6 @@ typedef struct {
   PIOSTRING DiagFunc;
   PIOBYTE flag_DiagFunc;  /* ==_PAR_TRUE if SparseFunc is present */
 
-  /* ---- Optional InputList External_MAP ---------------------------------
-   *
-   */
-  PIOSTRING *External_MAP;
-  PIOBYTE flag_External_MAP;  /* ==_PAR_TRUE if External_MAP is present */
-  PIOLONG n_External_MAP; /* ==number_of_External_MAP */
-
   /* ---- Optional InputList Ptg ----------------------------------
    *
    */

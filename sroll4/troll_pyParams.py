@@ -74,8 +74,6 @@ def main():
 	number_of_Sub_HPR = 
 	SparseFunc = 
 	DiagFunc = 
-	External_MAP = []
-	number_of_External_MAP = 
 	Ptg = []
 	number_of_Ptg = 
 	Hit = []

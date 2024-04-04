@@ -319,7 +319,6 @@ paramDef troll_paramDef_list[] = {
   {"Sub_HPR", true, false, false},
   {"SparseFunc", false, false, false},
   {"DiagFunc", false, false, false},
-  {"External_MAP", true, false, false},
   {"Ptg", true, false, false},
   {"Hit", true, false, false},
   {"Badring", true, false, false},
@@ -341,7 +340,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 68;
+int troll_paramDef_list_size = 67;
 
 
 
@@ -917,19 +916,6 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
   else if (strcmp(name, "DiagFunc") == 0) {
     param->flag_DiagFunc = _PAR_TRUE;
     strcpy(param->DiagFunc, *value);
-  }
-  else if (strcmp(name, "External_MAP") == 0) {
-    param->flag_External_MAP = _PAR_TRUE;
-    param->n_External_MAP = list_size;
-    param->External_MAP = malloc(list_size * sizeof(PIOSTRING));
-    if (param->External_MAP == NULL) {
-      perror("Error");
-      return 1;
-    }
-    int i;
-    for (i = 0; i < list_size; i++) {
-      strcpy(param->External_MAP[i], value[i]);
-    }
   }
   else if (strcmp(name, "Ptg") == 0) {
     param->flag_Ptg = _PAR_TRUE;
