@@ -3373,6 +3373,7 @@ int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,int 
 	Py_DECREF(pValue);
       }
       else {
+	fprintf(stderr,"%d %d\n",(int) PyTuple_Check(pValue),(int) PyTuple_Size(pValue));
 	fprintf(stderr,"Problem while executing the get_heapix_idx method get value inside projection class\n");
 	PyErr_Print();
 	MPI_Finalize(); 
@@ -4433,7 +4434,7 @@ int main(int argc,char *argv[])  {
 	      
 	      tp_hpix=l_hpix[ipix]+l_nhpix[ipix];
 	      
-	      tp_hpix->hit =  o_widx[lll]/sqrt(h[i]);
+	      tp_hpix->hit =  h[i]*o_widx[lll];
 	      
 	      tp_hpix->model=tp_hpix->hpr_cal;
 	      
@@ -4469,7 +4470,7 @@ int main(int argc,char *argv[])  {
 		
 	      }
 	      
-	      tp_hpix->w = h[i]*sxi;
+	      tp_hpix->w = h[i]*sxi*o_widx[lll];
 	      tp_hpix->surv = surv;
 	      tp_hpix->ib = ib;
 	      tp_hpix->rg = rg;
@@ -4483,7 +4484,8 @@ int main(int argc,char *argv[])  {
 	  }
 	}
 
-	if ((rank==rank_zero) && (rg==globalRankInfo.BeginRing[rank]) ) {
+	//if ((rank==rank_zero) && (rg==globalRankInfo.BeginRing[rank]) ) {
+	{
 	  GetProcMem(&vmem,&phymem);
 	  fprintf(stderr,"Com %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld \n",
 		  Command, (long) rank, getpid(),

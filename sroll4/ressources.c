@@ -60,9 +60,9 @@ int memory_usage()
   long long free_memory = sys_info.freeram * sys_info.mem_unit;
   long long available_memory = sys_info.freeram * sys_info.mem_unit + sys_info.bufferram * sys_info.mem_unit + sys_info.sharedram * sys_info.mem_unit;
   
-  printf(" %8.3lf", (double) (total_memory)/(1024*1024*1024));
-  printf(" %8.3lf", (double)(free_memory)/(1024*1024*1024));
-  printf(" %8.3lf\n", (double)(available_memory)/(1024*1024*1024));
+  fprintf(stderr," %8.3lf", (double) (total_memory)/(1024*1024*1024));
+  fprintf(stderr," %8.3lf", (double)(free_memory)/(1024*1024*1024));
+  fprintf(stderr," %8.3lf\n", (double)(available_memory)/(1024*1024*1024));
   
   return 0;
 }
@@ -73,14 +73,14 @@ int main() {
     while (1) {
         get_cpu_usage(cpu_usage);
 
-        printf("%08ld",i);
+        fprintf(stderr,"%08ld",i);
         for (int i = 0; i < MAX_CPUS; ++i) {
             if (cpu_usage[i] != 0.0) {
-                printf(" %6.2f",cpu_usage[i]);
+                fprintf(stderr," %6.2f",cpu_usage[i]);
             }
         }
         memory_usage();
-        sleep(1); // Wait for 1 second before checking CPU usage again
+        sleep(4); // Wait for 1 second before checking CPU usage again
 	i++;
     }
 
