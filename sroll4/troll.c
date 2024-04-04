@@ -1020,9 +1020,10 @@ typedef struct {
   PIOINT   nShpr;
   PIOFLOAT listofShpr[MAXEXTERNALSHPR];
   PIOINT   listofShpr_idx[MAXEXTERNALSHPR];
-  PIOINT ipix;  PIOINT rg;
+  PIOINT   ipix;
+  PIOINT   rg;
   PIOFLOAT corr_cnn;
-  PIOINT gi;
+  PIOINT   gi;
   PIOFLOAT hpr_cal;
   PIOFLOAT Sub_HPR;
   PIOFLOAT w;
@@ -3336,13 +3337,14 @@ int Get_NumberOfDiag(PyObject *diagFunc)
   return n;
 }
 
-int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,int idx_in_ring,double rg_norm,PIOFLOAT *External,
+int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,
+	     int idx_in_ring,double rg_norm,PIOFLOAT *External,
 	     PIOFLOAT *o_widx,PIOINT *o_hidx)
 {
   
   PyObject *pValue=NULL;
   int n=0;
-  
+
   if (projFunc != NULL){
     PyObject *pArg1 = PyFloat_FromDouble((double)ph); // val est un flottant
     PyObject *pArg2 = PyFloat_FromDouble((double)th); // val est un flottant
@@ -3855,11 +3857,6 @@ int main(int argc,char *argv[])  {
 
   if (rank==rank_zero)  fprintf(stderr,"Projection uses %d channels\n",MAXCHANNELS);
 
-  int nside128=128; // IF DONside=1 then all 128 maps are used in Nside
-  if (Param->flag_TEMPLATE_NSIDE) {
-    nside128=Param->TEMPLATE_NSIDE;
-  }
-
   GAINSTEP = Param->GAINSTEP;
 
   if (rank==rank_zero) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
@@ -3977,29 +3974,8 @@ int main(int argc,char *argv[])  {
   PIOLONG ib;
 
   if (rank==rank_zero) fprintf(stderr,"Avv GAIN is equal to 0 if ==1 : NORM_GAIN : %d\n",(int) Param->NORM_GAIN);
-
-  PIOFLOAT **skymodel = (PIOFLOAT **) malloc(sizeof(PIOFLOAT *)*MAXCHANNELS);
-  for (i=0;i<MAXCHANNELS;i++) skymodel[i]=(PIOFLOAT *) malloc(sizeof(PIOFLOAT)*12*Nside*Nside);
-
-  PIOFLOAT **mapmodel = NULL;
-
-  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
-  if (Param->flag_External_MAP==_PAR_TRUE) {
-
-    mapmodel = (PIOFLOAT **) malloc(sizeof(PIOFLOAT)*Param->n_External_MAP);
-    
-    for (int l=0;l<Param->n_External_MAP;l++) {
-      mapmodel[l]= (PIOFLOAT *) malloc(sizeof(PIOFLOAT)*12*nside128*nside128);
-
-      PIOLONG nsa  = noDMC_readObject_PIOFLOAT(Param->External_MAP[l],0,12*nside128*nside128,mapmodel[l]);
-      if (nsa<0) {
-	      fprintf(stderr, "Impossible to the model map: %s %d\n",Param->External_MAP[l],(int) nsa);
-
-	      exit ( -1);
-      }
-    }
-  }
+  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
   PIOFLOAT *addpol=NULL;
   if (Param->flag_ADDPOL==_PAR_TRUE) {
@@ -4179,21 +4155,6 @@ int main(int argc,char *argv[])  {
   if (NB_EXTERNAL==0) NB_EXTERNAL=1;
   
   for (ib=0;ib<nbolo;ib++) {
-    if (Param->n_in_template_map>0) {
-      for (int nchan=0;nchan<MAXCHANNELS;nchan++) {
-	      PIOLONG nsa  = noDMC_readObject_PIOFLOAT(Param->in_template_map[ib*MAXCHANNELS+nchan],0,12*Nside*Nside,
-	      skymodel[nchan]);  
-	      if (nsa<0) {
-	        fprintf(stderr, "Impossible to read in_template_map: %s %d\n",Param->in_template_map[ib],(int) nsa);
-	        exit ( -1);
-	      }
-      }
-    }
-    else {
-      for (int nchan=0;nchan<MAXCHANNELS;nchan++) {
-	      memset(skymodel[nchan],0,12*Nside*Nside*sizeof(PIOFLOAT));
-      }
-    }
 
     double sxi= (Param->Calibration[ib]/Param->NEP[ib])*(Param->Calibration[ib]/Param->NEP[ib]);
     if (rank==rank_zero) fprintf(stderr,"SXI %d %lg\n",(int) ib,sxi);
@@ -4273,6 +4234,8 @@ int main(int argc,char *argv[])  {
         PIOFLOAT *h,*Sub_HPR;
         PIODOUBLE *ph,*th,*psi;
         PIOBYTE surv=-1;
+	
+	if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
 	
         if (rg>=0&&rg<=globalEndRing/2)    surv=1;
         if (rg>=globalEndRing/2)  surv=12;
@@ -4367,107 +4330,134 @@ int main(int argc,char *argv[])  {
           exit ( -1);
         }
 	long nrg_htmp=0;
+	
+	if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+	
+	hpix *l_tp_hpix = (hpix *) malloc(sizeof(hpix));
+	
 	for (i=0;i<RINGSIZE;i++) {
-	  hpix tmp_hpix;
-	  long ipix;
-	  int lll;
-	  PIOFLOAT o_widx[MAXPIXDEF];
-	  PIOINT o_hidx[MAXPIXDEF];
-	  
-	  int npt=1;
-	  if (calc_hidx_proj==0) {
-	    ang2pix_ring( Nside, th[i], ph[i], &ipix);
-	    o_widx[0]=1.0;
-	    o_hidx[0]=ipix;
-	  }
-	  else {
-	    npt=Get_hidx(projFunc,ph[i],th[i],psi[i],ib,i,
-			  (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
-			  External+i,
-			  o_widx,o_hidx);
-	  }
-	  
-	  nrg_htmp+=npt;
-
-	  for (lll=0;lll<npt;lll++) {
-
-	    ipix=o_hidx[lll];
+	  if (h[i]!=0.0) { 
+	    long ipix;
+	    int lll;
+	    PIOFLOAT o_widx[MAXPIXDEF];
+	    PIOINT o_hidx[MAXPIXDEF];
 	    
-	    hpix *tp_hpix=&tmp_hpix;
-            
-	    memset(tp_hpix,0,sizeof(hpix));
-
-	    for (int iter = 0; iter < number_of_iterations; iter++) {
-	      tp_hpix->listp[iter]=(y[iter][i]-Param->Monop[ib])/Param->Calibration[ib];
+	    int npt=1;
+	    if (calc_hidx_proj==0) {
+	      ang2pix_ring( Nside, th[i], ph[i], &ipix);
+	      o_widx[0]=1.0;
+	      o_hidx[0]=ipix;
 	    }
-	  
-	    tp_hpix->sig=tp_hpix->listp[0];
-	    
-	    if (Sub_HPR != NULL) {
-	      tp_hpix->Sub_HPR = Sub_HPR[i]*Param->SUB_HPRCOEF[ib];
-	    } else {
-	      tp_hpix->Sub_HPR = 0.0;
+	    else {
+	      npt=Get_hidx(projFunc,ph[i],th[i],psi[i],ib,i,
+			   (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
+			   External+i,
+			   o_widx,
+			   o_hidx);
 	    }
 	    
-	    tp_hpix->corr_cnn = 0;
-	    
-	    int is_valid = init_channels(tp_hpix,
-					 projFunc,
-					 psi[i],
-					 External+i,
-					 (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
-					 ipix,
-					 ib,
-					 i,
-					 &(tp_hpix->sig),
-					 &(tp_hpix->hpr_cal),
-					 h+i);
-	    
-	    if (is_valid) {
-	      if (l_nhpix[ipix]==0) {
-		l_hpix[ipix] = (hpix *) malloc(sizeof(hpix));
-	      }
-	      else {
-		l_hpix[ipix] = (hpix *) realloc(l_hpix[ipix],(l_nhpix[ipix]+1)*sizeof(hpix));
-	      }
-	      memcpy(l_hpix[ipix]+l_nhpix[ipix],tp_hpix,sizeof(hpix));
+	    for (lll=0;lll<npt;lll++) {
+	      hpix *tp_hpix = l_tp_hpix;
 	      
-	      tp_hpix=l_hpix[ipix]+l_nhpix[ipix];
+	      memset(tp_hpix,0,sizeof(hpix));
+	      
+	      ipix=o_hidx[lll];
+	      
+	      if (ipix<0||ipix>=12*Nside*Nside) {
+		fprintf(stderr,"Problem with pointing, healpix index %ld not in domain [%d,%d]\n",(long) ipix,
+			0,12*Nside*Nside);
+		exit(0);
+	      }
+	      
+	      for (int l_iter = 0; l_iter < number_of_iterations; l_iter++) {
+		tp_hpix->listp[l_iter]=(y[l_iter][i]-Param->Monop[ib])/Param->Calibration[ib];
+	      }
+	      
+	      tp_hpix->sig=tp_hpix->listp[0];
+	      
+	      if (Sub_HPR != NULL) {
+		tp_hpix->Sub_HPR = Sub_HPR[i]*Param->SUB_HPRCOEF[ib];
+	      } else {
+		tp_hpix->Sub_HPR = 0.0;
+	      }
+	      
+	      tp_hpix->corr_cnn = 0.0;
 	      
 	      tp_hpix->hit =  h[i]*o_widx[lll];
 	      
-	      tp_hpix->model=tp_hpix->hpr_cal;
+	      int is_valid = init_channels(tp_hpix,
+					   projFunc,
+					   psi[i],
+					   External+i,
+					   (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
+					   ipix,
+					   ib,
+					   i,
+					   &(tp_hpix->sig),
+					   &(tp_hpix->hpr_cal),
+					   &(tp_hpix->hit));
 	      
-	      if (sparseFunc!=NULL) {
+	      if (is_valid) {
 		
-		tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,
-						 rg,
-						 ib,
-						 ipix,
-						 i,
-						 psi[i],
-						 External+i,
-						 tp_hpix->listofShpr,
-						 tp_hpix->listofShpr_idx);
+		nrg_htmp++;
 		
+		if (l_nhpix[ipix]==0) {
+		  l_hpix[ipix] = (hpix *) malloc(sizeof(hpix));
+		}
+		else {
+		  l_hpix[ipix] = (hpix *) realloc(l_hpix[ipix],(l_nhpix[ipix]+1)*sizeof(hpix));
+		}
+		memcpy(l_hpix[ipix]+l_nhpix[ipix],tp_hpix,sizeof(hpix));
 		
-		for (j=0;j<tp_hpix->nShpr;j++) {
-		  if (npixShpr<tp_hpix->listofShpr_idx[j]+1) {
-		    npixShpr=tp_hpix->listofShpr_idx[j]+1;
+		tp_hpix=l_hpix[ipix]+l_nhpix[ipix];
+		
+		tp_hpix->model=tp_hpix->hpr_cal;
+		
+		if (sparseFunc!=NULL) {
+		  
+		  tp_hpix->nShpr = calc_sparse_hpr(sparseFunc,
+						   rg,
+						   ib,
+						   ipix,
+						   i,
+						   psi[i],
+						   External+i,
+						   tp_hpix->listofShpr,
+						   tp_hpix->listofShpr_idx);
+		  
+		  
+		  for (j=0;j<tp_hpix->nShpr;j++) {
+		    if (npixShpr<tp_hpix->listofShpr_idx[j]+1) {
+		      npixShpr=tp_hpix->listofShpr_idx[j]+1;
+		    }
 		  }
 		}
-	      }
-	      
-	      if (diagFunc!=NULL) {
-		tp_hpix->diag_idx = calc_diag_hpr(diagFunc,
-						  rg,
-						  ib,
-						  ipix,
-						  i,
-						  psi[i],
-						  tp_hpix->sig,
-						  External+i);
 		
+		if (diagFunc!=NULL) {
+		  tp_hpix->diag_idx = calc_diag_hpr(diagFunc,
+						    rg,
+						    ib,
+						    ipix,
+						    i,
+						    psi[i],
+						    tp_hpix->sig,
+						    External+i);
+		  
+		}
+		
+		tp_hpix->w = tp_hpix->hit*sxi*o_widx[lll];
+		tp_hpix->surv = surv;
+		tp_hpix->ib = ib;
+		tp_hpix->rg = rg;
+		tp_hpix->gi = 0;
+		tp_hpix->ipix = ipix;
+		
+		if (isnan(tp_hpix->sig)||isnan(tp_hpix->w)||isnan(tp_hpix->hpr_cal)) {
+		  fprintf(stderr,"NAN NAN NAN %lf %lf %lf %ld %ld\n",tp_hpix->hpr_cal,
+			  tp_hpix->sig,tp_hpix->w,
+			  (long)rg,(long)i);
+		}  
+		else l_nhpix[ipix]+=1;
 	      }
 	      
 	      tp_hpix->w = h[i]*sxi*o_widx[lll];
@@ -4483,6 +4473,9 @@ int main(int argc,char *argv[])  {
 	    }
 	  }
 	}
+	free(l_tp_hpix);
+	  
+	if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
 
 	//if ((rank==rank_zero) && (rg==globalRankInfo.BeginRing[rank]) ) {
 	{
@@ -4498,7 +4491,8 @@ int main(int argc,char *argv[])  {
         if (Param->flag_stim_paramfiles == 0) {
           free(y[0]);
         }
-        free(Sub_HPR);
+	if (Sub_HPR!=NULL)
+	  free(Sub_HPR);
         free(External);
         free(th);
         free(ph);
@@ -4525,19 +4519,6 @@ int main(int argc,char *argv[])  {
     free(addpol);
   }
 
-  if (skymodel!=NULL) {
-    for (int l=0;l<MAXCHANNELS;l++) {
-      free(skymodel[l]);
-    }
-  }
-
-  if (mapmodel!=NULL) {
-    for (int l=0;l<Param->n_External_MAP;l++) {
-      free(mapmodel[l]);
-    }
-    free(mapmodel);
-  }
-  
   PrintFreeMemOnNodes( rank, mpi_size, "before pixel balancing");
 
   if (sparseFunc!=NULL) {
@@ -4709,55 +4690,68 @@ int main(int argc,char *argv[])  {
     id_buff = NULL;
   }
   
+  nnbpix = edpix[rank]-begpix[rank]+1;
+
+  loc_hpix = (hpix **) malloc(sizeof(hpix *)*nnbpix);
+  loc_nhpix = (PIOINT *) malloc(sizeof(PIOINT)*nnbpix);
+  memset(loc_nhpix,0,sizeof(PIOINT)*nnbpix);
+    
   hpix * tbs = NULL;
   long ntbs=0;
-  
+
+  long maxpix=0;
   for (long k=0;k<mpi_size;k++) {
-    for (i=begpix[k];i<edpix[k]+1;i++) {
-      if (l_nhpix[i]>0) {
-	if (tbs==NULL) {
-	  tbs = (hpix *) malloc(l_nhpix[i]*sizeof(hpix));
-	  if (mpi_size>1) id_buff = (int *) malloc(l_nhpix[i]*sizeof(int));
-	}
-	else {
-	  tbs = (hpix *) realloc(tbs,(ntbs+l_nhpix[i])*sizeof(hpix));
-	  if (mpi_size>1) id_buff = (int *) realloc(id_buff,(ntbs+l_nhpix[i])*sizeof(int));
-	}
-	memcpy(tbs+ntbs,l_hpix[i],l_nhpix[i]*sizeof(hpix));
-	if (mpi_size>1) {
-	  for (long l=0;l<l_nhpix[i];l++) {
-	    id_buff[ntbs+l]=k;
+    if (edpix[k]+1-begpix[k]>maxpix) maxpix=edpix[k]+1-begpix[k];
+  }
+  long ntot_pts=0;
+#define MAXMPIBUFFER (512*512)
+  
+  for (long lll=0;lll<maxpix;lll+=MAXMPIBUFFER) {
+    for (long k=0;k<mpi_size;k++) {
+      long istop=begpix[k]+lll+MAXMPIBUFFER;
+      if (istop>edpix[k]+1) istop=edpix[k]+1;
+      
+      for (i=begpix[k]+lll;i<istop;i++) {
+	
+	if (l_nhpix[i]>0) {
+	  if (tbs==NULL) {
+	    tbs = (hpix *) malloc(l_nhpix[i]*sizeof(hpix));
+	    if (mpi_size>1) id_buff = (int *) malloc(l_nhpix[i]*sizeof(int));
 	  }
+	  else {
+	    tbs = (hpix *) realloc(tbs,(ntbs+l_nhpix[i])*sizeof(hpix));
+	    if (mpi_size>1) id_buff = (int *) realloc(id_buff,(ntbs+l_nhpix[i])*sizeof(int));
+	  }
+	  memcpy(tbs+ntbs,l_hpix[i],l_nhpix[i]*sizeof(hpix));
+	  if (mpi_size>1) {
+	    for (long l=0;l<l_nhpix[i];l++) {
+	      id_buff[ntbs+l]=k;
+	    }
+	  }
+	  ntbs+=l_nhpix[i];
+	  
+	  free(l_hpix[i]);
 	}
-	ntbs+=l_nhpix[i];
-	free(l_hpix[i]);
       }
     }
-  }
-  free(l_hpix);
-  free(l_nhpix);
-
-  long ldata=ntbs;
-
-  if (mpi_size>1) { 
-    hpix *otbs=NULL;
-    long notbs=0;
-    long *begbuf = (long *) malloc((mpi_size+1)*sizeof(long));
-
-    begbuf[0]=0;
-
-    for (long k=0;k<ntbs;k++) {
-      begbuf[id_buff[k]+1]=(k+1)*sizeof(hpix);
-    }
-
-#define MAXMPIBUFFER (10000000)
-    if (ntbs<MAXMPIBUFFER) {
+    if (mpi_size>1) {  
+      hpix *otbs=NULL;
+      long *begbuf = (long *) malloc((mpi_size+1)*sizeof(long));
+      memset(begbuf,0,(mpi_size+1)*sizeof(long));
+      
+      for (long k=0;k<ntbs;k++) {
+	begbuf[id_buff[k]+1]=(k+1)*sizeof(hpix);
+      }
+      // case some process have no data
+      for (long k=1;k<mpi_size+1;k++) {
+	if (begbuf[k]==0) {
+	  begbuf[k]=begbuf[k-1];
+	}
+      }
       
       /* exchange all buffer information */
       long *allbuf = (long *) malloc(mpi_size*(mpi_size+1)*sizeof(long));
-      
       MPI_Allgather(begbuf,mpi_size+1,MPI_LONG,allbuf,(mpi_size+1),MPI_LONG,MPI_COMM_WORLD);
-      
       int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
       int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
       int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
@@ -4768,21 +4762,24 @@ int main(int argc,char *argv[])  {
 	sdispls[i]=begbuf[i];
 	recvcounts[i]=allbuf[i*(mpi_size+1)+rank+1]-allbuf[i*(mpi_size+1)+rank];
       }
-      
       free(begbuf);
       free(allbuf);
-      
       rdispls[0]=0;
       for (i=1;i<mpi_size;i++) {
 	rdispls[i]=rdispls[i-1]+recvcounts[i-1];
       }
+      ntbs=(rdispls[mpi_size-1]+recvcounts[mpi_size-1])/sizeof(hpix);
       
-      ldata=(rdispls[mpi_size-1]+recvcounts[mpi_size-1])/sizeof(hpix);
-      
-      
-      otbs = (hpix *) malloc(ldata*sizeof(hpix));
+      if (tbs==NULL) tbs = (hpix *) malloc(sizeof(hpix));
+      if (ntbs==0) {
+	otbs = (hpix *) malloc(sizeof(hpix));
+	memset(otbs,0,sizeof(hpix));
+      }
+      else{
+	otbs = (hpix *) malloc(ntbs*sizeof(hpix));
+	memset(otbs,0,ntbs*sizeof(hpix));
+      }
 
-      MPI_Barrier(MPI_COMM_WORLD);
       MPI_Alltoallv(tbs,sendcounts,sdispls,MPI_BYTE,
 		    otbs,recvcounts,rdispls,MPI_BYTE,
 		    MPI_COMM_WORLD);
@@ -4791,117 +4788,53 @@ int main(int argc,char *argv[])  {
       free(sendcounts);
       free(recvcounts);
       free(rdispls);
-      free(tbs);
-      free(id_buff);
-      tbs=otbs;
-    }
-    else {
-      long nbuffer=ntbs/MAXMPIBUFFER;
-      if (nbuffer*MAXMPIBUFFER<ntbs) nbuffer++;
-      //nbuffer=1;
-
-      if (rank==rank_zero) fprintf(stderr,"Too much data per proc cut the data exchange in subpieces [%d]\n",(int) nbuffer);
-
-      hpix * l_tbs = (hpix *) malloc(sizeof(hpix)*(ntbs/nbuffer+1));
-
-      for (long k=0;k<nbuffer;k++) {
-	long l_ntbs=0;
-
-	if (rank==rank_zero) fprintf(stderr,"Start [%d] ...",(int) k);
-
-	begbuf[0]=0;
-
-	for (long l=k;l<ntbs;l+=nbuffer) {
-	  begbuf[id_buff[l]+1]=(l_ntbs+1)*sizeof(hpix);
-	  memcpy(l_tbs+l_ntbs,tbs+l,sizeof(hpix));
-	  l_ntbs++;
-	}
-
-	/* exchange all buffer information */
-	long *allbuf = (long *) malloc(mpi_size*(mpi_size+1)*sizeof(long));
-      
-	MPI_Allgather(begbuf,mpi_size+1,MPI_LONG,allbuf,(mpi_size+1),MPI_LONG,MPI_COMM_WORLD);
-      
-	int *sdispls = (int *) malloc(sizeof(int)*mpi_size);
-	int *sendcounts = (int *) malloc(sizeof(int)*mpi_size);
-	int *recvcounts = (int *) malloc(sizeof(int)*mpi_size);
-	int *rdispls = (int *) calloc(mpi_size,sizeof(int));
-      
-	for (i=0;i<mpi_size;i++) {
-	  sendcounts[i]=begbuf[i+1]-begbuf[i];
-	  sdispls[i]=begbuf[i];
-	  recvcounts[i]=allbuf[i*(mpi_size+1)+rank+1]-allbuf[i*(mpi_size+1)+rank];
-	}
-      
-	free(allbuf);
-      
-	rdispls[0]=0;
-	for (i=1;i<mpi_size;i++) {
-	  rdispls[i]=rdispls[i-1]+recvcounts[i-1];
-	}
-      
-	ldata=(rdispls[mpi_size-1]+recvcounts[mpi_size-1])/sizeof(hpix);
-
-	hpix *l_otbs = (hpix *) malloc(ldata*sizeof(hpix));
-
-	MPI_Barrier(MPI_COMM_WORLD);
-
-	MPI_Alltoallv(l_tbs,sendcounts,sdispls,MPI_BYTE,
-		      l_otbs,recvcounts,rdispls,MPI_BYTE,
-		      MPI_COMM_WORLD);
-	
-	free(sdispls);
-	free(sendcounts);
-	free(recvcounts);
-	free(rdispls);
-
-	if (otbs==NULL) {
-	  otbs = (hpix *) malloc(ldata*sizeof(hpix));
-	}
-	else {
-	  otbs = (hpix *) realloc(otbs,(notbs+ldata)*sizeof(hpix));
-	}
-	memcpy(otbs+notbs,l_otbs,ldata*sizeof(hpix));
-
-	free(l_otbs);
-	
-	notbs += ldata;
-
-	if (rank==rank_zero) 
-	  fprintf(stderr,"Finish [%d] %ld %ld\n",(int) k,(long) notbs,(long) ntbs);
+      if (tbs!=NULL) {
+	free(tbs);
       }
-
-      free(begbuf);
-      free(l_tbs);
-      free(tbs);
+      if (id_buff!=NULL) {
+	free(id_buff);
+	id_buff = NULL;
+      }
       tbs=otbs;
-      ldata=notbs;
     }
+	    
+    for (int kk=0;kk<ntbs;kk++) {
+      j=tbs[kk].ipix-begpix[rank];
+      if (j<0||j>nnbpix) {
+	fprintf(stderr,"Problem while exchanging data between processors %d\n",(int) j);
+	exit(0);
+      }
+      if (loc_nhpix[j]==0) {
+	loc_hpix[j] = (hpix *) malloc(sizeof(hpix));
+      }
+      else {
+	loc_hpix[j] = (hpix *) realloc(loc_hpix[j],(1+loc_nhpix[j])*sizeof(hpix));
+      }
+      memcpy(loc_hpix[j]+loc_nhpix[j],tbs+kk,sizeof(hpix));
+      loc_nhpix[j] +=1;
+      ntot_pts++;
+    }
+    if (rank==rank_zero) fprintf(stderr,"Exchange %ld values\n",(long) ntbs);
+    
+    if (tbs!=NULL) {
+      free(tbs);
+      tbs=NULL;
+    }
+    ntbs=0;
   }
   
-  nnbpix = edpix[rank]-begpix[rank]+1;
+  free(l_hpix);
+  free(l_nhpix);
+  if (rank==rank_zero)
+    fprintf(stderr,"\n===============================================\n\n");
+  MPI_Barrier(MPI_COMM_WORLD);
 
-  loc_hpix = (hpix **) malloc(sizeof(hpix *)*nnbpix);
-  loc_nhpix = (PIOINT *) malloc(sizeof(PIOINT)*nnbpix);
-  memset(loc_nhpix,0,sizeof(PIOINT)*nnbpix);
-
-  for (int kk=0;kk<ldata;kk++) {
-    j=tbs[kk].ipix-begpix[rank];
-    if (j<0||j>nnbpix) {
-      fprintf(stderr,"Problem while exchanging data between processors %d\n",(int) j);
-      exit(0);
-    }
-    if (loc_nhpix[j]==0) {
-      loc_hpix[j] = (hpix *) malloc(sizeof(hpix));
-    }
-    else {
-      loc_hpix[j] = (hpix *) realloc(loc_hpix[j],(1+loc_nhpix[j])*sizeof(hpix));
-    }
-    memcpy(loc_hpix[j]+loc_nhpix[j],tbs+kk,sizeof(hpix));
-    loc_nhpix[j] +=1;
-  }
+  fprintf(stderr,"   NTOT[%d] = %ld\n",(int) rank,(long) ntot_pts);
   
-  free(tbs);
+  MPI_Barrier(MPI_COMM_WORLD);
+  if (rank==rank_zero)
+    fprintf(stderr,"\n\n===============================================\n");
+	  
 #else
   nnbpix = edpix[rank]-begpix[rank]+1;
 

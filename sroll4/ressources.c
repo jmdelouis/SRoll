@@ -80,6 +80,7 @@ int main() {
             }
         }
         memory_usage();
+
         sleep(4); // Wait for 1 second before checking CPU usage again
 	i++;
     }
