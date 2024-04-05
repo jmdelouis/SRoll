@@ -4467,7 +4467,7 @@ int main(int argc,char *argv[])  {
 	if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
 
 	//if ((rank==rank_zero) && (rg==globalRankInfo.BeginRing[rank]) )
-	{
+	if (rank==rank_zero) {
 	  GetProcMem(&vmem,&phymem);
 	  fprintf(stderr,"Com %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld \n",
 		  Command, (long) rank, getpid(),
@@ -4693,7 +4693,7 @@ int main(int argc,char *argv[])  {
     if (edpix[k]+1-begpix[k]>maxpix) maxpix=edpix[k]+1-begpix[k];
   }
   long ntot_pts=0;
-#define MAXMPIBUFFER (512*512)
+  long MAXMPIBUFFER=Param->MAXMPIBUFFER;
   
   for (long lll=0;lll<maxpix;lll+=MAXMPIBUFFER) {
     for (long k=0;k<mpi_size;k++) {
@@ -4720,6 +4720,7 @@ int main(int argc,char *argv[])  {
 	  ntbs+=l_nhpix[i];
 	  
 	  free(l_hpix[i]);
+	  l_nhpix[i]=0;
 	}
       }
     }

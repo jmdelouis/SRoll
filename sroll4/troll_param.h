@@ -44,6 +44,11 @@ typedef struct {
    */
   PIOLONG EndRing;
 
+  /* ---- Parameter EndRing --------------------------------------------
+   * Define the size of data to exchange between processor corresponding to a number of pixel 
+   */
+  PIOLONG MAXMPIBUFFER;
+
   
   /* ---- List ADDPOL ---------------------------------------------
    *

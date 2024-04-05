@@ -274,6 +274,7 @@ paramDef *getParamDef(char *name, paramDef paramDef_list[], int paramDef_list_si
 paramDef troll_paramDef_list[] = {
   {"BeginRing", false, true, false},
   {"EndRing", false, true, false},
+  {"MAXMPIBUFFER", false, true, false},
   {"ADDPOL", false, false, false},
   {"Calibration", true, true, false},
   {"seuilcond", false, true, false},
@@ -340,7 +341,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 67;
+int troll_paramDef_list_size = 68;
 
 
 
@@ -382,6 +383,14 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->EndRing = myRead_PIOLONG(*value);
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'EndRing': Unable to convert value '%s' to target type %s\n", *value, "PIOLONG");
+      return 1;
+    }
+  }
+  else if (strcmp(name, "MAXMPIBUFFER") == 0) {
+    errno = 0;
+    param->MAXMPIBUFFER = myRead_PIOLONG(*value);
+    if (errno != 0) {
+      fprintf(stderr, "ERROR: 'MAXMPIBUFFER': Unable to convert value '%s' to target type %s\n", *value, "PIOLONG");
       return 1;
     }
   }

@@ -5,6 +5,7 @@
 def main():
 	BeginRing = 	#mandatory parameter
 	EndRing = 	#mandatory parameter
+	MAXMPIBUFFER = 	#mandatory parameter
 	ADDPOL = 
 	Calibration = []
 	number_of_Calibration = 	#mandatory parameter
