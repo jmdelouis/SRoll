@@ -5,12 +5,16 @@
 
 #define MAXPIXDEF (4)
 
+
 // MAP NAME DEFINITION
 #define MAX_OUT_NAME_LENGTH (2048)
 
 #define CNN_NSIDE (32)
 
+//should not compute calcmatrix
+#if 0
 #define CALCMATRIX
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,6 +64,7 @@
 #endif
 
 PIOINT **rgordinv;
+int *rank_map;
 
 float *tpparam=NULL; // parameters for neural network initialise to NULL at the beginning.
 int CNN_NB_PARAM=0;
@@ -168,6 +173,7 @@ int compar_int(const void *a, const void *b)
   hpint *pb = (hpint *) b;
   return(pb->hit-pa->hit);
 }
+
 
 int getx12(int idx)
 {
@@ -1032,13 +1038,30 @@ typedef struct {
   PIOFLOAT hit;
   PIOFLOAT model;
   PIOFLOAT channels[MAXCHAN];
-  PIOINT ipix_foscat;
+  PIOINT irank;
   //add for new version
   int diag_idx;
   double m;
   double R_ij;
   double alpha[MAXCHAN];
 } hpix;
+
+hpix ** ptr_l_hpix;
+PIOINT *l_nhpix;
+
+int compar_hpix_rank(const void *a, const void *b)
+{
+  hpix *pa = (hpix *) a;
+  hpix *pb = (hpix *) b;
+  return(rank_map[pa->ipix]-rank_map[pb->ipix]);
+}
+
+int compar_hpix_ipix(const void *a, const void *b)
+{
+  hpix *pa = (hpix *) a;
+  hpix *pb = (hpix *) b;
+  return(pa->ipix-pb->ipix);
+}
 
 int MAXCHANNELS  = 0;
 long DODISTOR=0;
@@ -1808,7 +1831,6 @@ double **rawcst;
 
 // TODO TODO
 long nnbpix;
-hpix **loc_hpix;
 PIOINT *loc_nhpix;
 
 #if 0
@@ -1905,6 +1927,7 @@ double **cache_gain_xi2;
 long n_cache_xi2=0;
 
 int NOMOREFITTED=0;
+long l_rank_ptr_hpix=0;
 
 #ifdef UPDATE_DIP
 #define UPDATE_DIP
@@ -1915,92 +1938,213 @@ void proj_data(double *b2,int nnbpix,int rank,double nmatres,int GAINSTEP2){
 
   long ir,irt;  
 
-  for(int pix =0;pix<nnbpix;pix++){
-    double sum_Rij = 0.0,tmp = 0.0,sum_channels[MAXCHAN];
-    
-    long ndata = loc_nhpix[pix];                // nombre de donnees dans le pixel pix
-    hpix *htmp = loc_hpix[pix]; 
+  double *sum_channels =(double *) malloc(sizeof(double)*nnbpix*MAXCHANNELS);
+  memset(sum_channels,0,sizeof(double)*nnbpix*MAXCHANNELS);
 
-    memset(sum_channels,0,MAXCHANNELS*sizeof(double)); 
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
 
-    if (ndata>1&&flgpix[pix]>0) {
-
-      //calcul sum_Rij && calcul sum_channels
-      for(int l1=0;l1<ndata;l1++){
-        long ri1=htmp[l1].rg-globalBeginRing;
-        if (flg_rg[htmp[l1].ib][ri1]!=0) {
-          sum_Rij+= htmp[l1].R_ij; 
-        }               
-        for(int k =0;k<MAXCHANNELS;k++){
-          sum_channels[k] += htmp[l1].channels[k]* htmp[l1].R_ij;
-        }
+      if (flgpix[htmp->ipix]>0) {
+	// calcul sum_channels
+        long ri1=htmp->rg-globalBeginRing;
+        if (flg_rg[htmp->ib][ri1]!=0) {
+	  for(int k =0;k<MAXCHANNELS;k++){
+	    sum_channels[htmp->ipix*MAXCHANNELS+k] += htmp->channels[k]* htmp->R_ij;
+	  }
+	}
       }
- 
-      // Calcul de b2
-      for(int l1=0;l1<ndata;l1++){
-        long ri1=htmp[l1].rg-globalBeginRing;
+    }
+  }
 
-        if (flg_rg[htmp[l1].ib][ri1]!=0) {
-          ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-                 
-          tmp = htmp[l1].R_ij;                            
-          for(int k =0;k<MAXCHANNELS;k++){
-            tmp-= sum_channels[k]*htmp[l1].alpha[k] ;
-          }
-
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+    
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+      
+      if (flgpix[htmp->ipix]>0) {
+	double tmp=0;
+	//calcul sum_Rij && calcul sum_channels
+	
+        long ri1=htmp->rg-globalBeginRing;
+        if (flg_rg[htmp->ib][ri1]!=0) {
+	  ir=rgord[htmp->ib][ri1]+newnr[htmp->ib];
+	  
+	  tmp = htmp->R_ij;                            
+	  for(int k =0;k<MAXCHANNELS;k++){
+	    tmp-= sum_channels[k+htmp->ipix*MAXCHANNELS]*htmp->alpha[k] ;
+	  }
+	  
 	  if (do_offset==1) {
 	    b2[ir]+=tmp;
 	  }
 	  
-          for(int m=0;m<htmp[l1].nShpr;m++){
-            b2[newnr[nbolo]+htmp[l1].listofShpr_idx[m]+(GAINSTEP2)*nbolo]+=htmp[l1].listofShpr[m]*tmp;
-          }
+	  for(int m=0;m<htmp->nShpr;m++){
+	    b2[newnr[nbolo]+htmp->listofShpr_idx[m]+(GAINSTEP2)*nbolo]+=htmp->listofShpr[m]*tmp;
+	  }
 	  
-
-          if(GAINSTEP2 != 0){
-            b2[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]+= tmp * htmp[l1].model;
-          }
-
-        }
-      }
-      
-  
-      //Calcul hit2
-      // le but est de calculer l'amplitude de chacun des paramètre dans chaque pixel.
-      // hit 2 est la somme des variances sur tous les pixels.
-      
-      for(int l1=0;l1<ndata;l1++){
-        long ri1=htmp[l1].rg-globalBeginRing;  
-        if (flg_rg[htmp[l1].ib][ri1]!=0) {
+	  
+	  if(GAINSTEP2 != 0){
+	    b2[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2]+= tmp * htmp->model;
+	  }
+	  
 	  if (do_offset==1) {
-	    ir=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];      
-	    hit2[ir]+= htmp[l1].w; // poids stat de chaque valeurs 
+	    ir=rgord[htmp->ib][ri1]+newnr[htmp->ib];      
+	    hit2[ir]+= htmp->w; // poids stat de chaque valeurs 
 	  }
-          for(int m = 0;m<htmp[l1].nShpr;m++){
-            irt = newnr[nbolo]+htmp[l1].listofShpr_idx[m]+nbolo*(GAINSTEP2);
-            hit2[irt]+= htmp[l1].listofShpr[m]*htmp[l1].listofShpr[m]*htmp[l1].w; // poids stat de chaque valeurs 
-          }
+	  for(int m = 0;m<htmp->nShpr;m++){
+	    irt = newnr[nbolo]+htmp->listofShpr_idx[m]+nbolo*(GAINSTEP2);
+	    hit2[irt]+= htmp->listofShpr[m]*htmp->listofShpr[m]*htmp->w; // poids stat de chaque valeurs 
+	  }
 	  
-          if(GAINSTEP2 != 0) {
-	    irt=newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2;
-	    hit2[irt]+=htmp[l1].w*htmp[l1].model*htmp[l1].model;
+	  if(GAINSTEP2 != 0) {
+	    irt=newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2;
+	    hit2[irt]+=htmp->w*htmp->model*htmp->model;
 	  }
-        }
+	}
       }
     }
   }
+  
+  free(sum_channels);
 }
 
 // -------------------------------------------------------------------------------------------------------------
 void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAINSTEP2){
   //plap
-  double val =0.0,sum =0.0;
+  double sum =0.0;
   long ir,irt;
   double tmp= 0.0;
   double *csum = (double *) malloc(sizeof(double)*MAXCHANNELS);
+  double *s_X = (double *) malloc(sizeof(double)*nnbpix*MAXCHANNELS);
+  double *sum_channels = (double *) malloc(sizeof(double)*nnbpix*MAXCHANNELS);
 
   memset(csum,0,sizeof(double)*MAXCHANNELS);
+  memset(s_X,0,sizeof(double)*MAXCHANNELS*nnbpix);
+  memset(sum_channels,0,sizeof(double)*MAXCHANNELS*nnbpix);
 
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+
+      if (flgpix[htmp->ipix]>0) {
+	// calcul sum_channels
+        long ri1=htmp->rg-globalBeginRing;
+        if (flg_rg[htmp->ib][ri1]!=0) {
+          ir=rgord[htmp->ib][ri1]+newnr[htmp->ib];
+	  double val=0.0;
+	  if (do_offset==1) {
+	    val = x[ir];
+          }
+	  
+          for(int m = 0;m<htmp->nShpr;m++){
+            irt = newnr[nbolo]+htmp->listofShpr_idx[m]+nbolo*(GAINSTEP2);
+            val+= x[irt]*htmp->listofShpr[m];            
+          }
+          
+          if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2]*htmp->model;
+
+          for(int l =0;l<MAXCHANNELS;l++){ 
+	    if (do_offset==1) {
+	      csum[l]+=x[ir]*htmp->channels[l];
+	    }
+            s_X[l+htmp->ipix*MAXCHANNELS]+= htmp->w *htmp->channels[l]*val;
+          }  
+        }
+      }
+    }
+  }
+
+  for(int pix =0;pix<nnbpix;pix++){
+    if (flgpix[pix]>0) {
+      invertMatrix(imatrice+pix*MAXCHANNELS*MAXCHANNELS,s_X+pix*MAXCHANNELS,MAXCHANNELS,rank); 
+    }
+  }
+
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+
+      if (flgpix[htmp->ipix]>0) {
+	// calcul sum_channels
+        long ri1=htmp->rg-globalBeginRing;
+        if (flg_rg[htmp->ib][ri1]!=0) {
+	  double val=0.0;
+	  if (do_offset==1) {
+	    val = x[ir];
+          }
+	  
+          for(int m = 0;m<htmp->nShpr;m++){
+            irt = newnr[nbolo]+htmp->listofShpr_idx[m]+nbolo*(GAINSTEP2);
+            val+= x[irt]*htmp->listofShpr[m];            
+          }
+          
+          if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2]*htmp->model;
+
+          //Calcul Rij_bis
+          double Rij_bis = val;
+          for(int k=0;k<MAXCHANNELS;k++){
+            Rij_bis -= htmp->channels[k]*s_X[k+htmp->ipix*MAXCHANNELS];
+          }
+
+          for(int k=0;k<MAXCHANNELS;k++){
+            sum_channels[k+htmp->ipix*MAXCHANNELS]+= htmp->channels[k]*Rij_bis;
+          }
+	}
+      }
+    }
+  }
+
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+
+      if (flgpix[htmp->ipix]>0) {
+	// calcul sum_channels
+        long ri1=htmp->rg-globalBeginRing;
+        if (flg_rg[htmp->ib][ri1]!=0) {
+	  double val=0.0;
+	  if (do_offset==1) {
+	    val = x[ir];
+          }
+	  
+          for(int m = 0;m<htmp->nShpr;m++){
+            irt = newnr[nbolo]+htmp->listofShpr_idx[m]+nbolo*(GAINSTEP2);
+            val+= x[irt]*htmp->listofShpr[m];            
+          }
+          
+          if(GAINSTEP2 != 0)  val+= x[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2]*htmp->model;
+
+          //Calcul Rij_bis
+          double Rij_bis = val;
+          for(int k=0;k<MAXCHANNELS;k++){
+            Rij_bis -= htmp->channels[k]*s_X[k+htmp->ipix*MAXCHANNELS];
+          }
+   
+          double tmp = Rij_bis;
+	  
+          for(int k=0;k<MAXCHANNELS;k++){                
+            tmp -=sum_channels[k+htmp->ipix*MAXCHANNELS]*htmp->alpha[k];
+          }
+
+	  if (do_offset==1) {
+	    q2[ir]+= tmp;        //ie  ((val-s_X[k])-htmp[l1].alpha[k]*htmp[l1].channels[k]*R_ij_bis);
+	  }
+       
+          for(int m=0;m<htmp->nShpr;m++){           
+            q2[newnr[nbolo]+htmp->listofShpr_idx[m]+(GAINSTEP2)*nbolo]+= htmp->listofShpr[m]*tmp;          
+          }
+
+          if(GAINSTEP2 != 0){ 
+            q2[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2] += htmp->model*tmp;            
+          }
+
+	}
+      }
+    }
+  }
+
+#if 0
   for(int pix =0;pix<nnbpix;pix++){
 
     long ndata = loc_nhpix[pix];                // nombre de donnees dans le pixel k
@@ -2019,16 +2163,6 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 
     if (ndata>1&&flgpix[pix]>0) {       
 
-#ifdef CALCMATRIX      
-      //Calcul matrice 
-      for(int l1=0;l1<ndata;l1++){ 
-        for(int m=0;m<MAXCHANNELS;m++){
-          for(int l =0;l<MAXCHANNELS;l++){
-            MAT[m+MAXCHANNELS*l]+= htmp[l1].w * htmp[l1].channels[l]*htmp[l1].channels[m];
-          }
-        }
-       } 
-#endif  
  
       //Calcul s_X  && calcul sum_channels
       for(int l1=0;l1<ndata;l1++){ 
@@ -2141,6 +2275,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
     }
 
   }
+#endif
 
   if(rank == rank_zero){ // to compute normalisation on precessor with less rings
     double msum=1E4;
@@ -2168,7 +2303,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
       Py_DECREF(pX);
     }
     
-    
+
     for(int n = 0;n<Param->n_val_mean;n++){
       double sum2 = 0.0;
       for(int b = 0;b<npixShpr;b++){
@@ -2209,7 +2344,9 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
     }
   }
 
+  free(sum_channels);
   free(csum);
+  free(s_X);
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2268,10 +2405,6 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   rank=rank_size;
   MPI_Comm_size(MPI_COMM_WORLD,&size);
 
-#ifdef CALCMATRIX   
-  double MAT[MAXCHAN*MAXCHAN];
-#endif
-
   struct timeval tp1,tp2;
   gettimeofday(&tp1,NULL);
 
@@ -2309,101 +2442,62 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   memcpy(x_tab,ix2,sizeof(double)*nmatres);
   //memset(x_tab,0,sizeof(double)*nmatres);
  
-  double SI[MAXCHAN]; // signal 
-  double val_tmp = 0.0;
+  double *SI = (double *) malloc(sizeof(double)*(nnbpix*MAXCHANNELS));
+  memset(SI,0,sizeof(double)*(nnbpix*MAXCHANNELS));
 
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
 
-  // Init
-  for (k=0;k<nnbpix;k++)  {                   // Pour chaque pixel in proc
-    long ndata = loc_nhpix[k];               // nombre de donnees dans le pixel k
-    hpix *htmp = loc_hpix[k]; 
-
-    //init matrice pour pixel k 
-#ifdef CALCMATRIX   
-    memset(MAT,0,MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
-#endif
-    memset(SI,0,MAXCHANNELS*sizeof(double));
-
-    if (ndata>0) {
-      for (l1=0;l1<ndata;l1++) {      
-        long ri1=htmp[l1].rg-globalBeginRing; // check if ring valide
-        if (flg_rg[htmp[l1].ib][ri1]!=0) {
-        
-#ifdef CALCMATRIX   
-          for(int m=0;m<MAXCHANNELS;m++){
-            for(int l =0;l<MAXCHANNELS;l++){
-              MAT[m+MAXCHANNELS*l]+= htmp[l1].w * htmp[l1].channels[l]*htmp[l1].channels[m];   
-            }
-          }
-#endif
-
-          //if(rank == rank_zero) for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++) fprintf(stderr,"MAT[%d] = %lg\n",i,MAT[i]);
-    
-          //Calcul de carte        
-          //long ri1=htmp[l1].rg-globalBeginRing; // check valide ring 
-          double g1=gaingi[htmp[l1].gi+htmp[l1].ib*GAINSTEP]; //get gain 
-          //long ir = rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-
-
-          val_tmp =htmp[l1].sig*g1- htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
+      if (flgpix[htmp->ipix]>0) {
+        long ri1=htmp->rg-globalBeginRing;
+        if (flg_rg[htmp->ib][ri1]!=0) {
+	  double g1=gaingi[htmp->gi+htmp->ib*GAINSTEP];
+          double val_tmp =htmp->sig*g1- htmp->Sub_HPR-htmp->corr_cnn;
 	  if (REMOVE_CAL==1) {
-	    val_tmp -=  htmp[l1].hpr_cal;
+	    val_tmp -=  htmp->hpr_cal;
 	  }
 	  
           for(int l =0;l<MAXCHANNELS;l++){           
-            SI[l]+= htmp[l1].w * htmp[l1].channels[l]*val_tmp;
+            SI[l+htmp->ipix*MAXCHANNELS]+= htmp->w * htmp->channels[l]*val_tmp;
           }
 
-          htmp[l1].m = val_tmp; // calcul de m 
-	}
-      }
-    }
-   
-#ifdef CALCMATRIX   
-    //Inversion de matrice
-    invertMatrix(MAT,SI,MAXCHANNELS,rank);
-#else
-    invertMatrix(imatrice+k*MAXCHANNELS*MAXCHANNELS,SI,MAXCHANNELS,rank);
-#endif
-    /*
-      if(rank == rank_zero){
-      for(int i=0;i<MAXCHANNELS;i++){
-      for(int j=0;j<MAXCHANNELS;j++){   
-      fprintf(stderr,"MAT[%d] = %lf\n",i,MAT[j+MAXCHANNELS*i]);
-      }
-      }
-      }
-      exit(0);
-    */
-    // JMD: COMPUTE M INSIDE THE MASK BUT NOT Q2
-    if (flgpix[k]>0) {
-	    
-      //Calcul ----- R_ij and alpha 
-      for (l1=0;l1<ndata;l1++) { // parcours des donnees du pixel
-	long ri1=htmp[l1].rg-globalBeginRing; 
-	//long ir1 = rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	
-	if (flg_rg[htmp[l1].ib][ri1]!=0) {                  //if pixel ok
-	  htmp[l1].R_ij = htmp[l1].m ; //- SI;            
-	  for(int i =0;i<MAXCHANNELS;i++){
-	    htmp[l1].alpha[i] = 0.0;                  
-	    htmp[l1].R_ij -= SI[i]*htmp[l1].channels[i];  
-	    for(int j=0;j<MAXCHANNELS;j++){
-#ifdef CALCMATRIX   
-	      htmp[l1].alpha[i] += htmp[l1].w*MAT[j+MAXCHANNELS*i]*htmp[l1].channels[j];                //calcul alpha
-#else
-	      htmp[l1].alpha[i] += htmp[l1].w*imatrice[j+MAXCHANNELS*i+k*MAXCHANNELS*MAXCHANNELS]*htmp[l1].channels[j];                //calcul alpha
-#endif
-	    }  
-	  }        
+          htmp->m = val_tmp; // calcul de m 
 	}
       }
     }
   }
 
+  // Init
+  for (k=0;k<nnbpix;k++)  { 
+    if (flgpix[k]>0) {
+      invertMatrix(imatrice+k*MAXCHANNELS*MAXCHANNELS,SI+k*MAXCHANNELS,MAXCHANNELS,rank);
+    }
+  }
+
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+
+      if (flgpix[htmp->ipix]>0) {
+        long ri1=htmp->rg-globalBeginRing;
+        if (flg_rg[htmp->ib][ri1]!=0) {               //if pixel ok
+	  htmp->R_ij = htmp->m ; //- SI;            
+	  for(int i =0;i<MAXCHANNELS;i++){
+	    htmp->alpha[i] = 0.0;                  
+	    htmp->R_ij -= SI[i+htmp->ipix*MAXCHANNELS]*htmp->channels[i];  
+	    for(int j=0;j<MAXCHANNELS;j++){ 
+	      //calcul alpha
+	      htmp->alpha[i] += htmp->w*imatrice[j+MAXCHANNELS*i+htmp->ipix*MAXCHANNELS*MAXCHANNELS]*htmp->channels[j];  
+	    }        
+	  }
+	}
+      }
+    }
+  }
   
-  
-   
+  free(SI);
+
   //Init b2 and q2 to 0
   memset(b2,0,sizeof(double)*(nmatres));
   memset(hit2,0,sizeof(double)*(nmatres));
@@ -2596,254 +2690,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
       
 
 }
-#if 0
-// --------------------------------------------------------------------------------------------------
-void buildmap(double * map,double *signal,int begpix,int endpix){
- 
-  int rank;
-  int size;
-  int mpi_size;
-  int rank_size;
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank_size);
-  rank=rank_size;
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
-  mpi_size=size;
 
-  int getbeginfo=0;
-  int *allbeg;
-  int *allend;
-  int *all_realpix;
-  float *all_map;
-
-  // Convert array from double to float for smaller file to be written
-  float *value = (float *)malloc(sizeof(float)*(endpix-begpix+1));
-  for (int i = 0; i < (endpix-begpix+1); ++i) {
-    value[i] = (float)signal[i];
-  }
-
-
-  if (getbeginfo==0) {
-    getbeginfo=1;
-    int i,rrk;
-    if (rank==rank_zero) {
-      allbeg = (int *) malloc(sizeof(int)*mpi_size);
-      allend = (int *) malloc(sizeof(int)*mpi_size);
-    }
-    MPI_Gather(&begpix,sizeof(int),MPI_BYTE,allbeg,sizeof(int),MPI_BYTE,rank_zero,MPI_COMM_WORLD);
-    MPI_Gather(&endpix,sizeof(int),MPI_BYTE,allend,sizeof(int),MPI_BYTE,rank_zero,MPI_COMM_WORLD);
-
-    if (rank==rank_zero) {
-      for (rrk=0;rrk<mpi_size;rrk++) {
-	      if (maxsize<allend[rrk]-allbeg[rrk]+1) maxsize=allend[rrk]-allbeg[rrk]+1;
-      }
-      all_realpix = (int *) malloc(sizeof(int)*mpi_size*maxsize);
-      all_map = (float *) malloc(sizeof(float)*mpi_size*maxsize);
-    }
-
-    MPI_Bcast(&maxsize,sizeof(int), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
-
-    int *l_idx =(int *)malloc(sizeof(int)*maxsize);
-    for (i=begpix;i<=endpix;i++) l_idx[i-begpix]=realpix[i-begpix];
-
-    MPI_Gather(l_idx,sizeof(int)*maxsize,MPI_BYTE,all_realpix,sizeof(int)*maxsize,MPI_BYTE,rank_zero,MPI_COMM_WORLD);
-
-    free(l_idx);
-  }
-  float *l_map =(float *)malloc(sizeof(float)*maxsize);
-  for (int k=begpix;k<=endpix;k++) l_map[k-begpix]=value[k-begpix];
-  MPI_Gather(l_map,sizeof(float)*maxsize,MPI_BYTE,all_map,sizeof(float)*maxsize,MPI_BYTE,rank_zero,MPI_COMM_WORLD);
-  free(l_map);
-
-
-  if (rank==rank_zero) {
-    int i,rrk;
-    for (rrk=0;rrk<mpi_size;rrk++) {
-      int l_beg,l_end;
-      l_beg=allbeg[rrk];
-      l_end=allend[rrk];
-      for (i=l_beg;i<=l_end;i++) map[all_realpix[i-l_beg+rrk*maxsize]]=all_map[i-l_beg+rrk*maxsize];
-    }
-  }
-
-}
-// --------------------------------------------------------------------------------------------------
-void foscat(double *x3,double *gain,int nside,int begpix,int endpix,int * do_templates){
-
-  MPI_Status statu;
-  int rank;
-  int size;
-  int mpi_size;
-  int rank_size;
-  MPI_Comm_rank(MPI_COMM_WORLD,&rank_size);
-  rank=rank_size;
-  MPI_Comm_size(MPI_COMM_WORLD,&size);
-  mpi_size=size;
-  int all_ndata = 0;
-
-  int getbeginfo=0;
-  int *allbeg;
-  int *allend;
-  int *all_realpix;
-  float *all_map;
-  int maxsize=0;
-  
-  PIOLONG GAINSTEP2 = GAINSTEP;
-
-  MPI_Barrier(MPI_COMM_WORLD); //Synchronization MPI process
-
-
-  double ** signal = (double **) malloc(sizeof(double*)*MAXCHANNELS);
-  for (int i = 0;i<MAXCHANNELS;i++){
-    signal[i]=(double *) malloc(sizeof(double)*nnbpix);
-  }
-  
-
-  // Init matrice and vecteur
-  double *matrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
-  double *Imatrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double));
-  double *vector = malloc(MAXCHANNELS*sizeof(double));
-  
-  for (int k=0;k<nnbpix;k++) {
-	
-    for(int i =0;i<MAXCHANNELS;i++){
-      signal[i][k]=UNSEENPIX;  // ie hp.UNSEEN
-    }
-    
-    long ndata = loc_nhpix[k];
-    hpix *htmp = loc_hpix[k];
-
-	    
-    //calcul map     
-    memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-    memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-    memset(vector,0,MAXCHANNELS*sizeof(double));
-	    
-    for (int l1=0;l1<ndata;l1++) {
-      // select only bolometers in detset
-      
-      long ri1=htmp[l1].rg-globalBeginRing;
-	     
-      if (flg_rg[htmp[l1].ib][ri1]!=0) {
-	long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	//calcul signal corriger
-	double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-	double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
-	double sig_corr2 = sig_corr;
-	if (do_offset==1) {
-	  sig_corr-=x3[iri1];
-	}
-	
-	if (REMOVE_CAL==1) {
-	  sig_corr-=htmp[l1].hpr_cal;
-	  sig_corr2-=htmp[l1].hpr_cal;
-	}
-	
-	for(int m =0;m<htmp[l1].nShpr;m++){
-	  sig_corr-=x3[newnr[nbolo]+htmp[l1].listofShpr_idx[m]+(GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
-	}
-	
-	if (GAINSTEP2!=0) sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
-	//calcul matrix & vector
-	for(int i = 0;i<MAXCHANNELS;i++){  
-	  vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
-	}
-	for(int i = 0;i<MAXCHANNELS;i++){        
-	  for(int j = 0;j<MAXCHANNELS;j++){
-	    matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
-	  }
-	} 
-      }
-    }
-    
-    cond[k]=cond_thres(matrix,Imatrix,MAXCHANNELS);  
-    
-    if (cond[k] < Param->seuilcond) {	               
-      apply_invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
-      for(int i = 0;i<MAXCHANNELS;i++){
-	signal[i][k]= vector[i];
-      }
-    }
-    
-  }
-
-  
-  // #####  synch mpi rank and add map ##### // 
-
-  int map_size = Nside*Nside*12; 
-
-  //fprintf(stderr,"[DEBUG] rank = %d begpix %d endpix %d // %d %d\n",rank,begpix,endpix,begpix+nnbpix-1,map_size);
-  
-  double ** maps = (double **) malloc(sizeof(double*)*MAXCHANNELS);
-  for (int i = 0;i<MAXCHANNELS;i++){
-    maps[i]=(double *) malloc(sizeof(double)*map_size);
-    for (int ii = 0;ii<map_size;ii++){
-      maps[i][ii]=UNSEENPIX;
-    }
-  }
-
-  for(int i =0;i<MAXCHANNELS;i++) buildmap(maps[i],signal[i],begpix,endpix);
-  
-  MPI_Barrier(MPI_COMM_WORLD);
-
-
-  double ** new_templates = (double **) malloc(sizeof(double*)*2);
-  for (int i =0;i<2;i++){
-    new_templates[i]=(double *) malloc(sizeof(double)*map_size);
-    for (int ii = 0;ii<map_size;ii++){
-      new_templates[i][ii]=UNSEENPIX;
-    }
-  }
-
-  if(rank == rank_zero){
-
-    PyObject* py_list = PyList_New(map_size);
-    PyObject* py_nside,*py_rank,*py_ite,*func,*result;
-
-    // For debug only 1 iteration sould be MAXCHANNELS send Q maps[1]
-                                                                                                                                                                                                          
-    for(int i =0;i<2;i++){
-      for (int k = 0; k < map_size; k++) {
-        PyObject* py_double = PyFloat_FromDouble(maps[i+1][k]);
-        PyList_SET_ITEM(py_list,k, py_double);
-      }
-
-      //PyObject* model_path = PyUnicode_FromString("/export/home1/tfoulquier/out_maps/test_rstep2_353psb_nside64_I.fits");
-
-      py_nside = Py_BuildValue("i",nside);
-      py_ite = Py_BuildValue("i",i);
-      py_rank = Py_BuildValue("i",rank);
-
-      // Call the function in the Python script that will receive the array    
-      func = MyPythonBackend.run_foscat;
-      result = PyObject_CallObject(func, Py_BuildValue("(OOOO)", py_list,py_nside,py_rank,py_ite));
-
-      
-      //get result map from foscat      
-      for(int m = 0;m<map_size;m++){
-        new_templates[i][m] = PyFloat_AsDouble(PyList_GetItem(result,m));        
-      }
-    }
-
-  
-    
-    // Clean up
-    Py_DECREF(py_list);
-    Py_DECREF(func);
-    Py_DECREF(result);
-    Py_DECREF(py_nside);
-    Py_DECREF(py_ite);
-    Py_DECREF(py_rank);
-        
-    
-  }
-
-  //Send templates // for debug only 1 iteration (only send Q) 
-  for(int i =0;i<2;i++) MPI_Bcast(new_templates[i], sizeof(double)*(map_size), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
-
-  free(new_templates);
-  free(maps);
-}
-#endif
 // --------------------------------------------------------------------------------------------------
 
 
@@ -3683,6 +3530,8 @@ int main(int argc,char *argv[])  {
 
   Param = &par;
 
+  long MAXMPIBUFFER=Param->MAXMPIBUFFER;
+
   if (Param->EndRing-Param->BeginRing+1<mpi_size) {
     if (rank==rank_zero)
       fprintf(stderr, "Number of MPI rank %d should be smaller than number pointing period %d.\n",
@@ -3957,9 +3806,14 @@ int main(int argc,char *argv[])  {
 #endif
 
   srand48((long)(rank+Param->SEED[0]));
-  
-  PIOINT *l_nhpix  = (PIOINT *) malloc(sizeof(PIOINT)*12*Nside*Nside);
-  hpix **l_hpix = (hpix **) malloc(sizeof(hpix *)*12*Nside*Nside);
+
+  ptr_l_hpix = (hpix **) malloc(sizeof(hpix **)*MAXMPIBUFFER);
+  l_nhpix  = (PIOINT *) malloc(sizeof(PIOINT)*MAXMPIBUFFER);
+  long alloc_ptr_hpix=MAXMPIBUFFER;
+  long rank_ptr_hpix=0;
+  ptr_l_hpix[rank_ptr_hpix] = (hpix *) malloc(sizeof(hpix)*MAXMPIBUFFER);
+  long n_l_hpix=0;
+
   memset(l_nhpix,0,sizeof(PIOINT)*12*Nside*Nside);
   
 
@@ -4400,16 +4254,21 @@ int main(int argc,char *argv[])  {
 	      if (is_valid) {
 		
 		nrg_htmp++;
-		
-		if (l_nhpix[ipix]==0) {
-		  l_hpix[ipix] = (hpix *) malloc(sizeof(hpix));
+		if (n_l_hpix+1-MAXMPIBUFFER*rank_ptr_hpix>MAXMPIBUFFER) {
+		  if (rank_ptr_hpix+1>alloc_ptr_hpix) {
+		    fprintf(stderr,"Alloc to new buffer\n");
+		    ptr_l_hpix = (hpix **) realloc(ptr_l_hpix,sizeof(hpix **)*(2*alloc_ptr_hpix));
+		    alloc_ptr_hpix*=2;
+		  }
+		  rank_ptr_hpix++;
+		  ptr_l_hpix[rank_ptr_hpix] = (hpix *) malloc(sizeof(hpix)*MAXMPIBUFFER);
 		}
-		else {
-		  l_hpix[ipix] = (hpix *) realloc(l_hpix[ipix],(l_nhpix[ipix]+1)*sizeof(hpix));
-		}
-		memcpy(l_hpix[ipix]+l_nhpix[ipix],tp_hpix,sizeof(hpix));
-		
-		tp_hpix=l_hpix[ipix]+l_nhpix[ipix];
+
+		hpix *l_hpix = ptr_l_hpix[rank_ptr_hpix]+n_l_hpix+1-MAXMPIBUFFER*rank_ptr_hpix;
+
+		memcpy(l_hpix,tp_hpix,sizeof(hpix));
+
+		tp_hpix=l_hpix;
 		
 		tp_hpix->model=tp_hpix->hpr_cal;
 		
@@ -4457,7 +4316,7 @@ int main(int argc,char *argv[])  {
 			  tp_hpix->sig,tp_hpix->w,
 			  (long)rg,(long)i);
 		}  
-		else l_nhpix[ipix]+=1;
+		else n_l_hpix+=1;
 	      }
 	    }
 	  }
@@ -4469,8 +4328,8 @@ int main(int argc,char *argv[])  {
 	//if ((rank==rank_zero) && (rg==globalRankInfo.BeginRing[rank]) )
 	if (rank==rank_zero) {
 	  GetProcMem(&vmem,&phymem);
-	  fprintf(stderr,"Com %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld \n",
-		  Command, (long) rank, getpid(),
+	  fprintf(stderr,"Com %d %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld \n",
+		  (int) ib, Command, (long) rank, getpid(),
 		  (double) vmem/1024./1024.,
 		  (double) phymem/1024./1024.,
 		  (long) nrg_htmp);
@@ -4574,9 +4433,9 @@ int main(int argc,char *argv[])  {
   int *newmask = (int *) malloc(sizeof(int)*nnbpix);
   //int *inv_stat_pix;
   {
-    long l_nr=12*Nside*Nside;
-    for (i=0;i<l_nr;i++) {
-      stat_pix[i]=l_nhpix[i];
+    for (i=0;i<n_l_hpix;i++) {
+      hpix *l_hpix = ptr_l_hpix[(int) (i/MAXMPIBUFFER)]+i-MAXMPIBUFFER*((int) (i/MAXMPIBUFFER));
+      stat_pix[l_hpix->ipix]+=1.0;
     }
 
     {
@@ -4636,6 +4495,11 @@ int main(int argc,char *argv[])  {
   // AND NOW IN FRONT OF YOUR EYES MIX PIXELS TO GET THEM EFFICIENTLY COMPUTED!!!
 
   if (rank==rank_zero) fprintf(stderr,"rebin pixel\n");
+  for (i=0;i<n_l_hpix;i++) {
+    hpix *l_hpix = ptr_l_hpix[(int) (i/MAXMPIBUFFER)]+i-MAXMPIBUFFER*((int) (i/MAXMPIBUFFER));
+    l_hpix->ipix=stat_pix[12*Nside*Nside+l_hpix->ipix];
+  }
+#if 0
   hpix **new_hpix = (hpix **) malloc(sizeof(hpix *)*12*Nside*Nside);
   long l_nr=12*Nside*Nside;
   for (i=0;i<l_nr;i++) {
@@ -4658,6 +4522,7 @@ int main(int argc,char *argv[])  {
   }
   free(l_nhpix);
   l_nhpix=new_nhpix;
+#endif
   free(stat_pix);
 
   GetProcMem(&vmem,&phymem);
@@ -4673,64 +4538,45 @@ int main(int argc,char *argv[])  {
     =
     =*/
   
-#if 1
-  int *id_buff;
-  if (mpi_size>1) { 
-    id_buff = NULL;
-  }
+  int *id_buff = (int *) malloc((mpi_size+1)*sizeof(int));
   
   nnbpix = edpix[rank]-begpix[rank]+1;
-
-  loc_hpix = (hpix **) malloc(sizeof(hpix *)*nnbpix);
-  loc_nhpix = (PIOINT *) malloc(sizeof(PIOINT)*nnbpix);
-  memset(loc_nhpix,0,sizeof(PIOINT)*nnbpix);
     
-  hpix * tbs = NULL;
   long ntbs=0;
 
-  long maxpix=0;
-  for (long k=0;k<mpi_size;k++) {
-    if (edpix[k]+1-begpix[k]>maxpix) maxpix=edpix[k]+1-begpix[k];
-  }
   long ntot_pts=0;
-  long MAXMPIBUFFER=Param->MAXMPIBUFFER;
+  rank_map = (int *) malloc(sizeof(int)*12*Nside*Nside);
+  memset(rank_map,0,sizeof(int)*12*Nside*Nside);
+  for (long k=0;k<mpi_size;k++) {
+    for (int l=begpix[k];l<edpix[k]+1;l++) rank_map[l]=k;
+  }
   
-  for (long lll=0;lll<maxpix;lll+=MAXMPIBUFFER) {
-    for (long k=0;k<mpi_size;k++) {
-      long istop=begpix[k]+lll+MAXMPIBUFFER;
-      if (istop>edpix[k]+1) istop=edpix[k]+1;
-      
-      for (i=begpix[k]+lll;i<istop;i++) {
-	
-	if (l_nhpix[i]>0) {
-	  if (tbs==NULL) {
-	    tbs = (hpix *) malloc(l_nhpix[i]*sizeof(hpix));
-	    if (mpi_size>1) id_buff = (int *) malloc(l_nhpix[i]*sizeof(int));
-	  }
-	  else {
-	    tbs = (hpix *) realloc(tbs,(ntbs+l_nhpix[i])*sizeof(hpix));
-	    if (mpi_size>1) id_buff = (int *) realloc(id_buff,(ntbs+l_nhpix[i])*sizeof(int));
-	  }
-	  memcpy(tbs+ntbs,l_hpix[i],l_nhpix[i]*sizeof(hpix));
-	  if (mpi_size>1) {
-	    for (long l=0;l<l_nhpix[i];l++) {
-	      id_buff[ntbs+l]=k;
-	    }
-	  }
-	  ntbs+=l_nhpix[i];
-	  
-	  free(l_hpix[i]);
-	  l_nhpix[i]=0;
-	}
-      }
-    }
-    if (mpi_size>1) {  
+  MPI_Allreduce(&rank_ptr_hpix,&l_rank_ptr_hpix,1,MPI_LONG, MPI_MAX,MPI_COMM_WORLD);
+
+  loc_nhpix = (PIOINT *) malloc(sizeof(PIOINT)*(l_rank_ptr_hpix+1));
+
+  memset(loc_nhpix,0,sizeof(PIOINT)*(l_rank_ptr_hpix+1));
+
+  for (long lll=0;lll<l_rank_ptr_hpix+1;lll++) {
+    long ed_buffer=MAXMPIBUFFER;
+
+    if (lll==rank_ptr_hpix) ed_buffer=n_l_hpix-lll*MAXMPIBUFFER;
+    if (lll>rank_ptr_hpix) ed_buffer=0;
+
+    hpix *ltbs=ptr_l_hpix[lll];
+    long ntbs=ed_buffer;
+
+    if (mpi_size>1) { 
+      qsort(ptr_l_hpix[lll],ed_buffer,sizeof(hpix),compar_hpix_rank);
+
       hpix *otbs=NULL;
+
       long *begbuf = (long *) malloc((mpi_size+1)*sizeof(long));
       memset(begbuf,0,(mpi_size+1)*sizeof(long));
       
       for (long k=0;k<ntbs;k++) {
-	begbuf[id_buff[k]+1]=(k+1)*sizeof(hpix);
+	hpix *l_hpix = ptr_l_hpix[lll]+k;
+	begbuf[rank_map[l_hpix->ipix]+1]=(k+1)*sizeof(hpix);
       }
       // case some process have no data
       for (long k=1;k<mpi_size+1;k++) {
@@ -4759,8 +4605,7 @@ int main(int argc,char *argv[])  {
 	rdispls[i]=rdispls[i-1]+recvcounts[i-1];
       }
       ntbs=(rdispls[mpi_size-1]+recvcounts[mpi_size-1])/sizeof(hpix);
-      
-      if (tbs==NULL) tbs = (hpix *) malloc(sizeof(hpix));
+
       if (ntbs==0) {
 	otbs = (hpix *) malloc(sizeof(hpix));
 	memset(otbs,0,sizeof(hpix));
@@ -4770,7 +4615,7 @@ int main(int argc,char *argv[])  {
 	memset(otbs,0,ntbs*sizeof(hpix));
       }
 
-      MPI_Alltoallv(tbs,sendcounts,sdispls,MPI_BYTE,
+      MPI_Alltoallv(ltbs,sendcounts,sdispls,MPI_BYTE,
 		    otbs,recvcounts,rdispls,MPI_BYTE,
 		    MPI_COMM_WORLD);
       
@@ -4778,256 +4623,137 @@ int main(int argc,char *argv[])  {
       free(sendcounts);
       free(recvcounts);
       free(rdispls);
-      if (tbs!=NULL) {
-	free(tbs);
-      }
-      if (id_buff!=NULL) {
-	free(id_buff);
-	id_buff = NULL;
-      }
-      tbs=otbs;
+      ltbs=otbs;
+      free(ptr_l_hpix[lll]);
     }
-	    
-    for (int kk=0;kk<ntbs;kk++) {
-      j=tbs[kk].ipix-begpix[rank];
-      if (j<0||j>nnbpix) {
-	fprintf(stderr,"Problem while exchanging data between processors %d\n",(int) j);
-	exit(0);
-      }
-      if (loc_nhpix[j]==0) {
-	loc_hpix[j] = (hpix *) malloc(sizeof(hpix));
-      }
-      else {
-	loc_hpix[j] = (hpix *) realloc(loc_hpix[j],(1+loc_nhpix[j])*sizeof(hpix));
-      }
-      memcpy(loc_hpix[j]+loc_nhpix[j],tbs+kk,sizeof(hpix));
-      loc_nhpix[j] +=1;
-      ntot_pts++;
-    }
-    if (rank==rank_zero) fprintf(stderr,"Exchange %ld values\n",(long) ntbs);
     
-    if (tbs!=NULL) {
-      free(tbs);
-      tbs=NULL;
-    }
-    ntbs=0;
+    ptr_l_hpix[lll]=ltbs;
+    loc_nhpix[lll]=ntbs;
+    ntot_pts+=ntbs;
+    
+    if (rank==rank_zero) fprintf(stderr,"Exchange[%ld/%ld] %ld values\n",(long) lll,
+				 (long) l_rank_ptr_hpix+1,(long) ntbs);
+    
   }
-  
-  free(l_hpix);
-  free(l_nhpix);
+  free(rank_map);
+
+  l_rank_ptr_hpix=l_rank_ptr_hpix+1;
+
   if (rank==rank_zero)
     fprintf(stderr,"\n===============================================\n\n");
   MPI_Barrier(MPI_COMM_WORLD);
-
+  
   fprintf(stderr,"   NTOT[%d] = %ld\n",(int) rank,(long) ntot_pts);
   
   MPI_Barrier(MPI_COMM_WORLD);
-  if (rank==rank_zero)
+  if (rank==rank_zero) {
     fprintf(stderr,"\n\n===============================================\n");
-	  
-#else
-  nnbpix = edpix[rank]-begpix[rank]+1;
-
-  loc_hpix = (hpix **) malloc(sizeof(hpix *)*nnbpix);
-  loc_nhpix = (PIOINT *) malloc(sizeof(PIOINT)*nnbpix);
-  memset(loc_nhpix,0,sizeof(PIOINT)*nnbpix);
-
-  MPI_Barrier(MPI_COMM_WORLD);
-  
-  //========================================================================
-  // USE iterative approach to avoid slow down while exchanging data
-  long nstep=log((double)(mpi_size))/log(2.0)+0.001;
-  long exch=1;
-  int is,js;
-  for (is=0;is<nstep;is++) {
-    MPI_Status statu;
-    exch*=2;
-    for (js=0;js<mpi_size;js+=exch) {
-      long rk0=exch*((long)(rank/exch));
-      int k;
-      for (k=0;k<exch;k++) {
-        if (rank%exch==k) {
-          hpix *tbs;
-          long ntbs=0,kk;
-          //fprintf (stderr,"%d <- %d\n",(int)rank,(int)(rk0+(k+exch/2)%(exch)));
-          MPI_Recv(&ntbs,sizeof(long), MPI_BYTE,rk0+(k+exch/2)%(exch),450, MPI_COMM_WORLD,&statu);
-
-          if (rank==rank_zero) {
-            GetProcMem( &vmem, &phymem);
-            fprintf(stderr,"Rank: %d(%s, free=%.2fGB) [%d/%d] used MEM virt:%.1lf[phys:%.1lf]MB line=%d ntbs:%ldMB\n",
-                  rank, hostname, GetFreeMemGB(), (int) (rk0+(k+exch/2)%(exch)),(int) exch,
-                  (double) vmem/1024./1024.,
-                  (double) phymem/1024./1024.,__LINE__,sizeof(hpix)*ntbs/1024/1024);
-          }
-          if (ntbs>0) {
-            tbs=(hpix *) malloc(sizeof(hpix)*(ntbs));
-            if (tbs == NULL) {
-              GetProcMem( &vmem, &phymem);
-              fprintf(stderr,"Rank: %d(%s, free=%.2fGB) [%d/%d] used MEM virt:%.1lf[phys:%.1lf]MB line=%d ntbs:%ldMB\n",
-                    rank, hostname, GetFreeMemGB(), (int) (rk0+(k+exch/2)%(exch)),(int) exch,
-                    (double) vmem/1024./1024.,
-                    (double) phymem/1024./1024.,__LINE__,sizeof(hpix)*ntbs/1024/1024);
-              sleep(10); // wait for other ranks to fail allocation and display error message
-              return 1;
-            }
-            MPI_Recv(tbs,sizeof(hpix)*ntbs, MPI_BYTE, rk0+(k+exch/2)%(exch),451, MPI_COMM_WORLD,&statu);
-
-            for (kk=0;kk<ntbs;kk++) {
-              j=tbs[kk].ipix;
-              if (l_nhpix[j]==0) {
-                l_hpix[j] = (hpix *) malloc(sizeof(hpix));
-              }
-              else {
-                l_hpix[j] = (hpix *) realloc(l_hpix[j],(1+l_nhpix[j])*sizeof(hpix));
-              }
-              memcpy(l_hpix[j]+l_nhpix[j],tbs+kk,sizeof(hpix));
-              l_nhpix[j] +=1;
-            }
-
-            free(tbs);
-          }
-        }
-        if ((rank+exch/2)%exch==k) {
-          hpix *tbs=NULL;
-          long ntbs=0;
-          for (j=begpix[js+k];j<=edpix[js+k];j++){
-	    if (l_nhpix[j]>0) {
-	      if (ntbs==0) {
-		tbs=(hpix *) malloc(sizeof(hpix)*(l_nhpix[j]));
-		if (tbs == NULL) {
-		  GetProcMem( &vmem, &phymem);
-		  fprintf(stderr,"Rank: %d(%s, free=%.2fGB) [%d/%d] used MEM virt:%.1lf[phys:%.1lf]MB line=%d ntbs:%ldMB\n",
-			  rank, hostname, GetFreeMemGB(), (int) (rk0+(k+exch/2)%(exch)),(int) exch,
-			  (double) vmem/1024./1024.,
-			  (double) phymem/1024./1024.,__LINE__,sizeof(hpix)*ntbs/1024/1024);
-		  sleep(10); // wait for other ranks to fail allocation and display error message
-		  return 1;
-		}
-	      }
-	      else {
-		tbs=(hpix *) realloc(tbs,sizeof(hpix)*(ntbs+l_nhpix[j]));
-		if (tbs == NULL) {
-		  GetProcMem( &vmem, &phymem);
-		  fprintf(stderr,"Rank: %d(%s, free=%.2fGB) [%d/%d] used MEM virt:%.1lf[phys:%.1lf]MB line=%d ntbs:%ldMB\n",
-			  rank, hostname, GetFreeMemGB(), (int) (rk0+(k+exch/2)%(exch)),(int) exch,
-			  (double) vmem/1024./1024.,
-			  (double) phymem/1024./1024.,__LINE__,sizeof(hpix)*ntbs/1024/1024);
-		  sleep(10); // wait for other ranks to fail allocation and display error message
-		  return 1;
-		}
-	      }
-
-	      memcpy(tbs+ntbs,l_hpix[j], sizeof(hpix)*(l_nhpix[j]));
-	      free(l_hpix[j]);
-	      ntbs+=l_nhpix[j];
-	    }
-	  }
-          //fprintf (stderr,"%d -> %d\n",rank,rk0+k);
-          MPI_Send(&ntbs, sizeof(long), MPI_BYTE, rk0+k, 450, MPI_COMM_WORLD);
-          if (ntbs>0) {
-            MPI_Send(tbs, sizeof(hpix)*(ntbs), MPI_BYTE, rk0+k, 451, MPI_COMM_WORLD);
-            free(tbs);
-          }
-        }
-      }
-    }
+    fprintf(stderr,"\n NBuffer = %ld\n",(long) l_rank_ptr_hpix);
+    fprintf(stderr,"\n\n===============================================\n");
   }
-
-
-  memcpy(loc_nhpix,l_nhpix+begpix[rank],sizeof(PIOINT)*(nnbpix));
-  for (j=0;j<nnbpix;j++) loc_hpix[j]=l_hpix[j+begpix[rank]];
-
-  free(l_hpix);
-  free(l_nhpix);
-#endif
+  
   
   GetProcMem(&vmem,&phymem);
   if (rank%64==0) fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
-              (long) rank, getpid(),
-              (double) vmem/1024./1024.,
-              (double) phymem/1024./1024.,__LINE__);
-
+			  (long) rank, getpid(),
+			  (double) vmem/1024./1024.,
+			  (double) phymem/1024./1024.,__LINE__);
+  
   PrintFreeMemOnNodes( rank, mpi_size, "before matrix computation");
+  
+  /*======================================================
+    =
+    =     Compute pixel index inside the process
+    =
+    =*/
+  
+
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+      htmp->ipix-=begpix[rank];
+    }
+  }
 
   /*======================================================
     =
     =     Compute matrix size
     =
     =*/
+  
   flg_rg = (PIOBYTE **) malloc(nbolo*sizeof(PIOBYTE *));
+  
   for (ib=0;ib<nbolo;ib++) {
     flg_rg[ib]= (PIOBYTE *) malloc(sizeof(PIOBYTE)*
-                                       (globalRangeRing));
-
+				   (globalRangeRing));
+    
     memset(flg_rg[ib],0,sizeof(PIOBYTE)*(globalRangeRing));
   }
+  
   fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
-              (long) rank, getpid(),
-              (double) vmem/1024./1024.,
-              (double) phymem/1024./1024.,__LINE__);
+	  (long) rank, getpid(),
+	  (double) vmem/1024./1024.,
+	  (double) phymem/1024./1024.,__LINE__);
+  
   PIOLONG k;
   long i0;
+
   flgpix = (PIOBYTE *) malloc(sizeof(PIOBYTE)*nnbpix);
   memset(flgpix,0,sizeof(PIOBYTE)*nnbpix);
-
-#ifdef CALCMATRIX
-#else
+  
   imatrice = (PIODOUBLE *) malloc(nnbpix*MAXCHANNELS*MAXCHANNELS*sizeof(PIODOUBLE));
   memset(imatrice,0,nnbpix*MAXCHANNELS*MAXCHANNELS*sizeof(PIODOUBLE));
-#endif
   cond = (PIODOUBLE *) malloc(nnbpix*sizeof(PIODOUBLE));
   
   long l_nmatpix=0;
+ 
   fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
-              (long) rank, getpid(),
-              (double) vmem/1024./1024.,
-	(double) phymem/1024./1024.,__LINE__);
-  for (k=0;k<nnbpix;k++) {
-      
-    cond[k] = 0.0;
-    double matrice[MAXCHAN*MAXCHAN];
-    double imat[MAXCHAN*MAXCHAN];
-    memset(matrice,0,MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
-    
-    long ndata = loc_nhpix[k];
-    if (ndata>2) {
-      hpix *htmp = loc_hpix[k];
-      for (i0=0;i0<ndata;i0++) { 
-	for(int i = 0;i<MAXCHANNELS;i++){        
-	  for(int j = 0;j<MAXCHANNELS;j++){
-	    matrice[i+j*MAXCHANNELS] += htmp[i0].w *htmp[i0].channels[j]*htmp[i0].channels[i];
-	  }
-	} 
-      }     
-      
-#ifdef CALCMATRIX
-      cond[k]=cond_thres(matrice,imat,MAXCHANNELS);
-#else
-      //test if matrice inversible 
-      cond[k]=cond_thres(matrice,imatrice+MAXCHANNELS*MAXCHANNELS*k,MAXCHANNELS);
-#endif
-      
-      if (cond[k] < Param->seuilcond) {
-	      flgpix[k]=1;
-	      for (i0=0;i0<ndata;i0++) {
-	        flg_rg[htmp[i0].ib][htmp[i0].rg-globalBeginRing]=1;
-	      }
-      }else {
-	      flgpix[k]=0;
-	      // Print detail for pix that does not meet cond requirement
-	      //fprintf(stderr,"[DBG COND] Pix#%ld is flagged out! II=%g IQ=%g IU=%g QQ=%g QU=%g UU=%g \n",k+begpix[rank], II, IQ, IU, QQ, QU, UU);
-	      cond[k]=BADCOND;
+    (long) rank, getpid(),
+    (double) vmem/1024./1024.,
+    (double) phymem/1024./1024.,__LINE__);
+  
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+      for(int i = 0;i<MAXCHANNELS;i++){
+	for(int j = 0;j<MAXCHANNELS;j++){
+	  imatrice[i+j*MAXCHANNELS+htmp->ipix*MAXCHANNELS*MAXCHANNELS] += htmp->w *htmp->channels[j]*htmp->channels[i];
+	}
       }
-    }else {
-      //fprintf(stderr,"[DBG COND] Pix#%ld is flagged out! ndata<=2\n", k+begpix[rank]);
-      flgpix[k]=0;
-      cond[k]=BADCOND;
     }
   }
+  
+  for (k=0;k<nnbpix;k++) {    
+    cond[k] = 0.0;
+    double matrice[MAXCHAN*MAXCHAN];
+    memcpy(matrice,imatrice+k*MAXCHANNELS*MAXCHANNELS,MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
+    
+    //test if matrice inversible 
+    cond[k]=cond_thres(matrice,imatrice+MAXCHANNELS*MAXCHANNELS*k,MAXCHANNELS);
+    if (cond[k] < Param->seuilcond) {
+      flgpix[k]=1;
+    }else {
+      flgpix[k]=0;
+      // Print detail for pix that does not meet cond requirement
+      //fprintf(stderr,"[DBG COND] Pix#%ld is flagged out! II=%g IQ=%g IU=%g QQ=%g QU=%g UU=%g \n",k+begpix[rank], II, IQ, IU, QQ, QU, UU);
+    }
+  }
+  
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+      if (flgpix[htmp->ipix]==1) {
+	flg_rg[htmp->ib][htmp->rg-globalBeginRing]=1;
+      }
+    }
+  }
+  
+  
   fprintf(stderr,"Rank: %ld[%d] MEM %.1lf[%.1lf]MB line=%d\n",
-              (long) rank, getpid(),
-              (double) vmem/1024./1024.,
-              (double) phymem/1024./1024.,__LINE__);
+	  (long) rank, getpid(),
+	  (double) vmem/1024./1024.,
+	  (double) phymem/1024./1024.,__LINE__);
   
   l_nmatpix=0;
   for (j=0;j<nnbpix;j++) {
@@ -5035,25 +4761,12 @@ int main(int argc,char *argv[])  {
       l_nmatpix++;
     }
   }
-
-
+  
   if (rank==rank_zero) fprintf(stderr,"l_nmatpix[%d] %ld / %ld \n",rank,(long) l_nmatpix ,nnbpix );
 
-#ifdef OPTIMPI
   long lb;
   MPI_Reduce(&l_nmatpix,&lb,1,MPI_LONG,MPI_SUM,rank_zero,MPI_COMM_WORLD);
   nmatpix=lb;
-#else
-  if (rank==rank_zero) {
-    long lb;
-    nmatpix=l_nmatpix;
-    for (rrk=1;rrk<mpi_size;rrk++) {
-      MPI_Recv(&lb,sizeof(long), MPI_BYTE, rrk,450, MPI_COMM_WORLD,&statu);
-      nmatpix+=lb;
-    }
-  }
-  else MPI_Send(&l_nmatpix, sizeof(long), MPI_BYTE, 0, 450, MPI_COMM_WORLD);
-#endif
   MPI_Bcast(&nmatpix, sizeof(long), MPI_BYTE, rank_zero, MPI_COMM_WORLD);
 
   for (ib=0;ib<nbolo;ib++) {
@@ -5125,47 +4838,31 @@ int main(int argc,char *argv[])  {
   memset(histo2_gi ,0,nbolo*32000*sizeof(double));
   memset(histon_gi ,0,nbolo*32000*sizeof(double));
 
-  for (k=0;k<nnbpix;k++)  {
-    if (flgpix[k]>0) {
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-      int l1;
-      double DI=0;
-      double II2=0;
-      for (l1=0;l1<ndata;l1++) {
-	long ri1=htmp[l1].rg-globalBeginRing;
-	if (flg_rg[htmp[l1].ib][ri1]!=0) {
+  for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+    for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+      hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+      if (flgpix[htmp->ipix]>0) {
+	long ri1=htmp->rg-globalBeginRing;
+	if (flg_rg[htmp->ib][ri1]!=0) {
 	  
-	  
-	  DI+=htmp[l1].w*htmp[l1].model;
-	  
-	  II2+=htmp[l1].w;
-	}
-      }
-      DI=DI/II2;
-      
-      for (l1=0;l1<ndata;l1++) {
-	long ri1=htmp[l1].rg-globalBeginRing;
-	if (flg_rg[htmp[l1].ib][ri1]!=0) {
-	  
-	  double divi=NEP_tab[htmp[l1].ib]*htmp[l1].hit;
+	  double divi=NEP_tab[htmp->ib]*htmp->hit;
 	  
 	  divi=divi*divi;
 	  double ww=1/divi;
 	  
-	  double tmp=(htmp[l1].model);
+	  double tmp=(htmp->model);
 	  
-	  histo_gi[ htmp[l1].rg+htmp[l1].ib*32000]+=ww*tmp;
-	  histo2_gi[htmp[l1].rg+htmp[l1].ib*32000]+=ww*tmp*tmp;
-	  histon_gi[htmp[l1].rg+htmp[l1].ib*32000]+=ww;
+	  histo_gi[ htmp->rg+htmp->ib*32000]+=ww*tmp;
+	  histo2_gi[htmp->rg+htmp->ib*32000]+=ww*tmp*tmp;
+	  histon_gi[htmp->rg+htmp->ib*32000]+=ww;
 	  
-	  mat_dip[0+4*htmp[l1].ib]+=ww*htmp[l1].model*htmp[l1].model;
-	  mat_dip[1+4*htmp[l1].ib]+=ww*htmp[l1].model;
-	  mat_dip[2+4*htmp[l1].ib]+=ww*htmp[l1].model;
-	  mat_dip[3+4*htmp[l1].ib]+=ww;
+	  mat_dip[0+4*htmp->ib]+=ww*htmp->model*htmp->model;
+	  mat_dip[1+4*htmp->ib]+=ww*htmp->model;
+	  mat_dip[2+4*htmp->ib]+=ww*htmp->model;
+	  mat_dip[3+4*htmp->ib]+=ww;
 	  
-	  vec_dip[0+2*htmp[l1].ib]+=ww*(htmp[l1].sig)*htmp[l1].model;
-	  vec_dip[1+2*htmp[l1].ib]+=ww*(htmp[l1].sig);
+	  vec_dip[0+2*htmp->ib]+=ww*(htmp->sig)*htmp->model;
+	  vec_dip[1+2*htmp->ib]+=ww*(htmp->sig);
 	}
       }
     }
@@ -5249,17 +4946,6 @@ int main(int argc,char *argv[])  {
     =*/
   
   for (int iter = 0; iter < number_of_iterations; iter++) {
-#if 0
-    for (k=0;k<nnbpix;k++)  {
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-      int l1;
-
-      for (l1=0;l1<ndata;l1++) {
-        htmp[l1].sig = htmp[l1].listp[iter]; 
-      }
-    }
-#endif
 
     itbogo=0;
 
@@ -5342,115 +5028,103 @@ int main(int argc,char *argv[])  {
 	  fprintf(stderr,"update_eval method available Update model to be fitted\n");
 
 	// Init matrice and vecteur
-	double *matrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
-	double *Imatrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double));
-	double *vector = malloc(MAXCHANNELS*sizeof(double));
-	double *rvector = malloc(MAXCHANNELS*sizeof(double));
+	double *vector = malloc(MAXCHANNELS*sizeof(double)*nnbpix);
+	memset(vector,0,MAXCHANNELS*sizeof(double)*nnbpix);
 
 	//=======================================================================================================
 	// Compute the map
 	//=======================================================================================================
-	
-	for (k=0;k<nnbpix;k++) {
-	  
-	  long ndata = loc_nhpix[k];
-	  hpix *htmp = loc_hpix[k];
-
-	  memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-	  memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-	  memset(vector,0,MAXCHANNELS*sizeof(double));
-	  memset(rvector,0,MAXCHANNELS*sizeof(double));
-	  
-	  for (int l1=0;l1<ndata;l1++) {
-	    long ri1=htmp[l1].rg-globalBeginRing;
-	
-	    if (flg_rg[htmp[l1].ib][ri1]!=0) {
-	      long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	      //calcul signal corriger
-	      double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
+	for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+	  for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+	    hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+	    if (flgpix[htmp->ipix]>0) {
+	      long ri1=htmp->rg-globalBeginRing;
+	      if (flg_rg[htmp->ib][ri1]!=0) {
+		long iri1=rgord[htmp->ib][ri1]+newnr[htmp->ib];
+		//calcul signal corriger
+		double g1=gain[htmp->gi+htmp->ib*GAINSTEP];
 	      
-	      double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
+		double sig_corr = htmp->sig*g1 - htmp->Sub_HPR-htmp->corr_cnn;
 	      
-	      if (do_offset==1) {
-		sig_corr-=x3[iri1];
-	      }
-	      
-	      if (REMOVE_CAL==1) {
-		sig_corr-=htmp[l1].hpr_cal;
-	      }
-	      
-	      if(GAINSTEP!=0)  
-		sig_corr-=x3[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP]*htmp[l1].model;
-	      
-	      
-	      for(int m =0;m<htmp[l1].nShpr;m++){
-		sig_corr-=x3[newnr[nbolo]+htmp[l1].listofShpr_idx[m]+(GAINSTEP)*nbolo]*htmp[l1].listofShpr[m];
-	      }
-	   
-	      //calcul matrix & vector
-	      for(int i = 0;i<MAXCHANNELS;i++){  
-		vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
-	      }
-	      
-	      for(int i = 0;i<MAXCHANNELS;i++){        
-		for(int j = 0;j<MAXCHANNELS;j++){
-		  matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
+		if (do_offset==1) {
+		  sig_corr-=x3[iri1];
+		}
+		
+		if (REMOVE_CAL==1) {
+		  sig_corr-=htmp->hpr_cal;
+		}
+		
+		if(GAINSTEP!=0)  
+		  sig_corr-=x3[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP]*htmp->model;
+		
+		
+		for(int m =0;m<htmp->nShpr;m++){
+		  sig_corr-=x3[newnr[nbolo]+htmp->listofShpr_idx[m]+(GAINSTEP)*nbolo]*htmp->listofShpr[m];
+		}
+		
+		//calcul matrix & vector
+		for(int i = 0;i<MAXCHANNELS;i++){  
+		  vector[i+htmp->ipix*MAXCHANNELS]+= htmp->w *htmp->channels[i]*sig_corr;
 		}
 	      } 
 	    }
 	  }
-	  
-	  double l_cond=cond_thres(matrix,Imatrix,MAXCHANNELS);  
-      
-	  if (l_cond < Param->seuilcond) {	               
-	    apply_invertMatrix(Imatrix,vector,MAXCHANNELS,rank);
-
-	    PyObject *pChan= PyList_New(MAXCHANNELS);
-	    PyObject *pVal = PyList_New(MAXCHANNELS);
-	    for (int i = 0; i < MAXCHANNELS; i++) {
-	      PyList_SetItem(pVal, i, PyFloat_FromDouble((double) vector[i]));
-	    }
-	    for (int l1=0;l1<ndata;l1++) {
-	      PyObject *pIdx = PyList_New(htmp[l1].nShpr);
-	      PyObject *pWw  = PyList_New(htmp[l1].nShpr);
-	      for(int m =0;m<htmp[l1].nShpr;m++){
-		PyList_SetItem(pIdx, m, PyLong_FromLong((long) htmp[l1].listofShpr_idx[m]));
-		PyList_SetItem(pWw, m, PyFloat_FromDouble((double) htmp[l1].listofShpr[m]));
-	      }
-	      for (int i = 0; i < MAXCHANNELS; i++) {
-		PyList_SetItem(pChan, i, PyFloat_FromDouble((double) htmp[l1].channels[i]));
-	      }
-	      
-	      PyObject *pValue = PyObject_CallMethod(sparseFunc, "update_eval", "(OOOO)", pIdx,pWw,pChan,pVal);
-	      
-	      // Traitement de la valeur de retour
-	      if (pValue != NULL) {
-		// Assurer que pValue est un tuple
-		if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
-		  // Extraire les deux tableaux du tuple
-		  int n1=copy_int_array(PyTuple_GetItem(pValue, 0), htmp[l1].listofShpr_idx,MAXEXTERNALSHPR);
-		  int n2=copy_float_array(PyTuple_GetItem(pValue, 1), htmp[l1].listofShpr,MAXEXTERNALSHPR);
-		  if (n1!=n2) {
-		    fprintf(stderr, "Update Sparse function should provide an equal number of invex and value, here Sroll received %d %d\n",n1,n2);
-		  }
-		  htmp[l1].nShpr=n1;
-		  Py_DECREF(pValue);
-		}
-	      }
-	      Py_DECREF(pIdx);
-	      Py_DECREF(pWw);
-	    }
-	    // Nettoyage des arguments
-	    Py_DECREF(pChan);
-	    Py_DECREF(pVal);
+	}
+	for (k=0;k<nnbpix;k++) {
+	  if (flgpix[k]>0) {
+	    apply_invertMatrix(imatrice+MAXCHANNELS*MAXCHANNELS*k,vector+MAXCHANNELS*k,MAXCHANNELS,rank);
 	  }
 	}
-	free(matrix);
-	free(Imatrix);
+	
+	for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+	  for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+	    hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+	    if (flgpix[htmp->ipix]>0) {
+	      long ri1=htmp->rg-globalBeginRing;
+	      if (flg_rg[htmp->ib][ri1]!=0) {
+		PyObject *pChan= PyList_New(MAXCHANNELS);
+		PyObject *pVal = PyList_New(MAXCHANNELS);
+		for (int i = 0; i < MAXCHANNELS; i++) {
+		  PyList_SetItem(pVal, i, PyFloat_FromDouble((double) vector[i+htmp->ipix*MAXCHANNELS]));
+		}
+		PyObject *pIdx = PyList_New(htmp->nShpr);
+		PyObject *pWw  = PyList_New(htmp->nShpr);
+		for(int m =0;m<htmp->nShpr;m++){
+		  PyList_SetItem(pIdx, m, PyLong_FromLong((long) htmp->listofShpr_idx[m]));
+		  PyList_SetItem(pWw, m, PyFloat_FromDouble((double) htmp->listofShpr[m]));
+		}
+		for (int i = 0; i < MAXCHANNELS; i++) {
+		  PyList_SetItem(pChan, i, PyFloat_FromDouble((double) htmp->channels[i]));
+		}
+		
+		PyObject *pValue = PyObject_CallMethod(sparseFunc, "update_eval", "(OOOO)", pIdx,pWw,pChan,pVal);
+		
+		// Traitement de la valeur de retour
+		if (pValue != NULL) {
+		  // Assurer que pValue est un tuple
+		  if (PyTuple_Check(pValue) && PyTuple_Size(pValue) == 2) {
+		    // Extraire les deux tableaux du tuple
+		    int n1=copy_int_array(PyTuple_GetItem(pValue, 0), htmp->listofShpr_idx,MAXEXTERNALSHPR);
+		    int n2=copy_float_array(PyTuple_GetItem(pValue, 1), htmp->listofShpr,MAXEXTERNALSHPR);
+		    if (n1!=n2) {
+		      fprintf(stderr, "Update Sparse function should provide an equal number of invex and value, here Sroll received %d %d\n",n1,n2);
+		    }
+		    htmp->nShpr=n1;
+		    Py_DECREF(pValue);
+		  }
+		}
+		Py_DECREF(pIdx);
+		Py_DECREF(pWw);
+		
+		// Nettoyage des arguments
+		Py_DECREF(pChan);
+		Py_DECREF(pVal);
+	      }
+	    }
+	  }
+	}
 	free(vector);
-	free(rvector);
       }
-
 
       memset(newnr[nbolo]+x3,0,sizeof(double)*nbolo*GAINSTEP);
      
@@ -5622,20 +5296,12 @@ int main(int argc,char *argv[])  {
     diag_n = (double *) malloc(sizeof(double)*nb_diag);
   }
   
-  double ** imap = (double **) malloc(sizeof(double*)*MAXCHANNELS);
-  for (i = 0;i<MAXCHANNELS;i++){
-    imap[i]=(double *) malloc(sizeof(double)*nnbpix);
-  }
-  double ** matmap = (double **) malloc(sizeof(double*)*MAXCHANNELS*MAXCHANNELS);
-  for (i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
-    matmap[i]=(double *) malloc(sizeof(double)*nnbpix);
-  }
-  
   // Init matrice and vecteur
-  double *matrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
-  double *Imatrix = malloc(MAXCHANNELS*MAXCHANNELS*sizeof(double));
-  double *vector = malloc(MAXCHANNELS*sizeof(double));
-  double *rvector = malloc(MAXCHANNELS*sizeof(double));
+  double *vector = malloc(MAXCHANNELS*sizeof(double)*nnbpix);
+  double *rvector = malloc(MAXCHANNELS*sizeof(double)*nnbpix);
+  double *avv = malloc(MAXCHANNELS*sizeof(double)*nnbpix);
+  double *navv = malloc(MAXCHANNELS*sizeof(double)*nnbpix);
+  double *avv2 = malloc(MAXCHANNELS*sizeof(double)*nnbpix);
   
   if (rank%64==0) {
     GetProcMem(&vmem,&phymem);
@@ -5656,242 +5322,235 @@ int main(int argc,char *argv[])  {
 	memset(diag_n,0,sizeof(double)*nb_diag);
       }
       int l1;
-      for (k=0;k<nnbpix;k++) {
-	
-      for(int i =0;i<MAXCHANNELS;i++){
-	map[i][k]=UNSEENPIX;  // ie hp.UNSEEN
-	imap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
-	rmap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
-      }
-      cmap[k]=UNSEENPIX;  // ie hp.UNSEEN
-	
-      for(int i =0;i<MAXCHANNELS*MAXCHANNELS;i++){
-	matmap[i][k]=UNSEENPIX;  // ie hp.UNSEEN
-      }
+      for (k=0;k<nnbpix;k++) cond[k]=UNSEENPIX;  // ie hp.UNSEEN
+	 
+      memset(vector,0,MAXCHANNELS*sizeof(double)*nnbpix);
+      memset(rvector,0,MAXCHANNELS*sizeof(double)*nnbpix);
+      memset(avv,0,MAXCHANNELS*sizeof(double)*nnbpix);
+      memset(navv,0,MAXCHANNELS*sizeof(double)*nnbpix);
+      memset(avv2,0,MAXCHANNELS*sizeof(double)*nnbpix);
+      memset(imatrice,0,MAXCHANNELS*MAXCHANNELS*sizeof(double)*nnbpix);
       
-	    
-      long ndata = loc_nhpix[k];
-      hpix *htmp = loc_hpix[k];
-      //fprintf(stderr,"%s %d\n",__FILE__,__LINE__);
-      
-      //buildmap
-      
-      memset(matrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-      memset(Imatrix,0,MAXCHANNELS*MAXCHANNELS*sizeof(double));
-      memset(vector,0,MAXCHANNELS*sizeof(double));
-      memset(rvector,0,MAXCHANNELS*sizeof(double));
+      for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+	for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+	  hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+	  if (flgpix[htmp->ipix]>0) {
+	    long ri1=htmp->rg-globalBeginRing;
+	    if (flg_rg[htmp->ib][ri1]!=0&&Param->bolomask[detset*nbolo+htmp->ib]==1 && 
+		htmp->rg>Param->beg_surv[isurv]&&htmp->rg<=Param->end_surv[isurv]) {
 
-      for (l1=0;l1<ndata;l1++) {
-	// select only bolometers in detset
-	int use_bolo = 0;
-	
-	if (Param->bolomask[detset*nbolo+htmp[l1].ib]==1 && htmp[l1].rg>Param->beg_surv[isurv]&&htmp[l1].rg<=Param->end_surv[isurv]) {
-	  use_bolo=1;
-	}
-	
-	long ri1=htmp[l1].rg-globalBeginRing;
-	
-	if (flg_rg[htmp[l1].ib][ri1]!=0 && use_bolo==1) {
-	  long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	  //calcul signal corriger
-	  double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-	  double rsig = htmp[l1].sig*g1;
-	  
-	  double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
-	  double sig_corr2 = sig_corr;
-
-	  if (do_offset==1) {
-	    sig_corr-=x3[iri1];
-	  }
-	  
-	  if (REMOVE_CAL==1) {
-	    sig_corr-=htmp[l1].hpr_cal;
-	    sig_corr2-=htmp[l1].hpr_cal;
-	  }
-	  
-	  
-          if(GAINSTEP2!=0)  
-	    sig_corr-= x3[newnr[nbolo]+htmp[l1].gi+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;
-
-	  
-	  for(int m =0;m<htmp[l1].nShpr;m++){
-	    sig_corr-=x3[newnr[nbolo]+htmp[l1].listofShpr_idx[m]+(GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
-	  }
-	   
-	  //calcul matrix & vector
-	  for(int i = 0;i<MAXCHANNELS;i++){  
-	    vector[i]+= htmp[l1].w *htmp[l1].channels[i]*sig_corr;
-	  }
-	  for(int i = 0;i<MAXCHANNELS;i++){  
-	    rvector[i]+= htmp[l1].w *htmp[l1].channels[i]*rsig;
-	  }
-	  for(int i = 0;i<MAXCHANNELS;i++){        
-	    for(int j = 0;j<MAXCHANNELS;j++){
-	      matrix[i+j*MAXCHANNELS] += htmp[l1].w *htmp[l1].channels[j]*htmp[l1].channels[i];
-	    }
-	  } 
-	}
-      }
-	             
-      cond[k]=cond_thres(matrix,Imatrix,MAXCHANNELS);  
-      
-      if (cond[k] < Param->seuilcond) {	               
-	apply_invertMatrix(Imatrix,vector,MAXCHANNELS,rank);	       
-	for(int i = 0;i<MAXCHANNELS;i++){
-	  map[i][k]= vector[i];
-	}      
-	apply_invertMatrix(Imatrix,rvector,MAXCHANNELS,rank);	       
-	for(int i = 0;i<MAXCHANNELS;i++){
-	  rmap[i][k]= rvector[i];
-	}
-	for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
-	  matmap[i][k]=Imatrix[i];
-	}
-
-	/*================================================================================================
-	  COMPUTE CHI2 MAP 
-	  ================================================================================================*/
-	
-	double avv=0,navv=0,avv2=0;
-	
-	for (l1=0;l1<ndata;l1++) {
-	  // select only bolometers in detset
-	  int use_bolo = 0;
-	  
-	  if (Param->bolomask[detset*nbolo+htmp[l1].ib]==1 && htmp[l1].rg>Param->beg_surv[isurv]&&htmp[l1].rg<=Param->end_surv[isurv]) {
-	    use_bolo=1;
-	  }
-	  
-	  long ri1=htmp[l1].rg-globalBeginRing;
-	  
-	  if (flg_rg[htmp[l1].ib][ri1]!=0 && use_bolo==1) {
-	    long iri1=rgord[htmp[l1].ib][ri1]+newnr[htmp[l1].ib];
-	    //calcul signal corriger
-	    double g1=gain[htmp[l1].gi+htmp[l1].ib*GAINSTEP];
-	    double sig_corr = htmp[l1].sig*g1 - htmp[l1].Sub_HPR-htmp[l1].corr_cnn;
-	    double sig_corr2 = sig_corr;
-
-	    if (do_offset==1) {
-	      sig_corr-=x3[iri1];
-	    }
-	    
-	    if (REMOVE_CAL==1) {
-	      sig_corr-=htmp[l1].hpr_cal;
-	      sig_corr2-=htmp[l1].hpr_cal;
-	    }
-	    
-	    
-	    
-	    for(int m =0;m<htmp[l1].nShpr;m++){
-	      sig_corr-=x3[newnr[nbolo]+htmp[l1].listofShpr_idx[m]+(GAINSTEP2)*nbolo]*htmp[l1].listofShpr[m];
-	    }
-	    
-	    if (GAINSTEP!=0) sig_corr-=x3[newnr[nbolo]+htmp[l1].ib*GAINSTEP2]*htmp[l1].model;  
-	    //calcul matrix & vector
-	    for(int i = 0;i<MAXCHANNELS;i++){  
-	      sig_corr-= htmp[l1].channels[i]*map[i][k];
-	    }
-	    avv=avv+htmp[l1].w *sig_corr;
-	    avv2=avv2+htmp[l1].w *sig_corr*sig_corr;
-	    navv=navv+htmp[l1].w;
-	    if (diagFunc!=NULL) {
-	      diag_avv[htmp[l1].diag_idx]  += htmp[l1].w *sig_corr;
-	      diag_avv2[htmp[l1].diag_idx] += htmp[l1].w *sig_corr*sig_corr;
-	      diag_n[htmp[l1].diag_idx]    += htmp[l1].w;
+	      long iri1=rgord[htmp->ib][ri1]+newnr[htmp->ib];
+	      //calcul signal corriger
+	      double g1=gain[htmp->gi+htmp->ib*GAINSTEP];
+	      double rsig = htmp->sig*g1;
+	      
+	      double sig_corr = htmp->sig*g1 - htmp->Sub_HPR-htmp->corr_cnn;
+	      double sig_corr2 = sig_corr;
+	      
+	      if (do_offset==1) {
+		sig_corr-=x3[iri1];
+	      }
+	      
+	      if (REMOVE_CAL==1) {
+		sig_corr-=htmp->hpr_cal;
+		sig_corr2-=htmp->hpr_cal;
+	      }
+	      
+	      
+	      if(GAINSTEP2!=0)  
+		sig_corr-= x3[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2]*htmp->model;
+	      
+	      
+	      for(int m =0;m<htmp->nShpr;m++){
+		sig_corr-=x3[newnr[nbolo]+htmp->listofShpr_idx[m]+(GAINSTEP2)*nbolo]*htmp->listofShpr[m];
+	      }
+	      
+	      //calcul matrix & vector
+	      for(int i = 0;i<MAXCHANNELS;i++){  
+		vector[htmp->ipix+i*nnbpix]+= htmp->w *htmp->channels[i]*sig_corr;
+	      }
+	      for(int i = 0;i<MAXCHANNELS;i++){  
+		rvector[htmp->ipix+i*nnbpix]+= htmp->w *htmp->channels[i]*rsig;
+	      }
+	      for(int i = 0;i<MAXCHANNELS;i++){
+		for(int j = 0;j<MAXCHANNELS;j++){
+		  imatrice[i+j*MAXCHANNELS+htmp->ipix*MAXCHANNELS*MAXCHANNELS] += htmp->w *htmp->channels[j]*htmp->channels[i];
+		}
+	      }
 	    }
 	  }
 	}
-
-	cmap[k]=sqrt(avv2/navv-(avv/navv)*(avv/navv));
-      }
-      else  {
-	cond[k]=UNSEENPIX;
-      }
-    }
-
-    if (diagFunc!=NULL) {
-      
-      double *l_avv = (double *) malloc(sizeof(double)*(nb_diag));
-      double *l_avv2 = (double *) malloc(sizeof(double)*(nb_diag));
-      double *l_n = (double *) malloc(sizeof(double)*(nb_diag));
-      
-      MPI_Reduce(diag_avv,l_avv,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
-      MPI_Reduce(diag_avv2,l_avv2,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
-      MPI_Reduce(diag_n,l_n,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
-
-      for (k=0;k<nb_diag;k++) diag_avv[k]=sqrt(l_avv2[k]/l_n[k]-(l_avv[k]/l_n[k])*(l_avv[k]/l_n[k]));
-
-      if  (rank==rank_zero) {
-	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-	sprintf(TEST_OUTMAP,"%s_%s_DIAG", mapout[detset],mapname);
-	PIOWriteVECT(TEST_OUTMAP,diag_avv,0,sizeof(PIODOUBLE)*nb_diag);
-	sprintf(TEST_OUTMAP,"%s_%s_DIAG_W", mapout[detset],mapname);
-	PIOWriteVECT(TEST_OUTMAP,l_n,0,sizeof(PIODOUBLE)*nb_diag);
-	sprintf(TEST_OUTMAP,"%s_%s_DIAG_L1", mapout[detset],mapname);
-	PIOWriteVECT(TEST_OUTMAP,l_avv,0,sizeof(PIODOUBLE)*nb_diag);
-	sprintf(TEST_OUTMAP,"%s_%s_DIAG_L2", mapout[detset],mapname);
-	PIOWriteVECT(TEST_OUTMAP,l_avv,0,sizeof(PIODOUBLE)*nb_diag);
       }
 
-      free(l_avv);
-      free(l_avv2);
-      free(l_n);
-    }
+      for (k=0;k<nnbpix;k++) {   
+	cond[k] = 0.0;
+	double matrice[MAXCHAN*MAXCHAN];
+	memcpy(matrice,imatrice+k*MAXCHANNELS*MAXCHANNELS,MAXCHANNELS*MAXCHANNELS*sizeof(double)); 
     
-    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
-    for(int i = 0;i<MAXCHANNELS;i++){
-      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
-      PIOWriteMAP(TEST_OUTMAP,map[i],begpix[rank],begpix[rank]+nnbpix-1);
-      MPI_Barrier(MPI_COMM_WORLD);
-    }
-   
-    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
-    for(int i = 0;i<MAXCHANNELS;i++){
-      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      sprintf(TEST_OUTMAP,"%s_%s_%d_RAW", mapout[detset],mapname,i);
-      PIOWriteMAP(TEST_OUTMAP,rmap[i],begpix[rank],begpix[rank]+nnbpix-1);
-      MPI_Barrier(MPI_COMM_WORLD);
-    }
-   
-    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
-    {
-      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      sprintf(TEST_OUTMAP,"%s_%s_STD", mapout[detset],mapname);
-      PIOWriteMAP(TEST_OUTMAP,cmap,begpix[rank],begpix[rank]+nnbpix-1);
-      MPI_Barrier(MPI_COMM_WORLD);
-    }
-#if 0
-    for(int i = 0;i<MAXCHANNELS*MAXCHANNELS;i++){
-      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      sprintf(TEST_OUTMAP,"%s_%s_MAT%d", mapout[detset],mapname,i);
-      PIOWriteMAP(TEST_OUTMAP,matmap[i],begpix[rank],begpix[rank]+nnbpix-1);
-      MPI_Barrier(MPI_COMM_WORLD);
-    }
-#endif
-    if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
-    {
-      char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-      sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
-      PIOWriteMAP(TEST_OUTMAP,cond,begpix[rank],begpix[rank]+nnbpix-1);
-      MPI_Barrier(MPI_COMM_WORLD);
-    }
+	//test if matrice inversible 
+	cond[k]=cond_thres(matrice,imatrice+MAXCHANNELS*MAXCHANNELS*k,MAXCHANNELS);
+    
+	if (cond[k] < Param->seuilcond) {
+	  double tmp[MAXCHAN];
+	  double rtmp[MAXCHAN];
+	  double *mat=imatrice+MAXCHANNELS*MAXCHANNELS*k;
+	  for (i=0;i<MAXCHANNELS;i++) {
+	    tmp[i] = 0.0;
+	    rtmp[i] = 0.0;
+	    for (j=0;j<MAXCHANNELS;j++) {
+	      tmp[i]+=mat[j+MAXCHANNELS*i]*vector[j*nnbpix+k];
+	      rtmp[i]+=mat[j+MAXCHANNELS*i]*rvector[j*nnbpix+k];
+	    }
+	  }
+	  for (i=0;i<MAXCHANNELS;i++) {
+	    vector[i*nnbpix+k]=tmp[i];
+	    rvector[i*nnbpix+k]=rtmp[i];
+	  }
+	}
+	else {
+	  cond[k]=UNSEENPIX;
+	  for (i=0;i<MAXCHANNELS;i++) {
+	    vector[i*nnbpix+k]=UNSEENPIX;
+	    rvector[i*nnbpix+k]=UNSEENPIX;
+	  }
+	}
+      }
+
+      /*================================================================================================
+	COMPUTE CHI2 MAP 
+	================================================================================================*/
+      for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
+	for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
+	  hpix *htmp = ptr_l_hpix[ibuffer]+pix; 
+	  if (cond[htmp->ipix]!=UNSEENPIX) {
+	    long ri1=htmp->rg-globalBeginRing;
+	    if (flg_rg[htmp->ib][ri1]!=0&&Param->bolomask[detset*nbolo+htmp->ib]==1 && 
+		htmp->rg>Param->beg_surv[isurv]&&htmp->rg<=Param->end_surv[isurv]) {
+
+	      long iri1=rgord[htmp->ib][ri1]+newnr[htmp->ib];
+	      //calcul signal corriger
+	      double g1=gain[htmp->gi+htmp->ib*GAINSTEP];
+	      
+	      double sig_corr = htmp->sig*g1 - htmp->Sub_HPR-htmp->corr_cnn;
+	      double sig_corr2 = sig_corr;
+	      
+	      if (do_offset==1) {
+		sig_corr-=x3[iri1];
+	      }
+	      
+	      if (REMOVE_CAL==1) {
+		sig_corr-=htmp->hpr_cal;
+		sig_corr2-=htmp->hpr_cal;
+	      }
+	      
+	      
+	      if(GAINSTEP2!=0)  
+		sig_corr-= x3[newnr[nbolo]+htmp->gi+htmp->ib*GAINSTEP2]*htmp->model;
+	      
+	      
+	      for(int m =0;m<htmp->nShpr;m++){
+		sig_corr-=x3[newnr[nbolo]+htmp->listofShpr_idx[m]+(GAINSTEP2)*nbolo]*htmp->listofShpr[m];
+	      }
+	      
+	      //calcul matrix & vector
+	      for(int i = 0;i<MAXCHANNELS;i++){  
+		sig_corr-=htmp->channels[i]*vector[htmp->ipix+i*nnbpix];
+	      }
+
+	      avv[htmp->ipix]=avv[htmp->ipix]+htmp->w *sig_corr;
+	      avv2[htmp->ipix]=avv2[htmp->ipix]+htmp->w *sig_corr*sig_corr;
+	      navv[htmp->ipix]=navv[htmp->ipix]+htmp->w;
+	      if (diagFunc!=NULL) {
+		diag_avv[htmp->diag_idx]  += htmp->w *sig_corr;
+		diag_avv2[htmp->diag_idx] += htmp->w *sig_corr*sig_corr;
+		diag_n[htmp->diag_idx]    += htmp->w;
+	      }
+	    }
+	  }
+	}
+      }
+    
+
+      for (k=0;k<nnbpix;k++) {  
+	if (cond[k]!=UNSEENPIX) {
+	  avv[k]=sqrt(avv2[k]/navv[k]-(avv[k]/navv[k])*(avv[k]/navv[k]));
+	}
+	else avv[k]=UNSEENPIX;
+      }
+      
+      if (diagFunc!=NULL) {
+	
+	double *l_avv = (double *) malloc(sizeof(double)*(nb_diag));
+	double *l_avv2 = (double *) malloc(sizeof(double)*(nb_diag));
+	double *l_n = (double *) malloc(sizeof(double)*(nb_diag));
+	
+	MPI_Reduce(diag_avv,l_avv,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
+	MPI_Reduce(diag_avv2,l_avv2,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
+	MPI_Reduce(diag_n,l_n,nb_diag,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
+	
+	for (k=0;k<nb_diag;k++) diag_avv[k]=sqrt(l_avv2[k]/l_n[k]-(l_avv[k]/l_n[k])*(l_avv[k]/l_n[k]));
+	
+	if  (rank==rank_zero) {
+	  char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	  sprintf(TEST_OUTMAP,"%s_%s_DIAG", mapout[detset],mapname);
+	  PIOWriteVECT(TEST_OUTMAP,diag_avv,0,sizeof(PIODOUBLE)*nb_diag);
+	  sprintf(TEST_OUTMAP,"%s_%s_DIAG_W", mapout[detset],mapname);
+	  PIOWriteVECT(TEST_OUTMAP,l_n,0,sizeof(PIODOUBLE)*nb_diag);
+	  sprintf(TEST_OUTMAP,"%s_%s_DIAG_L1", mapout[detset],mapname);
+	  PIOWriteVECT(TEST_OUTMAP,l_avv,0,sizeof(PIODOUBLE)*nb_diag);
+	  sprintf(TEST_OUTMAP,"%s_%s_DIAG_L2", mapout[detset],mapname);
+	  PIOWriteVECT(TEST_OUTMAP,l_avv,0,sizeof(PIODOUBLE)*nb_diag);
+	}
+	
+	free(l_avv);
+	free(l_avv2);
+	free(l_n);
+      }
+    
+      if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+      for(int i = 0;i<MAXCHANNELS;i++){
+	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
+	PIOWriteMAP(TEST_OUTMAP,vector+i*nnbpix,begpix[rank],begpix[rank]+nnbpix-1);
+	MPI_Barrier(MPI_COMM_WORLD);
+      }
+      
+      if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+      for(int i = 0;i<MAXCHANNELS;i++){
+	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	sprintf(TEST_OUTMAP,"%s_%s_%d_RAW", mapout[detset],mapname,i);
+	PIOWriteMAP(TEST_OUTMAP,rvector+i*nnbpix,begpix[rank],begpix[rank]+nnbpix-1);
+	MPI_Barrier(MPI_COMM_WORLD);
+      }
+      
+      if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+      {
+	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	sprintf(TEST_OUTMAP,"%s_%s_STD", mapout[detset],mapname);
+	PIOWriteMAP(TEST_OUTMAP,avv,begpix[rank],begpix[rank]+nnbpix-1);
+	MPI_Barrier(MPI_COMM_WORLD);
+      }
+      // Save the cond matrix
+      if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+      {
+	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	sprintf(TEST_OUTMAP,"%s_%s_COND", mapout[detset],mapname);
+	PIOWriteMAP(TEST_OUTMAP,cond,begpix[rank],begpix[rank]+nnbpix-1);
+	MPI_Barrier(MPI_COMM_WORLD);
+      }
     }
   }
-
-  for(int i = 0;i<MAXCHANNELS;i++){
-    free(map[i]);
-    free(rmap[i]);
-  }
-  free(cmap);
-  free(map);
-  free(rmap);
-
+  free(avv);
+  free(avv2);
+  free(navv);
+  free(vector);
+  free(rvector);
   if (diagFunc!=NULL) {
     free(diag_avv);
     free(diag_avv2);
     free(diag_n);
   }
+
   
   if (rank==rank_zero) {
     now = time( NULL);
@@ -5904,5 +5563,5 @@ int main(int argc,char *argv[])  {
 
   exit (0);
  }
-
+    
 
