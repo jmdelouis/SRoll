@@ -3796,7 +3796,7 @@ int main(int argc,char *argv[])  {
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  
+
   PIOINT  *badring;
   PIOINT  *ibadring;
   int rg_max;
@@ -3806,6 +3806,17 @@ int main(int argc,char *argv[])  {
 #endif
 
   srand48((long)(rank+Param->SEED[0]));
+  if (rank==rank_zero) {
+    fprintf(stderr,"MAXMPIBUFFER %ld\n",MAXMPIBUFFER);
+    if (MAXMPIBUFFER<1024*128) {
+      fprintf(stderr,"MAXMPIBUFFER is usually around %ld be sure of your choice\n",(long) (1024*1024));
+    }
+  }
+  if (MAXMPIBUFFER==0) {
+    fprintf(stderr,"MAXMPIBUFFER==0 does not work!! set a value to MAXMPIBUFFER\n");
+    exit(0);
+  }
+    
 
   ptr_l_hpix = (hpix **) malloc(sizeof(hpix **)*MAXMPIBUFFER);
   l_nhpix  = (PIOINT *) malloc(sizeof(PIOINT)*MAXMPIBUFFER);
