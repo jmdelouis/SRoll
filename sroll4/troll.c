@@ -4553,7 +4553,6 @@ int main(int argc,char *argv[])  {
   
   nnbpix = edpix[rank]-begpix[rank]+1;
     
-  long ntbs=0;
 
   long ntot_pts=0;
   rank_map = (int *) malloc(sizeof(int)*12*Nside*Nside);
