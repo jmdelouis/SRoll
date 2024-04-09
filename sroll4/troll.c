@@ -2014,7 +2014,6 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
   //plap
   double sum =0.0;
   long ir,irt;
-  double tmp= 0.0;
   double *csum = (double *) malloc(sizeof(double)*MAXCHANNELS);
   double *s_X = (double *) malloc(sizeof(double)*nnbpix*MAXCHANNELS);
   double *sum_channels = (double *) malloc(sizeof(double)*nnbpix*MAXCHANNELS);
@@ -2394,7 +2393,7 @@ void minimize_gain_tf(double *ix2,double *gaingi){
   // xi2 -> vecteur des offsets + amplitude de templates
 
   // Init 
-  long i,k,l1;
+  long i,k;
   int itermax = NUMBEROFITER;
   PIOLONG GAINSTEP2;
   int rank;
@@ -5286,16 +5285,6 @@ int main(int argc,char *argv[])  {
       =*/
   
   PIOLONG GAINSTEP2 = GAINSTEP;
-
-  double ** map = (double **) malloc(sizeof(double*)*MAXCHANNELS);
-  for (i = 0;i<MAXCHANNELS;i++){
-    map[i]=(double *) malloc(sizeof(double)*nnbpix);
-  }
-  double ** rmap = (double **) malloc(sizeof(double*)*MAXCHANNELS);
-  for (i = 0;i<MAXCHANNELS;i++){
-    rmap[i]=(double *) malloc(sizeof(double)*nnbpix);
-  }
-  double * cmap = (double *) malloc(sizeof(double)*nnbpix);
   
   double *diag_avv=NULL;
   double *diag_avv2=NULL;
@@ -5332,7 +5321,7 @@ int main(int argc,char *argv[])  {
 	memset(diag_avv2,0,sizeof(double)*nb_diag);
 	memset(diag_n,0,sizeof(double)*nb_diag);
       }
-      int l1;
+      
       for (k=0;k<nnbpix;k++) cond[k]=UNSEENPIX;  // ie hp.UNSEEN
 	 
       memset(vector,0,MAXCHANNELS*sizeof(double)*nnbpix);
