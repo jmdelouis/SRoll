@@ -2068,6 +2068,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 	// calcul sum_channels
         long ri1=htmp->rg-globalBeginRing;
         if (flg_rg[htmp->ib][ri1]!=0) {
+          ir=rgord[htmp->ib][ri1]+newnr[htmp->ib];
 	  double val=0.0;
 	  if (do_offset==1) {
 	    val = x[ir];
@@ -2102,6 +2103,7 @@ void proj_grad(double * q2,double nmatres,double * x,int nnbpix,int rank,int GAI
 	// calcul sum_channels
         long ri1=htmp->rg-globalBeginRing;
         if (flg_rg[htmp->ib][ri1]!=0) {
+          ir=rgord[htmp->ib][ri1]+newnr[htmp->ib];
 	  double val=0.0;
 	  if (do_offset==1) {
 	    val = x[ir];
@@ -4559,7 +4561,6 @@ int main(int argc,char *argv[])  {
     =
     =*/
   
-  int *id_buff = (int *) malloc((mpi_size+1)*sizeof(int));
   
   nnbpix = edpix[rank]-begpix[rank]+1;
     
@@ -4717,7 +4718,7 @@ int main(int argc,char *argv[])  {
 	  (double) phymem/1024./1024.,__LINE__);
   
   PIOLONG k;
-  long i0;
+
 
   flgpix = (PIOBYTE *) malloc(sizeof(PIOBYTE)*nnbpix);
   memset(flgpix,0,sizeof(PIOBYTE)*nnbpix);
