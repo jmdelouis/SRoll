@@ -3532,7 +3532,6 @@ int main(int argc,char *argv[])  {
   Param = &par;
 
   long MAXMPIBUFFER=Param->MAXMPIBUFFER;
-
   if (Param->EndRing-Param->BeginRing+1<mpi_size) {
     if (rank==rank_zero)
       fprintf(stderr, "Number of MPI rank %d should be smaller than number pointing period %d.\n",
@@ -3542,7 +3541,6 @@ int main(int argc,char *argv[])  {
   }
   if (Param->flag_verbose==_PAR_TRUE) verbose=Param->verbose;
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
-      
   if (Param->flag_do_offset==_PAR_TRUE) do_offset=Param->do_offset;
   
   /*-------------------------------------------------------------------------*/
@@ -3817,7 +3815,6 @@ int main(int argc,char *argv[])  {
     fprintf(stderr,"MAXMPIBUFFER==0 does not work!! set a value to MAXMPIBUFFER\n");
     exit(0);
   }
-    
 
   ptr_l_hpix = (hpix **) malloc(sizeof(hpix **)*MAXMPIBUFFER);
   l_nhpix  = (PIOINT *) malloc(sizeof(PIOINT)*MAXMPIBUFFER);
@@ -3826,7 +3823,7 @@ int main(int argc,char *argv[])  {
   ptr_l_hpix[rank_ptr_hpix] = (hpix *) malloc(sizeof(hpix)*MAXMPIBUFFER);
   long n_l_hpix=0;
 
-  memset(l_nhpix,0,sizeof(PIOINT)*12*Nside*Nside);
+  memset(l_nhpix,0,sizeof(PIOINT)*MAXMPIBUFFER);
   
 
   /*======================================================
