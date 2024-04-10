@@ -245,7 +245,6 @@ PyObject *EXECPYTHON(PyObject *TheObject)
   if (TheObject==NULL) {
     fprintf(stderr,"EXECPYTHON : error object null\n");
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   return(TheObject);
@@ -259,7 +258,6 @@ PyObject *CALLPYTHON(PyObject *Dict,const char *name)
   else {
     fprintf(stderr,"Problem while loading %s function\n",name);
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   return(NULL);
@@ -3015,7 +3013,6 @@ PyObject * init_PyFunction(char* path,char *funcname){
 
     if (!PyCallable_Check(pFunc)){
         PyErr_Print();
-	MPI_Finalize();
         exit(0);
     }
     
@@ -3032,7 +3029,6 @@ long exec_PyFunction(PyObject *pFunc){
         
     } else {
         PyErr_Print();
-	MPI_Finalize();
         exit(0);
     }
   
@@ -3140,14 +3136,12 @@ int Get_NumberOfChannels(PyObject *projFunc)
     }
     else {
       PyErr_Print();
-      MPI_Finalize();
       exit(0);
     }
     
   }
   else {
     PyErr_Print();
-    MPI_Finalize();
     exit(0);
   }
   
@@ -3171,14 +3165,12 @@ int Get_NumberOfDiag(PyObject *diagFunc)
     }
     else {
       PyErr_Print();
-      MPI_Finalize();
       exit(0);
     }
     
   }
   else {
     PyErr_Print();
-    MPI_Finalize();
     exit(0);
   }
   
@@ -3226,14 +3218,12 @@ int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,
       else {
 	fprintf(stderr,"Problem while executing the get_heapix_idx method get value inside projection class\n");
 	PyErr_Print();
-	MPI_Finalize(); 
 	exit(0);
       }
     }
     else {
       fprintf(stderr, "Problem while trying to compute the healpix coordinate in the projection class\n");
       PyErr_Print();
-      MPI_Finalize();  
       exit(0);
     }
 
@@ -3248,7 +3238,6 @@ int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,
     
   } else {
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -3305,8 +3294,7 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
     }
     else {
       fprintf(stderr, "Problem while trying to compute the projection\n");
-      PyErr_Print();
-      MPI_Finalize();  
+      PyErr_Print(); 
       exit(0);
     }
 
@@ -3323,7 +3311,6 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
     
   } else {
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -3376,8 +3363,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
       }
       else {
 	fprintf(stderr,"Problem while executing the method get value inside SparseFunc class\n");
-	PyErr_Print();
-	MPI_Finalize(); 
+	PyErr_Print(); 
 	exit(0);
       }
     }
@@ -3392,7 +3378,6 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     
   } else {
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -3442,7 +3427,6 @@ int calc_diag_hpr(PyObject *diagFunc,
       fprintf(stderr,"%d\n",(int) hpix);
       fprintf(stderr,"Problem while executing the method get_diag_idx inside DiagFunc class\n");
       PyErr_Print();
-      MPI_Finalize(); 
       exit(0);
     }
 
@@ -3458,7 +3442,6 @@ int calc_diag_hpr(PyObject *diagFunc,
   } else {
     fprintf(stderr,"no DiagFunc class defined\n");
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -4246,7 +4229,7 @@ int main(int argc,char *argv[])  {
 	      
 	      tp_hpix->corr_cnn = 0.0;
 	      
-	      tp_hpix->hit =h[i]*o_widx[lll];
+	      tp_hpix->hit = h[i]*o_widx[lll];
 	      
 	      int is_valid = init_channels(tp_hpix,
 					   projFunc,
@@ -4313,7 +4296,7 @@ int main(int argc,char *argv[])  {
 		  
 		}
 		
-		tp_hpix->w = tp_hpix->hit*sxi*o_widx[lll];
+		tp_hpix->w = tp_hpix->hit*sxi;
 		tp_hpix->surv = surv;
 		tp_hpix->ib = ib;
 		tp_hpix->rg = rg;
@@ -4376,7 +4359,7 @@ int main(int argc,char *argv[])  {
     free(addpol);
   }
 
-  PrintFreeMemOnNodes( rank, mpi_size, "before pixel balancing");
+  //PrintFreeMemOnNodes( rank, mpi_size, "before pixel balancing");
 
   if (sparseFunc!=NULL) {
     long lnpix=npixShpr;
@@ -4385,9 +4368,6 @@ int main(int argc,char *argv[])  {
     npixShpr=mnpix;
     if (TestUpdateSparse==0&&TestNormalizeSparse==0)
       ClosepFunc(sparseFunc);
-    
-    Py_DECREF(pClass);
-    Py_DECREF(pArgs);
   }
 
   if (rank==rank_zero) fprintf(stderr,"Number Of Sparse Value %d\n",(int) npixShpr);
@@ -4631,7 +4611,7 @@ int main(int argc,char *argv[])  {
       free(recvcounts);
       free(rdispls);
       ltbs=otbs;
-      free(ptr_l_hpix[lll]);
+      if (lll<=rank_ptr_hpix) free(ptr_l_hpix[lll]);
     }
     
     ptr_l_hpix[lll]=ltbs;
