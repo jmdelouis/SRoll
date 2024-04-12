@@ -5331,6 +5331,7 @@ int main(int argc,char *argv[])  {
 	      if (REMOVE_CAL==1) {
 		sig_corr-=htmp->hpr_cal;
 		sig_corr2-=htmp->hpr_cal;
+		rsig-=htmp->hpr_cal;
 	      }
 	      
 	      
