@@ -5319,7 +5319,7 @@ int main(int argc,char *argv[])  {
 	      long iri1=rgord[htmp->ib][ri1]+newnr[htmp->ib];
 	      //calcul signal corriger
 	      double g1=gain[htmp->gi+htmp->ib*GAINSTEP];
-	      double rsig = htmp->sig*g1;
+	      double rsig = htmp->sig;
 	      
 	      double sig_corr = htmp->sig*g1 - htmp->Sub_HPR-htmp->corr_cnn;
 	      double sig_corr2 = sig_corr;
