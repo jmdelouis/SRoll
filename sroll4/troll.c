@@ -3187,7 +3187,7 @@ int Get_NumberOfDiag(PyObject *diagFunc)
 
 int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,
 	     int idx_in_ring,double rg_norm,PIOFLOAT *External,
-	     PIOFLOAT *o_widx,PIOINT *o_hidx)
+	     PIOFLOAT *o_widx,PIOINT *o_hidx,int rank)
 {
   
   PyObject *pValue=NULL;
@@ -3226,14 +3226,14 @@ int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,
 	fprintf(stderr,"%d %d\n",(int) PyTuple_Check(pValue),(int) PyTuple_Size(pValue));
 	fprintf(stderr,"Problem while executing the get_heapix_idx method get value inside projection class\n");
 	PyErr_Print();
-	MPI_Finalize(); 
 	exit(0);
       }
     }
     else {
-      fprintf(stderr, "Problem while trying to compute the healpix coordinate in the projection class\n");
+      fprintf(stderr,"%d %lf %lf %lf %d %lf %d %lf\n",rank,
+	      ph,th,psi,(int) idx_bolo,rg_norm,(int)idx_in_ring,External[RINGSIZE]);
+      fprintf(stderr, "Problem while trying to compute the healpix coordinate in the projection class %d\n",rank);
       PyErr_Print();
-      MPI_Finalize();  
       exit(0);
     }
 
@@ -3255,7 +3255,7 @@ int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,
   return n;
 }
 
-int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo,int idx_in_ring,PIOFLOAT *sig,PIOFLOAT *calib,PIOFLOAT *hit)
+int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,double rgnorm,int ipix,int idx_bolo,int idx_in_ring,PIOFLOAT *sig,PIOFLOAT *calib,PIOFLOAT *hit,int rank)
 {
   
   PyObject *pValue=NULL;
@@ -3304,7 +3304,7 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
       Py_DECREF(pValue);
     }
     else {
-      fprintf(stderr, "Problem while trying to compute the projection\n");
+      fprintf(stderr, "Problem while trying to compute the projection %d\n",rank);
       PyErr_Print();
       MPI_Finalize();  
       exit(0);
@@ -3442,7 +3442,7 @@ int calc_diag_hpr(PyObject *diagFunc,
       fprintf(stderr,"%d\n",(int) hpix);
       fprintf(stderr,"Problem while executing the method get_diag_idx inside DiagFunc class\n");
       PyErr_Print();
-      MPI_Finalize(); 
+      
       exit(0);
     }
 
@@ -3708,6 +3708,7 @@ int main(int argc,char *argv[])  {
   GAINSTEP = Param->GAINSTEP;
 
   if (rank==rank_zero) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
+  if (rank==rank_zero) fprintf(stderr,"Nside = %d\n",(int) Param->Nside);
   
   /*-------------------------------------------------------------------------*/
   /*   SAVE PARAMETER FILE                                                   */
@@ -4216,7 +4217,8 @@ int main(int argc,char *argv[])  {
 			   (rg-globalBeginRing)/((double) (globalEndRing-globalBeginRing)),
 			   External+i,
 			   o_widx,
-			   o_hidx);
+			   o_hidx,
+			   rank);
 	    }
 	    
 	    for (lll=0;lll<npt;lll++) {
@@ -4248,6 +4250,7 @@ int main(int argc,char *argv[])  {
 	      
 	      tp_hpix->hit =  h[i]*o_widx[lll];
 	      
+
 	      int is_valid = init_channels(tp_hpix,
 					   projFunc,
 					   psi[i],
@@ -4258,8 +4261,8 @@ int main(int argc,char *argv[])  {
 					   i,
 					   &(tp_hpix->sig),
 					   &(tp_hpix->hpr_cal),
-					   &(tp_hpix->hit));
-	      
+					   &(tp_hpix->hit),rank);
+
 	      if (is_valid) {
 		
 		nrg_htmp++;
@@ -4313,7 +4316,7 @@ int main(int argc,char *argv[])  {
 		  
 		}
 		
-		tp_hpix->w = tp_hpix->hit*sxi*o_widx[lll];
+		tp_hpix->w = tp_hpix->hit*sxi;
 		tp_hpix->surv = surv;
 		tp_hpix->ib = ib;
 		tp_hpix->rg = rg;
@@ -4327,17 +4330,6 @@ int main(int argc,char *argv[])  {
 		}  
 		else n_l_hpix+=1;
 	      }
-	      
-	      tp_hpix->w = h[i]*sxi*o_widx[lll];
-	      tp_hpix->surv = surv;
-	      tp_hpix->ib = ib;
-	      tp_hpix->rg = rg;
-	      tp_hpix->gi = 0;
-	      tp_hpix->ipix = ipix;
-	      if (isnan(tp_hpix->sig)||isnan(tp_hpix->w)||isnan(tp_hpix->hpr_cal)) {
-		fprintf(stderr,"NAN NAN NAN %lf %lf %lf %ld %ld\n",tp_hpix->hpr_cal,tp_hpix->sig,tp_hpix->w,(long)rg,(long)i);
-	      }  
-	      else l_nhpix[ipix]+=1;
 	    }
 	  }
 	}
@@ -4346,7 +4338,7 @@ int main(int argc,char *argv[])  {
 	if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
 
 	//if ((rank==rank_zero) && (rg==globalRankInfo.BeginRing[rank]) ) {
-	if (rank==rank_zero) {
+	{
 	  GetProcMem(&vmem,&phymem);
 	  fprintf(stderr,"Com %d %s Rank: %ld[%d] MEM %.1lf[%.1lf]MB Nd=%ld \n",
 		  (int) ib, Command, (long) rank, getpid(),
@@ -4375,7 +4367,7 @@ int main(int argc,char *argv[])  {
       }
     }
 
-    if (rank==rank_zero) {
+    {
       GetProcMem(&vmem,&phymem);
       fprintf(stderr,"\nafter troll detector (%ld/%ld): used VMEM %.1lf[PHYS %.1lf]MB\n",
           ib, nbolo-1, (double) vmem/1024./1024., (double) phymem/1024./1024.);
@@ -4387,7 +4379,7 @@ int main(int argc,char *argv[])  {
     free(addpol);
   }
 
-  PrintFreeMemOnNodes( rank, mpi_size, "before pixel balancing");
+  //PrintFreeMemOnNodes( rank, mpi_size, "before pixel balancing");
 
   if (sparseFunc!=NULL) {
     long lnpix=npixShpr;
@@ -4396,9 +4388,6 @@ int main(int argc,char *argv[])  {
     npixShpr=mnpix;
     if (TestUpdateSparse==0&&TestNormalizeSparse==0)
       ClosepFunc(sparseFunc);
-    
-    Py_DECREF(pClass);
-    Py_DECREF(pArgs);
   }
 
   if (rank==rank_zero) fprintf(stderr,"Number Of Sparse Value %d\n",(int) npixShpr);
@@ -4642,7 +4631,8 @@ int main(int argc,char *argv[])  {
       free(recvcounts);
       free(rdispls);
       ltbs=otbs;
-      free(ptr_l_hpix[lll]);
+      
+      if (lll<=rank_ptr_hpix) free(ptr_l_hpix[lll]);
     }
     
     ptr_l_hpix[lll]=ltbs;
