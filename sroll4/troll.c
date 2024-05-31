@@ -245,7 +245,6 @@ PyObject *EXECPYTHON(PyObject *TheObject)
   if (TheObject==NULL) {
     fprintf(stderr,"EXECPYTHON : error object null\n");
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   return(TheObject);
@@ -259,7 +258,6 @@ PyObject *CALLPYTHON(PyObject *Dict,const char *name)
   else {
     fprintf(stderr,"Problem while loading %s function\n",name);
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   return(NULL);
@@ -3015,7 +3013,6 @@ PyObject * init_PyFunction(char* path,char *funcname){
 
     if (!PyCallable_Check(pFunc)){
         PyErr_Print();
-	MPI_Finalize();
         exit(0);
     }
     
@@ -3032,7 +3029,6 @@ long exec_PyFunction(PyObject *pFunc){
         
     } else {
         PyErr_Print();
-	MPI_Finalize();
         exit(0);
     }
   
@@ -3140,14 +3136,12 @@ int Get_NumberOfChannels(PyObject *projFunc)
     }
     else {
       PyErr_Print();
-      MPI_Finalize();
       exit(0);
     }
     
   }
   else {
     PyErr_Print();
-    MPI_Finalize();
     exit(0);
   }
   
@@ -3171,14 +3165,12 @@ int Get_NumberOfDiag(PyObject *diagFunc)
     }
     else {
       PyErr_Print();
-      MPI_Finalize();
       exit(0);
     }
     
   }
   else {
     PyErr_Print();
-    MPI_Finalize();
     exit(0);
   }
   
@@ -3248,7 +3240,6 @@ int Get_hidx(PyObject *projFunc,double ph,double th,double psi,int idx_bolo,
     
   } else {
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -3304,9 +3295,14 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
       Py_DECREF(pValue);
     }
     else {
+<<<<<<< HEAD
       fprintf(stderr, "Problem while trying to compute the projection %d\n",rank);
       PyErr_Print();
       MPI_Finalize();  
+=======
+      fprintf(stderr, "Problem while trying to compute the projection\n");
+      PyErr_Print(); 
+>>>>>>> dff99a7ab986815bef762f9fbeed13c21bd8ae33
       exit(0);
     }
 
@@ -3323,7 +3319,6 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
     
   } else {
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -3376,8 +3371,7 @@ int calc_sparse_hpr(PyObject *sparseFunc,
       }
       else {
 	fprintf(stderr,"Problem while executing the method get value inside SparseFunc class\n");
-	PyErr_Print();
-	MPI_Finalize(); 
+	PyErr_Print(); 
 	exit(0);
       }
     }
@@ -3392,7 +3386,6 @@ int calc_sparse_hpr(PyObject *sparseFunc,
     
   } else {
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -3442,7 +3435,10 @@ int calc_diag_hpr(PyObject *diagFunc,
       fprintf(stderr,"%d\n",(int) hpix);
       fprintf(stderr,"Problem while executing the method get_diag_idx inside DiagFunc class\n");
       PyErr_Print();
+<<<<<<< HEAD
       
+=======
+>>>>>>> dff99a7ab986815bef762f9fbeed13c21bd8ae33
       exit(0);
     }
 
@@ -3458,7 +3454,6 @@ int calc_diag_hpr(PyObject *diagFunc,
   } else {
     fprintf(stderr,"no DiagFunc class defined\n");
     PyErr_Print();
-    MPI_Finalize(); 
     exit(0);
   }
   
@@ -4248,7 +4243,11 @@ int main(int argc,char *argv[])  {
 	      
 	      tp_hpix->corr_cnn = 0.0;
 	      
+<<<<<<< HEAD
 	      tp_hpix->hit =  h[i]*o_widx[lll];
+=======
+	      tp_hpix->hit = h[i]*o_widx[lll];
+>>>>>>> dff99a7ab986815bef762f9fbeed13c21bd8ae33
 	      
 
 	      int is_valid = init_channels(tp_hpix,
@@ -4631,7 +4630,10 @@ int main(int argc,char *argv[])  {
       free(recvcounts);
       free(rdispls);
       ltbs=otbs;
+<<<<<<< HEAD
       
+=======
+>>>>>>> dff99a7ab986815bef762f9fbeed13c21bd8ae33
       if (lll<=rank_ptr_hpix) free(ptr_l_hpix[lll]);
     }
     
@@ -5340,7 +5342,7 @@ int main(int argc,char *argv[])  {
 	      long iri1=rgord[htmp->ib][ri1]+newnr[htmp->ib];
 	      //calcul signal corriger
 	      double g1=gain[htmp->gi+htmp->ib*GAINSTEP];
-	      double rsig = htmp->sig*g1;
+	      double rsig = htmp->sig;
 	      
 	      double sig_corr = htmp->sig*g1 - htmp->Sub_HPR-htmp->corr_cnn;
 	      double sig_corr2 = sig_corr;
@@ -5352,6 +5354,7 @@ int main(int argc,char *argv[])  {
 	      if (REMOVE_CAL==1) {
 		sig_corr-=htmp->hpr_cal;
 		sig_corr2-=htmp->hpr_cal;
+		rsig-=htmp->hpr_cal;
 	      }
 	      
 	      
