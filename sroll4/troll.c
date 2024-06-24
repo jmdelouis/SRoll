@@ -3083,7 +3083,7 @@ void sum_double_array(PyObject *pArray, PIODOUBLE *array,int maxsize) {
   for (Py_ssize_t i = 0; i < n; i++) {
     PyObject *item = PyList_Check(pArray) ? PyList_GetItem(pArray, i) : PyTuple_GetItem(pArray, i);
     if (!PyFloat_Check(item)) {
-      fprintf(stderr, "L'élément n'est pas un double\n");
+      fprintf(stderr, "L'élément n'est pas un double %d\n",__LINE__);
       exit(0);
     }
     array[i] += PyFloat_AsDouble(item);
@@ -3095,7 +3095,6 @@ int copy_float_array(PyObject *pArray, PIOFLOAT *array,int maxsize) {
   
   if (!PyList_Check(pArray) && !PyTuple_Check(pArray)) {
     fprintf(stderr, "The provided object is not a list or a tuple\n");
-    exit(0);
     return -1;
   }
 
@@ -3104,14 +3103,13 @@ int copy_float_array(PyObject *pArray, PIOFLOAT *array,int maxsize) {
   if (maxsize!=-1) {
     if (n>maxsize) {
       fprintf(stderr,"Table read from python (%d) is bigger than allocated memory (%d)\n",(int)n,maxsize);
-      exit(0);
+      return -1;
     }
   }
   for (Py_ssize_t i = 0; i < n; i++) {
     PyObject *item = PyList_Check(pArray) ? PyList_GetItem(pArray, i) : PyTuple_GetItem(pArray, i);
     if (!PyFloat_Check(item)) {
-      fprintf(stderr, "L'élément n'est pas un double\n");
-      free(array);
+      fprintf(stderr, "L'élément n'est pas un double %d\n",__LINE__);
       return -1;
     }
     array[i] = (PIOFLOAT) PyFloat_AsDouble(item);
@@ -3284,6 +3282,7 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
 	int err=copy_float_array(PyTuple_GetItem(pValue, 4),h->channels,MAXCHAN);
 	if (err!=MAXCHANNELS) {
 	  fprintf(stderr, "Projection function does not provide the good number of channels: expected %d  get %d\n",MAXCHANNELS,err);
+	  exit(0);
 	}
       }
       else {
@@ -5100,6 +5099,7 @@ int main(int argc,char *argv[])  {
 		    int n2=copy_float_array(PyTuple_GetItem(pValue, 1), htmp->listofShpr,MAXEXTERNALSHPR);
 		    if (n1!=n2) {
 		      fprintf(stderr, "Update Sparse function should provide an equal number of invex and value, here Sroll received %d %d\n",n1,n2);
+		      exit(0);
 		    }
 		    htmp->nShpr=n1;
 		    Py_DECREF(pValue);
