@@ -4377,12 +4377,14 @@ int main(int argc,char *argv[])  {
   if (rank==rank_zero) fprintf(stderr,"Number Of Sparse Value %d\n",(int) npixShpr);
   if (rank==rank_zero) fprintf(stderr,"Number of Detector %d\n",(int) nbolo);
   if (rank==rank_zero) fprintf(stderr,"Number of val means %d\n",(int) Param->n_val_mean);
+#if 0
   if (Param->n_do_mean!=npixShpr*Param->n_val_mean) {
     fprintf(stderr, "do_mean param should have the size [%ld (Number Of Sparse Value x Number of Detector x Number of val weigts)] but found %ld\n",
 	    (long) (npixShpr*Param->n_val_mean),
 	    (long) (Param->n_do_mean));
     exit(0);
   }
+#endif
  
   /*======================================================
     =
