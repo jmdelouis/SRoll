@@ -602,9 +602,9 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
   }
   else if (strcmp(name, "RINGSIZE") == 0) {
     errno = 0;
-    param->RINGSIZE = myRead_PIOLONG(*value);
+    param->RINGSIZE = myRead_PIOINT(*value);
     if (errno != 0) {
-      fprintf(stderr, "ERROR: 'RINGSIZE': Unable to convert value '%s' to target type %s\n", *value, "PIOLONG");
+      fprintf(stderr, "ERROR: 'RINGSIZE': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
       return 1;
     }
   }
