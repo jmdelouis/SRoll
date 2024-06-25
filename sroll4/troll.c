@@ -3999,7 +3999,7 @@ int main(int argc,char *argv[])  {
 
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
-  NB_EXTERNAL=Param->n_External;
+  NB_EXTERNAL=Param->n_External/nbolo;
   if (NB_EXTERNAL==0) NB_EXTERNAL=1;
   
   for (ib=0;ib<nbolo;ib++) {
@@ -4140,7 +4140,7 @@ int main(int argc,char *argv[])  {
         if (Param->flag_External==_PAR_TRUE) {
           External = (PIOFLOAT *) _PIOMALLOC(sizeof(PIOFLOAT)*RINGSIZE*NB_EXTERNAL);
 	  for (i=0;i<NB_EXTERNAL;i++) {
-	    tperr = noDMC_readObject_PIOFLOAT(Param->External[i],rg*RINGSIZE,RINGSIZE,External+i*RINGSIZE);
+	    tperr = noDMC_readObject_PIOFLOAT(Param->External[i+ib*NB_EXTERNAL],rg*RINGSIZE,RINGSIZE,External+i*RINGSIZE);
 	    if (tperr<0) {
 	      fprintf(stderr, "Impossible to read External[%ld]: %s %d %ld\n",ib,Param->External[i],tperr,(long) rg);
 	      exit ( -1);
