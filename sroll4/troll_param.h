@@ -158,7 +158,7 @@ typedef struct {
   /* ---- Parameter RINGSIZE ----------------------------------------------
    * ring size in samples. 
    */
-  PIOLONG RINGSIZE;
+  PIOINT RINGSIZE;
 
   /* ---- Parameter GAINSTEP -------------------------------------------
    * number of gain values to fit over the whole mission.
