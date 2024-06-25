@@ -78,6 +78,7 @@ int NUMBEROFITER=500;
 double LIMIT_ITER=1E-30;
 int do_offset=DOOFFSET;
 int NORMFITPOL=0;
+long RINGSIZE=27664; // default value used by Planck HFI
 
 PyObject *sparseFunc=NULL;
 PIOINT TestNormalizeSparse=0;
@@ -564,9 +565,6 @@ int isPowerOfTwo (unsigned int x)
 }
 // --------------------------------------------------------------------------------
 
-#if !defined(RINGSIZE)
-#define RINGSIZE (27664l)
-#endif
 
 void GetProcMem(long *vmem,long *phymem)
 {
@@ -3527,6 +3525,11 @@ int main(int argc,char *argv[])  {
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   if (Param->flag_do_offset==_PAR_TRUE) do_offset=Param->do_offset;
   
+  RINGSIZE = Param->RINGSIZE;
+
+  if (rank==rank_zero) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
+  if (rank==rank_zero) fprintf(stderr,"Nside = %d\n",(int) Param->Nside);
+
   /*-------------------------------------------------------------------------*/
   /* MPI: Ring dispatching between available ranks                           */
   /*-------------------------------------------------------------------------*/
@@ -3690,9 +3693,6 @@ int main(int argc,char *argv[])  {
   if (rank==rank_zero)  fprintf(stderr,"Projection uses %d channels\n",MAXCHANNELS);
 
   GAINSTEP = Param->GAINSTEP;
-
-  if (rank==rank_zero) fprintf(stderr,"RINGSIZE = %d \n",(int) (RINGSIZE));
-  if (rank==rank_zero) fprintf(stderr,"Nside = %d\n",(int) Param->Nside);
   
   /*-------------------------------------------------------------------------*/
   /*   SAVE PARAMETER FILE                                                   */

@@ -155,6 +155,11 @@ typedef struct {
    */
   PIOINT RSTEP;
 
+  /* ---- Parameter RINGSIZE ----------------------------------------------
+   * ring size in samples. 
+   */
+  PIOLONG RINGSIZE;
+
   /* ---- Parameter GAINSTEP -------------------------------------------
    * number of gain values to fit over the whole mission.
    * If set to 1, only one gain value will be fitted, thus no variable gains.

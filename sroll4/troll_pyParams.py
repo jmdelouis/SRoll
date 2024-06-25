@@ -31,6 +31,7 @@ def main():
 	BUILDTF = 
 	TEMPLATE_NSIDE = 
 	RSTEP = 	#mandatory parameter
+	RINGSIZE = 	#mandatory parameter
 	GAINSTEP = 	#mandatory parameter
 	Nside = 	#mandatory parameter
 	do_foscat = []

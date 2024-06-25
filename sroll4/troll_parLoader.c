@@ -292,6 +292,7 @@ paramDef troll_paramDef_list[] = {
   {"BUILDTF", false, false, false},
   {"TEMPLATE_NSIDE", false, false, false},
   {"RSTEP", false, true, false},
+  {"RINGSIZE", false, true, false},
   {"GAINSTEP", false, true, false},
   {"Nside", false, true, false},
   {"do_foscat", true, true, false},
@@ -341,7 +342,7 @@ paramDef troll_paramDef_list[] = {
   {"MAP_CNN", false, false, false},
   {"INST_CNN", false, false, false},
 };
-int troll_paramDef_list_size = 68;
+int troll_paramDef_list_size = 69;
 
 
 
@@ -596,6 +597,14 @@ int troll_updateParam(troll_parContent *param, char *name, PIOSTRING *value, PIO
     param->RSTEP = myRead_PIOINT(*value);
     if (errno != 0) {
       fprintf(stderr, "ERROR: 'RSTEP': Unable to convert value '%s' to target type %s\n", *value, "PIOINT");
+      return 1;
+    }
+  }
+  else if (strcmp(name, "RINGSIZE") == 0) {
+    errno = 0;
+    param->RINGSIZE = myRead_PIOLONG(*value);
+    if (errno != 0) {
+      fprintf(stderr, "ERROR: 'RINGSIZE': Unable to convert value '%s' to target type %s\n", *value, "PIOLONG");
       return 1;
     }
   }
