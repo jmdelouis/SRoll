@@ -3292,7 +3292,7 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
       Py_DECREF(pValue);
     }
     else {
-      fprintf(stderr, "Problem while trying to compute the projection %d\n",rank);
+      fprintf(stderr, "Problem while trying to compute the projection %d %d\n",rank,__LINE__);
       PyErr_Print();
       exit(0);
     }
