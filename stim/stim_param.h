@@ -15,9 +15,6 @@
 
 #define ADCBITS  (16l)
 #define INLSIZE  (1l<<ADCBITS)
-#ifndef RINGSIZE
-#define RINGSIZE (27664l)
-#endif
 #define MAXRSTREAMS (26100l)
 
 /*******************************************************************************

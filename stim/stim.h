@@ -6,9 +6,6 @@
 
 #include "no_dmc_metadata.h"
 
-#ifndef RINGSIZE
-#define RINGSIZE (27664l)
-#endif
 
 int init_stim( stimParameters *stimPar,   // pointer to an allocated structure to recieve parameter file, brimo and input data
                PIOSTRING param_filename); // parameter file name
