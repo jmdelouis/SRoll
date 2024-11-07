@@ -92,6 +92,12 @@ typedef struct {
   PIOBYTE flag_DOCNN;  /* ==_PAR_TRUE if DOCNN is present */
   PIOLONG n_DOCNN; /* ==number_of_DOCNN */
 
+  /* ---- List TEMP_DISK ---------------------------------------------
+   *
+   */
+  PIOSTRING TEMP_DISK;
+  PIOBYTE flag_TEMP_DISK;  /* ==_PAR_TRUE if TEMP_DISK is present */
+  
   /* ---- List CNN_CORE ---------------------------------------------
    *
    */
@@ -120,6 +126,11 @@ typedef struct {
    *
    */
   PIOINT SAVEINTMAP;
+
+  /* ---- Parameter regrid -----------------------------------------
+   *
+   */
+  PIOINT regrid;
   
   /* ---- Parameter CNN_LEARN_PARAM -----------------------------------------
    *
@@ -223,6 +234,18 @@ typedef struct {
   PIOINT number_val;
   
   
+  /* ---- Parameter  inc_surv_ref ---------------------------------------------
+   *
+   */  
+  PIODOUBLE *inc_surv_ref;
+  PIOLONG n_inc_surv_ref; /* ==number_of_inc_surv_ref */
+  
+  /* ---- Parameter  rg_surv_ref ---------------------------------------------
+   *
+   */  
+  PIODOUBLE *rg_surv_ref;
+  PIOLONG n_rg_surv_ref; /* ==number_of_rg_surv_ref */
+  
   /* ---- Parameter  beg_surv ---------------------------------------------
    *
    */  
@@ -322,6 +345,12 @@ typedef struct {
    */
   PIOSTRING SparseFunc;
   PIOBYTE flag_SparseFunc;  /* ==_PAR_TRUE if SparseFunc is present */
+
+  /* ---- Optional Input CorrTOD ---------------------------------
+   *
+   */
+  PIOSTRING CorrTOD;
+  PIOBYTE flag_CorrTOD;  /* ==_PAR_TRUE if CorrTOD is present */
 
   /* ---- Optional Input DiagFunc ---------------------------------
    *

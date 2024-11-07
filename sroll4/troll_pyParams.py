@@ -18,6 +18,7 @@ def main():
 	number_of_bolomask = 	#mandatory parameter
 	DOCNN = []
 	number_of_DOCNN = 
+	TEMP_DISK = 
 	CNN_CORE = 
 	SEED = []
 	number_of_SEED = 	#mandatory parameter
@@ -26,6 +27,7 @@ def main():
 	SUB_HPRCOEF = []
 	number_of_SUB_HPRCOEF = 	#mandatory parameter
 	SAVEINTMAP = 	#mandatory parameter
+	regrid = 	#mandatory parameter
 	CNN_LEARN_PARAM = 
 	CNN_TMPID = 
 	BUILDTF = 
@@ -48,6 +50,10 @@ def main():
 	in_template_map = []
 	number_of_in_template_map = 
 	number_val = 	#mandatory parameter
+	inc_surv_ref = []
+	number_of_inc_surv_ref = 	#mandatory parameter
+	rg_surv_ref = []
+	number_of_rg_surv_ref = 	#mandatory parameter
 	beg_surv = []
 	number_of_beg_surv = 	#mandatory parameter
 	end_surv = []
@@ -75,6 +81,7 @@ def main():
 	Sub_HPR = []
 	number_of_Sub_HPR = 
 	SparseFunc = 
+	CorrTOD = 
 	DiagFunc = 
 	Ptg = []
 	number_of_Ptg = 

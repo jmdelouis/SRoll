@@ -1,5 +1,5 @@
 SHELL = /bin/sh
-#CFLAGS := -g -O0 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections -fprofile-arcs -ftest-coverage
+#CFLAGS := -g -O0 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections
 CFLAGS := -O3 -Wall $(CFG) -std=c99 -fgnu89-inline -fopenmp -ffunction-sections -fdata-sections 
 
 CC := mpicc
@@ -85,7 +85,7 @@ CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I
 
 
 # build hprclean before sroll, because sroll uses stimlib which needs HPR_Clean.o
-all: alwaysCheckModules troll_857 troll_cfosat
+all: alwaysCheckModules troll_857 troll_cfosat troll_cfosat_old
 
 
 # DEBUG rule, to print a variable computed in this Makefile, for example OBJ, do: make print-OBJ
@@ -145,6 +145,9 @@ troll_cfosat_large: troll.c $(OBJTROLL)
 
 #troll_857: alwaysCheckModules
 troll_cfosat: troll.c $(OBJTROLL)
+	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DMAXSIMU=1 -DMAXEXTERNALSHPR=16 -DMAXCHAN=2 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -fno-finite-math-only -lm
+#troll_857: alwaysCheckModules
+troll_cfosat_old: /export/home/jmdeloui/SRoll/sroll4/troll.c $(OBJTROLL)
 	$(CC) $(CFLAGS) $(CFGSROLL) $(OPTIONAL_FLAGS) -DMAXSIMU=1 -DMAXEXTERNALSHPR=16 -DMAXCHAN=2 -Wl,-R$(NO_DMC_LIB_DIR):$(STIM_LIB_DIR) -l$(NO_DMC_LIB_NAME) -l$(STIM_LIB_NAME) -o $@ $< $(OBJTROLL) -l$(STIM_LIB_NAME) $(FFTW_LIB) $(FFTW_OMPLIB) $(CFITSIO_LIB) -l$(NO_DMC_LIB_NAME) $(LIBPYTHONLIB)  -DPYTHON3 $(PYTHONLIB) -fno-finite-math-only -lm
 #troll_857: alwaysCheckModules
 
