@@ -3417,35 +3417,72 @@ int init_channels(hpix * h,PyObject *projFunc,double psi,PIOFLOAT *External,doub
   
 }
 
-double eval_corrtod(PyObject *corrtodFunc,
-		    PIODOUBLE inc_ref,
-		    PIODOUBLE inc,
-		    PIODOUBLE rg_ref,
-		    PIODOUBLE rg,
-		    PIOINT HealIdx)
+int npar_corrtod(PyObject *corrtodFunc,
+		 PIOINT HealIdx)
 {
   PyObject *pValue=NULL;
-  double result=0;
+  int n=0;
+  if (corrtodFunc != NULL){
+    // Créer des arguments pour la fonction Python
+    // Création des arguments
+
+    PyObject *pyHidx   = PyLong_FromLong((long) HealIdx);
+    
+    // Appel de la méthode 'eval's
+    pValue = PyObject_CallMethod(CorrTODFunc, "npar_correction", "(O)",pyHidx);
+
+    // Traitement de la valeur de retour
+    if (pValue != NULL) {
+      n=(int) PyLong_AsLong(pValue);
+      Py_DECREF(pValue);
+    }
+    else {
+      fprintf(stderr,"Problem while evaluating the correction class\n");
+      PyErr_Print(); 
+      exit(0);
+    }
+
+    // Nettoyage des arguments
+    Py_DECREF(pyHidx);
+  } else {
+    PyErr_Print();
+    exit(0);
+  }
+
+  return n;
+}
+
+void eval_corrtod(PyObject *corrtodFunc,
+		 PIODOUBLE inc_ref,
+		 PIODOUBLE rg_ref,
+		 PIOINT HealIdx,
+		 double *delta)
+{
+  PyObject *pValue=NULL;
   
   if (corrtodFunc != NULL){
     // Créer des arguments pour la fonction Python
     // Création des arguments
 
     PyObject *pyInc_ref= PyFloat_FromDouble((double) inc_ref);
-    PyObject *pyInc    = PyFloat_FromDouble((double) inc);
     PyObject *pyRg_ref = PyFloat_FromDouble((double) rg_ref);
-    PyObject *pyRg     = PyFloat_FromDouble((double) rg);
     PyObject *pyHidx   = PyLong_FromLong((long) HealIdx);
     
     // Appel de la méthode 'eval's
-    pValue = PyObject_CallMethod(CorrTODFunc, "eval_correction", "(OOOOO)",
-				 pyInc_ref,pyInc,pyRg_ref,pyRg,pyHidx);
+    pValue = PyObject_CallMethod(CorrTODFunc, "eval_correction", "(OOO)",
+				 pyInc_ref,pyRg_ref,pyHidx);
 
     // Traitement de la valeur de retour
     if (pValue != NULL) {
-	// Assurer que pValue est un tuple
-	result=(double) PyFloat_AsDouble(pValue);
-	Py_DECREF(pValue);
+      // Assurer que pValue est un tuple
+      int err=copy_double_array(pValue,delta,MAXCHANNELS);
+      if (err!=MAXCHANNELS) {
+	fprintf(stderr,"Problem while evaluating the correction class (did not get the proper number of data) %d instead of %d\n",
+		(int) err,(int) MAXCHANNELS);
+	PyErr_Print(); 
+	exit(0);
+      }
+      Py_DECREF(pValue);
     }
     else {
       fprintf(stderr,"Problem while evaluating the correction class\n");
@@ -3455,16 +3492,12 @@ double eval_corrtod(PyObject *corrtodFunc,
 
     // Nettoyage des arguments
     Py_DECREF(pyInc_ref);
-    Py_DECREF(pyInc);
     Py_DECREF(pyRg_ref);
-    Py_DECREF(pyRg);
     Py_DECREF(pyHidx);
   } else {
     PyErr_Print();
     exit(0);
   }
-  
-  return result;
 }
 
 int calc_corrtod_hpr(PyObject *corrtodFunc,
@@ -5853,15 +5886,6 @@ int main(int argc,char *argv[])  {
 	      double sig_corr = htmp->sig*g1-htmp->Sub_HPR;
 	      double sig_corr2 = sig_corr;
 
-	      if (TestCorrTODEval_corr) {
-		htmp->corr_cnn=eval_corrtod(CorrTODFunc,
-					    Param->inc_surv_ref[isurv],
-					    htmp->inc,
-					    Param->rg_surv_ref[isurv],
-					    (double) ri1,
-					    realpix[htmp->ipix]);
-	      }
-	      
 	      sig_corr -= htmp->corr_cnn;
 	      
 	      if (do_offset==1) {
@@ -5953,14 +5977,6 @@ int main(int argc,char *argv[])  {
 	      double sig_corr = htmp->sig*g1-htmp->Sub_HPR;
 	      double sig_corr2 = sig_corr;
 
-	      if (TestCorrTODEval_corr) {
-		htmp->corr_cnn=eval_corrtod(CorrTODFunc,
-					    Param->inc_surv_ref[isurv],
-					    htmp->inc,
-					    Param->rg_surv_ref[isurv],
-					    (double) ri1,
-					    realpix[htmp->ipix]);
-	      }
 	      sig_corr -= htmp->corr_cnn;
 	      
 	      if (do_offset==1) {
@@ -6036,14 +6052,63 @@ int main(int argc,char *argv[])  {
 	free(l_n);
       }
       
-      if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
-      for(int i = 0;i<MAXCHANNELS;i++){
-	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
-	sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
-	PIOWriteMAP(TEST_OUTMAP,vector+i*nnbpix,begpix[rank],begpix[rank]+nnbpix-1);
-	MPI_Barrier(MPI_COMM_WORLD);
+	      
+      if (TestCorrTODEval_corr) {
+	double *l_vector = (double *) malloc(MAXCHANNELS*sizeof(double)*nnbpix);
+	memset(l_vector,0,MAXCHANNELS*sizeof(double)*nnbpix);
+	for (int pix=0;pix<nnbpix;pix++) {
+	  l_vector[pix]=npar_corrtod(CorrTODFunc,realpix[pix]);
+	}
+	if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+	{
+	  char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	  sprintf(TEST_OUTMAP,"%s_%s_PAR", mapout[detset],mapname);
+	  PIOWriteMAP(TEST_OUTMAP,l_vector,begpix[rank],begpix[rank]+nnbpix-1);
+	  MPI_Barrier(MPI_COMM_WORLD);
+	}
+	
+	double *delta = (double *) malloc(MAXCHANNELS*sizeof(double));
+	for (int istep=0;istep<Param->n_inc_sub_ref;istep++) {
+	  memset(l_vector,0,MAXCHANNELS*sizeof(double)*nnbpix);
+	  for (int pix=0;pix<nnbpix;pix++) {
+	    int err=npar_corrtod(CorrTODFunc,realpix[pix]);
+	    if (err>0) {
+	      eval_corrtod(CorrTODFunc,
+			   Param->inc_sub_ref[istep],
+			   Param->rg_sub_ref[istep],
+			   realpix[pix],
+			   delta);
+	      for(int i = 0;i<MAXCHANNELS;i++){
+		l_vector[pix+i*nnbpix]=vector[pix+i*nnbpix]-delta[i];
+	      }
+	    }
+	    else {
+	      for(int i = 0;i<MAXCHANNELS;i++){
+		l_vector[pix+i*nnbpix]=UNSEENPIX;
+	      }
+	    }
+	  }
+	  if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+	  for(int i = 0;i<MAXCHANNELS;i++){
+	    char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	    sprintf(TEST_OUTMAP,"%s_%s_%d_%s", mapout[detset],mapname,i,Param->name_sub[istep]);
+	    PIOWriteMAP(TEST_OUTMAP,l_vector+i*nnbpix,begpix[rank],begpix[rank]+nnbpix-1);
+	    MPI_Barrier(MPI_COMM_WORLD);
+	  }
+	}
+	free(l_vector);
+	free(delta);
       }
-      
+      else {
+	if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
+	for(int i = 0;i<MAXCHANNELS;i++){
+	  char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
+	  sprintf(TEST_OUTMAP,"%s_%s_%d", mapout[detset],mapname,i);
+	  PIOWriteMAP(TEST_OUTMAP,vector+i*nnbpix,begpix[rank],begpix[rank]+nnbpix-1);
+	  MPI_Barrier(MPI_COMM_WORLD);
+	}
+      }
+	
       if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       for(int i = 0;i<MAXCHANNELS;i++){
 	char TEST_OUTMAP[MAX_OUT_NAME_LENGTH];
@@ -6059,6 +6124,7 @@ int main(int argc,char *argv[])  {
 	PIOWriteMAP(TEST_OUTMAP,avv,begpix[rank],begpix[rank]+nnbpix-1);
 	MPI_Barrier(MPI_COMM_WORLD);
       }
+      
       // Save the cond matrix
       if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
       {

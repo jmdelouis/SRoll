@@ -234,17 +234,17 @@ typedef struct {
   PIOINT number_val;
   
   
-  /* ---- Parameter  inc_surv_ref ---------------------------------------------
+  /* ---- Parameter  inc_sub_ref ---------------------------------------------
    *
    */  
-  PIODOUBLE *inc_surv_ref;
-  PIOLONG n_inc_surv_ref; /* ==number_of_inc_surv_ref */
+  PIODOUBLE *inc_sub_ref;
+  PIOLONG n_inc_sub_ref; /* ==number_of_inc_sub_ref */
   
-  /* ---- Parameter  rg_surv_ref ---------------------------------------------
+  /* ---- Parameter  rg_sub_ref ---------------------------------------------
    *
    */  
-  PIODOUBLE *rg_surv_ref;
-  PIOLONG n_rg_surv_ref; /* ==number_of_rg_surv_ref */
+  PIODOUBLE *rg_sub_ref;
+  PIOLONG n_rg_sub_ref; /* ==number_of_rg_sub_ref */
   
   /* ---- Parameter  beg_surv ---------------------------------------------
    *
@@ -258,11 +258,18 @@ typedef struct {
   PIOLONG *end_surv;
   PIOLONG n_end_surv; /* ==number_of_end_surv */
   
+  /* ---- InputList name_sub ---------------------------------------------
+   *
+   */  
+  PIOSTRING *name_sub;
+  PIOLONG n_name_sub; /* ==number_of_name_sub */
+  
   /* ---- InputList name_surv ---------------------------------------------
    *
    */  
   PIOSTRING *name_surv;
   PIOLONG n_name_surv; /* ==number_of_name_surv */
+
 
   /* ---- Parameter  do_mean ---------------------------------------------
    *
