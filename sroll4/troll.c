@@ -4913,6 +4913,9 @@ int main(int argc,char *argv[])  {
     long ed_buffer=MAXMPIBUFFER;
     hpix *ltbs=NULL;
 
+    if (rank==rank_zero) fprintf(stderr,"Start Exchange[%ld/%ld]\n",(long) lll,
+				 (long) l_rank_ptr_hpix+1);
+
     if (lll==rank_ptr_hpix) {
       ed_buffer=n_l_hpix-lll*MAXMPIBUFFER;
     }
@@ -5593,6 +5596,9 @@ int main(int argc,char *argv[])  {
 	}
 	for (k=0;k<nnbpix;k++) 
 	  {
+	    if (rank==0&&10*k%nnbpix==nnbpix) {
+	      fprintf(stderr,"Compute %.2f\n",((double)(100*k))/nnbpix);
+	    }
 	    if (l_ndata[k]>0) {
 	      double *o_signal = (double *) malloc(l_ndata[k]*sizeof(double));
 	      double *o_hit = (double *) malloc(l_ndata[k]*sizeof(double));
