@@ -4007,6 +4007,39 @@ int main(int argc,char *argv[])  {
   /* parameters consistency checks                                           */
   /* and default values / legacy behavior for optional parameters            */
   /*-------------------------------------------------------------------------*/
+  long *begpix = (long *) malloc(sizeof(long)*mpi_size);
+  long *edpix = (long *) malloc(sizeof(long)*mpi_size);
+
+  PIOLONG k;
+
+  //PIOINT Nside=Param->Nside;
+  Nside = Param->Nside;
+
+  nnbpix=(12*Nside*Nside)/mpi_size;
+ 
+  memset(edpix,0,mpi_size*sizeof(long));
+
+  for (i=0;i<12*Nside*Nside;i++) {
+    edpix[i%mpi_size]+=1;
+  }
+
+  begpix[0]=0;
+
+  for (i=1;i<mpi_size;i++) {
+    begpix[i]=edpix[i-1]+begpix[i-1];
+  }
+
+  for (i=0;i<mpi_size-1;i++) {
+    edpix[i]=begpix[i+1]-1;
+  }
+  edpix[mpi_size-1]=12*Nside*Nside-1;
+
+  if (rank==rank_zero) {
+    for (i=0;i<mpi_size;i++) {
+      fprintf(stderr,"PIX %ld %ld %ld %ld\n",(long) begpix[i],(long) edpix[i],(long) 12*Nside*Nside ,(long) (edpix[i]-begpix[i]+1));
+    }
+  }
+  MPI_Barrier(MPI_COMM_WORLD);
 
   // global number of bolometers
   nbolo = Param->n_Ptg;
@@ -4045,8 +4078,6 @@ int main(int argc,char *argv[])  {
   }
   assert( Param->n_MAPRINGS == Param->n_Out_MAP);
 
-  //PIOINT Nside=Param->Nside;
-  Nside = Param->Nside;
   if (Param->flag_stim_paramfiles == 1) {
     assert( Param->n_stim_paramfiles == nbolo);
   }
@@ -4062,6 +4093,8 @@ int main(int argc,char *argv[])  {
 
   assert( Param->n_NEP == nbolo);
   assert( Param->n_Calibration == nbolo);
+  assert( Param->n_Monop == nbolo);
+
   NEP_tab = malloc( nbolo * sizeof( double));
 
   double avvnep=0;
@@ -4769,8 +4802,7 @@ int main(int argc,char *argv[])  {
     =
     =*/
 
-  long *begpix = (long *) malloc(sizeof(long)*mpi_size);
-  long *edpix = (long *) malloc(sizeof(long)*mpi_size);
+  
   long rrk;
 
   PIOINT *mask;
@@ -4786,14 +4818,6 @@ int main(int argc,char *argv[])  {
     mask=NULL;
   }
 
-  nnbpix=12*Nside*Nside/mpi_size;
- 
-  for (i=0;i<mpi_size;i++) {
-    begpix[i]=i*nnbpix;
-    edpix[i]=(i+1)*nnbpix-1;
-  }
-  edpix[mpi_size-1]=12*Nside*Nside-1;
-  
   nnbpix=edpix[rank]-begpix[rank]+1;
 
   realpix = (long *) malloc(sizeof(long)*nnbpix);
@@ -4907,7 +4931,7 @@ int main(int argc,char *argv[])  {
       
 	for (long k=0;k<ed_buffer;k++) {
 	  hpix *l_hpix = local_ptr+k;
-	  l_hpix->ipix = begpix[l_hpix->ipix%mpi_size]+ (int) (l_hpix->ipix/mpi_size);
+	  l_hpix->ipix = begpix[l_hpix->ipix%mpi_size] + (int) (l_hpix->ipix/mpi_size);
 	}
       }
     }
@@ -5134,8 +5158,6 @@ int main(int argc,char *argv[])  {
 	  (long) rank, getpid(),
 	  (double) vmem/1024./1024.,
 	  (double) phymem/1024./1024.,__LINE__);
-  
-  PIOLONG k;
 
 
   flgpix = (PIOBYTE *) malloc(sizeof(PIOBYTE)*nnbpix);
@@ -5265,22 +5287,14 @@ int main(int argc,char *argv[])  {
     fprintf(stderr,"\n");
   }
   
+ #if 1
  //========================================================================
 
-
-  double *histo_gi = (double *) malloc(32000*sizeof(double)*nbolo);
-  double *histo2_gi = (double *) malloc(32000*sizeof(double)*nbolo);
-  double *histon_gi = (double *) malloc(32000*sizeof(double)*nbolo);
-
-  double mat_dip[4*nbolo];
-  double vec_dip[2*nbolo];
+  double *mat_dip=(double*) malloc(sizeof(double)*4*nbolo);
+  double *vec_dip=(double*) malloc(sizeof(double)*2*nbolo);
 
   memset(mat_dip,0,4*sizeof(double)*nbolo);
   memset(vec_dip,0,2*sizeof(double)*nbolo);
-
-  memset(histo_gi ,0,nbolo*32000*sizeof(double));
-  memset(histo2_gi ,0,nbolo*32000*sizeof(double));
-  memset(histon_gi ,0,nbolo*32000*sizeof(double));
 
   for(int ibuffer=0;ibuffer<l_rank_ptr_hpix;ibuffer++) {
     hpix *l_htmp=call_hpix_buffer(ibuffer,rank);
@@ -5295,12 +5309,6 @@ int main(int argc,char *argv[])  {
 	  divi=divi*divi;
 	  double ww=1/divi;
 	  
-	  double tmp=(htmp->model);
-	  
-	  histo_gi[ htmp->rg+htmp->ib*32000]+=ww*tmp;
-	  histo2_gi[htmp->rg+htmp->ib*32000]+=ww*tmp*tmp;
-	  histon_gi[htmp->rg+htmp->ib*32000]+=ww;
-	  
 	  mat_dip[0+4*htmp->ib]+=ww*htmp->model*htmp->model;
 	  mat_dip[1+4*htmp->ib]+=ww*htmp->model;
 	  mat_dip[2+4*htmp->ib]+=ww*htmp->model;
@@ -5309,21 +5317,36 @@ int main(int argc,char *argv[])  {
 	  vec_dip[0+2*htmp->ib]+=ww*(htmp->sig)*htmp->model;
 	  vec_dip[1+2*htmp->ib]+=ww*(htmp->sig);
 
-	  if (isnan(ww)||isnan(htmp->sig)||isnan(htmp->model)) {
-	    fprintf(stderr,"NAN AAA %lf %lf %lf\n",(double) ww,(double) htmp->sig,(double) htmp->model);
+	  if (isnan(ww)||isnan(htmp->sig)||isnan(htmp->model)||htmp->ib>nbolo-1) {
+	    fprintf(stderr,"NAN %d %lf %lf %lf\n",__LINE__,(double) ww,(double) htmp->sig,(double) htmp->model);
 	  }
 	}
       }
     }
   }
 
+  for (j=0;j<nbolo;j++) {
+    if (isnan(mat_dip[4*j])||isnan(mat_dip[4*j+1])||isnan(mat_dip[4*j+2])||isnan(mat_dip[4*j+3])) {
+      fprintf(stderr,"NAN %d %d %lf %lf %lf %lf\n",__LINE__,rank,
+	      (double) mat_dip[4*j],
+	      (double) mat_dip[4*j+1],
+	      (double) mat_dip[4*j+2],
+	      (double) mat_dip[4*j+3]);
+    }
+    if (isnan(vec_dip[2*j])||isnan(vec_dip[2*j+1])) {
+      fprintf(stderr,"NAN %d %d %lf %lf\n",__LINE__,rank,
+	      (double) vec_dip[2*j],
+	      (double) vec_dip[2*j+1]);
+    }
+  }
 
   //============================================================
   // remove dipole from the first harmonic
   //
 
-  double l_mat[4*100];
-  double l_vec[2*100];
+  double *l_mat=(double*) malloc(sizeof(double)*4*nbolo);
+  double *l_vec=(double*) malloc(sizeof(double)*2*nbolo);
+
   MPI_Reduce(mat_dip,l_mat,4*nbolo,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
   MPI_Reduce(vec_dip,l_vec,2*nbolo,MPI_DOUBLE,MPI_SUM,rank_zero,MPI_COMM_WORLD);
 
@@ -5331,16 +5354,43 @@ int main(int argc,char *argv[])  {
 
     for (j=0;j<nbolo;j++) {
 
-      lusol(mat_dip+4*j,vec_dip+2*j,2);
+      lusol(l_mat+4*j,l_vec+2*j,2);
 
+      if (isnan(l_mat[4*j])||isnan(l_mat[4*j+1])||isnan(l_mat[4*j+2])||isnan(l_mat[4*j+3])) {
+	  fprintf(stderr,"NAN %d %lf %lf %lf %lf\n",__LINE__,
+		  (double) l_mat[4*j],
+		  (double) l_mat[4*j+1],
+		  (double) l_mat[4*j+2],
+		  (double) l_mat[4*j+3]);
+	}
+      if (isnan(l_vec[2*j])||isnan(l_vec[2*j+1])) {
+	  fprintf(stderr,"NAN %d %lf %lf\n",__LINE__,
+		  (double) l_vec[2*j],
+		  (double) l_vec[2*j+1]);
+	}
+      
+      
+      if (isnan(mat_dip[4*j])||isnan(mat_dip[4*j+1])||isnan(mat_dip[4*j+2])||isnan(mat_dip[4*j+3])) {
+	  fprintf(stderr,"NAN %d %lf %lf %lf %lf\n",__LINE__,
+		  (double) mat_dip[4*j],
+		  (double) mat_dip[4*j+1],
+		  (double) mat_dip[4*j+2],
+		  (double) mat_dip[4*j+3]);
+	}
+      if (isnan(vec_dip[2*j])||isnan(vec_dip[2*j+1])) {
+	  fprintf(stderr,"NAN %d %lf %lf\n",__LINE__,
+		  (double) vec_dip[2*j],
+		  (double) vec_dip[2*j+1]);
+      }
       fprintf(stderr,"GAIN DIP BOL (%ld/%ld): %lf\n", j, nbolo-1, vec_dip[2*j]);
     }
   }
 
-  free(histo_gi);
-  free(histo2_gi);
-  free(histon_gi);
-
+  free(mat_dip);
+  free(vec_dip);
+  free(l_mat);
+  free(l_vec);
+#endif
   long l_off_nmatpix=0;
   {
     long rrk=0;
@@ -5599,6 +5649,9 @@ int main(int argc,char *argv[])  {
 	  hpix *l_htmp=call_hpix_buffer(ibuffer,rank);
 	  for(int pix =0;pix<loc_nhpix[ibuffer];pix++){
 	    hpix *htmp = l_htmp+pix; 
+	    if (htmp->ipix<0||htmp->ipix>nnbpix) {
+	      fprintf(stderr,"DEBUG %d %ld\n",__LINE__,(long) htmp->ipix);
+	    }
 	    if (flgpix[htmp->ipix]>0) {
 	      long ri1=htmp->rg-globalBeginRing;
 	      if (flg_rg[htmp->ib][ri1]!=0) {
@@ -5625,24 +5678,24 @@ int main(int argc,char *argv[])  {
 		}
 		
 		if (l_ndata[htmp->ipix]==0) {
-		  l_signal[htmp->ipix]  = (double *) malloc(sizeof(double));
-		  l_weights[htmp->ipix] = (double *) malloc(sizeof(double));
-		  l_inc[htmp->ipix]     = (double *) malloc(sizeof(double));
-		  l_time[htmp->ipix]    = (int *) malloc(sizeof(int));
-		  l_did[htmp->ipix]     = (int *) malloc(sizeof(int));
-		  l_pointer[htmp->ipix]     = (hpix **) malloc(sizeof(hpix *));
-		  l_external[htmp->ipix]    = (double *) malloc(sizeof(double)*NB_EXTERNAL);
+		  l_signal[htmp->ipix]   = (double *) malloc(sizeof(double));
+		  l_weights[htmp->ipix]  = (double *) malloc(sizeof(double));
+		  l_inc[htmp->ipix]      = (double *) malloc(sizeof(double));
+		  l_time[htmp->ipix]     = (int *)    malloc(sizeof(int));
+		  l_did[htmp->ipix]      = (int *)    malloc(sizeof(int));
+		  l_pointer[htmp->ipix]  = (hpix **)  malloc(sizeof(hpix *));
+		  l_external[htmp->ipix] = (double *) malloc(sizeof(double)*NB_EXTERNAL);
 		  
 		}
 		else {
-		  l_signal[htmp->ipix]  = (double *) realloc(l_signal[htmp->ipix] ,sizeof(double)*(l_ndata[htmp->ipix]+1));
-		  l_weights[htmp->ipix] = (double *) realloc(l_weights[htmp->ipix],sizeof(double)*(l_ndata[htmp->ipix]+1));
-		  l_inc[htmp->ipix]     = (double *) realloc(l_inc[htmp->ipix],sizeof(double)*(l_ndata[htmp->ipix]+1));
-		  l_time[htmp->ipix]    = (int *) realloc(l_time[htmp->ipix]      ,sizeof(int)*(l_ndata[htmp->ipix]+1));
-		  l_did[htmp->ipix]     = (int *)   realloc(l_did[htmp->ipix]     ,sizeof(int)*(l_ndata[htmp->ipix]+1));
-		  l_pointer[htmp->ipix] = (hpix **) realloc(l_pointer[htmp->ipix] ,sizeof(hpix *)*(l_ndata[htmp->ipix]+1));
-		  l_external[htmp->ipix]    = (double *) realloc(l_external[htmp->ipix],
-								    sizeof(double)*(l_ndata[htmp->ipix]+1)*NB_EXTERNAL);
+		  l_signal[htmp->ipix]   = (double *) realloc(l_signal[htmp->ipix] ,sizeof(double)*(l_ndata[htmp->ipix]+1));
+		  l_weights[htmp->ipix]  = (double *) realloc(l_weights[htmp->ipix],sizeof(double)*(l_ndata[htmp->ipix]+1));
+		  l_inc[htmp->ipix]      = (double *) realloc(l_inc[htmp->ipix],sizeof(double)*(l_ndata[htmp->ipix]+1));
+		  l_time[htmp->ipix]     = (int *)    realloc(l_time[htmp->ipix]      ,sizeof(int)*(l_ndata[htmp->ipix]+1));
+		  l_did[htmp->ipix]      = (int *)    realloc(l_did[htmp->ipix]     ,sizeof(int)*(l_ndata[htmp->ipix]+1));
+		  l_pointer[htmp->ipix]  = (hpix **)  realloc(l_pointer[htmp->ipix] ,sizeof(hpix *)*(l_ndata[htmp->ipix]+1));
+		  l_external[htmp->ipix] = (double *) realloc(l_external[htmp->ipix],
+							     sizeof(double)*(l_ndata[htmp->ipix]+1)*NB_EXTERNAL);
 		}
 		l_signal[htmp->ipix][l_ndata[htmp->ipix]]=sig_corr;
 		l_weights[htmp->ipix][l_ndata[htmp->ipix]]=htmp->w;
@@ -5658,7 +5711,9 @@ int main(int argc,char *argv[])  {
 	    }
 	  }
 	}
+
 	int already_computed=(int)(nnbpix/100);
+
 	for (k=0;k<nnbpix;k++) 
 	  {
 	    if (rank==0&&k==already_computed) {
@@ -5734,7 +5789,17 @@ int main(int argc,char *argv[])  {
 	  }
 	fclose(fp);
 #endif	    
-
+	for (int k=0;k<nnbpix;k++) {
+	  if (l_ndata[k]>0) {
+	    free(l_signal[k]);
+	    free(l_weights[k]);
+	    free(l_inc[k]);
+	    free(l_time[k]);
+	    free(l_did[k]);
+	    free(l_pointer[k]);
+	    free(l_external[k]);
+	  }
+	}
 	free(l_signal);
 	free(l_weights);
 	free(l_time);
