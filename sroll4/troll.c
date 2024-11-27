@@ -5740,6 +5740,7 @@ int main(int argc,char *argv[])  {
 		htmp->corr_cnn=o_signal[o];
 		htmp->w=o_hit[o];
 	      }
+	      if (o_hit[0]==0) flgpix[k]=0;
 	      
 	      free(o_signal);
 	      
