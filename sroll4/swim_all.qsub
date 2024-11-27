@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -q mpi_10
+#PBS -l select=10:ncpus=28:mem=115g
+#PBS -l walltime=24:00:00
+#PBS -N DSWIM_ALL
+#PBS -o /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4/scatout.log
+
+echo 'PATH INIT DONE'
+source /usr/share/Modules/3.2.10/init/bash
+module purge
+module load impi/5.1.3.258
+#module load valgrind/3.12.0__gcc-6.3.0
+rm /home1/scratch/jmdeloui/HISTO_TIME_*.npy
+
+cd /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4
+export MKL_DEBUG_CPU_TYPE=5
+echo 'READY FOR RUN'
+#./ressources &> /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4/memusage.log &
+mpirun -np 280 ./troll_cfosat swim_all.py &> /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4/swim_all.log
+echo 'End'
+
