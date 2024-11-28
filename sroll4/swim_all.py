@@ -8,6 +8,43 @@ import sys
 import os
 from scipy.optimize import lsq_linear
 
+def thefunc(x):
+
+    return (-2*x**3+3*x**2)
+
+def compute3deg(x,N):
+
+    if isinstance(x,float):
+        ix=int(x*(N+1))
+        i=np.zeros([4],dtype='int')
+        r=np.zeros([4])
+    else:
+        ix=(x*(N+1)).astype('int')
+        i=np.zeros([4,x.shape[0]],dtype='int')
+        r=np.zeros([4,x.shape[0]])
+
+    xx=x*(N+1)-ix
+    r[3]=thefunc(xx/2)/2
+    r[2]=thefunc(0.5+xx/2)/2
+    r[1]=thefunc(1-xx/2)/2
+    r[0]=thefunc(0.5-xx/2)/2
+    i[3]=ix+3
+    i[2]=ix+2
+    i[1]=ix+1
+    i[0]=ix
+    for k in range(4):
+        i[k,i[k]==0]=2
+        i[k,i[k]==1]=2
+        
+    for k in range(4):
+        i[k,i[k]==N+2]=N+1
+        i[k,i[k]==N+3]=N+1
+        i[k,i[k]==N+4]=N+1
+        
+    i=i-2
+    r=r*r
+    return i,r/np.sum(r,0)
+
 def compute_3deg_spline(x,N):
     if isinstance(x,float):
         it0_moins=int(x*(N-1))
@@ -72,12 +109,15 @@ class corrtime:
     self.angref=8/180.*np.pi
     self.solution={}
     self.xref={}
-    self.valmin=2*np.pi/180.0
-    self.valmax=12*np.pi/180.0
+    self.valmin=3*np.pi/180.0
+    self.valmax=11*np.pi/180.0
+    self.nspline_max=0
     #### New marine 
     self.splineval = {}
     self.doprint=0
-
+    self.rank=rank
+    self.c0_min=10.0
+    self.c0_max=0.0
 
     if rank==0:
       print('End init corrtime')
@@ -94,11 +134,11 @@ class corrtime:
     
     # Incidence 
     ang=np.array(Inc)
-    c0 = (ang-self.valmin)/(self.valmax-self.valmin)
-
+    c0 = np.clip((ang-self.valmin)/(self.valmax-self.valmin),0.0,1.0)
+            
     # compute time
     t0 = np.array(externals).reshape(len(externals)//2,2)
-    # do t0 in [0,1]
+    # do t0 in [0,1] 
     t0 = np.clip((t0[:,1]-self.MINTIME)/(self.DELTATIME),0.0,1.0)
     #print(t0)
     #Signal 
@@ -117,13 +157,19 @@ class corrtime:
     while nspline>1 and test==0:
         X=np.zeros([nspline*2,t0.shape[0]])
         
-        iv,v=compute_3deg_spline(t0,nspline)
+        iv,v=compute3deg(t0,nspline)
         idx=np.arange(t0.shape[0])
         
         X[iv[0],idx]=v[0]*c0
-        X[iv[1],idx]=v[1]*c0
+        X[iv[1],idx]+=v[1]*c0
+        X[iv[2],idx]+=v[2]*c0
+        X[iv[3],idx]+=v[3]*c0
+
         X[iv[0]+nspline,idx]=v[0]
-        X[iv[1]+nspline,idx]=v[1]
+        X[iv[1]+nspline,idx]+=v[1]
+        X[iv[2]+nspline,idx]+=v[2]
+        X[iv[3]+nspline,idx]+=v[3]
+
         mat=X@X.T
         solution=None
         try:
@@ -131,6 +177,22 @@ class corrtime:
             if cond<1000:
                 solution=np.linalg.solve(mat,X@Y)
                 test=1
+                if self.nspline_max<nspline and self.rank==0:
+                    np.save('t0_VAL_SPL.npy',t0)
+                    np.save('signal_VAL_SPL.npy',Y)
+                    np.save('X_VAL_SPL.npy',X)
+                    np.save('c_VAL_SPL.npy',c0)
+                    np.save('S_VAL_SPL.npy',solution)
+                    self.nspline_max=nspline
+                if rank==0:
+                    if c0.min()<self.c0_min:
+                        self.c0_min=c0.min()
+                        print(c0.min(),c0.max())
+                        sys.stdout.flush()
+                    if c0.max()>self.c0_max:
+                        self.c0_max=c0.max()
+                        print(c0.min(),c0.max())
+                        sys.stdout.flush()
             else:  
                 nspline-=1
         except:
@@ -158,14 +220,16 @@ class corrtime:
     del X
 
     if nspline>1:
-        itmp,tmp=compute_3deg_spline(0.5,nspline)
+        itmp,tmp=compute3deg(0.5,nspline)
+        vref=np.zeros([nspline*2])
+        for k in range(4):
+            vref[itmp[k]]+=0.6*tmp[k]
+            vref[nspline+itmp[k]]+=tmp[k]
     else:
-        tmp=1.0
-        itmp=0
-      
-    vref=np.zeros([nspline*2])
-    vref[itmp]=0.6*tmp
-    vref[nspline+itmp]=tmp
+        vref=np.zeros([2])
+        vref[0]=0.6
+        vref[1]=1.0
+
     xref=solution@vref
     
     self.solution[hidx[0]]=solution
@@ -195,10 +259,11 @@ class corrtime:
         if nspline==1: # no time variation
             return [0.0]
         
-        itmp,tmp=compute_3deg_spline(rg_ref,nspline)
+        itmp,tmp=compute3deg(rg_ref,nspline)
         vref=np.zeros([nspline*2])
-        vref[itmp]=((inc_ref-self.valmin)/(self.valmax-self.valmin))*tmp
-        vref[nspline+itmp]=tmp
+        for k in range(4):
+            vref[itmp[k]]=((inc_ref-self.valmin)/(self.valmax-self.valmin))*tmp[k]
+            vref[nspline+itmp[k]]=tmp[k]
         x=self.solution[hidx]@vref
         return [self.xref[hidx]-x]
     else:
@@ -225,8 +290,8 @@ class azi:
     self.nspline=params['n_spline']
     self.nbolo=len(params['bolo'])
     self.TimeStep=params['TimeStep']
+    self.rank=rank
     self.time_spline_resolution=params['time_spline_resolution']
-
     if rank==0:
       print('Init azimuth correction')
       sys.stdout.flush()
@@ -260,21 +325,21 @@ class azi:
       a1=0
     a1=self.histo[ib][a1]
 
-    iv,v=compute_3deg_spline(a1,self.ntime_spline)
+    iv,v=compute3deg(a1,self.ntime_spline)
     
     a2=int(1000*(np.fmod(externals[0]+np.pi,2*np.pi)/(2*np.pi)))
 
-    return [int(iv[k]*self.nbolo+ib) for k in range(2)]+[int((k+self.ntime_spline)*self.nbolo+ib) for k in self.spline_idx[a2]], \
-      [v[k] for k in range(2)]+self.spline_ref[a2]
+    return [int(iv[k]*self.nbolo+ib) for k in range(4)]+[int((k+self.ntime_spline)*self.nbolo+ib) for k in self.spline_idx[a2]], \
+      [v[k] for k in range(4)]+self.spline_ref[a2]
       
   def normalize(self,x):
     q=np.array(x[self.ntime_spline*self.nbolo:])
     avv=1E4*np.sum(q.reshape(self.nspline,self.nbolo),0)
-    
+
     q=np.array(x[:self.ntime_spline*self.nbolo]).reshape(self.ntime_spline,self.nbolo)
     if self.kernel.shape[0]<self.ntime_spline:
         for k in range(self.nbolo):
-            q[:,k]=1E4*np.convolve(q[:,k],self.kernel,mode='same')
+            q[:,k]=1E2*np.convolve(q[:,k],self.kernel,mode='same')
     else:
         for k in range(self.nbolo):
             q[:,k]=1E4*np.mean(q[:,k])
@@ -321,7 +386,7 @@ def main():
   # info_date = np.loadtxt('/home1/datawork/mgallian/SRoll_datarmor/SRoll/sroll4/file_b1.txt',delimiter=',',dtype='str')
   # Nombre de ring à sélectionner, ici 100 ring
   BeginRing = 0 #int(info_date[0])
-  EndRing   = 19880 #int(info_date[1]) # max ring is 19880
+  EndRing   = 500 #19880 #int(info_date[1]) # max ring is 19880
   day = 'A_%dR'%(EndRing) #info_date[2]
   CorrTOD = "corrtime"
   TimeStep= 4
@@ -363,7 +428,7 @@ def main():
 
   # Nombre d'itération pour fit le gain 
   NITT = 1
-  N_IN_ITT = 300
+  N_IN_ITT = 500
 
   # Limite de calcul
   S_IN_ITT = 1E-18
