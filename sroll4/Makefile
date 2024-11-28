@@ -85,7 +85,7 @@ CFGSROLL := -I$(FFTWDIR_INCLUDE) -I$(CFITSIO_DIR) -I$(NO_DMC_LIB_DIR_INCLUDE) -I
 
 
 # build hprclean before sroll, because sroll uses stimlib which needs HPR_Clean.o
-all: alwaysCheckModules troll_857 troll_cfosat
+all: alwaysCheckModules troll_cfosat troll_swim
 
 
 # DEBUG rule, to print a variable computed in this Makefile, for example OBJ, do: make print-OBJ
