@@ -5631,6 +5631,8 @@ int main(int argc,char *argv[])  {
       // Start TOD correction if needed
       //=======================================================================================================
       if (TestCorrTOD==1) {
+	double sum_diff_corr=0.0;
+	double n_sum_diff_corr=0.0;
 	if (rank==rank_zero)
 	  fprintf(stderr,"corr_tod_eval method available clean tod\n");
 	//extract corrected data for timeline interpretation
@@ -5659,7 +5661,7 @@ int main(int argc,char *argv[])  {
 		//calcul signal corriger
 		double g1=gain[htmp->gi+htmp->ib*GAINSTEP];
 	      
-		double sig_corr = htmp->sig*g1 - htmp->Sub_HPR-htmp->corr_cnn;
+		double sig_corr = htmp->sig*g1 - htmp->Sub_HPR;
 	      
 		if (do_offset==1) {
 		  sig_corr-=x3[iri1];
@@ -5716,7 +5718,7 @@ int main(int argc,char *argv[])  {
 
 	for (k=0;k<nnbpix;k++) 
 	  {
-	    if (rank==0&&k==already_computed) {
+	    if (rank==rank_zero&&k==already_computed) {
 	      fprintf(stderr,"Compute TOD correction %.2f%%\n",((double)(100*k))/nnbpix);
 	      already_computed+=(int)(nnbpix/100);
 	    }
@@ -5737,6 +5739,9 @@ int main(int argc,char *argv[])  {
 					     l_ndata[k]);
 	      for (int o=0;o<ncorrtod;o++) {
 		hpix *htmp=l_pointer[k][o];
+		sum_diff_corr+=(htmp->corr_cnn-o_signal[o])*(htmp->corr_cnn-o_signal[o]);
+		n_sum_diff_corr+=1;
+	   
 		htmp->corr_cnn=o_signal[o];
 		htmp->w=o_hit[o];
 	      }
@@ -5746,8 +5751,10 @@ int main(int argc,char *argv[])  {
 	      
 	    }
 	  }
-
-
+	
+	if (rank==rank_zero) {
+	  fprintf(stderr,"Total TOD correction %g\n",sqrt(sum_diff_corr/n_sum_diff_corr));
+	}
 #if 0
 	char FILENAME[1024];
 	sprintf(FILENAME,"/home1/scratch/jmdeloui/SIGNAL_%d.dat",(int) rank);

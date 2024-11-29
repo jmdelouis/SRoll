@@ -9,21 +9,18 @@ import os
 from scipy.optimize import lsq_linear
 
 def thefunc(x):
-
     return (-2*x**3+3*x**2)
 
 def compute3deg(x,N):
-
     if isinstance(x,float):
-        ix=int(x*(N+1))
+        ix=int(x*(N-1))
         i=np.zeros([4],dtype='int')
         r=np.zeros([4])
     else:
-        ix=(x*(N+1)).astype('int')
+        ix=(x*(N-1)).astype('int')
         i=np.zeros([4,x.shape[0]],dtype='int')
         r=np.zeros([4,x.shape[0]])
-
-    xx=x*(N+1)-ix
+    xx=x*(N-1)-ix
     r[3]=thefunc(xx/2)/2
     r[2]=thefunc(0.5+xx/2)/2
     r[1]=thefunc(1-xx/2)/2
@@ -32,16 +29,26 @@ def compute3deg(x,N):
     i[2]=ix+2
     i[1]=ix+1
     i[0]=ix
-    for k in range(4):
-        i[k,i[k]==0]=2
-        i[k,i[k]==1]=2
+    
+    if isinstance(x,float):
+        if i[0]==0:
+            i[0]=1
+        if i[1]==0:
+            i[1]=1
+        if i[2]==N+1:
+            i[2]=N
+        if i[3]==N+1:
+            i[3]=N
+        if i[3]==N+2:
+            i[3]=N
+    else:
+        i[0,i[0]==0]=1
+        i[1,i[1]==0]=1
+        i[2,i[2]==N+1]=N
+        i[3,i[3]==N+1]=N
+        i[3,i[3]==N+2]=N
         
-    for k in range(4):
-        i[k,i[k]==N+2]=N+1
-        i[k,i[k]==N+3]=N+1
-        i[k,i[k]==N+4]=N+1
-        
-    i=i-2
+    i=i-1
     r=r*r
     return i,r/np.sum(r,0)
 
@@ -109,8 +116,8 @@ class corrtime:
     self.angref=8/180.*np.pi
     self.solution={}
     self.xref={}
-    self.valmin=3*np.pi/180.0
-    self.valmax=11*np.pi/180.0
+    self.valmin=2*np.pi/180.0
+    self.valmax=12*np.pi/180.0
     self.nspline_max=0
     #### New marine 
     self.splineval = {}
@@ -177,6 +184,7 @@ class corrtime:
             if cond<1000:
                 solution=np.linalg.solve(mat,X@Y)
                 test=1
+                """
                 if self.nspline_max<nspline and self.rank==0:
                     np.save('t0_VAL_SPL.npy',t0)
                     np.save('signal_VAL_SPL.npy',Y)
@@ -184,15 +192,7 @@ class corrtime:
                     np.save('c_VAL_SPL.npy',c0)
                     np.save('S_VAL_SPL.npy',solution)
                     self.nspline_max=nspline
-                if rank==0:
-                    if c0.min()<self.c0_min:
-                        self.c0_min=c0.min()
-                        print(c0.min(),c0.max())
-                        sys.stdout.flush()
-                    if c0.max()>self.c0_max:
-                        self.c0_max=c0.max()
-                        print(c0.min(),c0.max())
-                        sys.stdout.flush()
+                """
             else:  
                 nspline-=1
         except:
@@ -262,8 +262,8 @@ class corrtime:
         itmp,tmp=compute3deg(rg_ref,nspline)
         vref=np.zeros([nspline*2])
         for k in range(4):
-            vref[itmp[k]]=((inc_ref-self.valmin)/(self.valmax-self.valmin))*tmp[k]
-            vref[nspline+itmp[k]]=tmp[k]
+            vref[itmp[k]]+=((inc_ref-self.valmin)/(self.valmax-self.valmin))*tmp[k]
+            vref[nspline+itmp[k]]+=tmp[k]
         x=self.solution[hidx]@vref
         return [self.xref[hidx]-x]
     else:
@@ -389,7 +389,7 @@ def main():
   EndRing   = 500 #19880 #int(info_date[1]) # max ring is 19880
   day = 'A_%dR'%(EndRing) #info_date[2]
   CorrTOD = "corrtime"
-  TimeStep= 4
+  TimeStep= 2
   do_offset=0
 
   regrid=0
@@ -427,7 +427,7 @@ def main():
   # Test sur selection 28/48 sur 20/50 : On pourrait mettre 1 comme conditionnement, à tester  
 
   # Nombre d'itération pour fit le gain 
-  NITT = 1
+  NITT = 4
   N_IN_ITT = 500
 
   # Limite de calcul
@@ -538,7 +538,6 @@ def main():
   ntime_spline=int(DELTATIME/(3600))+1
   time_spline_resolution=16
 
-  ntimestep=int(DELTATIME/(24*3600))
     
   nhisto=time_spline_resolution*ntime_spline
   histo=np.zeros([nhisto+1])
@@ -556,6 +555,9 @@ def main():
       isMPI=0
       
   print('rank ',rank,size)
+
+  ntimestep=int(DELTATIME/(24*3600))
+
   fhisto={}
   for k in range(nbolo):
       histo=np.zeros([nhisto+1])
