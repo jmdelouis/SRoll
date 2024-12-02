@@ -3834,26 +3834,7 @@ int main(int argc,char *argv[])  {
 
   if (verbose==1) fprintf(stderr,"%s %d %d\n",__FILE__,__LINE__,rank);
   
-  if (Param->flag_stim_paramfiles == 1) {
-    /* Compute load balancing per sample count, starting from the end where very long rings are */
-    for (int irank = mpi_size-1; irank >= 0 ; irank--) {
-      if (irank == mpi_size-1) {
-        globalRankInfo.EndRing[irank] = globalEndRing;
-      } else {
-        globalRankInfo.EndRing[irank] = globalRankInfo.BeginRing[irank+1] - 1;
-      }
-      if (irank == 0) {
-        globalRankInfo.BeginRing[irank] = globalBeginRing;
-      } else {
-        long samples_to_process = (ENDRINGINDEX( globalRankInfo.EndRing[irank]) - BEGINRINGINDEX( globalBeginRing)) / (irank+1);
-        int temp_beg_ring = globalRankInfo.EndRing[irank]-1;
-        while (ENDRINGINDEX( globalRankInfo.EndRing[irank]) - BEGINRINGINDEX( temp_beg_ring) < samples_to_process) {
-          temp_beg_ring--;
-        }
-        globalRankInfo.BeginRing[irank] = temp_beg_ring+1;
-      }
-    }
-  } else {
+   {
     /* Compute load balancing per ring count*/
     // number of ranks to get an extra ring to proceed
     PIOLONG balancing_correction = 0;
@@ -3907,7 +3888,7 @@ int main(int argc,char *argv[])  {
                 irank, mpi_size, hostname, GetFreeMemGB(),
                 globalRankInfo.BeginRing[irank], globalRankInfo.EndRing[irank],
                 globalRankInfo.EndRing[irank] - globalRankInfo.BeginRing[irank] + 1,
-                (int)((ENDRINGINDEX( globalRankInfo.EndRing[irank]) - BEGINRINGINDEX(globalRankInfo.BeginRing[irank])) / 1e6));
+		 (int)((RINGSIZE*( globalRankInfo.EndRing[irank]) - globalRankInfo.BeginRing[irank]) / 1e6));
       }
       MPI_Barrier(MPI_COMM_WORLD);
     }

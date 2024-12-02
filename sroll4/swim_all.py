@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 import time
 import sys
 import os
-from scipy.optimize import lsq_linear
+from scipy.sparse import coo_matrix
+from scipy.sparse.linalg import cg
 
 def thefunc(x):
     return (-2*x**3+3*x**2)
@@ -115,6 +116,7 @@ class corrtime:
 
     self.angref=8/180.*np.pi
     self.solution={}
+    self.solution[-1]=0
     self.xref={}
     self.valmin=2*np.pi/180.0
     self.valmax=12*np.pi/180.0
@@ -159,42 +161,60 @@ class corrtime:
     t,p=hp.pix2ang(self.nside,hidx[0])
             
     test=0
-    nspline=np.max([int(self.maxspline*self.maxth/np.sin(t)),1])
+
+    if hidx[0] in self.solution:
+        if self.solution[hidx[0]] is not None:
+            nspline=self.solution[hidx[0]].shape[0]//2
+        else:
+            nspline=np.max([int(self.maxspline*self.maxth/np.sin(t)),1])
+    else:
+        nspline=np.max([int(self.maxspline*self.maxth/np.sin(t)),1])
       
     while nspline>1 and test==0:
-        X=np.zeros([nspline*2,t0.shape[0]])
         
         iv,v=compute3deg(t0,nspline)
         idx=np.arange(t0.shape[0])
         
-        X[iv[0],idx]=v[0]*c0
-        X[iv[1],idx]+=v[1]*c0
-        X[iv[2],idx]+=v[2]*c0
-        X[iv[3],idx]+=v[3]*c0
+        if nspline>10:
+            ncol=t0.shape[0]
+            X=coo_matrix((c0*v[0], (iv[0], idx)), shape=(2*nspline,ncol))+ \
+               coo_matrix((v[0], (iv[0]+nspline, idx)), shape=(2*nspline, ncol))+\
+               coo_matrix((c0*v[1], (iv[1], idx)), shape=(2*nspline, ncol))+ \
+               coo_matrix((v[1], (iv[1]+nspline, idx)), shape=(2*nspline, ncol))+\
+               coo_matrix((c0*v[2], (iv[2], idx)), shape=(2*nspline, ncol))+ \
+               coo_matrix((v[2], (iv[2]+nspline, idx)), shape=(2*nspline, ncol))+\
+               coo_matrix((c0*v[3], (iv[3], idx)), shape=(2*nspline, ncol))+ \
+               coo_matrix((v[3], (iv[3]+nspline, idx)), shape=(2*nspline, ncol))
+        else:
+            X=np.zeros([nspline*2,t0.shape[0]])
 
-        X[iv[0]+nspline,idx]=v[0]
-        X[iv[1]+nspline,idx]+=v[1]
-        X[iv[2]+nspline,idx]+=v[2]
-        X[iv[3]+nspline,idx]+=v[3]
+            X[iv[0],idx]=v[0]*c0
+            X[iv[1],idx]+=v[1]*c0
+            X[iv[2],idx]+=v[2]*c0
+            X[iv[3],idx]+=v[3]*c0
+
+            X[iv[0]+nspline,idx]=v[0]
+            X[iv[1]+nspline,idx]+=v[1]
+            X[iv[2]+nspline,idx]+=v[2]
+            X[iv[3]+nspline,idx]+=v[3]
 
         mat=X@X.T
         solution=None
         try:
-            cond=np.linalg.cond(mat)
-            if cond<1000:
-                solution=np.linalg.solve(mat,X@Y)
-                test=1
-                """
-                if self.nspline_max<nspline and self.rank==0:
-                    np.save('t0_VAL_SPL.npy',t0)
-                    np.save('signal_VAL_SPL.npy',Y)
-                    np.save('X_VAL_SPL.npy',X)
-                    np.save('c_VAL_SPL.npy',c0)
-                    np.save('S_VAL_SPL.npy',solution)
-                    self.nspline_max=nspline
-                """
-            else:  
-                nspline-=1
+            if nspline>10:
+                solution,e=cg(M,X@Y)
+                if e==0:
+                    test=1
+                else:
+                    solution=None
+                    nspline-=1
+            else:
+                cond=np.linalg.cond(mat)
+                if cond<1000:
+                    solution=np.linalg.solve(mat,X@Y)
+                    test=1
+                else:  
+                    nspline-=1
         except:
             nspline-=1
               
@@ -386,7 +406,7 @@ def main():
   # info_date = np.loadtxt('/home1/datawork/mgallian/SRoll_datarmor/SRoll/sroll4/file_b1.txt',delimiter=',',dtype='str')
   # Nombre de ring à sélectionner, ici 100 ring
   BeginRing = 0 #int(info_date[0])
-  EndRing   = 500 #19880 #int(info_date[1]) # max ring is 19880
+  EndRing   = 500 #int(info_date[1]) # max ring is 19880
   day = 'A_%dR'%(EndRing) #info_date[2]
   CorrTOD = "corrtime"
   TimeStep= 2
@@ -427,7 +447,7 @@ def main():
   # Test sur selection 28/48 sur 20/50 : On pourrait mettre 1 comme conditionnement, à tester  
 
   # Nombre d'itération pour fit le gain 
-  NITT = 4
+  NITT = 3
   N_IN_ITT = 500
 
   # Limite de calcul
