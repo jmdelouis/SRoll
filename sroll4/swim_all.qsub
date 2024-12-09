@@ -1,8 +1,8 @@
 #!/bin/bash
-#PBS -q mpi_1
-#PBS -l select=1:ncpus=28:mem=115g
+#PBS -q mpi_4
+#PBS -l select=4:ncpus=28:mem=115g
 #PBS -l walltime=24:00:00
-#PBS -N DSWIM_ALL
+#PBS -N DSWIM_TEST
 #PBS -o /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4/scatout.log
 
 echo 'PATH INIT DONE'
@@ -16,6 +16,6 @@ cd /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4
 export MKL_DEBUG_CPU_TYPE=5
 echo 'READY FOR RUN'
 #./ressources &> /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4/memusage.log &
-mpirun -np 28 ./troll_swim swim_all.py &> /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4/swim_all.log
+mpirun -np 112 ./troll_swim config_file_sroll_swim_TL_3Y.py &> /home1/datahome/jmdeloui/DATAWORK/SRoll/sroll4/swim_all_test.log
 echo 'End'
 
